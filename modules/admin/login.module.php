@@ -85,17 +85,21 @@ if($_POST) {
 
 function validateData($request) {
 	global $amessages;
-	include_once(ROOT_PATH.'classes/data/validate.class.php');
-	$error = array();
-	$validate = new Validate();
-	$error['INPUT']['username'] = $validate->validUsername(Filter($request->element('username')));
-	$error['INPUT']['password'] = $validate->validPassword(Filter($request->element('password')));
-	
-	if($error['INPUT']['username']['error'] || $error['INPUT']['password']['error']) { # || $error['password']['error']
+	$username = trim((string) $request->element('username'));
+	$password = (string) $request->element('password');
+	$error = array('invalid' => 0, 'message' => array());
+
+	// Login accepts existing legacy credentials. Password-complexity rules belong
+	// to account creation/password changes, not authentication.
+	if ($username === '') {
 		$error['invalid'] = 1;
-		return $error;
+		$error['message'][] = $amessages['username_required'];
 	}
-	$error['invalid'] = 0;
+	if ($password === '') {
+		$error['invalid'] = 1;
+		$error['message'][] = $amessages['password_required'];
+	}
+
 	return $error;
 }
 ?>
