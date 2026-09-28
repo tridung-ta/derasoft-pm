@@ -68,7 +68,11 @@ $templateFile = 'index.tpl.html';
 # Language manager
 $lang = $request->element('lang');
 if(!$lang) $lang = DEFAULT_ADMIN_LANGUAGE;
-include_once(ROOT_PATH.'languages/admin/'.$lang.'.php');
+if(PM_HIDE_LEGACY) {
+	include_once(ROOT_PATH.'includes/pm_messages.inc.php');
+} else {
+	include_once(ROOT_PATH.'languages/admin/'.$lang.'.php');
+}
 $template->assign('amessages',$amessages);
 $template->assign('lang',$lang);
 
