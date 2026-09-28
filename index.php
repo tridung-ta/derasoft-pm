@@ -15,6 +15,11 @@ if (!defined('ROOT_PATH')) {
 	define('ROOT_PATH', dirname(__FILE__).'/');
 	
 }
+include_once(ROOT_PATH.'includes/pm_mode.inc.php');
+if (PM_HIDE_LEGACY) {
+	include(ROOT_PATH.'pm-launch.php');
+	exit;
+}
 include_once(ROOT_PATH.'includes/constant.inc.php');
 include_once(ROOT_PATH.'classes/security/boot.class.php');
 $boots = new Boot();
@@ -190,6 +195,11 @@ $sId = 1;
 if($sId) $op = 'estore';
 if(!$op) $op = DEFAULT_OP;
 if(!$act) $act = DEFAULT_ACT;
+
+# Keep the public module allowlist explicit when environment config does not define it.
+if (!isset($ops) || !is_array($ops)) {
+	$ops = array('main', 'estore');
+}
 
 
 # Put this code any where in the modules

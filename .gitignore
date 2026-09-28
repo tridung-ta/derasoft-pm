@@ -1,5 +1,6 @@
 # Environment-specific configuration and secrets
 /includes/config.inc.php
+/license/license.inc.php
 .env
 .env.*
 !.env.example

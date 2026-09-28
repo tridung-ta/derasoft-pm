@@ -17,6 +17,14 @@ if (!defined( "ROOT_PATH" )) {
 	define("ROOT_PATH", dirname(__FILE__)."/");
 }
 
+include_once(ROOT_PATH.'includes/pm_mode.inc.php');
+if (PM_HIDE_LEGACY) {
+	http_response_code(404);
+	header('Content-Type: application/json; charset=utf-8');
+	echo json_encode(array('error' => 'Legacy endpoint disabled'));
+	exit;
+}
+
 
 
 include_once(ROOT_PATH.'includes/config.inc.php');

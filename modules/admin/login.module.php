@@ -9,7 +9,7 @@ Last updated: 02/07/2008
 **************************************************************************/
 include_once(ROOT_PATH.'classes/dao/users.class.php');
 include_once(ROOT_PATH.'classes/security/checklogin.class.php');
-$templateFile = 'login.tpl.html';
+$templateFile = defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? 'pm-login.tpl.html' : 'login.tpl.html';
 $template->assign('userTemplate',$userTemplate);
 $error = '';
 $site = $request->element("site");
@@ -44,7 +44,8 @@ if($_POST) {
 				# Operation tracking
 				$trackings->addData(array('store_id'=>$storeId,'username'=>$username,'action'=>$amessages['tracking']['login_ok'],'date_created'=>date("Y-m-d H:i:s"),'ip'=>$_SERVER['REMOTE_ADDR']));
 				if($site == 'admin') {
-					header('location: '.ADMIN_SCRIPT.'?op=manage');
+					header('location: '.ADMIN_SCRIPT.'?op='.(defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? 'pm' : 'manage'));
+					exit;
 				} else {
 					$url =$customDomain?PROTOCOL.$customDomain:'/';
 					header('location: '.$url);

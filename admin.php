@@ -15,8 +15,10 @@ if (!defined('ROOT_PATH')) {
 }
 include_once(ROOT_PATH.'classes/security/boot.class.php');
 $boots = new Boot();
+include_once(ROOT_PATH.'includes/pm_mode.inc.php');
 include_once(ROOT_PATH.'includes/config.inc.php');
 $aops[] = 'editorial'; // V48 Editorial Control Center
+$aops[] = 'pm';
 include_once(ROOT_PATH.'includes/constant.inc.php');
 include_once(ROOT_PATH.'classes/data/translator.class.php');
 include_once(ROOT_PATH.'includes/admin/functions.inc.php');
@@ -29,7 +31,10 @@ include_once(ROOT_PATH.'classes/dao/estores.class.php');
 include_once(ROOT_PATH.'classes/dao/trackings.class.php');
 include_once(ROOT_PATH.'classes/dao/storeusers.class.php');
 include_once(ROOT_PATH.'classes/dao/addons.class.php');
-require_once 'vendor/autoload.php'; // Đường dẫn đến autoload.php của Composer
+$composerAutoload = ROOT_PATH . 'vendor/autoload.php';
+if (is_file($composerAutoload)) {
+	require_once $composerAutoload;
+}
 
 # Setting time zone
 if(function_exists('date_default_timezone_set')) date_default_timezone_set(TIME_ZONE);
@@ -83,6 +88,13 @@ $addons = new Addons(1);
 # Session manager
 include_once(ROOT_PATH.'includes/admin/sessions.inc.php');
 
+# In PM mode, authenticated users can only access the new dashboard or logout.
+if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'logout'), true)) {
+	$op = 'pm';
+	$act = '';
+	$mod = '';
+}
+
 # Load module
 include_once(ROOT_PATH.'modules/admin/'.$op.'.module.php');
 
@@ -127,7 +139,9 @@ if(DEBUG && $_SERVER['REMOTE_ADDR'] == DEBUG_IP) {
 	file_put_contents($debug_file, $debugText, FILE_APPEND);		
 	file_put_contents($debug_file, "***** End runtime *****\n\n", FILE_APPEND);
 }
-$time_end = microtime(true);
-$time = $time_end - $time_start;
-echo '<center>'.$time.'</center>';
+if(!PM_HIDE_LEGACY) {
+	$time_end = microtime(true);
+	$time = $time_end - $time_start;
+	echo '<center>'.$time.'</center>';
+}
 ?>
