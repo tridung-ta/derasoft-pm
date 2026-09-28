@@ -124,7 +124,7 @@ $template->display($templateFolder.$templateFile);
 # Close database connection
 #$db->close();
 
-if(DEBUG && $_SERVER['REMOTE_ADDR'] == DEBUG_IP) {	
+if(!PM_HIDE_LEGACY && DEBUG && $_SERVER['REMOTE_ADDR'] == DEBUG_IP) {
 	$debug_file = "debug/".DEBUG_IP.".txt";
 	$debugText = "";
 	$time_end = microtime(true);
