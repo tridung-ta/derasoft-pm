@@ -1,0 +1,140 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title="show-tabs"}
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<select name="filter_date_created" id="filter_date_created">
+<option value="">{$locale->msg('filter_date_created')}</option>
+<option value="all" {if $filter_date_created eq "all"}selected="selected"{/if} >{$amessages.status_times.7}</option>
+<option value="onehour" {if $filter_date_created eq "onehour"}selected="selected"{/if} >{$amessages.status_times.1}</option>
+<option value="fourhours" {if $filter_date_created eq "fourhours"}selected="selected"{/if}  >{$amessages.status_times.2}</option>
+<option value="today" {if $filter_date_created eq "today"}selected="selected"{/if}  >{$amessages.status_times.3}</option>
+<option value="7" {if $filter_date_created eq "7"}selected="selected"{/if} >{$amessages.status_times.4}</option>
+<option value="30" {if $filter_date_created eq "30"}selected="selected"{/if} >{$amessages.status_times.5}</option>
+<option value="365" {if $filter_date_created eq "365"}selected="selected"{/if} >{$amessages.status_times.6}</option>
+</select>
+<select name="filter_last_login" id="filter_last_login">
+<option value="">{$locale->msg('filter_last_login')}</option>
+<option value="all" {if $filter_last_login eq "all"}selected="selected"{/if} >{$amessages.status_times.7}</option>
+<option value="onehour" {if $filter_last_login eq "onehour"}selected="selected"{/if} >{$amessages.status_times.1}</option>
+<option value="fourhours" {if $filter_last_login eq "fourhours"}selected="selected"{/if}  >{$amessages.status_times.2}</option>
+<option value="today" {if $filter_last_login eq "today"}selected="selected"{/if}  >{$amessages.status_times.3}</option>
+<option value="7" {if $filter_last_login eq "7"}selected="selected"{/if} >{$amessages.status_times.4}</option>
+<option value="30" {if $filter_last_login eq "30"}selected="selected"{/if} >{$amessages.status_times.5}</option>
+<option value="365" {if $filter_last_login eq "365"}selected="selected"{/if} >{$amessages.status_times.6}</option>
+</select>
+<select name="filter_status" id="filter_status">
+<option value="" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('filter_status')}</option>
+<option value="all" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="0" {if $filter_status eq "0"}selected="selected"{/if}>{$amessages.status_user.0}</option>
+<option value="1" {if $filter_status eq "1"}selected="selected"{/if}>{$amessages.status_user.1}</option>
+<option value="2" {if $filter_status eq "2"}selected="selected"{/if}>{$amessages.status_user.2}</option>
+</select>
+<select name="filter_groups" id="filter_groups">
+<option value="" {if $filter_groups eq "all"}selected="selected"{/if}>{$locale->msg('customer_group_name')}</option>
+<option value="all" {if $filter_groups eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+{$customerGroupsCombo}
+</select>
+<select name="filter_countries" id="filter_countries">
+<option value="" {if $filter_countries eq "all"}selected="selected"{/if}>{$locale->msg('country_name')}</option>
+<option value="all" {if $filter_countries eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+{$customerCountriesCombo}
+</select>
+<select name="filter_areas" id="filter_areas">
+<option value="" {if $filter_areas eq "all"}selected="selected"{/if}>{$locale->msg('area_name')}</option>
+<option value="all" {if $filter_areas eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+{if isset($customerAreasCombo)}{$customerAreasCombo}{/if}
+</select>
+<select name="filter_wards" id="filter_wards">
+<option value="" {if $filter_wards eq "all"}selected="selected"{/if}>{$locale->msg('customer_ward_name')}</option>
+<option value="all" {if $filter_wards eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+{if isset($customerWardsCombo)}{$customerWardsCombo}{/if}
+</select>
+{literal}<script>
+$(document).ready(function(){
+    $('#filter_countries').change(function(){
+        var countryID = $(this).val();
+        $('#filter_areas').html('<option>Đang tải...</option>');
+        $('#filter_wards').html('<option value="">Chọn phường, xã</option>');
+        if(countryID){
+            $.ajax({
+                type: 'POST',
+                url: 'ajaxadmin.php',
+                data: {op: 'loadareas', country_id: countryID},
+                success: function(html){
+                    $('#filter_areas').html(html);
+                }
+            });
+        } else {
+            $('#filter_areas').html('<option value="">Chọn tỉnh, thành</option>');
+        }
+    });
+
+    $('#filter_areas').change(function(){
+        var areaID = $(this).val();
+        $('#filter_wards').html('<option>Đang tải...</option>');
+        if(areaID){
+            $.ajax({
+                type: 'POST',
+                url: 'ajaxadmin.php',
+                data: {op: 'loadwards', area_id: areaID},
+                success: function(html){
+                    $('#filter_wards').html(html);
+                }
+            });
+        } else {
+            $('#filter_wards').html('<option value="">Chọn phường, xã</option>');
+        }
+    });
+});
+</script>{/literal}
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{elseif $mod eq "listcategory"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="pId" value="{$pId}" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title="show-tabs"}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

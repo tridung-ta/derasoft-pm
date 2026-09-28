@@ -1,0 +1,164 @@
+<Files .htaccess>
+deny from all
+</Files>
+
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+<IfModule mod_headers.c>
+ExpiresActive On
+
+# Expires after 1 month
+<FilesMatch "\.(gif|png|jpg|jpeg|ico|pdf|js|htm|html)$">
+    Header set Cache-Control "max-age=2592000"
+</FilesMatch>
+
+# Expires after 7 day
+<FilesMatch "\.(css)$">
+    Header set Cache-Control "max-age=604800"
+</FilesMatch>
+
+# Expires after 1 hour
+<FilesMatch "\.(txt)$">
+    Header set Cache-Control "max-age=3600"
+</FilesMatch>
+
+# PWA metadata and worker must be revalidated after every deployment.
+<FilesMatch "^(service-worker\.js|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+</FilesMatch>
+
+</IfModule>
+
+<Files config.php>
+deny from all
+</Files>
+
+#Options -Indexes
+#Options +FollowSymLinks
+
+<IfModule mod_rewrite.c>
+
+RewriteEngine On
+RewriteBase /
+
+Options -MultiViews
+
+RewriteRule ^ajax/search-suggest/?$ index.php?op=ajax&act=search_suggest [L,QSA,NC]
+
+<IfModule mod_dir.c>
+DirectoryIndex index.php index.html
+</IfModule>
+
+RewriteRule ^trienlam\.tpl\.html/?$ index.php?op=estore&act=dev&slug=trienlam [L,QSA,NC]
+RewriteRule ^trienlam-1\.tpl\.html/?$ index.php?op=estore&act=dev&slug=trienlam-1 [L,QSA,NC]
+RewriteRule ^sankhau-1\.tpl\.html/?$ index.php?op=estore&act=dev&slug=sankhau-1 [L,QSA,NC]
+
+RewriteRule ^(template-new1|template-new2)$ index.php?op=estore&act=templatenew&slug=$1 [L,NC,QSA]
+
+# Redirect toàn bộ /vn sang /
+RewriteRule ^vn/?$ / [R=301,L,NC]
+RewriteRule ^vn/(.*)$ /$1 [R=301,L,NC,QSA]
+
+# HOME
+RewriteRule ^trang-chu/?$ index.php?op=estore&act=index [L,QSA,NC]
+
+RewriteRule ^en/home/?$ index.php?op=estore&act=index&lang=en [L,QSA,NC]
+RewriteRule ^en/?$ index.php?op=estore&act=index&lang=en [L,QSA,NC]
+
+RewriteRule ^zh/home/?$ index.php?op=estore&act=index&lang=zh [L,QSA,NC]
+RewriteRule ^zh/?$ index.php?op=estore&act=index&lang=zh [L,QSA,NC]
+
+# CONTACT
+RewriteRule ^lien-he/?$ index.php?op=estore&act=contact [L,QSA,NC]
+
+RewriteRule ^en/contact/?$ index.php?op=estore&act=contact&lang=en [L,QSA,NC]
+RewriteRule ^zh/contact/?$ index.php?op=estore&act=contact&lang=zh [L,QSA,NC]
+
+# INTRODUCTION
+RewriteRule ^gioi-thieu/?$ index.php?op=estore&act=intro&slug=gioi-thieu [L,QSA,NC]
+
+RewriteRule ^en/introduction/?$ index.php?op=estore&act=intro&lang=en&slug=gioi-thieu [L,QSA,NC]
+RewriteRule ^zh/introduction/?$ index.php?op=estore&act=intro&lang=zh&slug=gioi-thieu [L,QSA,NC]
+
+# SERVICES
+RewriteRule ^dich-vu-cua-mpx/?$ index.php?op=estore&act=service&slug=dich-vu-cua-mpx [L,QSA,NC]
+
+RewriteRule ^en/services/?$ index.php?op=estore&act=service&lang=en&slug=dich-vu-cua-mpx [L,QSA,NC]
+RewriteRule ^zh/services/?$ index.php?op=estore&act=service&lang=zh&slug=dich-vu-cua-mpx [L,QSA,NC]
+
+# STAGE SERVICES
+RewriteRule ^dich-vu-ve-san-khau-cua-mpx/?$ index.php?op=estore&act=servicestage&slug=dich-vu-ve-san-khau-cua-mpx [L,QSA,NC]
+
+RewriteRule ^en/stage-services/?$ index.php?op=estore&act=servicestage&lang=en&slug=dich-vu-ve-san-khau-cua-mpx [L,QSA,NC]
+RewriteRule ^zh/stage-services/?$ index.php?op=estore&act=servicestage&lang=zh&slug=dich-vu-ve-san-khau-cua-mpx [L,QSA,NC]
+
+# EXHIBITION SERVICES
+RewriteRule ^dich-vu-ve-trien-lam-cua-mpx/?$ index.php?op=estore&act=serviceexhibition&slug=dich-vu-ve-trien-lam-cua-mpx [L,QSA,NC]
+
+RewriteRule ^en/exhibition-services/?$ index.php?op=estore&act=serviceexhibition&lang=en&slug=dich-vu-ve-trien-lam-cua-mpx [L,QSA,NC]
+RewriteRule ^zh/exhibition-services/?$ index.php?op=estore&act=serviceexhibition&lang=zh&slug=dich-vu-ve-trien-lam-cua-mpx [L,QSA,NC]
+
+# SOLUTIONS
+RewriteRule ^giai-phap/?$ index.php?op=estore&act=solution&slug=giai-phap [L,QSA,NC]
+
+RewriteRule ^en/solutions/?$ index.php?op=estore&act=solution&lang=en&slug=giai-phap [L,QSA,NC]
+RewriteRule ^zh/solutions/?$ index.php?op=estore&act=solution&lang=zh&slug=giai-phap [L,QSA,NC]
+
+# PRODUCTS
+RewriteRule ^san-pham-cua-mpx/?$ index.php?op=estore&act=product&slug=san-pham-cua-mpx [L,QSA,NC]
+
+RewriteRule ^en/products/?$ index.php?op=estore&act=product&lang=en&slug=san-pham-cua-mpx [L,QSA,NC]
+RewriteRule ^zh/products/?$ index.php?op=estore&act=product&lang=zh&slug=san-pham-cua-mpx [L,QSA,NC]
+
+# EXHIBITION PRODUCTS
+RewriteRule ^san-pham-trien-lam/?$ index.php?op=estore&act=productexhibition&slug=san-pham-trien-lam [L,QSA,NC]
+
+RewriteRule ^en/exhibition-products/?$ index.php?op=estore&act=productexhibition&lang=en&slug=san-pham-trien-lam [L,QSA,NC]
+RewriteRule ^zh/exhibition-products/?$ index.php?op=estore&act=productexhibition&lang=zh&slug=san-pham-trien-lam [L,QSA,NC]
+
+# STAGE PRODUCTS
+RewriteRule ^thiet-bi-san-khau/?$ index.php?op=estore&act=productstage&slug=thiet-bi-san-khau [L,QSA,NC]
+
+RewriteRule ^en/stage-equipment/?$ index.php?op=estore&act=productstage&lang=en&slug=thiet-bi-san-khau [L,QSA,NC]
+RewriteRule ^zh/stage-equipment/?$ index.php?op=estore&act=productstage&lang=zh&slug=thiet-bi-san-khau [L,QSA,NC]
+
+# CASE STUDY
+RewriteRule ^case-study-cua-mpx/?$ index.php?op=estore&act=casestudy&slug=case-study-cua-mpx [L,QSA,NC]
+
+RewriteRule ^en/case-study/?$ index.php?op=estore&act=casestudy&lang=en&slug=case-study-cua-mpx [L,QSA,NC]
+RewriteRule ^zh/case-study/?$ index.php?op=estore&act=casestudy&lang=zh&slug=case-study-cua-mpx [L,QSA,NC]
+
+# KNOWLEDGE
+RewriteRule ^kien-thuc/?$ index.php?op=estore&act=knowledge&slug=kien-thuc [L,QSA,NC]
+
+RewriteRule ^en/knowledge/?$ index.php?op=estore&act=knowledge&lang=en&slug=kien-thuc [L,QSA,NC]
+RewriteRule ^zh/knowledge/?$ index.php?op=estore&act=knowledge&lang=zh&slug=kien-thuc [L,QSA,NC]
+
+# NEWS
+RewriteRule ^tin-tuc/?$ index.php?op=estore&act=news&slug=tin-tuc [L,QSA,NC]
+
+RewriteRule ^en/news/?$ index.php?op=estore&act=news&lang=en&slug=tin-tuc [L,QSA,NC]
+RewriteRule ^zh/news/?$ index.php?op=estore&act=news&lang=zh&slug=tin-tuc [L,QSA,NC]
+
+# Redirect 301
+RewriteRule ^thiet-ke-va-lap-dat-gian-hang-trien-lam/?$ /thiet-ke-va-thi-cong-gian-hang-trien-lam [R=301,L]
+
+# DETAIL
+RewriteRule ^en/([a-z0-9-_]+)/?$ index.php?op=estore&act=details&lang=en&slug=$1 [L,QSA,NC]
+RewriteRule ^zh/([a-z0-9-_]+)/?$ index.php?op=estore&act=details&lang=zh&slug=$1 [L,QSA,NC]
+RewriteRule ^([a-z0-9-_]+)/?$ index.php?op=estore&act=details&slug=$1 [L,QSA,NC]
+
+# Sitemap
+
+RewriteRule ^sitemap\.html$ index.php?op=estore&act=sitemap [L,NC]
+RewriteRule ^404\.html$ index.php?op=estore&act=404 [L,NC]
+
+ErrorDocument 404 /404.html
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ 404.html [L]
+
+</IfModule>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2b1d19">
+    <title>Đang ngoại tuyến | Tạp chí Văn hóa Việt</title>
+    <style>
+        :root{color-scheme:light dark;font-family:Arial,sans-serif}*{box-sizing:border-box}body{display:grid;min-height:100vh;margin:0;padding:24px;place-items:center;background:#f7f3ee;color:#2b1d19}.offline{width:min(560px,100%);padding:48px;border:1px solid #d8ccc2;background:#fff;text-align:center;box-shadow:0 20px 60px rgba(43,29,25,.09)}.offline__mark{display:grid;width:72px;height:72px;margin:0 auto 24px;border-radius:50%;place-items:center;background:#2b1d19;color:#d7ad68;font:700 30px Georgia,serif}.offline h1{margin:0 0 16px;font:400 clamp(2rem,8vw,3.6rem)/1.05 Georgia,serif}.offline p{margin:0 auto 28px;color:#76665d;line-height:1.7}.offline button{padding:13px 22px;border:0;background:#ad3328;color:#fff;font-weight:700;letter-spacing:.05em;cursor:pointer}@media(prefers-color-scheme:dark){body{background:#1f1815;color:#f7f3ee}.offline{border-color:#56463e;background:#2b211d}.offline p{color:#c9bbb2}}
+    </style>
+</head>
+<body>
+    <main class="offline">
+        <div class="offline__mark" aria-hidden="true">V</div>
+        <h1>Bạn đang ngoại tuyến</h1>
+        <p>Không thể kết nối tới Tạp chí Văn hóa Việt. Hãy kiểm tra đường truyền rồi thử lại.</p>
+        <button type="button" onclick="window.location.reload()">Thử kết nối lại</button>
+    </main>
+</body>
+</html>

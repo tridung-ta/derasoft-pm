@@ -1,0 +1,135 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+<div class="contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_user')}</div>
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_user')}</h1>
+{if $validItem}
+{if $item}
+<!-- Load user info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{$item->getUsername()}</strong></p>
+<div class="boxTyle">
+<label for="password">* {$locale->msg('password')}</label>
+<input class="small" type="password" value="" name="password" id="password" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('password')}</h4>
+<p>{$locale->msg('leave_password_blank')}</p>
+</div>
+</div>
+</div>
+<p><label for="confirm_password">* {$locale->msg('confirm_password')}</label>
+<input class="small" type="password" value="" name="confirm_password" id="confirm_password" /></p>
+<p><label for="fullname">* {$locale->msg('fullname')}</label>
+<input class="medium" type="text" value="{$item->getFullname()}" name="fullname" id="fullname" /></p>
+<p><label for="email">* {$locale->msg('email')}</label>
+<input class="medium" type="text" value="{$item->getEmail()}" name="email" id="email" /></p>
+<p><label for="email">{$locale->msg('address')}</label>
+<input type="text" value="{$item->getAddress()}" name="address" id="address" /></p>
+<p><label for="telephone">{$locale->msg('telephone')}</label>
+<input class="small" type="text" value="{$item->getTel()}" name="telephone" id="telephone" /></p>
+<p><label for="user_group">{$locale->msg('user_group')}</label>
+<select class="small" name="user_group" id="user_group">
+<option value="1"{if $item->getType() eq 1}selected="selected"{/if}>{$locale->msg('employment')}</option>
+<option value="2"{if $item->getType() eq 2}selected="selected"{/if}>{$locale->msg('managerment')}</option>
+{if $authUser->isSiteFounder()}<option value="3"{if $item->getType() eq 3}selected="selected"{/if}>{$locale->msg('founder')}</option>{/if}
+</select></p>
+<p><label for="photos">{$locale->msg('upload_image')}</label><input type="file" name="logo" id="logo" /></label></p>
+<p>
+   {if $avatarImg}
+        <p>
+            <label></label>
+            <a href="{$avatarImg->getPath()}/{$avatarImg->getUrlL()}" target="_blank" rel="noopener noreferrer"><img src="{$avatarImg->getPath()}/{$avatarImg->getUrlA()}" /></a>
+            <a href="/{$aScript}?op=system&act=staff&mod=edit&id={$item->getId()}&doo=delAvatar&lang={$lang}" style="color:#c00;font-size:12px;">Xóa</a>
+        </p> 
+    {/if}
+</p>
+<br>
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="username" value="{$item->getUsername()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.password.error} class="errormsg"{/if}><label for="password">* {$locale->msg('password')}</label>
+<input class="small" type="password" value="{if isset($error.INPUT)}{$error.INPUT.password.value}{/if}" name="password" id="password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.confirm_password.error} class="errormsg"{/if}><label for="confirm_password">* {$locale->msg('confirm_password')}</label>
+<input class="small" type="password" value="{if isset($error.INPUT)}{$error.INPUT.confirm_password.value}{/if}" name="confirm_password" id="confirm_password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.fullname.error} class="errormsg"{/if}><label for="fullname">* {$locale->msg('fullname')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.fullname.value}{/if}" name="fullname" id="fullname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">* {$locale->msg('email')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p><label for="email">{$locale->msg('address')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p><label for="telephone">{$locale->msg('telephone')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.telephone.value}{/if}" name="telephone" id="telephone" /></p>
+<p><label for="user_group">{$locale->msg('user_group')}</label>
+<select class="small" name="user_group" id="user_group">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.user_group.value eq 1}selected="selected"{/if}>{$locale->msg('employment')}</option>
+<option value="2"{if isset($error.INPUT) && $error.INPUT.user_group.value eq 2}selected="selected"{/if}>{$locale->msg('managerment')}</option>
+{if $authUser->isSiteFounder()}<option value="3"{if isset($error.INPUT) && $error.INPUT.user_group.value eq 3}selected="selected"{/if}>{$locale->msg('founder')}</option>{/if}
+</select></p>
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="id" value="{$error.INPUT.id.value}" />
+<input type="hidden" name="username" value="{$error.INPUT.username.value}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>

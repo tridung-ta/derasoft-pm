@@ -1,0 +1,130 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field key=key}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_new_article')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="category_id">{$locale->msg('of_category')}</label>
+<select name="category_id" id="category_id" class="medium">
+{$categoryCombo}
+</select></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="verysmall">
+<option value="1" {if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0" {if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="editorial_access">Quyền đọc</label>
+<select name="editorial_access" id="editorial_access" class="small">
+<option value="free"{if !isset($error.INPUT) || $error.INPUT.editorial_access.value != 'premium'} selected="selected"{/if}>Miễn phí</option>
+<option value="premium"{if isset($error.INPUT) && $error.INPUT.editorial_access.value == 'premium'} selected="selected"{/if}>Hội viên Premium</option>
+</select></p>
+<p><label for="status">{$locale->msg('choose_language')}</label>
+  <label for="vn">Tiếng Việt</label>
+  <input type="checkbox" name="language[]" value="vn" checked="checked">
+  <label for="en">Tiếng Anh</label>
+  <input type="checkbox" name="language[]" value="en" {if isset($error.INPUT.language.value) && in_array('en', $error.INPUT.language.value)}checked="checked"{/if}>
+  <label for="zh">Tiếng Hoa</label>
+  <input type="checkbox" name="language[]" value="zh" {if isset($error.INPUT.language.value) && in_array('zh', $error.INPUT.language.value)}checked="checked"{/if}>
+</p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" class="verysmall" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.view.error} class="errormsg"{/if}><label for="views">{$locale->msg('views')}</label>
+<input type="text" class="verysmall" value="{if isset($error.INPUT)}{$error.INPUT.view.value}{/if}" name="view" id="view" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.title.error} class="errormsg"{/if}><label for="title">* {$locale->msg('title')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.title.value}{/if}" name="title" id="title" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.keyword.error} class="errormsg"{/if}><label for="keyword">* {$locale->msg('keyword')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.keyword.value}{/if}" name="keyword" id="keyword" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.slug_en.error} class="errormsg"{/if}><label for="slug_en">{$locale->msg('slug_en')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.slug_en.value}{/if}" name="slug_en" id="slug_en" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.slug_zh.error} class="errormsg"{/if}><label for="slug_zh">{$locale->msg('slug_zh')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.slug_zh.value}{/if}" name="slug_zh" id="slug_zh" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.description.error} class="errormsg"{/if}><label for="description">* {$locale->msg('description')}</label></p>
+<textarea rows="10" cols="20" name="description" id="description">{if isset($error.INPUT)}{$error.INPUT.description.value|escape}{/if}</textarea></textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('description');</script>{/literal}
+</p>
+
+<p>
+  <label for="dateDisplay">Đặt lịch đăng</label>
+
+  <!-- Input hiển thị cho user, KHÔNG có name → không gửi lên server -->
+  <input type="text" id="dateDisplay"
+         style="width: 350px;" placeholder="dd/mm/yyyy" readonly/>
+
+  <!-- Hidden field gửi lên server, format YYYY-MM-DD -->
+  <input type="hidden" id="dateISO" name="publish_at"
+         value="{if isset($error.INPUT)}{$error.INPUT.publish_at.value}{/if}"/>
+
+  <span>(Note: Đổi trạng thái bài viết sang "Vô hiệu" để dùng chức năng đặt lịch đăng bài)</span>
+</p>
+
+<p{if isset($error.INPUT) && $error.INPUT.detail.error} class="errormsg"{/if}><label for="detail">* {$locale->msg('detail')}</label></p>
+<textarea rows="10" cols="20" name="detail" id="detail">{if isset($error.INPUT)}{$error.INPUT.detail.value|escape}{/if}</textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>{/literal}
+{include file='managearticletranslations.tpl.html'}
+<br />
+<p><label for="article_group_ids">{$locale->msg('article_group')}</label>
+<select name="article_group_ids[]" id="article_group_ids" class="small" multiple="multiple">
+  {foreach from=$articleGroupList item=group}
+    <option value="{$group->getId()}"
+      {if isset($error.INPUT) && $error.INPUT.article_group_ids.value && in_array($group->getId(), $error.INPUT.article_group_ids.value)} selected="selected" {/if}>
+      {$group->getName()}
+    </option>
+  {/foreach}
+</select>
+</p>
+<p><label for="avatar"> {$locale->msg('avatar')}</label><input type="file"  name="avatar" id="avatar" /></p>
+<p><label for="files">{$locale->msg('attachments')}</label><input type="file" multiple="multiple" name="files[]" id="files[]" /></p>
+
+{if isset($fieldOptionList)}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{else}
+{$field->displayHTML('','')}
+{/if}
+{/foreach}
+{/if}
+
+{if isset($fieldList)}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{else}
+{$field->displayHTML('', ['0'])}
+{/if}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="article" />
+<input type="hidden" name="mod" value="add" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>

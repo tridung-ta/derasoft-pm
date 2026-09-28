@@ -1,0 +1,136 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+{if $validItem}
+{if isset($item)}
+<h1>Danh Sách Product Options</h1>
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<!-- PO -->
+{if $productName}<h2>Lựa chọn thuộc sản phẩm: {$productName}</h2>{/if}
+<div id="options-wrapper">
+  {foreach from=$listProductOptions key=optionIndex item=option}
+  <div class="option-block">
+    <div class="option-name-group">
+      <p>
+        <label style="font-weight: 700; font-size: 18px;">* Tên option:</label>
+        <input type="text" name="option_names[]" value="{$option.name|escape}" placeholder="VD: Kích thước" required>
+      </p>
+    </div>
+    <div class="values-wrapper">
+      {foreach from=$option.values key=valueIndex item=value}
+      <div class="value-row" style="position: relative;">
+        <p>
+          <label>Tên giá trị:</label>
+          <input type="text" name="value_names[{$optionIndex}][]" value="{$value.value|escape}" placeholder="Tên giá trị" required>
+          <button type="button" class="remove-value-btn" style="margin-top: 10px; padding: 3px 5px; background-color: white; position: absolute; bottom: 40px; border: none; cursor: pointer;"><i class="fa fa-times fa-lg" style="color: red;"></i></button>
+        </p>
+        <p>
+          <label>Giá trị quy định:</label>
+          <input type="number" name="value_modifiers[{$optionIndex}][]" value="{$value.price_modifier|escape}" required>
+        </p>
+      </div>
+      {/foreach}
+    </div>
+    <button type="button" class="add-value-btn" data-index="{$optionIndex}" style="padding: 5px; margin-left: 395px; background-color: #283373; color: white; border-radius: 3px; cursor: pointer; border: none;">Thêm giá trị</button>
+    <button type="button" class="remove-option-btn" style="margin-top: 10px; background-color: crimson; color: white; padding: 5px 10px; border-radius: 3px; cursor: pointer; border: none;">Xóa option</button>
+  </div>
+  {/foreach}
+</div>
+
+<button type="button" id="add-option-btn" style="margin-bottom: 10px; padding: 7px; background-color: #283373; color: white; border-radius: 3px; cursor: pointer; border: none;">Thêm option</button>
+
+
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="picklist" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="arraylistCat" value="{$uniqueArray}" />
+<input type="hidden" name="listidcar" value="" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+<!-- <a href="/{$item->getSlug()}" target="_blank"><input type="button"  value="Xem trước" title="Xem trước" name="btnCancel"/></a> -->
+</p>
+</fieldset>
+</form>
+
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<!-- PO -->
+<h2>Danh Sách Product Options</h2>
+<button type="button" id="toggle-options-btn" style="margin-bottom: 10px; padding: 7px; background-color: orange; color: white; border-radius: 3px; cursor: pointer; border: none;">
+  Hiện Danh Sách Product Options
+</button>
+<div id="options-wrapper" style="display: none;">
+  {foreach from=$listProductOptions key=optionIndex item=option}
+  <div class="option-block">
+    <div class="option-name-group">
+      <p>
+        <label style="font-weight: 700;">* Tên option:</label>
+        <input type="text" name="option_names[]" value="{$option.name|escape}" placeholder="VD: Kích thước" required>
+      </p>
+    </div>
+    <div class="values-wrapper">
+      {foreach from=$option.values key=valueIndex item=value}
+      <div class="value-row" style="position: relative;">
+        <p>
+          <label>Tên giá trị:</label>
+          <input type="text" name="value_names[{$optionIndex}][]" value="{$value.value|escape}" placeholder="Tên giá trị" required>
+          <button type="button" class="remove-value-btn" style="margin-top: 10px; padding: 3px 5px; background-color: white; position: absolute; bottom: 40px; border: none; cursor: pointer;"><i class="fa fa-times fa-lg" style="color: red;"></i></button>
+        </p>
+        <p>
+          <label>Giá trị quy định:</label>
+          <input type="number" name="value_modifiers[{$optionIndex}][]" value="{$value.price_modifier|escape}" required>
+        </p>
+      </div>
+      {/foreach}
+    </div>
+    <button type="button" class="add-value-btn" data-index="{$optionIndex}" style="padding: 5px; margin-left: 395px; background-color: #283373; color: white; border-radius: 3px; cursor: pointer; border: none;">Thêm giá trị</button>
+    <button type="button" class="remove-option-btn" style="margin-top: 10px; background-color: crimson; color: white; padding: 5px 10px; border-radius: 3px; cursor: pointer; border: none;">Xóa option</button>
+  </div>
+  {/foreach}
+</div>
+<button type="button" id="add-option-btn" style="margin-bottom: 10px; padding: 7px; background-color: #283373; color: white; border-radius: 3px; cursor: pointer; border: none;">Thêm option</button>
+
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="picklist" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>

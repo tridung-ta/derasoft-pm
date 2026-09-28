@@ -1,0 +1,178 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{include file="$userTemplate/coreheader.tpl.html" title=siteheader}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=sitetopmenu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigationbar}
+<div class="innerContent">
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+{if $result_code}
+<div class="infoBox">
+<h2>{$amessages.result_code.$result_code}</h2>
+</div>
+{/if}
+<div class="formContent">
+<h1>{$locale->msg(update_acount)}</h1>
+{if $validItem}
+{if $item}
+<!-- Load user info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{$item->getUsername()}</strong></p>
+<p><label for="fullname">* {$locale->msg('fullname')}</label>
+<input class="medium" type="text" value="{$item->getFullname()}" name="fullname" id="fullname" /></p>
+<p><label for="email">* {$locale->msg('email')}</label>
+<input class="medium" type="text" value="{$item->getEmail()}" name="email" id="email" /></p>
+<p><label for="email">{$locale->msg('address')}</label>
+<input type="text" value="{$item->getAddress()}" name="address" id="address" /></p>
+<p><label for="telephone">{$locale->msg('telephone')}</label>
+<input class="small" type="text" value="{$item->getTel()}" name="telephone" id="telephone" /></p>
+
+<p>
+    <label for="myCheckbox">{$locale->msg('activate_2fa')}</label>
+    <input style="width: 15px;" type="checkbox" id="myCheckbox" name="myCheckbox" {if $item->getActive2fa()==1}checked{/if}>
+</p>
+{if $item->getActive2fa()==1}
+    <input type="text" value="{$item->getActive2fa()}" name="getActive2fa" hidden>
+    <input type="text" value="{$item->getQrcode()}" name="qrcode" hidden>
+{/if}
+<div id="qrcode" class="qrcode">
+ 
+</div>
+
+<p class="btn">
+<input type="hidden" name="op" value="profile" />
+<input type="hidden" name="act" value="information" />
+<input type="hidden" name="mod" value="" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="username" value="{$item->getUsername()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.fullname.error} class="errormsg"{/if}><label for="fullname">* {$locale->msg('fullname')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.fullname.value}{/if}" name="fullname" id="fullname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">* {$locale->msg('email')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p><label for="email">{$locale->msg('address')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p><label for="telephone">{$locale->msg('telephone')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.telephone.value}{/if}" name="telephone" id="telephone" /></p>
+
+<p>
+    <label for="myCheckbox">{$locale->msg('activate_2fa')}</label>
+    <input style="width: 15px;" type="checkbox" id="myCheckbox" name="myCheckbox" {if isset($error.INPUT) && $error.INPUT.myCheckbox.value=="on"}checked{/if}>
+</p>
+
+<div id="qrcode" class="qrcode">
+    {if isset($error.INPUT) && $error.INPUT.myCheckbox.value=="on"}
+        <h2>Vui lòng quét mã QR trên app Google Authenticator, sau đó hãy nhập lại mã code để xác nhận.</h2>
+        <img src="{if isset($error.INPUT)}{$error.INPUT.qrCodeUrl.value}{/if}" id="qrCodeUrl" name="qrCodeUrl">
+        <div class="loader"></div>
+        <input type="text" value="{if isset($error.INPUT)}{$error.INPUT.qrcode.value}{/if}" name="qrcode" hidden>
+        <span>Mã xác thực</span>
+    <input type="number" value="{if isset($error.INPUT)}{$error.INPUT.code.value}{/if}" name="code" required>
+    {else}
+    <input type="text" value="{if isset($error.INPUT)}{$error.INPUT.qrcode.value}{/if}" name="qrcode" hidden>
+    <span>Mã xác thực</span>
+    <input type="number" value="{if isset($error.INPUT)}{$error.INPUT.code.value}{/if}" name="code" required>
+    {/if}
+</div>
+
+<p class="btn">
+<input type="hidden" name="op" value="profile" />
+<input type="hidden" name="act" value="information" />
+<input type="hidden" name="mod" value="" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="id" value="{$error.INPUT.id.value}" />
+<input type="hidden" name="username" value="{$error.INPUT.username.value}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>
+</div>
+</div>
+
+{include file="$userTemplate/corefooter.tpl.html" title=sitefooter}
+
+<script>
+    $(document).ready(function() {
+        // Đặt sự kiện change cho ô checkbox
+        if($('#qrCodeUrl').length){
+            $('#qrCodeUrl').on('load', function(){
+                if($(".loader").length){
+                    $(".loader").remove();
+
+                }
+        });
+        }
+      
+        $('#myCheckbox').change(function() {
+            // Kiểm tra trạng thái của ô checkbox
+            if ($(this).is(':checked')) {
+                // Nếu ô checkbox được chọn, thực hiện AJAX
+                let op = "active_2fa";
+                $.ajax({
+                    type: "post",
+                    url: "/active_2fa.php",
+                    dataType: "json",
+                    data: { op},
+                    success: function (data) {
+                        alert("Vui lòng quét mã QR mới này trên app GoogleAuthentic");
+                        var html = '<h2>Vui lòng quét mã QR trên app Google Authentic, sau đó hãy nhập lại mã code để xác nhận.</h2>';
+                        html += '<img id="qrCodeUrl" src="'+data['qrCodeUrl']+'">';
+                        html += '<div class="loader"></div>';
+                        html += '<input type="text" name="qrCodeUrl" hidden value="'+data['qrCodeUrl']+'">';
+                        html += '<input type="text" name="qrcode" hidden value="'+data['secret']+'">';
+                        html += '<span> Mã xác thực </span> <input type="number" name="code" required>';
+                        $("#qrcode").html(html)
+
+                        $('#qrCodeUrl').on('load', function(){
+                            $(".loader").remove();
+                        });
+                    },
+                });
+            }else{
+                if(confirm("Bạn có chắc chắn muốn huỷ 2FA?")){
+                    var html = '<h2>Vui lòng nhập mã trên app Google Authentic, sau đó nhấn tiếp tục để xác nhận huỷ.</h2>';
+                    html += '<span> Mã xác thực </span> <input type="number" name="code" required>';
+                    $("#qrcode").html(html)
+                }else{
+                    $(this).prop('checked', true)
+                }
+            }
+        });
+    });
+</script>
+

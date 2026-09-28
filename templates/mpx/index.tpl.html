@@ -1,0 +1,248 @@
+﻿{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main >
+        {if $bannerDesktop}
+            {assign var=bannerD value=$bannerDesktop->getAvatarImage($uploads)}
+            {if $bannerD}
+            <section class="container-f swiper js-slider-wrapper">
+                <div class="container-f js-slider-banner js-slider-ratio overflow-hidden">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide ">
+                            <div class="overflow-hidden fill-view pos-rel">
+                                <picture>
+                                    <source media="(min-width: 1024px)"
+                                        srcset="/{$bannerD->getPath()}/{$bannerD->getUrlO()}">
+                                    {if $bannerMobile}
+                                        {assign var=bannerM value=$bannerMobile->getAvatarImage($uploads)}
+                                        {if $bannerM}
+                                        <source media="(max-width: 768px)"
+                                            srcset="{$bannerM->getPath()}/{$bannerM->getUrlO()}">
+                                        {/if}
+                                    {/if}
+                                    <img class="img-content" src="/{$bannerD->getPath()}/{$bannerD->getUrlO()}"
+                                        alt="{$bannerDesktop->getName()}">
+                                </picture>
+                                <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết dự án"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {/if}
+        {/if}
+        <section class="services-section bg-white-secondary container-padding flex center-hor">
+            <div class="container-l flex flex-col gap-20">
+                <h1 class="section-title text-center bold uppercase">{$messages['professional_services']}</h1>
+                <p class="text-center">
+                    {$messages['professional_services_des']}
+                </p>
+                <div class="service-slider-wrapper pos-rel">
+                    <div class="swiper-button-prev custom-prev-btn"></div>
+                    <div class="swiper-button-next custom-next-btn"></div>
+                    <div class="service-list fill-view swiper" >
+                        <div class="swiper-wrapper fill-view ">
+                            {if $listProfessionalService}
+                            {foreach from=$listProfessionalService item=service}
+                            <article class="swiper-slide col-3">
+                                <div
+                                    class="service-item__content border-radius-5 gap-20 bg-white jus-sb flex flex-col pos-rel item-padding-30 center-ver center-hor">
+                                    <div class="icon-box-sm ">
+                                        {assign var="avatar" value=$service->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$service->getName($lang)}"
+                                            class="icon-img">
+                                        {else}
+                                        <img src="/{$templatePath}/{$userTemplate}/img/icon/no-image.webp"
+                                            alt="{$service->getName($lang)}" class="icon-img">
+                                        {/if}
+                                    </div>
+                                    <div class="service-content flex flex-col gap-10 flex-1">
+                                        <h3 class="service-name text-center bold fill-view">
+                                            {$service->getName($lang)}
+                                        </h3>
+                                        <p class="service-text text-center fill-view">
+                                        {if $lang == 'vn'}
+                                            {$service->getProperty('custom_sapo')|strip_tags}
+                                        {else if $lang == 'en'}
+                                            {$service->getProperty('custom_sapo_en')|strip_tags}
+                                        {else if $lang == 'zh'}
+                                            {$service->getProperty('custom_sapo_zh')|strip_tags}
+                                        {/if}
+                                        </p>
+                                    </div>
+                                    <a href="{$service->getUrlByLang($lang)}" class="pos-abs cover-all"
+                                        aria-label="{$service->getName($lang)}"></a>
+                                    <button
+                                        class="btn-padding text-color-white border-radius-5 cursor-point home-banner__btn bg-primary uppercase flex gap-20 un-wrap">
+                                        {$messages['learn_more']} →</button>
+                                </div>
+                            </article>
+                            {/foreach}
+                            {/if}
+                        </div>
+                        <div class="swiper-pagination custom-dots"></div>
+                    </div>
+                </div>
+        </section>
+        <section class="container-f container-padding flex center-hor bg-white-secondary">
+            <div class="container-l flex flex-col gap-30">
+                <div class="flex flex-col gap-10 center-hor">
+                    <h2 class="section-title text-center bold uppercase">{$messages['featured_projects']}</h2>
+                    <p class="text-center">
+                        {$messages['featured_projects_des']}
+                    </p>
+                </div>
+                <div class="project-slider-wrapper pos-rel">
+                    <div class="swiper-button-prev custom-prev-btn"></div>
+                    <div class="swiper-button-next custom-next-btn"></div>
+                    <div class="project-swiper fill-view swiper">
+                        <div class="swiper-wrapper">
+                            {if $featuredProjects}
+                            {foreach from=$featuredProjects item=project}
+                            <article class="swiper-slide col-4">
+                                <div class="project-item hover-border-primary bg-white flex flex-col pos-rel border-radius-5">
+                                    <div class="project-item__img">
+                                        {assign var=avatar value=$project->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlM()}" alt="{$project->getTitle($lang)}" class="img-content">
+                                        {else}
+                                        <img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="{$project->getTitle($lang)}" class="img-content">
+                                        {/if}
+                                    </div>
+                                    <div class="project-item__content  item-padding-20 flex flex-col gap-10 jus-sb flex-1">
+                                        <div class="flex flex-col gap-10">
+                                            <h3 class="bold uppercase clamp-text">{$project->getTitle($lang)}</h3>
+                                            <p class="clamp-text">
+                                                {$project->getDescription($lang)|strip_tags}
+                                            </p>
+                                        </div>
+                                        <button
+                                            class="project-btn btn-padding border-radius-5 cursor-point home-banner__btn bg-primary uppercase flex gap-20 un-wrap">
+                                            <p class="text-color-white">{$messages['view_details']}</p>
+                                            <p class="text-color-white">➔</p>
+                                        </button>
+                                    </div>
+                                    <a href="{$project->getUrl($lang)}" class="pos-abs cover-all"
+                                        aria-label="{$project->getTitle($lang)}"></a>
+                                </div>
+                            </article>
+                            {/foreach}
+                            {/if}
+                        </div>
+                        <div class="swiper-pagination custom-dots"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="container-f container-padding flex center-hor bg-white-secondary">
+            <div class="container-l flex flex-col gap-30">
+                <div class="container-m flex flex-col gap-10 center-hor">
+                    <h2 class="section-title text-center bold uppercase">{$messages['customer_testimonials']}</h2>
+                    {if $groupBannerCustomerListMpx}
+                        <p class="text-center">
+                            {$groupBannerCustomerListMpx->getProperty('detail')|strip_tags}
+                        </p>
+                    {/if}
+                </div>
+                <div class="logo-brand-wrapper pos-rel">
+
+                    <div class="swiper-button-prev custom-prev-btn"></div>
+                    <div class="swiper-button-next custom-next-btn"></div>
+
+                    <div class="logo-brand__swiper fill-view swiper " >
+                        <div class="swiper-wrapper ">
+                            {if $customerListMpx}
+                            {foreach $customerListMpx as $customer}
+                            {assign var=avatar value=$customer->getAvatarImage($uploads)}
+                            {if $avatar}
+                            <div class="swiper-slide col-6">
+                                <div class="logo-brand__item padding-10 pos-rel">
+                                    <img class="img-icon" src="/{$avatar->getPath()}/{$avatar->getUrlO()}"
+                                        alt="{$customer->getName($lang)}">
+                                </div>
+                            </div>
+                            {/if}
+                            {/foreach}
+                            {/if}
+                        </div>
+                        <div class="swiper-pagination custom-dots"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="container-f container-padding bg-white">
+            {include file='section_contact.tpl.html' title='section_contact'}
+        </section>
+        <section class="container-f container-padding news-background flex center-hor bg-white-secondary">
+            <div class="container-l flex flex-col gap-30">
+                <div class=" flex flex-col center-hor z-index-2 guest-comment__title">
+                    <p class="text-color-white">{$messages['news_and_blogs']}</p>
+                    <h2 class="section-title bold uppercase text-color-white">{$messages['recent_news']}</h2>
+                    <div class="title-border-bottom__left"></div>
+                </div>
+                {include file='recent_news.tpl.html' title='recent_news'}
+            </div>
+        </section>
+    </main>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@graph": [
+                {
+                "@type": "WebSite",
+                "@id": "{$rootUrl|escape:'javascript'}/#website",
+                "url": "{$rootUrl|escape:'javascript'}/",
+                "name": "{$estore->getName()|escape:'javascript'}",
+                "description": "{$estore->getDescription()|escape:'javascript'}",
+                "inLanguage": "vi-VN"
+                },
+                {
+                "@type": "Corporation",
+                "@id": "{$rootUrl|escape:'javascript'}/#organization",
+                "name": "{$estore->getName()|escape:'javascript'}",
+                "url": "{$rootUrl|escape:'javascript'}/",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "{$rootUrl}{$estore->getProperty('store_logo')}",
+                    "width": 600,
+                    "height": 600
+                },
+                "description": "{$estore->getDescription()|escape:'javascript'}",
+                "telephone": "{$estore->getTel()|escape:'javascript'}",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "{$estore->getProperty('custom_address')|escape:'javascript'}",
+                    "addressLocality": "TP. Hồ Chí Minh",
+                    "addressCountry": "VN"
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": "{$estore->getTel()|escape:'javascript'}",
+                    "contactType": "customer service",
+                    "areaServed": "VN",
+                    "availableLanguage": ["Vietnamese", "English"]
+                },
+                "sameAs": [
+                    "{$estore->getProperty('custom_link_facebook')}",
+                    "{$estore->getProperty('custom_link_youtube')}"
+                ]
+                }
+            ]
+        }
+    </script>
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

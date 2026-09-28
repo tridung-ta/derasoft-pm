@@ -1,0 +1,221 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+<ul class="tabs">
+<li><a title="{$locale->msg('list_item')}" href="javascript:void(0);">{$locale->msg('list_item')}</a></li>
+<li class="current"><a title="{$locale->msg('view_order')}" href="javascript:void(0);">{$locale->msg('view_order')}</a></li>
+<li><a title="{$locale->msg('clean_trash')}" href="javascript:void(0);">{$locale->msg('clean_trash')}</a></li>
+</ul>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formView">
+    {if $item}
+    <!-- Load order info -->
+    <form action="/{$aScript}" method="post" name="formView" id="formView" enctype="multipart/form-data">
+      <fieldset>
+        <h1>Quản lý đơn hàng: {$item->getCode()} <button type="button"
+            class="btn btn-success btn-sm print-icon" onclick="PrintElem('#formwrapper')"><i class="fa fa-print"
+              aria-hidden="true"></i> IN</button></h1>
+        <p><label>{$locale->msg('code')}</label>{$item->getCode()}</p>
+        <p><label>{$locale->msg('date_order')}</label>{$item->getDateCreated()|date_format:"%d/%m/%Y %H:%M:%S"}</p>
+        <p><label>{$locale->msg('status_order')}</label><strong> {$item->getStatusTextBackend()}</strong></p>
+        <div class="infoCustomer">
+          <h3>{$locale->msg('buyer_info')}</h3>
+          <p><label>{$locale->msg('fullname')}</label>{$item->getName()}</p>
+          <p><label>{$locale->msg('email_add')}</label>{$item->getEmail()}</p>
+          {if $item->getTel()}<p><label>{$locale->msg('telephone')}</label>{$item->getTel()}</p>{/if}
+          {if $item->getNote()}<p><label>{$locale->msg('addon_description')}</label>{$item->getNote()}</p>{/if}
+          <p>Địa chỉ: {$item->getAddress()},{$wards->getNameFromId($item->getWard())},{$districts->getNameFromId($item->getDistrict())},{$provinces->getNameFromId($item->getProvince())}</p>
+        </div>
+        <div class="infoOrder">
+          <h3>{$locale->msg('bill_info')}</h3>
+          {if $listProducs}
+          <table>
+            <tr>
+              <td>{$locale->msg('product_name')}</td>
+              <td>{$locale->msg('quantity')}</td>
+            </tr>
+            {foreach from=$listProducs item=itemOrder}
+            <tr>
+			{if $carts->getProEventFromId($itemOrder->getId()) eq 'product'}
+              <td>{$products->getNameFromId($itemOrder->getProductId())}</td>
+			{else}
+			  <td>{$productaccessorys->getNameFromId($itemOrder->getProductId())}</td>
+			{/if}
+			  <td>{$itemOrder->getQuantity()}</td>
+            </tr>
+            {/foreach}
+          </table>
+          {/if}
+          <!-- <h3>{$locale->msg('payment_info')}</h3>
+          <p><label>{$locale->msg('payment_type')}</label>{$amessages['payments'][$item->getPayment()]}</p> -->
+        </div>
+        <p class="btn">
+          <input type="hidden" name="op" value="manage" />
+          <input type="hidden" name="act" value="order" />
+          <input type="hidden" name="mod" value="view" />
+          <input type="hidden" name="doo" value="submit" />
+          <input type="hidden" name="sCode" value="{$sCode}_" />
+          <input type="hidden" name="id" value="{$item->getId()}" />
+          <input type="hidden" name="lang" value="{$lang}" />
+        </p>
+      </fieldset>
+    </form>
+    <!-- Formpdf -->
+    <div id="formwrapper" style="display: none;">
+      <div class="forminvoice form9">
+        <div class="form__info">
+          <p>{$estore->getName()}</p>
+          <p>Điện thoại: {$estore->getTel()}</p>
+          <p>Email: {$estore->getEmail()}</p>
+          {$estore->getAddress()}
+        </div>
+        <div class="form__heading">THÔNG TIN ĐƠN HÀNG</div>
+        <div class="form9__top">
+          <div class="form9__top__block">
+            <div class="form9__top__item">
+              <div class="form9__top__title">{$locale->msg('code')}:</div>
+              <div class="form9__top__text"> &nbsp;{$item->getCode()}</div>
+            </div>
+            <div class="form9__top__item">
+              <div class="form9__top__title">Ngày đặt hàng:</div>
+              <div class="form9__top__text"> &nbsp;{$item->getDateCreated()|date_format:"%d/%m/%Y %H:%M"}</div>
+            </div>
+          </div>
+          <div class="form9__top__block form9__top__block--2">
+            <div class="form9__top__item">
+              <div class="form9__top__title form9__top__title--2">{$locale->msg('fullname')}:</div>
+              <div class="form9__top__text form9__top__text--2"> &nbsp;{$item->getName()}</div>
+            </div>
+            <div class="form9__top__item">
+              <div class="form9__top__title form9__top__title--2">{$locale->msg('telephone')}:</div>
+              <div class="form9__top__text form9__top__text--2"> &nbsp;{$item->getTel()}</div>
+            </div>
+          </div>
+        </div>
+        <p>&nbsp;</p>
+        <p>Địa chỉ: {$item->getAddress()},{$wards->getNameFromId($item->getWard())},{$districts->getNameFromId($item->getDistrict())},{$provinces->getNameFromId($item->getProvince())}</p>
+        <p>{$locale->msg('addon_description')}:{$item->getNote()}</p>
+        <div class="clearfix"></div>
+        <div class="space"></div>
+        {if $listProducs}
+        <table class="form9__table-1">
+          <thead>
+            <tr>
+              <td colspan="2" class="color-2">Chi tiết sản phẩm</td>
+              <td colspan="3" style="border: none;"></td>
+            </tr>
+            <tr>
+              <td class="color-1">STT</td>
+              <td class="color-1">Tên Sản Phẩm</td>
+              <td class="color-1">Đơn giá</td>
+              <td class="color-1">Số Lượng</td>
+              <td class="color-1">Đơn vị</td>
+              <td class="color-1">Tổng tiền</td>
+            </tr>
+          </thead>
+          <tbody>
+            {foreach from=$listProducs item=itemOrder key=keyItm}
+            {assign var=totalPrice value=$itemOrder->getQuantity()*$itemOrder->getPrice()}
+            <tr>
+              <td>{$keyItm+1}</td>
+              <td>{$itemOrder->getName()}</td>
+              <td class="right">{$itemOrder->getPrice()|number_format}</td>
+              <td style="width:100px;">{$itemOrder->getQuantity()}</td>
+              <td style="width:100px;">{$itemOrder->getMessunit()}</td>
+              <td class="right">{$totalPrice|number_format}</td>
+            </tr>
+            {assign var=subTotalOnly2 value=$subTotalOnly2+$totalPrice}
+            {/foreach}
+
+            <tr>
+              <td colspan="4" style="border: none; text-align: right; padding-right: 24px; font-weight: bold;">
+                {$locale->msg('total_bill')}:</td>
+              <td style="border: none">{$subTotalOnly2|number_format} {$estore->getProperty('currency')}</td>
+            </tr>
+            <tr>
+              <td colspan="4" style="border: none; text-align: right; padding-right: 24px; font-weight: bold;">
+                {$locale->msg('shipping_costs')}:</td>
+              <td style="border: none">10,000 {$estore->getProperty('currency')}</td>
+            </tr>
+            {if $item->getIdPrize()}
+            <tr>
+              <td colspan="4" style="border: none; text-align: right; padding-right: 24px; font-weight: bold;">Giảm giá:
+              </td>
+              <td style="border: none">-{$prizeDetails->getDiscountFromId($item->getIdPrize())|number_format}
+                {$estore->getProperty('currency')}</td>
+            </tr>
+            {/if}
+            {if $item->getType()==1}
+            <tr>
+              <td colspan="4" style="border: none; text-align: right; padding-right: 24px; font-weight: bold;">Tài khoản
+                Affiliate giảm: {$estore->getProperty('custom_discount_aff')}%:</td>
+              <td style="border: none">-{$subTotalOnly*$estore->getProperty('custom_discount_aff')/100|number_format}
+                {$estore->getProperty('currency')}</td>
+            </tr>
+            {/if}
+            <tr>
+              <td colspan="4" style="border: none; text-align: right; padding-right: 24px; font-weight: bold;">Tổng giá
+                trị đơn hàng:</td>
+              <td style="border: none; font-weight: bold;" class="color-2">{$item->getTotal()|number_format}
+                {$estore->getProperty('currency')}</td>
+            </tr>
+          </tbody>
+        </table>
+        {/if}
+        <div class="line"></div>
+        <div class="clearfix"> </div>
+        <div class="space"></div>
+        <div class="form9__record">
+          <div class="clearfix"> </div>
+        </div>
+      </div>
+      <!-- form pdf -->
+      {/if}
+    </div>
+  </div>
+</div>
+<div class="tableContent hidden">
+<div class="contType">
+<h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_clean_trash')}</div>
+<form name="formClean" id="formClean" action="/{$aScript}" method="post">
+<fieldset>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="cleantrash" />
+<input type="hidden" name="lang" value="{$lang}" />
+<p class="btn"><input type="submit" value="{$locale->msg('button_ok')}" title="{$locale->msg('button_ok')}" name="btnSubmit2" />
+<input type="button" onClick="javascript:formSubmit('formClean','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

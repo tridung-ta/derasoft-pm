@@ -1,0 +1,206 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>Cập nhật thông tin</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="cat_id">Thuộc nhóm</label>
+<select name="cat_id" id="cat_id">
+<option value="28" {if $item->getPcId() eq 28} selected="selected" {/if}>&nbsp;&nbsp;&nbsp;l--Thương hiệu</option>
+<option value="32" {if $item->getPcId() eq 32} selected="selected" {/if}>&nbsp;&nbsp;&nbsp;l--Thương hiệu phụ kiện</option>
+<option value="29" {if $item->getPcId() eq 29} selected="selected" {/if}>&nbsp;&nbsp;&nbsp;l--Hãng xe</option>
+<option value="30" {if $item->getPcId() eq 30} selected="selected" {/if}>&nbsp;&nbsp;&nbsp;l--Kích thước</option>
+<option value="31" {if $item->getPcId() eq 31} selected="selected" {/if}>&nbsp;&nbsp;&nbsp;l--Dung Lượng</option>
+<option value="33" {if $item->getPcId() eq 33} selected="selected" {/if}>&nbsp;&nbsp;&nbsp;l--Phân loại dòng xe chi tiết theo bình</option>
+</select></p>
+<div id="car_companys" style="display: none">
+    <p><label for="car_company">Thuộc hãng</label>
+        <select name="car_company" id="car_company">
+        <option value="0">&nbsp;&nbsp;&nbsp;l--Gốc</option>
+        {$productOptionsCombo}
+    </select></p>
+    <p><label for="list_size">Kích thước xe sử dụng</label>
+        <select name="list_size[]" id="list_size" multiple="multiple" style="height: 100px;">
+        <option value="0">Chọn</option>
+        {if $ListSize}
+        {foreach from=$ListSize item=items}
+        <option value="{$items->getId()}"{if $items->getId()|in_array:$arraylistSize}selected="selected"{/if}>{$items->getName()}</option>
+        {/foreach}
+        {/if}
+        </select>
+    </p>
+    <p><label for="list_camera">Xe sử dụng các camera nào</label>
+        <select name="list_camera[]" id="list_camera" multiple="multiple" style="height: 100px;">
+        <option value="0">Chọn</option>
+        {if $ListCamera}
+        {foreach from=$ListCamera item=items}
+        <option value="{$items->getId()}"{if $items->getId()|in_array:$arraylistCamera}selected="selected"{/if}>{$items->getName()}</option>
+        {/foreach}
+        {/if}
+        </select>
+    </p>
+    <p><label for="list_cambien">Xe sử dụng các cảm biến nào</label>
+        <select name="list_cambien[]" id="list_cambien" multiple="multiple" style="height: 100px;">
+        <option value="0">Chọn</option>
+        {if $ListCamBien}
+        {foreach from=$ListCamBien item=items}
+        <option value="{$items->getId()}"{if $items->getId()|in_array:$arrayListCamBien}selected="selected"{/if}>{$items->getName()}</option>
+        {/foreach}
+        {/if}
+        </select>
+    </p>
+    <p><label for="list_fim">Xe sử dụng các phim cách nhiệt nào</label>
+        <select name="list_fim[]" id="list_fim" multiple="multiple" style="height: 100px;">
+        <option value="0">Chọn</option>
+        {if $ListFim}
+        {foreach from=$ListFim item=items}
+        <option value="{$items->getId()}"{if $items->getId()|in_array:$arrayListFim}selected="selected"{/if}>{$items->getName()}</option>
+        {/foreach}
+        {/if}
+        </select>
+    </p>
+    <p><label for="list_ppf">Xe sử dụng các PPF nào</label>
+        <select name="list_ppf[]" id="list_ppf" multiple="multiple" style="height: 100px;">
+        <option value="0">Chọn</option>
+        {if $ListPpf}
+        {foreach from=$ListPpf item=items}
+        <option value="{$items->getId()}"{if $items->getId()|in_array:$arrayListPpf}selected="selected"{/if}>{$items->getName()}</option>
+        {/foreach}
+        {/if}
+        </select>
+    </p>
+</div>
+<p><label for="type">{$locale->msg('of_procate')}</label>
+    <select name="type" id="type">
+        {$categoryCombo}
+    </select>
+</p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"{if $item->getStatus()  eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if $item->getStatus() eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="position">{$locale->msg('position')}</label>
+<input class="small" type="text" value="{$item->getPosition()}" name="position" id="position" /></p>
+
+<p id="vanh" style="display: none"  ><label for="vanh">*Vành</label>
+<input type="text" value="{$item->getClass()}" name="vanh" id="vanh" /></p>
+<p><label for="name">slug</label>
+    <input type="text" value="{$item->getSlug()}" name="slug" id="slug" /></p>
+<p><label for="name">*Tên</label>
+<input type="text" value="{$item->getName()}" name="name" id="name" /></p>
+<p><label for="avatar"> {$locale->msg('avatar')}</label><input type="file" name="avatar" id="avatar" /></p>
+<p>
+    
+    {if $imgs->getUrlFromId($item->getAvatar())}
+    <div class="listPhoto">
+    <ul>
+    <li>
+    <a href="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlFromId($item->getAvatar())}" target="_blank"><img src="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlFromId($item->getAvatar())}" width="100" /></a><a href="/{$aScript}?op=manage&act=product&mod=editoption&id={$item->getId()}&doo=delAvatar&avatar={$avatar}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+    </ul>
+    </div>
+    {/if}
+    </p>
+
+
+<p><label for="sapo">Tóm tắt</label></p>
+<textarea rows="10" cols="20" name="sapo"id="sapo">{$item->getSapo()}</textarea>
+{literal}
+<script type="text/javascript">var editor = CKEDITOR.replace('sapo');</script>
+{/literal}
+<br>
+<p><label for="detail">*Chi tiết</label></p>
+<textarea rows="10" cols="20" name="detail"id="detail">{$item->getDetails()}</textarea>
+{literal}
+<script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>
+{/literal}
+
+
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+    <input type="hidden" name="op" value="manage" />
+    <input type="hidden" name="act" value="product" />
+    <input type="hidden" name="mod" value="editoption" />
+    <input type="hidden" name="doo" value="submit" />
+    <input type="hidden" name="id" value="{$item->getId()}" />
+    <input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+    <input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+    <input type="button" onclick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+    {if $item->getPcId() eq 29}
+    <a href="/{$item->getSlug()}-nen-thay-lop-gi-chi-phi-bao-nhieu" target="_blank"><input type="button"  value="Xem trước" title="Xem trước" name="btnCancel"/></a>
+    {elseif $item->getPcId() eq 30}
+    <a href="/lop-xe-{$item->getSlug()}" target="_blank"><input type="button"  value="Xem trước" title="Xem trước" name="btnCancel"/></a>
+    {elseif $item->getPcId() eq 28}
+    <a href="/{$item->getSlug()}" target="_blank"><input type="button"  value="Xem trước" title="Xem trước" name="btnCancel"/></a>
+    {/if}
+    
+</p>
+</fieldset>
+</form>
+</div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var selectElement = document.getElementById("cat_id");
+        if (selectElement) {
+            var selectedValue = selectElement.value;
+
+            if (selectedValue == "29") {
+                $('#car_companys').css("display", "block");
+
+            } else {
+                $('#car_companys').css("display", "none");
+
+            }
+            if (selectedValue == "30") {
+                $('#vanh').css("display", "block");
+
+            } else {
+                $('#vanh').css("display", "none");
+
+            }
+        }
+    });
+</script>
+<script>
+    document.getElementById("cat_id").addEventListener("change", function () {
+        var selectedValue = this.value;
+
+        if (selectedValue == "29") {
+            $('#car_companys').css("display", "block");
+
+        } else {
+            $('#car_companys').css("display", "none");
+
+        }
+        if (selectedValue == "30") {
+            $('#vanh').css("display", "block");
+
+        } else {
+            $('#vanh').css("display", "none");
+
+        }
+    });
+
+</script>

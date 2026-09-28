@@ -1,0 +1,41 @@
+{include file='head.tpl.html' title='head'}
+{* Keep language prefixes on category tabs even if the host runs an older public module. *}
+{if $slugActive == 'van-tho'}
+ {if $lang == 'en'}{assign var='editorialRoute' value='/en/van-tho'}{elseif $lang == 'zh'}{assign var='editorialRoute' value='/zh/van-tho'}{else}{assign var='editorialRoute' value='/van-tho'}{/if}
+{elseif $slugActive == 'nghe-thuat'}
+ {if $lang == 'en'}{assign var='editorialRoute' value='/en/nghe-thuat'}{elseif $lang == 'zh'}{assign var='editorialRoute' value='/zh/nghe-thuat'}{else}{assign var='editorialRoute' value='/nghe-thuat'}{/if}
+{elseif $slugActive == 'tin-tuc' || $slugActive == 'tin-tuc-moi'}
+ {if $lang == 'en'}{assign var='editorialRoute' value='/en/tin-tuc'}{elseif $lang == 'zh'}{assign var='editorialRoute' value='/zh/tin-tuc'}{else}{assign var='editorialRoute' value='/tin-tuc'}{/if}
+{/if}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-archive ed-journal {if $slugActive == 'van-tho'}ed-archive--literature{elseif $slugActive == 'nghe-thuat'}ed-archive--arts{else}ed-archive--news{/if}">
+ {include file='editorial-breadcrumb.tpl.html'}
+ <section class="ed-page-hero"><div class="ed-shell ed-page-hero__inner">
+  <span class="ed-kicker">{if $slugActive == 'van-tho'}{if $lang == 'en'}LITERARY LIBRARY{elseif $lang == 'zh'}文学书房{else}THƯ VIỆN VĂN CHƯƠNG{/if}{elseif $slugActive == 'nghe-thuat'}{if $lang == 'en'}ART &amp; CULTURE{elseif $lang == 'zh'}艺术与文化{else}NGHỆ THUẬT &amp; VĂN HÓA{/if}{else}{if $lang == 'en'}CULTURE DESK{elseif $lang == 'zh'}文化资讯{else}DÒNG TIN VĂN HÓA{/if}{/if}</span>
+  <h1>{$editorialTitle|escape:'html'}</h1>
+  <p>{$editorialIntro|escape:'html'}</p>
+  <span class="ed-page-hero__index" aria-hidden="true">{if $slugActive == 'van-tho'}01{elseif $slugActive == 'nghe-thuat'}02{else}03{/if}</span>
+ </div></section>
+ {if $categoryNav}
+ <div class="ed-tabs-wrap"><nav class="ed-shell ed-tabs" aria-label="{if $lang == 'en'}Categories{elseif $lang == 'zh'}分类{else}Chuyên mục{/if}">
+  <a href="{$editorialRoute|escape:'html'}" class="{if !$smarty.get.category}is-active{/if}"{if !$smarty.get.category} aria-current="page"{/if}>{if $lang == 'en'}All{elseif $lang == 'zh'}全部{else}Tất cả{/if}</a>
+  {foreach from=$categoryNav item=category}<a href="{$editorialRoute|escape:'html'}?category={$category.slug|escape:'url'}" class="{if $smarty.get.category == $category.slug}is-active{/if}"{if $smarty.get.category == $category.slug} aria-current="page"{/if}>{if $lang == 'en'}{if $category.slug == 'tho'}Poetry{elseif $category.slug == 'van-xuoi'}Prose{elseif $category.slug == 'am-nhac'}Music{elseif $category.slug == 'my-thuat'}Visual Arts{elseif $category.slug == 'san-khau-nghe-thuat'}Theatre{elseif $category.slug == 'van-hoa'}Culture{else}{$category.name|escape:'html'}{/if}{elseif $lang == 'zh'}{if $category.slug == 'tho'}诗歌{elseif $category.slug == 'van-xuoi'}散文{elseif $category.slug == 'am-nhac'}音乐{elseif $category.slug == 'my-thuat'}美术{elseif $category.slug == 'san-khau-nghe-thuat'}戏剧{elseif $category.slug == 'van-hoa'}文化{else}{$category.name|escape:'html'}{/if}{else}{if $category.slug == 'tho'}Thơ{elseif $category.slug == 'van-xuoi'}Văn xuôi{elseif $category.slug == 'am-nhac'}Âm nhạc{elseif $category.slug == 'my-thuat'}Mỹ thuật{elseif $category.slug == 'san-khau-nghe-thuat'}Sân khấu{elseif $category.slug == 'van-hoa'}Văn hóa{else}{$category.name|escape:'html'}{/if}{/if}</a>{/foreach}
+ </nav></div>
+ {/if}
+ <section class="ed-archive__content"><div class="ed-shell">
+  {if $items}<div class="ed-archive-view" data-archive-view-controls>
+   <span>{if $lang == 'en'}View{elseif $lang == 'zh'}&#35270;&#22270;{else}Hi&#7875;n th&#7883;{/if}</span>
+   <div class="ed-archive-view__buttons" role="group" aria-label="{if $lang == 'en'}Article layout{elseif $lang == 'zh'}&#25991;&#31456;&#24067;&#23616;{else}B&#7889; c&#7909;c b&#224;i vi&#7871;t{/if}">
+    <button type="button" class="is-active" data-archive-view="grid" aria-pressed="true">{if $lang == 'en'}Grid{elseif $lang == 'zh'}&#32593;&#26684;{else}L&#432;&#7899;i{/if}</button>
+    <button type="button" data-archive-view="compact" aria-pressed="false">{if $lang == 'en'}Compact{elseif $lang == 'zh'}&#32039;&#20945;{else}G&#7885;n{/if}</button>
+    {if $slugActive == 'nghe-thuat'}<button type="button" data-archive-view="masonry" aria-pressed="false">Masonry</button>{/if}
+   </div>
+  </div>{/if}
+  <div class="ed-archive__lede"><span class="ed-kicker">{if $lang == 'en'}EDITORIAL SELECTION{elseif $lang == 'zh'}精选文章{else}BÀI VIẾT CHỌN LỌC{/if}</span><p>{if isset($totalRows)}{$totalRows|escape:'html'} {if $lang == 'en'}articles{elseif $lang == 'zh'}篇文章{else}bài viết{/if}{/if}</p></div>
+  {if $items}{include file='listarticlesfromsearch.tpl.html' title='articles'}{else}<div class="ed-empty"><h2>{if $lang == 'en'}No content is available{elseif $lang == 'zh'}暂无内容{else}Nội dung đang được cập nhật{/if}</h2><p>{if $lang == 'en'}New articles will be published in this section soon.{elseif $lang == 'zh'}新文章将很快在此栏目发布。{else}Các bài viết mới sẽ sớm được xuất bản tại chuyên mục này.{/if}</p></div>{/if}
+ </div></section>
+</main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+<button class="ed-back-top" id="btnToTop" type="button" aria-label="{if $lang == 'en'}Back to top{elseif $lang == 'zh'}返回顶部{else}Về đầu trang{/if}">↑</button>
+{include file='editorial-script.tpl.html'}
+</body></html>

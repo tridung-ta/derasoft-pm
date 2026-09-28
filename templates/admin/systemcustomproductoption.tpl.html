@@ -1,0 +1,86 @@
+{include file="$userTemplate/coreheader.tpl.html" title=siteheader}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=sitetopmenu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigationbar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title=showtabs}
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+
+<!-- <select name="default" id="default">
+    <option value="">-----Lọc theo đối tượng----</option>
+    {if $listDefault} {foreach from=$listDefault item=itemadd}
+    <option value="{$itemadd->getId()}"{if $module eq $itemadd->getId()}selected="selected"{/if}>{$itemadd->getName()}</option>
+    {/foreach} {/if}
+</select> -->
+
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="customproductoption" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+{if $mod eq "listvalue"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="customproductoption" />
+<input type="hidden" name="mod" value="listvalue" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+<!-- {if $mod eq "listobject"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="optionstructure" />
+<input type="hidden" name="mod" value="listobject" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if} -->
+
+
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title=showtabs}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=sitefooter}

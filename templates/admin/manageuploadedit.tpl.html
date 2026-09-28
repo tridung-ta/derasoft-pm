@@ -1,0 +1,67 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field key=key}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{if isset($error.message)}{$error.message}{/if}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_upload')}</h1>
+{if $validItem}
+{if $item}
+<!-- Load item info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data">
+	<fieldset>
+		<p><label for="name">* {$locale->msg('name')}</label>
+			<input type="text" value="{$item->getName()}" name="name" id="name" />
+		</p>
+		{if $item->getUrlO()}<p><label>{$locale->msg('original_file_name')}</label>
+			/{$item->getPath()}/{$item->getUrlO()}
+		</p>{/if}
+		{if $item->getUrlL()}<p><label>{$locale->msg('large_file_name')}</label>
+			/{$item->getPath()}/{$item->getUrlL()}
+		</p>{/if}
+		{if $item->getUrlM()}<p><label>{$locale->msg('medium_file_name')}</label>
+			/{$item->getPath()}/{$item->getUrlM()}
+		</p>{/if}
+		{if $item->getUrlT()}<p><label>{$locale->msg('thumbnail_file_name')}</label>/{$item->getPath()}/{$item->getUrlT()}
+		</p>{/if}
+		{if $item->getUrlA()}<p><label>{$locale->msg('avatar_file_name')}</label>
+			/{$item->getPath()}/{$item->getUrlA()}
+		</p>{/if}
+		{if $item->getUrlA()}<p>	
+			<div class="listPhoto">
+			<ul>
+			<li>
+			<a href="{$item->getPath()}/{$item->getUrlL()}" target="_blank"><img src="{$item->getPath()}/{$item->getUrlA()}" width="100" /></a></li>
+			</ul>
+			</div>
+		</p>{/if}
+		<br>
+		<input type="hidden" name="op" value="manage" />
+		<input type="hidden" name="act" value="upload" />
+		<input type="hidden" name="mod" value="edit" />
+		<input type="hidden" name="doo" value="submit" />
+		<input type="hidden" name="sCode" value="{$sCode}_" />
+		<input type="hidden" name="lang" value="{$lang}" />
+		<input type="hidden" name="id" value="{$item->getId()}" />
+	<p class="btn">
+	<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+	<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+	</p>
+	</fieldset>
+</form>
+</div>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>

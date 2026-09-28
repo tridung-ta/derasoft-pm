@@ -1,0 +1,127 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($listItems)}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th><input type="checkbox" name="all" id="all" value="1" class="box3" onClick="toggleAllChecks('formType');" /></th>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','order_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "order_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','customer_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_id')}">{$locale->msg('customer_id')}</a>{if $sk eq "customer_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('order_customer_information')}<br />
+<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_name')}">{$locale->msg('name_customer')}</a>{if $sk eq "name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','tel','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_tel')}">{$locale->msg('telephone')}</a>{if $sk eq "tel"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','email','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_email')}">{$locale->msg('email_add')}</a>{if $sk eq "email"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','address','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_address')}">{$locale->msg('address')}</a>{if $sk eq "address"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+</th>
+<th>{$locale->msg('order_recipient_information')}<br />
+<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','rname','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_rname')}">{$locale->msg('rname_customer')}</a>{if $sk eq "rname"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','rtel','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_rtel')}">{$locale->msg('rtelephone')}</a>{if $sk eq "rtel"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','remail','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_remail')}">{$locale->msg('remail_add')}</a>{if $sk eq "remail"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','raddress','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_raddress')}">{$locale->msg('raddress')}</a>{if $sk eq "raddress"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+</th>
+<th>{$locale->msg('order_details')}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','payment_method','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_payment_method')}">{$locale->msg('order_payment_method_text')}</a>{if $sk eq "payment_method"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','payment_status','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_payment_status')}">{$locale->msg('order_payment_status_text')}</a>{if $sk eq "payment_status"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','delivery_vendor','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_delivery_vendor')}">{$locale->msg('order_delivery_vendor_text')}</a>{if $sk eq "delivery_vendor"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','delivery_status','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_delivery_status')}">{$locale->msg('order_delivery_status_text')}</a>{if $sk eq "delivery_status"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','date_created','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_date_created')}">{$locale->msg('date_order')}</a>{if $sk eq "date_created"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','date_updated','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_date_updated')}">{$locale->msg('date_order_update')}</a>{if $sk eq "date_updated"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','status','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_status')}">{$locale->msg('status_order')}</a>{if $sk eq "status"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','pic_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_pic_id')}">{$locale->msg('pic_name')}</a>{if $sk eq "pic_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+<td>{$startNum+$no}</td>
+<td>{$item->getId()}</td>
+<td>{$item->getCustomerId()}</td>
+<td>{$item->getName()}<br />
+{$item->getTel()}<br />
+{$item->getEmail()}<br />
+{$item->getAddress()}
+</td>
+<td>
+{$item->getRName()}<br />
+{$item->getRTel()}<br />
+{$item->getREmail()}<br />
+{$item->getRAddress()}</td>
+<td></td>
+<td>{$item->getPaymentMethodText()}</td>
+<td>{$item->getPaymentStatusText()}</td>
+<td>{$item->getDeliveryVendorText()}</td>
+<td>{$item->getDeliveryStatusText()}</td>
+<td>{$item->getDateCreated()}</td>
+<td>{$item->getDateUpdated()}</td>
+<td>{$item->getStatusTextBackend()}</td>
+<td>{$item->getPicId()}</td>
+<td>
+<div class="cell-content">
+    <!-- <a href="/{$aScript}?op=manage&act=order&mod=edit&id={$item->getId()}&lang={$lang}" title="{$locale->msg('edit')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png" alt="{$locale->msg('edit')}" width="16" height="16" /></a> -->
+<a href="/{$aScript}?op=manage&act=order&mod=view&id={$item->getId()}&lang={$lang}" title="{$locale->msg('view_detail')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_view.png" alt="{$locale->msg('view_detail')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','process_order',{$item->getId()});" title="{$locale->msg('process_order')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_process_order.png" alt="{$locale->msg('process_order')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','complete',{$item->getId()});" title="{$locale->msg('completed_orders')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_enable.png" alt="{$locale->msg('completed_orders')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','cancel_order',{$item->getId()});" title="{$locale->msg('cancel_order')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_cancel_order.png" alt="{$locale->msg('cancel_order')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','disable',{$item->getId()});" title="{$locale->msg('disable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_disable.png" alt="{$locale->msg('disable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','delete',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+</div>
+</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+</div>
+<div class="paging">
+<p class="listBtn">
+<a title="{$locale->msg('button_process_order')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','process_order','0');;">{$locale->msg('button_process')}</a>
+<a title="{$locale->msg('button_complete')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','complete','0');;">{$locale->msg('button_comple')}</a>
+<a title="{$locale->msg('button_cancel')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','cancel_order','0');;">{$locale->msg('button_cancel')}</a>
+<a title="{$locale->msg('button_disable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','disable','0');">{$locale->msg('button_disable')}</a>
+<a title="{$locale->msg('button_delete')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','delete','0');">{$locale->msg('button_delete')}</a>
+</p>
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+<div class="listCategory">
+<select name="status">
+<option value="" selected="selected">{$locale->msg('select_status')}</option>
+<option value="2" >{$amessages.order_status.2}</option>
+<option value="3" >{$amessages.order_status.3}</option>
+<option value="1" >{$amessages.order_status.1}</option>
+<option value="4" >{$amessages.order_status.4}</option>
+<option value="0" >{$amessages.order_status.0}</option>
+<option value="5" >{$amessages.order_status.5}</option>
+</select>
+<input type="button" value="{$locale->msg('button_move')}" title="{$locale->msg('button_move')}" class="btnSubmit2" name="btnSubmit2" onClick="javascript:formSubmit('formType','list','changegroup','0');" />
+</div>
+</div>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="uId" value="{$uId}" />
+<input type="hidden" name="filter_date_created" value="{$filter_date_created}">
+<input type="hidden" name="filter_status" value="{$filter_status}">
+<input type="hidden" name="filter_pic" value="{$filter_pic}" />
+<input type="hidden" name="filter_payment_method" value="{$filter_payment_method}">
+<input type="hidden" name="filter_payment_status" value="{$filter_payment_status}">
+<input type="hidden" name="filter_delivery_vendor" value="{$filter_delivery_vendor}">
+<input type="hidden" name="filter_delivery_status" value="{$filter_delivery_status}">
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+{$locale->msg('no_record')}
+{/if}
+</div>

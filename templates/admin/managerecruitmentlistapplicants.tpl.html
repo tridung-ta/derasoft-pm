@@ -1,0 +1,91 @@
+<!-- {if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if} -->
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($pId)}<p><a href="/{$aScript}?op=manage&act=recruitment&mod=list&pId={$gfId}" title="{$locale->msg('back_group')}"><img src="/{$templatePath}/{$userTemplate}/images/icon_parent.png" alt="{$locale->msg('back_group')}" width="32" height="32" />...{$locale->msg('back')}</a></p>{/if}
+{if isset($listItems)}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th><input type="checkbox" name="all" id="all" value="1" class="box3" onclick="toggleAllChecks('formType');" /></th>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>Email ứng tuyển</th>
+<th>Vị trí ứng tuyển</th>
+<th>hồ sơ ứng tuyển</th>
+{if isset($customValueName)}
+    {foreach from=$customValueName item=name}
+    <th>{$name}</th>
+    {/foreach}
+{/if}
+<th>Trạng thái</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+<td>{$startNum+$no}</td>
+<td>{$item->getId()}</td>
+<td>{$item->getMail()}</td>
+<td>{$item->getName()}</td>
+<td>{$item->getFile()|regex_replace:'/^\d{8}(?:[_-]\d{6})?[_-]/':''}</td>
+{if isset($customValueName)}
+{foreach from=$customValueName key=index item=fieldName}
+    {assign var="fieldId" value=$customFieldsMapping[$fieldName]}
+    <td>
+        {if isset($customValueField[$item->getId()][$fieldId])}
+            {$customValueField[$item->getId()][$fieldId]}
+        {else}
+        {/if}
+    </td>
+{/foreach}
+{/if}
+<td>{$item->getStatusTextBackend()}</td>
+<td>
+<!-- <a href="/{$aScript}?op=manage&act=recruitment&mod=edit&id={$item->getId()}&lang={$lang}" title="{$locale->msg('edit')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png" alt="{$locale->msg('edit')}" width="16" height="16" /></a> -->
+<a href="javascript:formSubmit('formType','listapplicants','enable',{$item->getId()});" title="{$locale->msg('enable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_enable.png" alt="{$locale->msg('enable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','listapplicants','disable',{$item->getId()});" title="{$locale->msg('disable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_disable.png" alt="{$locale->msg('disable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','listapplicants','delete',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+</div>
+<div class="paging">
+<p class="listBtn">
+<a title="{$locale->msg('button_update')}" href="javascript:void(0);" onclick="javascript:formSubmit('formType','listapplicants','changeposition','0');;">{$locale->msg('button_update')}</a>
+<a title="{$locale->msg('button_enable')}" href="javascript:void(0);" onclick="javascript:formSubmit('formType','listapplicants','enable','0');;">{$locale->msg('button_enable')}</a>
+<a title="{$locale->msg('button_disable')}" href="javascript:void(0);" onclick="javascript:formSubmit('formType','listapplicants','disable','0');">{$locale->msg('button_disable')}</a>
+<a title="{$locale->msg('button_delete')}" href="javascript:void(0);" onclick="javascript:formSubmit('formType','listapplicants','delete','0');">{$locale->msg('button_delete')}</a>
+</p>
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+</div>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="recruitment" />
+<input type="hidden" name="mod" value="listapplicants" />
+<input type="hidden" name="pId" value="{$pId}" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="kw" value="{$kw|default:''|escape}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+{$locale->msg('no_record')}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="recruitment" />
+<input type="hidden" name="mod" value="listapplicants" />
+<input type="hidden" name="doo" value="" />
+</form>
+{/if}
+</div>

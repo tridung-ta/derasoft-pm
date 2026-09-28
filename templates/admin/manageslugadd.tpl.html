@@ -1,0 +1,74 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{if isset($albumCreateError)}<li>{$albumCreateError}</li>{/if}
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_new_slug')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select class="verysmall" name="status" id="status">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select>
+</p>
+<p{if isset($error.INPUT) && $error.INPUT.slug.error} class="errormsg"{/if}><label for="slug">* {$locale->msg('slug')}</label>
+<input type="text" class="large" value="{if isset($error.INPUT)}{$error.INPUT.slug.value}{/if}" name="slug" id="slug" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.module.error} class="errormsg"{/if}><label for="module">* {$locale->msg('frontend_module')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.module.value}{/if}" name="module" id="module" />{$locale->msg('module_hint')}</p>
+<p{if isset($error.INPUT) && $error.INPUT.object_id.error} class="errormsg"{/if}><label for="object_id">{$locale->msg('object_id')}</label>
+<input type="text" class="verysmall" value="{if isset($error.INPUT)}{$error.INPUT.object_id.value}{/if}" name="object_id" id="object_id" />{$locale->msg('object_id_null')}</p>
+
+{if isset($fieldOptionList)}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{else}
+{$field->displayHTML('','')}
+{/if}
+{/foreach}
+{/if}
+
+{if isset($fieldList)}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{else}
+{$field->displayHTML('')}
+{/if}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="slug" />
+<input type="hidden" name="mod" value="add" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>

@@ -1,0 +1,121 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($listItems)}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <thead>
+    <tr>
+    <th><input type="checkbox" name="all" id="all" value="1" class="box3" onClick="toggleAllChecks('formType');" /></th>
+    <th>{$locale->msg('numbers')}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','c.id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "c.id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','username','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_username')}">{$locale->msg('username')}</a>{if $sk eq "username"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th>{$locale->msg('customer_information')}<br />
+	<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','fullname','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_fullname')}">{$locale->msg('fullname')}</a>{if $sk eq "fullname"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+	&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','address','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_address')}">{$locale->msg('address')}</a>{if $sk eq "address"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+	&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','tel','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_tel')}">{$locale->msg('telephone')}</a>{if $sk eq "tel"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+	&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','email','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_email')}">{$locale->msg('email_add')}</a>{if $sk eq "email"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','tax_code','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_tax_code')}">{$locale->msg('customer_tax_code')}</a>{if $sk eq "tax_code"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','group_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_group')}">{$locale->msg('customer_group_name')}</a>{if $sk eq "group_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','country_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_country')}">{$locale->msg('customer_country')}</a>{if $sk eq "country_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','area_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_province')}">{$locale->msg('customer_area')}</a>{if $sk eq "area_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','ward_id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_customer_ward')}">{$locale->msg('customer_ward')}</a>{if $sk eq "ward_id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th>{$locale->msg('create_title')}<br />
+	<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','creator_name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_creator_name')}">User</a>{if $sk eq "creator_name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+	&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','date_created','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_date_created')}">Time</a>{if $sk eq "date_created"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+	<th>{$locale->msg('update_title')}<br />
+	<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','updater_name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_updater_name')}">User</a>{if $sk eq "updater_name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+	&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','date_updated','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_date_updated')}">Time</a>{if $sk eq "date_updated"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','last_login','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_last_login')}">{$locale->msg('last_login')}</a>{if $sk eq "last_login"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    {if $customValueName}
+        {foreach from=$customValueName item=name}
+        <th>{$name}</th>
+        {/foreach}
+    {/if}
+    <th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','status','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_status')}">{$locale->msg('system_status')}</a>{if $sk eq "status"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+    <th>{$locale->msg('actions')}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach key=no from=$listItems item=item}
+    <tr{if $no%2 eq 0} class="bgType"{/if}>
+    <td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+    <td>{$startNum+$no}</td>
+    <td>{$item->getId()}</td>
+    <td>{$item->getUserName()}</td>
+    <td>[N] <strong>{$item->getFullName()}</strong><br />
+		[A] {$item->getAddress()}<br />
+		[T] {$item->getTel()}<br />
+		[E] {$item->getEmail()}</td>
+    <td>{$item->getTaxCode()}</td>
+    <td>{$item->getGroupName()}</td>
+    <td>{$item->getCountryName()}</td>
+    <td>{$item->getAreaName()}</td>
+    <td>{$item->getWardName()}</td>
+    <td>{$item->getCreatorName()}<br />{$item->getDateCreated()}</td>
+    <td>{$item->getUpdaterName()}<br />{$item->getDateUpdated()}</td>
+    <td>{$item->getLastLogin()}</td>
+    {foreach from=$customValueName key=index item=fieldName}
+        {assign var="fieldId" value=$customFieldsMapping[$fieldName]}
+        <td>
+            {if isset($customValueField[$item->getId()][$fieldId])}
+                {$customValueField[$item->getId()][$fieldId]}
+            {else}
+            {/if}
+        </td>
+    {/foreach}
+    <td>{$item->getStatusTextBackend()}</td>
+    <td>
+    <div class="cell-content">
+        <a href="/{$aScript}?op=manage&act=customer&mod=edit&id={$item->getId()}&lang={$lang}" title="{$locale->msg('edit')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png" alt="{$locale->msg('edit')}" width="16" height="16" /></a>
+        <a href="javascript:formSubmit('formType','list','enable',{$item->getId()});" title="{$locale->msg('enable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_enable.png" alt="{$locale->msg('enable')}" width="16" height="16" /></a>
+        <a href="javascript:formSubmit('formType','list','disable',{$item->getId()});" title="{$locale->msg('disable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_disable.png" alt="{$locale->msg('disable')}" width="16" height="16" /></a>
+        <a href="javascript:formSubmit('formType','list','delete',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+    </div>
+    </td>
+    </tr>
+    {/foreach}
+    </tbody>
+</table>
+</div>
+<div class="paging">
+<p class="listBtn">
+<a title="{$locale->msg('button_enable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','enable','0');;">{$locale->msg('button_enable')}</a>
+<a title="{$locale->msg('button_disable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','disable','0');">{$locale->msg('button_disable')}</a>
+<a title="{$locale->msg('button_delete')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','delete','0');">{$locale->msg('button_delete')}</a>
+</p>
+{include file="$userTemplate/corepager.tpl.html" title="pager"}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title="ipp"}
+
+</div>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="filter_date_created" value="{$filter_date_created}" />
+<input type="hidden" name="filter_last_login" value="{$filter_last_login}" />
+<input type="hidden" name="filter_status" value="{$filter_status}" />
+<input type="hidden" name="filter_groups" value="{$filter_groups}" />
+<input type="hidden" name="filter_countries" value="{$filter_countries}" />
+<input type="hidden" name="filter_areas" value="{$filter_areas}" />
+<input type="hidden" name="filter_wards" value="{$filter_wards}" />
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+{$locale->msg('no_record')}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="" />
+</form>
+{/if}
+</div>

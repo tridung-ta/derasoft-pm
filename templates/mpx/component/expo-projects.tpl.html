@@ -1,0 +1,47 @@
+{if $featuredProjects}
+<div class="container-l flex flex-col gap-30">
+    <div class="flex flex-col gap-10 center-hor">
+        <h2 class="section-title text-center bold uppercase">
+            {if $slug == 'dich-vu-ve-san-khau-cua-mpx'}
+                {$messages['stage_featured_projects_in_the_stage_title']}
+            {else}
+                {$messages['exhibition_featured_projects_title']}
+            {/if}
+        </h2>
+        <div class="title-border-bottom"></div>
+    </div>
+    <div class="js-slider-wrapper pos-rel expo-projects-slider">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="expo-projects__swiper js-slider-4cols fill-view swiper">
+            <div class="swiper-wrapper">
+                {foreach from=$featuredProjects item=project}
+                <article class="swiper-slide col-4">
+                    <div
+                        class="hover-border-primary fill-height flex-1 expo-project-card bg-white flex flex-col pos-rel border-radius-5  overflow-hidden">
+                        <div class="expo-project-card__img overflow-hidden">
+                            {assign var=avatar value=$project->getAvatarImage($uploads)}
+                            {if $avatar}
+                            <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$project->getTitle($lang)}" class="img-content">
+                            {else}
+                            <img src="/templates/mpx/img/logo/no-image.webp" alt="{$project->getTitle($lang)}" class="img-content">
+                            {/if}
+                        </div>
+                        <div class="expo-project-card__content flex flex-col gap-10 item-padding-20 flex-grow-1">
+                            <h3 class="bold uppercase text-sm clamp-text">
+                                {$project->getTitle($lang)}
+                            </h3>
+                            <div class="flex flex-col gap-5 mt-5">
+                                <p class="clamp-text ">{$project->getDescription($lang)|strip_tags}</p>
+                            </div>
+                        </div>
+                        <a href="{$project->getUrl($lang)}" class="pos-abs cover-all z-index-2"></a>
+                    </div>
+                </article>
+                {/foreach}
+            </div>
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+{/if}

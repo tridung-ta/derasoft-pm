@@ -1,0 +1,135 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+
+<div class="formContent">
+<h1>{$locale->msg('edit_product_features')}</h1>
+
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+
+<!-- STATUS -->
+<p>
+<label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"
+{if isset($error.INPUT)}
+    {if $error.INPUT.status.value eq 1}selected{/if}
+{else}
+    {if $item->getStatus() eq 1}selected{/if}
+{/if}>
+{$locale->msg('enable')}
+</option>
+
+<option value="0"
+{if isset($error.INPUT)}
+    {if $error.INPUT.status.value eq 0}selected{/if}
+{else}
+    {if $item->getStatus() eq 0}selected{/if}
+{/if}>
+{$locale->msg('disable')}
+</option>
+</select>
+</p>
+
+<!-- NAME -->
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}>
+<label for="name">* {$locale->msg('product_name')}:</label>
+<input class="medium" type="text"
+value="{if isset($error.INPUT)}{$error.INPUT.name.value}{else}{$item->getName()}{/if}" name="name" id="name" />
+</p>
+
+<!-- DESCRIPTION -->
+<p>
+<label for="description">Nội dung :</label>
+</p>
+
+<textarea rows="10" cols="20" name="description" id="description">
+{if isset($error.INPUT)}
+    {$error.INPUT.description.value}
+{else}
+    {$item->getDescription()}
+{/if}
+</textarea>
+
+{literal}
+<script type="text/javascript">
+    var editor = CKEDITOR.replace('description');
+</script>
+{/literal}
+
+<br>
+
+<!-- AVATAR -->
+<p>
+  <label for="avatar">Hình ảnh sản phẩm:</label>
+  <input type="file" name="avatar" id="avatar" />
+</p>
+{if $avatarImg}
+  <p>
+    <label>Ảnh sản phẩm:</label>
+    <a href="{$avatarImg->getPath()}/{$avatarImg->getUrlL()}" target="_blank" rel="noopener noreferrer"><img src="{$avatarImg->getPath()}/{$avatarImg->getUrlA()}" /></a>
+    <a href="/{$aScript}?op=manage&act=product&mod=editfeature&id={$item->getId()}&doo=delAvatar&lang={$lang}" style="color:#c00;font-size:12px;">Xóa</a>
+   </p> 
+{/if}
+
+<br>
+
+<!-- {if isset($fieldOptionList)}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{/if}
+{/foreach}
+{/if} -->
+
+{if $fieldList}
+<br />
+<h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="editfeature" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+
+<input type="submit"
+value="{$locale->msg('button_update')}"
+title="{$locale->msg('button_update')}"
+name="btnSubmit" />
+
+<input type="button"
+onclick="javascript:formSubmit('formEdit','listfeature','cancel',0);"
+value="{$locale->msg('button_cancel')}"
+title="{$locale->msg('button_cancel')}"
+name="btnCancel" />
+</p>
+
+</fieldset>
+</form>
+</div>
+</div>

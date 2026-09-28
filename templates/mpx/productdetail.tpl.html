@@ -1,0 +1,232 @@
+{include file='head.tpl.html' title='head'}
+
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        <section class="archive-section container-f  bg-white-secondary item-padding-20">
+            <div class="container-l flex  flex-wrap gap-20">
+                <div class="detail-header flex-1 flex flex-col gap-20">
+                    <div
+                        class="flex flex-col server-detail gap-20 detail-header__content bg-white border-radius-5 item-padding-10">
+                        <div class="container-f flex flex-col center-ver">
+                            <div class="container-l flex flex-wrap gap-20">
+                             <div class="col-section-2 flex flex-col gap-10 js-gallery-wrapper pos-rel">
+                                    <div class="js-gallery-main swiper fill-view border-radius-5 overflow-hidden">
+                                        {assign var="avatar" value=$objectInfo->getAvatarImage($uploads)}
+                                        {assign var="galleryImages" value=$objectInfo->getFileImages($uploads)}
+                                        <div class="swiper-wrapper">
+                                            {if $avatar}
+                                            <div class="swiper-slide">
+                                                <div class="flex center-hor fill-view">
+                                                    <div class="fill-view product-main__item">
+                                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$avatar->getName()}"
+                                                            class="img-content">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/if}
+                                            {if $galleryImages}
+                                            {foreach $galleryImages as $image}
+                                            <div class="swiper-slide">
+                                                <div class="flex center-hor fill-view">
+                                                    <div class="fill-view product-main__item">
+                                                        <img src="/{$image->getPath()}/{$image->getUrlL()}" alt="{$image->getName()}"
+                                                            class="img-content">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/foreach}
+                                            {/if}
+                                        </div>
+                                    </div>
+                                    <div class="js-gallery-thumb swiper fill-view">
+                                        {assign var="avatar" value=$objectInfo->getAvatarImage($uploads)}
+                                        {assign var="galleryImages" value=$objectInfo->getFileImages($uploads)}
+                                        <div class="swiper-wrapper">
+                                            {if $avatar}
+                                            <div class="swiper-slide custom-item__low item-padding-10 cursor-pointer border-radius-5 overflow-hidden">
+                                                <div class="flex center-hor fill-view">
+                                                    <div class="fill-view product-thumb__item">
+                                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlT()}" alt="{$avatar->getName()}"
+                                                            class="img-content">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/if}
+                                            {if $galleryImages}
+                                            {foreach $galleryImages as $image}
+                                            <div class="swiper-slide custom-item__low item-padding-10 cursor-pointer border-radius-5 overflow-hidden">
+                                                <div class="flex center-hor fill-view">
+                                                    <div class="fill-view product-thumb__item">
+                                                        <img src="/{$image->getPath()}/{$image->getUrlT()}" alt="{$image->getName()}"
+                                                            class="img-content">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/foreach}
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product-info-container col-section-2 flex flex-col gap-30">
+
+                                    <div class="flex flex-col gap-10">
+                                        <h1 class="text-header-size bold">{$objectInfo->getName($lang)}</h1>
+                                    </div>
+                                    {if $objectInfo->getOverview($lang) !== ''}
+                                        {$objectInfo->getOverview($lang)}
+                                    {/if}
+                                    <div class="flex gap-20 mt-10">
+                                        <a href="{$estore->getProperty('custom_link_zalo')}" target="_blank" onclick = "count('zalo')" class="flex-1 bg-primary text-color-white item-padding-10 border-radius-5 border-none cursor-pointer flex center-hor center-ver gap-10 transition">
+                                            <span class="bold uppercase">Nhận tư vấn</span> <span>➔</span>
+                                        </a>
+                                        <a href="/lien-he" class="flex-1 bg-white text-color-black item-padding-10 border-radius-5 cursor-pointer flex center-hor center-ver gap-10 transition custom-item__low">
+                                            <span class="bold uppercase">Y&ecirc;u cầu b&aacute;o gi&aacute;</span> <span>➔</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-meta flex flex-col flex-wrap gap-10">
+                            <div class="container-xs detail-content flex flex-col gap-20">
+                                <p>{$objectInfo->getDescription($lang)}</p>
+                            </div>
+                            <div class="container-xs service-tab flex flex-col gap-20">
+                                <div class="tab-nav flex gap-10">
+                                    <button type="button"
+                                        class="tab-btn btn-padding border-radius-5 bold cursor-pointer active"
+                                        data-target="#tab-content">
+                                        {$messages['content']}
+                                    </button>
+                                    <button type="button"
+                                        class="tab-btn btn-padding border-radius-5 bold cursor-pointer"
+                                        data-target="#tab-gallery">
+                                        {$messages['gallery']}
+                                    </button>
+                                </div>
+                                <div class="tab-panels border-radius-5">
+                                     <div id="tab-content"
+                                        class="tab-panel flex-col gap-20 item-padding-20 border-radius-5 active">
+                                        <div class="tab-panel__container flex flex-col gap-20"
+                                            data-textviewmore="{$messages['see_more']}"
+                                            data-texthide="{$messages['hide']}">
+                                            {if $objectInfo->getDetail($lang)}
+                                            {$objectInfo->getDetail($lang)|unescape:'html'}
+                                            {/if}
+                                        </div>
+                                        <div class="flex center-hor">
+                                            <button type="button"
+                                                class="btn-hide item-padding-10-20 bg-primary border-radius-5 text-color-white pos-rel"
+                                                onclick="setTimeout(() => document.getElementById('detailCover').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)">
+                                                {$messages['hide']}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="tab-gallery"
+                                        class="tab-panel item-padding-20 gap-20 border-radius-5">
+                                        <div class="tab-panel__container" data-textviewmore="{$messages['see_more']}"
+                                            data-texthide="{$messages['hide']}">
+                                            {assign var="galleryImages" value=$objectInfo->getGalleryImages($uploads)}
+                                            {if $galleryImages}
+                                            {foreach $galleryImages as $image}
+                                            <img src="/{$image->getPath()}/{$image->getUrlO()}"
+                                                alt="{$image->getName()}">
+                                            {/foreach}
+                                            {else}
+                                            <p class="text-center">{$messages['no_data']}</p>
+                                            {/if}
+                                        </div>
+                                        <div class="flex center-hor">
+                                            <button type="button"
+                                                class="btn-hide item-padding-10-20 bg-primary border-radius-5 text-color-white pos-rel"
+                                                onclick="setTimeout(() => document.getElementById('detailCover').scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)">
+                                                {$messages['hide']}
+                                            </button>
+                                        </div>
+                                    </div>
+                                   
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review-section flex bg-white border-radius-5">
+                        {include file='component/comment.tpl.html' title='comment'}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": "{$objectInfo->getName($lang)}",
+        "image": [
+            {assign var="avatar" value=$objectInfo->getAvatarImage($uploads)}
+            {assign var="gallery" value=$objectInfo->getFileImages($uploads)}
+            {assign var="first" value=true}
+
+            {if $avatar}
+                "{$rootUrl}/{$avatar->getPath()}/{$avatar->getUrlL()}"
+                {assign var="first" value=false}
+            {/if}
+
+            {if $gallery}
+                {foreach $gallery as $image}
+                    {if !$first},{/if}
+                    "{$rootUrl}/{$image->getPath()}/{$image->getUrlL()}"
+                    {assign var="first" value=false}
+                {/foreach}
+            {/if}
+        ],
+        "description": "{$descriptionSchema|strip_tags}",
+        "sku": "{$objectInfo->getSlug()}",
+        "category": "{$categoryObj->getName($lang)}",
+            "brand": {
+                "@type": "Brand",
+                "name": "Melody Productionworx"
+            },
+            "manufacturer": {
+                "@type": "Organization",
+                "name": "Melody Productionworx"
+            },
+            {if $objectInfo->getStar() > 0 && $objectInfo->getCommentCount() > 0}
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "{$objectInfo->getStar()}",
+                "reviewCount": "{$objectInfo->getCommentCount()}"
+            }
+            {else}
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "5",
+                "reviewCount": "12"
+            }
+            {/if}
+        }
+    </script>
+    {if $objectInfo->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$objectInfo->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    <div class="popup-comment__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup-comment.tpl.html' title='popup-comment'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

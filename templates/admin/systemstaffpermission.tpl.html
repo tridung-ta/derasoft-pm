@@ -1,0 +1,154 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_user_permission')}</h1>
+{if $validItem}
+{if $item}
+<!-- Load user info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="username">{$locale->msg('username')}</label><strong>{$item->getUsername()}</strong></p>
+<p><label for="user_group">{$locale->msg('user_group')}</label>{$item->getTypeTextBackend()}</p>
+<h2>{$locale->msg('permission')}:</h2>
+<p><label>{$locale->msg('manager_order')}</label>
+<input type="checkbox" name="order_all" value="1" id="order_all" class="box" onclick="toggleAllChecksPrefix('formEdit','order');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="order[view]" value="1" id="order[view]" class="box"{if $item->getPermission('order','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="order[add]" value="1" id="order[add]" class="box"{if $item->getPermission('order','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="order[edit]" value="1" id="order[edit]" class="box"{if $item->getPermission('order','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="order[delete]" value="1" id="order[delete]" class="box"{if $item->getPermission('order','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="order[clean]" value="1" id="order[clean]" class="box"{if $item->getPermission('order','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('mana_customer')}</label>
+<input type="checkbox" name="customer_all" value="1" id="customer_all" class="box" onclick="toggleAllChecksPrefix('formEdit','customer');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="customer[view]" value="1" id="customer[view]" class="box"{if $item->getPermission('customer','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="customer[add]" value="1" id="customer[add]" class="box"{if $item->getPermission('customer','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="customer[edit]" value="1" id="customer[edit]" class="box"{if $item->getPermission('customer','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="customer[delete]" value="1" id="customer[delete]" class="box"{if $item->getPermission('customer','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="customer[clean]" value="1" id="customer[clean]" class="box"{if $item->getPermission('customer','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('manage_procate')}</label>
+<input type="checkbox" name="pro_cat_all" value="1" id="pro_cat_all" class="box" onclick="toggleAllChecksPrefix('formEdit','pro_cat');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="pro_cat[view]" value="1" id="pro_cat[view]" class="box"{if $item->getPermission('pro_cat','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="pro_cat[add]" value="1" id="pro_cat[add]" class="box"{if $item->getPermission('pro_cat','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="pro_cat[edit]" value="1" id="pro_cat[edit]" class="box"{if $item->getPermission('pro_cat','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="pro_cat[delete]" value="1" id="pro_cat[delete]" class="box"{if $item->getPermission('pro_cat','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="pro_cat[clean]" value="1" id="pro_cat[clean]" class="box"{if $item->getPermission('pro_cat','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('mana_product')}</label>
+<input type="checkbox" name="product_all" value="1" id="product_all" class="box" onclick="toggleAllChecksPrefix('formEdit','product');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="product[view]" value="1" id="product[view]" class="box"{if $item->getPermission('product','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="product[add]" value="1" id="product[add]" class="box"{if $item->getPermission('product','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="product[edit]" value="1" id="product[edit]" class="box"{if $item->getPermission('product','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="product[delete]" value="1" id="product[delete]" class="box"{if $item->getPermission('product','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="product[clean]" value="1" id="product[clean]" class="box"{if $item->getPermission('product','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('manage_category')}</label>
+<input type="checkbox" name="category_all" value="1" id="category_all" class="box" onclick="toggleAllChecksPrefix('formEdit','category');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="category[view]" value="1" id="category[view]" class="box"{if $item->getPermission('category','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="category[add]" value="1" id="category[add]" class="box"{if $item->getPermission('category','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="category[edit]" value="1" id="category[edit]" class="box"{if $item->getPermission('category','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="category[delete]" value="1" id="category[delete]" class="box"{if $item->getPermission('category','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="category[clean]" value="1" id="category[clean]" class="box"{if $item->getPermission('category','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('manage_posts')}</label>
+<input type="checkbox" name="article_all" value="1" id="article_all" class="box" onclick="toggleAllChecksPrefix('formEdit','article');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="article[view]" value="1" id="article[view]" class="box"{if $item->getPermission('article','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="article[add]" value="1" id="article[add]" class="box"{if $item->getPermission('article','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="article[edit]" value="1" id="article[edit]" class="box"{if $item->getPermission('article','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="article[delete]" value="1" id="article[delete]" class="box"{if $item->getPermission('article','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="article[clean]" value="1" id="article[clean]" class="box"{if $item->getPermission('article','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('mana_menu')}</label>
+<input type="checkbox" name="menu_all" value="1" id="menu_all" class="box" onclick="toggleAllChecksPrefix('formEdit','menu');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="menu[view]" value="1" id="menu[view]" class="box"{if $item->getPermission('menu','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="menu[add]" value="1" id="menu[add]" class="box"{if $item->getPermission('menu','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="menu[edit]" value="1" id="menu[edit]" class="box"{if $item->getPermission('menu','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="menu[delete]" value="1" id="menu[delete]" class="box"{if $item->getPermission('menu','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="menu[clean]" value="1" id="menu[clean]" class="box"{if $item->getPermission('menu','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('mana_banner')}</label>
+<input type="checkbox" name="banner_all" value="1" id="banner_all" class="box" onclick="toggleAllChecksPrefix('formEdit','banner');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="banner[view]" value="1" id="banner[view]" class="box"{if $item->getPermission('banner','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="banner[add]" value="1" id="banner[add]" class="box"{if $item->getPermission('banner','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="banner[edit]" value="1" id="banner[edit]" class="box"{if $item->getPermission('banner','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="banner[delete]" value="1" id="banner[delete]" class="box"{if $item->getPermission('banner','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="banner[clean]" value="1" id="banner[clean]" class="box"{if $item->getPermission('banner','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('mana_support')}</label>
+<input type="checkbox" name="support_all" value="1" id="support_all" class="box" onclick="toggleAllChecksPrefix('formEdit','support');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="support[view]" value="1" id="support[view]" class="box"{if $item->getPermission('support','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="support[add]" value="1" id="support[add]" class="box"{if $item->getPermission('support','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="support[edit]" value="1" id="support[edit]" class="box"{if $item->getPermission('support','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="support[delete]" value="1" id="support[delete]" class="box"{if $item->getPermission('support','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="support[clean]" value="1" id="support[clean]" class="box"{if $item->getPermission('support','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p><label>{$locale->msg('mana_static')}</label>
+<input type="checkbox" name="static_all" value="1" id="static_all" class="box" onclick="toggleAllChecksPrefix('formEdit','static');" /><label class="lbl">{$locale->msg('system_all')}</label>
+<input type="checkbox" name="static[view]" value="1" id="static[view]" class="box"{if $item->getPermission('static','view')} checked{/if} /><label class="lbl">{$locale->msg('system_view')}</label>
+<input type="checkbox" name="static[add]" value="1" id="static[add]" class="box"{if $item->getPermission('static','add')} checked{/if} /><label class="lbl">{$locale->msg('system_add')}</label>
+<input type="checkbox" name="static[edit]" value="1" id="static[edit]" class="box"{if $item->getPermission('static','edit')} checked{/if} /><label class="lbl">{$locale->msg('system_edit')}</label>
+<input type="checkbox" name="static[delete]" value="1" id="static[delete]" class="box"{if $item->getPermission('static','delete')} checked{/if} /><label class="lbl">{$locale->msg('system_delete')}</label>
+<input type="checkbox" name="static[clean]" value="1" id="static[clean]" class="box"{if $item->getPermission('static','clean')} checked{/if} /><label class="lbl">{$locale->msg('clean')}</label>
+</p>
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="permission" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="username" value="{$item->getUsername()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{$userInfo->getUsername()}</strong></p>
+<p><label for="user_group">{$locale->msg('user_group')}</label>{$userInfo->getTypeTextBackend()}</p>
+<h2>{$locale->msg('manager_order')}</h2>
+<h2>{$locale->msg('mana_customer')}</h2>
+<h2>{$locale->msg('manager_order')}</h2>
+<h2>{$locale->msg('mana_product')}</h2>
+<h2>{$locale->msg('manage_posts')}</h2>
+<h2>{$locale->msg('mana_menu')}</h2>
+<h2>{$locale->msg('mana_banner')}</h2>
+<h2>{$locale->msg('mana_support')}</h2>
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="permission" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="id" value="{$error.INPUT.id.value}" />
+<input type="hidden" name="username" value="{$error.INPUT.username.value}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>

@@ -1,0 +1,11 @@
+{include file='head.tpl.html' title='head'}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-unsubscribe"><div class="ed-unsubscribe__card"><span class="ed-kicker">{if $lang == 'en'}NEWSLETTER{elseif $lang == 'zh'}电子简报{else}BẢN TIN{/if}</span>
+{if $unsubscribeState == 'confirm'}<h1>{if $lang == 'en'}Stop receiving the newsletter?{elseif $lang == 'zh'}停止接收电子简报？{else}Ngừng nhận bản tin?{/if}</h1><p>{if $lang == 'en'}Confirm below to remove this address from future editorial newsletters.{elseif $lang == 'zh'}请在下方确认，以停止此邮箱接收今后的电子简报。{else}Xác nhận bên dưới để địa chỉ này không nhận các bản tin tiếp theo.{/if}</p><form action="{$unsubscribePath|escape:'html'}?token={$unsubscribeToken|escape:'url'}" method="post"><input type="hidden" name="csrf_token" value="{$csrf_token|escape:'html'}"><button class="ed-button" type="submit">{if $lang == 'en'}Confirm unsubscribe{elseif $lang == 'zh'}确认取消订阅{else}Xác nhận hủy đăng ký{/if}</button></form>
+{elseif $unsubscribeState == 'done'}<h1>{if $lang == 'en'}You have unsubscribed{elseif $lang == 'zh'}您已取消订阅{else}Bạn đã hủy đăng ký{/if}</h1><p>{if $lang == 'en'}This address will no longer receive the editorial newsletter.{elseif $lang == 'zh'}此邮箱将不再接收电子简报。{else}Địa chỉ này sẽ không còn nhận bản tin editorial.{/if}</p>
+{elseif $unsubscribeState == 'csrf'}<h1>{if $lang == 'en'}Session expired{elseif $lang == 'zh'}会话已过期{else}Phiên làm việc đã hết hạn{/if}</h1><p>{if $lang == 'en'}Reload the unsubscribe link and try again.{elseif $lang == 'zh'}请重新打开取消订阅链接后再试。{else}Hãy mở lại liên kết hủy đăng ký và thử lại.{/if}</p>
+{else}<h1>{if $lang == 'en'}Link unavailable{elseif $lang == 'zh'}链接不可用{else}Liên kết không khả dụng{/if}</h1><p>{if $lang == 'en'}This unsubscribe link is invalid or has expired.{elseif $lang == 'zh'}此取消订阅链接无效或已过期。{else}Liên kết hủy đăng ký không hợp lệ hoặc đã hết hạn.{/if}</p>{/if}
+<a class="ed-unsubscribe__home" href="{$publicHome}">← {if $lang == 'en'}Return home{elseif $lang == 'zh'}返回首页{else}Trở về trang chủ{/if}</a></div></main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+{include file='editorial-script.tpl.html'}
+</body></html>

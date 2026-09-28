@@ -1,0 +1,35 @@
+{include file='head.tpl.html' title='head'} 
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}  
+        <section class="archive-section container-f container-padding bg-white-secondary">
+            <div class="container-l flex flex-wrap gap-20">
+                <div class="archive-main  flex flex-col gap-20">
+                    <div class="archive-header flex flex-col gap-10">
+                        <h1 class="section-title bold uppercase">{$messages['all_products']}</h1>
+                        <div class="title-border-bottom"></div>
+                    </div>
+                    {include file='listproductsfromsearch.tpl.html' title='listproductsfromsearch'}
+                </div>
+                <aside class="archive-sidebar bg-white item-padding-20 border-radius-5 flex flex-col gap-20">
+                    {include file='component/sidebar.tpl.html' title='sidebar'}
+                </aside>
+            </div>
+        </section>
+    </main>
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

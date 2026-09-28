@@ -1,0 +1,54 @@
+<div class="news-slider-wrapper pos-rel">
+    <div class="swiper-button-prev custom-prev-btn"></div>
+    <div class="swiper-button-next custom-next-btn"></div>
+    <div class="news-swiper fill-view swiper">
+        <div class="swiper-wrapper">
+            {if $recentArticlesBlock}
+            {foreach $recentArticlesBlock as $article}
+            <article class="swiper-slide col-4">
+                <div class="news-item hover-border-primary bg-white flex flex-col pos-rel border-radius-5 overflow-hidden">
+                    <div class="news-item__img">
+                        {assign var=avatar value=$article->getAvatarImage($uploads)}
+                        {if $avatar}
+                        <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$article->getTitle($lang)|escape:'html'}"
+                            class="img-content" loading="lazy">
+                        {else}
+                        <img src="/{$templatePath}/{$userTemplate}/img/news/news.jpg" alt="{$article->getTitle($lang)}"
+                            class="img-content">
+                        {/if}
+                    </div>
+                    <div class="news-item__content item-padding-20 flex flex-1 flex-col gap-10 jus-sb">
+                        <div class="news-item__info flex flex-col gap-10">
+                            <div class="flex gap-20">
+                                <div class="news-item__date flex gap-10">
+                                    <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/clock.svg"
+                                        alt="">
+                                    <p>
+                                        {$article->getDisplayDate()}
+                                    </p>
+                                </div>
+                                <div class="news-item__view flex gap-10">
+                                    <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/eye.svg"
+                                        alt="">
+                                    <p>{$article->getViewed()}</p>
+                                </div>
+                            </div>
+                            <h4 class="news-item__title clamp-text bold">{$article->getTitle($lang)|escape:'html'}</h4>
+                            <p class="news-item__desc clamp-text">
+                                {$article->getDescription($lang)|strip_tags}
+                            </p>
+                        </div>
+                        <button
+                            class="news-btn btn-padding flex gap-5 center-hor center-ver text-color-white border-radius-5 cursor-point bg-primary uppercase flex gap-10 center-ver un-wrap">
+                            <p class="text-color-white">{$messages['view_details']}</p>
+                            <p class="text-color-white">➔</p>
+                        </button>
+                    </div>
+                    <a href="{$article->getUrl($lang)|escape:'html'}" class="pos-abs cover-all" aria-label="{$article->getTitle($lang)|escape:'html'}"></a>
+                </div>
+            </article>
+            {/foreach}
+            {/if}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Tạp chí Văn hóa Việt</title>
+  <rect width="512" height="512" rx="112" fill="#2b1d19"/>
+  <circle cx="256" cy="256" r="174" fill="none" stroke="#d7ad68" stroke-width="5"/>
+  <path d="M159 165h194v28H159zm22 52h150v17H181zm0 42h150v17H181zm0 42h96v17h-96z" fill="#f7f3ee"/>
+  <path d="M302 285c31 0 57 25 57 57s-26 57-57 57-57-25-57-57 26-57 57-57zm0 24-21 33 21 33 21-33-21-33z" fill="#ad3328"/>
+</svg>

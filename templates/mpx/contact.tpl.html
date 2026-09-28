@@ -1,0 +1,66 @@
+﻿{include file='head.tpl.html' title='head'} 
+    <header class="container-f bg-black">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor">
+        <section class="flex bg-gray container-f ">
+            <div class="container-l nav-bar__container">
+                <a href="{if $lang == 'en'}/en{else}/{/if}" class="nav-bar__item">{$messages.home}</a>
+                <a href="{if $lang == 'en'}/en/contact{else}/lien-he{/if}" class="nav-bar__item">{$messages.contact}</a>
+            </div>
+        </section>
+        <div class="container-f flex flex-col center-hor pos-rel ">
+            <section class="container-f container-padding bg-white">
+                {include file='section_contact.tpl.html' title='section_contact'}
+            </section>
+            <section class="container-f container-padding-bottom ">
+                <div class="container-l company-map">
+                    <iframe class="fill-view border-none"
+                        src="{$estore->getProperty('custom_linkmap')}"
+                        height="350" allowfullscreen="" loading="lazy">
+                    </iframe>
+                </div>
+            </section>
+        </div>
+    </main>
+        <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "name": "{$pageTitle|escape:'javascript'}",
+        "url": "{$rootUrl|escape:'javascript'}{if $lang == 'en'}/en/contact{else}/lien-he{/if}",
+        "description": "{$contactMenu->getProperty('custom_sapo')|strip_tags|escape:'javascript'}",
+        "mainEntity": {
+            "@type": "Corporation",
+            "@id": "{$rootUrl|escape:'javascript'}/#organization",
+            "name": "{$estore->getName()|escape:'javascript'}",
+            "telephone": "{$estore->getTel()|escape:'javascript'}",
+            "email": "{$estore->getEmail()|escape:'javascript'}",
+            "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{$estore->getProperty('custom_address')|escape:'javascript'}",
+            "addressCountry": "VN"
+            }
+        }
+        }
+        </script>
+        {if $contactMenu->getProperty('custom_schema_faq') != ''}
+            <script type="application/ld+json">
+                {$contactMenu->getProperty('custom_schema_faq')}
+            </script>
+        {/if}
+        <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+            {include file='footer.tpl.html' title='footer'}
+        </footer>
+        {include file='CTA.tpl.html' title='call to action contact'}
+        <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+            {include file='rolltotop.tpl.html' title='rolltotop'}
+        </div>
+        <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+            {include file='popup.tpl.html' title='popup'}
+        </div>
+
+        {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

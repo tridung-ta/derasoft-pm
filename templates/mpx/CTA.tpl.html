@@ -1,0 +1,35 @@
+<div class="cta-floating flex flex-col z-index-5 jus-sb">
+
+    <div class="cta-item pos-rel flex flex-col center-ver">
+        <div class="cta-item__img">
+            <img src="/templates/mpx/img/icon/phone-cta.svg" alt="Phone" class="img-content">
+        </div>
+        <p class="cta-title">{$messages['mobile_phone']}</p>
+        <a href="tel:{$estore->getTel()}" class="pos-abs cover-all" aria-label="Phone" onclick="count('tel')"></a>
+    </div>
+
+    <div class="cta-item pos-rel flex flex-col center-ver">
+        <div class="cta-item__img">
+            <img src="/templates/mpx/img/icon/messenger-cta.svg" alt="Messenger" class="img-content">
+        </div>
+        <p class="cta-title">Messenger</p>
+        <a href="{$estore->getProperty('custom_link_facebook')}" target="_blank" class="pos-abs cover-all" aria-label="Messenger" onclick="count('mess')"></a>
+    </div>
+
+    <div class="cta-item pos-rel flex flex-col center-ver">
+        <div class="cta-item__img">
+            <img src="/templates/mpx/img/icon/zalo-cta.svg" alt="Zalo" class="img-content">
+        </div>
+        <p class="cta-title">Zalo</p>
+        <a href="{$estore->getProperty('custom_link_zalo')}" target="_blank" class="pos-abs cover-all" aria-label="Zalo" onclick="count('zalo')"></a>
+    </div>
+
+    <div class="cta-item pos-rel flex flex-col center-ver">
+        <div class="cta-item__img">
+            <img src="/templates/mpx/img/icon/map-cta.svg" alt="Google Maps" class="img-content">
+        </div>
+        <p class="cta-title">Google Maps</p>
+        <a href="{$estore->getProperty('custom_linkmap')}" target="_blank" class="pos-abs cover-all" aria-label="Google Maps" onclick="count('map')"></a>
+    </div>
+
+</div>

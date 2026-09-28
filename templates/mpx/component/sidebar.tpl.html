@@ -1,0 +1,147 @@
+<div class="sidebar-widget flex flex-col gap-20">
+    <div class="archive-header flex flex-col gap-10">
+        <h3 class="widget-title bold uppercase">{$messages['services']}</h3>
+        <div class="title-border-bottom__left"></div>
+    </div>
+    {if $childCate}
+<div class="widget-list flex flex-col gap-10">
+    {foreach from=$childCate item=category}
+        <a href="{$category->getUrl()}" class="">{$category->getName($lang)}</a>
+    {/foreach}
+</div>
+{/if}
+</div>
+
+{if !empty($subCategories)}
+<div class="sidebar-widget flex flex-col gap-20">
+    <div class="archive-header flex flex-col gap-10">
+        <h3 class="widget-title bold uppercase">{$messages['category']} {$nameCateParent}</h3>
+        <div class="title-border-bottom__left"></div>
+    </div>
+    <div class="widget-list flex flex-col gap-10">
+        {foreach from=$subCategories item=category}
+            <a href="/{$category->getSlug()}" class="">{$category->getName($lang)}</a>
+        {/foreach}
+    </div>
+</div>
+{/if}
+
+<div class="sidebar-widget flex flex-col gap-20">
+    <div class="archive-header flex flex-col gap-10">
+        {if $isDetail && $isDetail == true}
+        <h3 class="widget-title bold uppercase">{$messages['most_viewed_articles']}</h3>
+        {else}
+        <h3 class="widget-title bold uppercase">{$messages['recent_articles']}</h3>
+        {/if}
+        <div class="title-border-bottom__left"></div>
+    </div>
+    {if !empty($recentArticles)}
+    <div class="widget-posts flex  gap-20">
+        {foreach from=$recentArticles item=article}
+            <article class="post-mini hover-border-primary  flex gap-10 center-ver pos-rel  border-radius-5 overflow-hidden">
+                <div class="post-mini__img border-radius-5 overflow-hidden">
+                    {assign var="avatar" value=$article->getAvatarImage($uploads)}
+                    {if $avatar}
+                         <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$avatar->getName()}" class="img-content">
+                    {else}
+                         <img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="No image" class="img-content">
+                    {/if}
+                </div>
+                <div class="post-mini__info flex flex-col gap-10">
+                    <h4 class="post-mini__title bold clamp-text">
+                        {$article->getTitle($lang)}
+                    </h4>
+                    <div class="flex gap-20">
+                        <div class="news-item__date flex gap-10">
+                            <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/clock.svg" alt="">
+                            <p>
+                                {$article->getDisplayDate()}
+                            </p>
+                        </div>
+                        <div class="news-item__view flex gap-10">
+                            <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/eye.svg" alt="">
+                            <p>{$article->getViewed()}</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="/{$article->getSlug()}" class="pos-abs cover-all z-index-2"></a>
+            </article>
+        {/foreach}
+    </div>
+    {else}
+    <p class="text-center">{$messages['no_data']}</p>
+    {/if}
+</div>
+
+{if $isDetail && $isDetail == true}
+    <div class="sidebar-widget flex flex-col gap-20">
+        <div class="archive-header flex flex-col gap-10">
+            <h3 class="widget-title bold uppercase">{$messages['recent_case_studies']}</h3>
+            <div class="title-border-bottom__left"></div>
+        </div>
+        {if !empty($recentCaseStudies)}
+        <div class="widget-posts flex  gap-20">
+            {foreach from=$recentCaseStudies item=article}
+                <article class="post-mini hover-border-primary  flex gap-10 center-ver pos-rel  border-radius-5 overflow-hidden">
+                    <div class="post-mini__img border-radius-5 overflow-hidden">
+                        {assign var="avatar" value=$article->getAvatarImage($uploads)}
+                        {if $avatar}
+                            <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$avatar->getName()}" class="img-content">
+                        {else}
+                            <img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="No image" class="img-content">
+                        {/if}
+                    </div>
+                    <div class="post-mini__info flex flex-col gap-10">
+                        <h4 class="post-mini__title bold clamp-text">
+                            {$article->getTitle($lang)}
+                        </h4>
+                        <div class="flex gap-20">
+                            <div class="news-item__date flex gap-10">
+                                <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/clock.svg" alt="">
+                                <p>
+                                    {$article->getDisplayDate()}
+                                </p>
+                            </div>
+                            <div class="news-item__view flex gap-10">
+                                <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/eye.svg" alt="">
+                                <p>{$article->getViewed()}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/{$article->getSlug()}" class="pos-abs cover-all z-index-2"></a>
+                </article>
+            {/foreach}
+        </div>
+        {else}
+        <p class="text-center">{$messages['no_data']}</p>
+        {/if}
+    </div>
+{/if}
+
+{if !empty($listPopularServices)}
+<div class="sidebar-widget flex flex-col gap-20">
+    <div class="archive-header flex flex-col gap-10">
+        <h3 class="widget-title bold uppercase">{$messages['popular_services']}</h3>
+        <div class="title-border-bottom__left"></div>
+    </div>
+    <div class="widget-service flex  gap-20">
+        {foreach from=$listPopularServices item=service}
+            <article class="service-mini flex hover-border-primary gap-10 center-ver pos-rel  border-radius-15 overflow-hidden">
+                <div class="service-mini__img  border-radius-5 overflow-hidden">
+                    {assign var="avatar" value=$service->getAvatarImage($uploads)}
+                    {if $avatar}
+                         <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$avatar->getName()}" class="img-content">
+                    {else}
+                         <img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="No image" class="img-content">
+                    {/if}
+                </div>
+                <div class="service-mini__info flex flex-col ">
+                    <h4 class="service-mini__title bold clamp-text">{$service->getName($lang)}</h4>
+                    <p class="service-mini__desc clamp-text">{$service->getDescription($lang)|strip_tags}</p>
+                </div>
+                <a href="/{$service->getSlug()}" class="pos-abs cover-all z-index-2"></a>
+            </article>
+        {/foreach}
+    </div>
+</div>
+{/if}

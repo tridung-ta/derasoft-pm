@@ -1,0 +1,36 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="currency" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+{include file="$userTemplate/coretabs.tpl.html" title=show-tabs}
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title=show-tabs}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

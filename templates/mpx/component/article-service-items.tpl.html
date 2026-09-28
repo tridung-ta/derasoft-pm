@@ -1,0 +1,51 @@
+{foreach from=$articlesServices item=article}
+{assign var="avatar" value=$article->getAvatarImage($uploads)}
+
+<article class="swiper-slide col-4">
+    <div class="news-item hover-border-primary bg-white flex flex-col pos-rel border-radius-5 shadow-sm">
+        <div class="news-item__img">
+            {if $avatar}
+            <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$article->getTitle()}" class="img-content">
+            {else}
+            <img src="/templates/mpx/img/logo/no-image.webp" alt="No image" class="img-content">
+            {/if}
+        </div>
+
+        <div class="news-item__content item-padding-20 flex flex-col gap-10">
+
+            <div class="flex gap-20">
+
+                <div class="news-item__date flex gap-10">
+                    <img class="img-icon" src="/templates/mpx/img/icon/clock.svg">
+                    <p>{$article->getDisplayDate()}</p>
+                </div>
+
+                <div class="news-item__view flex gap-10">
+                    <img class="img-icon" src="/templates/mpx/img/icon/eye.svg">
+                    <p>{$article->getViewed()}</p>
+                </div>
+
+            </div>
+
+            <h4 class="news-item__title clamp-text bold uppercase">
+                {$article->getTitle($lang)}
+            </h4>
+
+            <p class="news-item__desc clamp-text">
+                {$article->getDescription($lang)|strip_tags}
+            </p>
+
+            <button class="news-btn btn-padding flex gap-5 center-hor center-ver text-color-white border-radius-5 cursor-point bg-primary uppercase flex gap-10 center-ver un-wrap">
+                <p class="text-color-white">{$messages.view_details}</p>
+                <p class="text-color-white">➔</p>
+            </button>
+
+        </div>
+
+        <a href="{$article->getUrl($lang)}"
+           class="pos-abs cover-all"></a>
+
+    </div>
+</article>
+
+{/foreach}

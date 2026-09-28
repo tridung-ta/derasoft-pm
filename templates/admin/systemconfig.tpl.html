@@ -1,0 +1,18 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title="show-tabs"}
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title="show-tabs"}
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

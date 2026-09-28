@@ -1,0 +1,175 @@
+{include file='head.tpl.html' title='head'}
+    <header class=" bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        {if $bannerDesktop}
+            {assign var=bannerD value=$bannerDesktop->getAvatarImage($uploads)}
+            {if $bannerD}
+            <section class=" container-f swiper js-slider-wrapper">
+                <div class=" js-slider-banner js-slider-ratio overflow-hidden">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide ">
+                            <div class="overflow-hidden fill-view pos-rel">
+                                <picture>
+                                    <source media="(min-width: 1024px)"
+                                        srcset="/{$bannerD->getPath()}/{$bannerD->getUrlO()}">
+                                    {if $bannerMobile}
+                                        {assign var=bannerM value=$bannerMobile->getAvatarImage($uploads)}
+                                        {if $bannerM}
+                                        <source media="(max-width: 768px)"
+                                            srcset="{$bannerM->getPath()}/{$bannerM->getUrlO()}">
+                                        {/if}
+                                    {/if}
+                                    <img class="img-content" src="/{$bannerD->getPath()}/{$bannerD->getUrlO()}"
+                                        alt="{$bannerDesktop->getName()}">
+                                </picture>
+                                <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết dự án"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {/if}
+        {/if}
+        {if $mpxDoingBlock && $mpxDoingBlock->getDetail($lang) != ''}
+            <section class=" container-padding flex center-hor bg-white">
+                {$mpxDoingBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $mpxProductCategoriesBlock && $mpxProductCategoriesBlock->getDetail($lang) != ''}
+            <section class=" container-padding flex center-hor bg-white-secondary expo-services">
+                {$mpxProductCategoriesBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $mpxExhibitionsBlock && $mpxExhibitionsBlock->getDetail($lang) != ''}
+            <section class=" container-padding flex center-hor bg-black expo-power">
+                {$mpxExhibitionsBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $mpxWhyChooseBlock && $mpxWhyChooseBlock->getDetail($lang) != ''}
+            <section class=" container-padding flex center-hor bg-white-secondary expo-reasons">
+                {$mpxWhyChooseBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $deploymentProcessBlock && $deploymentProcessBlock->getDetail($lang) != ''}
+            <section class=" container-padding flex center-hor bg-white expo-process">
+                {$deploymentProcessBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $exhibitionImagesBlock && $exhibitionImagesBlock->getDetail($lang) != ''}
+            <section class=" container-padding flex center-hor bg-white expo-stages">
+                {$exhibitionImagesBlock->getDetail($lang)}
+            </section>
+        {/if}
+        <section class=" container-padding flex center-hor bg-white-secondary expo-projects">
+           {include file='component/expo-projects.tpl.html' title='footer'}
+        </section>
+        {if $listTechnologies}
+        <section class=" container-padding flex center-hor bg-white expo-materials">
+            <div class="container-l flex flex-col gap-30">
+                <div class="flex flex-col gap-10 center-hor">
+                    <h2 class="section-title text-center bold uppercase">
+                        {$messages['exhibition_materials_equipment_title']}
+                    </h2>
+                    <div class="title-border-bottom"></div>
+                </div>
+                <div class="js-slider-wrapper pos-rel expo-materials-slider">
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="expo-materials__swiper js-slider-3cols fill-view swiper">
+                        <div class="swiper-wrapper">
+                            {foreach from=$listTechnologies item=technology}
+                                <article class="swiper-slide col-3">
+                                    <div
+                                        class="hover-border-primary fill-height custom-item__low flex-1 expo-material-card bg-white flex flex-col text-center pos-rel border-radius-5  overflow-hidden">
+                                        <div class="expo-material-card__img bg-white-secondary overflow-hidden">
+                                            {assign var=avatar value=$technology->getAvatarImage($uploads)}
+                                            {if $avatar}
+                                            <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$technology->getName($lang)}"
+                                                class="img-content" style="mix-blend-mode: multiply;">
+                                            {else}
+                                            <img src="/templates/mpx/img/logo/no-image.webp" alt="{$technology->getName($lang)}"
+                                                class="img-content" style="mix-blend-mode: multiply;">
+                                            {/if}
+                                        </div>
+                                        <div class="expo-material-card__content flex flex-col gap-10 item-padding-20">
+                                        <h3 class="bold uppercase clamp-text number-line-two">{$technology->getName($lang)}</h3>
+                                            <p class="text-sm text-color-deactive clamp-text number-line-three">{$technology->getDescription($lang)|strip_tags}</p>
+                                        </div>
+                                    </div>
+                                </article>
+                            {/foreach}
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="flex center-hor mt-20">
+                    <p class="text-center text-sm text-color-black w-70">{$messages['mpx_material_selection_desc']}</p>
+                </div>
+            </div>
+        </section>
+        {/if}
+        <section class="container-padding">
+                {include file='component/service-section.tpl.html' title='service section'}
+        </section>
+        {if $faqBlock && $faqBlock->getDetail($lang) != ''}
+        <section class=" container-padding flex center-hor bg-white-secondary expo-faq">
+            {$faqBlock->getDetail($lang)}
+        </section>
+        {/if}
+        {if $needHelpBlock && $needHelpBlock->getDetail($lang) != ''}
+        <section class=" flex center-hor pos-rel advise-section__container">
+            {$needHelpBlock->getDetail($lang)}
+        </section>
+        {/if}
+    </main>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "name": "Dịch vụ Triển lãm & Trưng bày thương hiệu MPX",
+            "url": "{$rootUrl}/{$slug}",
+            "description": "{$serviceExhibitionMenu->getProperty('custom_sapo')}",
+            "provider": {
+                "@id": "https://mpx.vn/#organization"
+            },
+            "areaServed": "VN",
+            "hasOfferCatalog": {
+                "@type": "OfferCatalog",
+                "name": "Các dịch vụ Triển lãm của MPX",
+                "itemListElement": [
+                    {foreach from=$childServiceExhibitionMenu item=child name=services}
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                            "@type": "Service",
+                            "name": "{$child->getName()}",
+                            "url": "{$rootUrl}{$child->getUrl()}"
+                        }
+                    }{if !$smarty.foreach.services.last},{/if}
+                    {/foreach}
+                ]
+            }
+        }
+    </script>
+    {if $serviceExhibitionMenu->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$serviceExhibitionMenu->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class=" bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor ">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

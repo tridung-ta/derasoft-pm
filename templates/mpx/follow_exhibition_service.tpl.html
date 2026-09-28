@@ -1,0 +1,100 @@
+{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        {if $contentPage !== ''}
+        <section class="container-f container-padding flex flex-col gap-20">
+            <div class="container-l flex flex-col gap-20 custom-content">
+                {$contentPage}
+            </div>
+            {if $userInfo}
+                <div class="container-l custom-item item-padding-20 gap-20 flex flex-col">
+                    <div class="expert__header flex center-ver gap-10">
+                        <div class="expert__image border-radius-5 overflow-hidden">
+                            {assign var="avatar" value=$userInfo->getAvatarImage($uploads)}
+                            {if $avatar}
+                            <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="MPX user" class="img-content">
+                            {else}
+                            <img src="/templates/mpx/img/icon/avatar.svg" alt="MPX user" class="img-content">
+                            {/if}
+                        </div>
+                        <h3 class="expert__name bold uppercase">{$userInfo->getFullName()}</h3>
+                    </div>
+
+                    <div class="expert__body">
+                        <p class="expert__desc text-color-gray">
+                            {if $lang eq 'en'}
+                                {$userInfo->getProperty('custom_intro_en') != ''} Connect with me on
+                                        <a href="{$estore->getProperty('custom_link_facebook')}" onlick="count('fanpage')">Facebook</a>,
+                                        <a href="{$estore->getProperty('custom_link_youtube')}" onlick="count('youtube')">Youtube</a>
+                            {elseif $lang eq 'zh'}
+                                {$userInfo->getProperty('custom_intro_zh') != ''} 与我联系
+                                        <a href="{$estore->getProperty('custom_link_facebook')}" onlick="count('fanpage')">Facebook</a>,
+                                        <a href="{$estore->getProperty('custom_link_youtube')}" onlick="count('youtube')">Youtube</a>
+                            {else}
+                                {if $userInfo->getProperty('custom_intro')}
+                                    {$userInfo->getProperty('custom_intro')} Kết nối với tôi trên 
+                                        <a href="{$estore->getProperty('custom_link_facebook')}" onlick="count('fanpage')">Facebook</a>,
+                                        <a href="{$estore->getProperty('custom_link_youtube')}" onlick="count('youtube')">Youtube</a>
+                                {else}
+                                    MPX là đơn vị chuyên tư vấn, thiết kế và cung cấp giải pháp kỹ thuật về kết cấu, dàn dựng sân khấu và cơ khí chuyển động 
+                                    trong sân khấu ca nhạc. Với vai trò là công ty thành viên của Lữ Nhạc Group, MPX ra đời với sứ mệnh cải tiến và ứng dụng 
+                                    các công nghệ hiện đại vào chuyển động cơ khí chính xác – biểu diễn nghệ thuật – hệ thống lắp đặt modular để phục vụ trong
+                                    ngành tổ chức sự kiện, triển lãm và quảng cáo.
+                                {/if}
+                            {/if}
+                        </p>
+                    </div>
+                </div>  
+            {/if}
+        </section>
+        {/if}
+        {if $caseStudy}
+            <section class="container-f container-padding flex center-hor bg-white-secondary">
+                <div class="container-l flex flex-col gap-30">
+                    <div class=" flex flex-col center-hor  guest-comment__title">
+                        <h2 class="section-title bold uppercase text-color-black">{$messages['case_studies_exhibition']}</h2>
+                        <div class="title-border-bottom__left"></div>
+                    </div>
+                    {include file='casestudyBlock.tpl.html' title='casestudy'}
+                </div>
+            </section>
+        {/if}
+        {if $isShowBlockService == true}
+        <section class="container-padding">
+                {include file='component/service-section.tpl.html' title='service section'}
+        </section>
+        {/if}
+    </main>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "serviceType": "Dịch vụ mảng triển lãm",
+            "url": "{$rootUrl}{$menuObj->getUrl()}",
+            "name": "{$menuObj->getName()}",
+            "description": "{$menuObj->getProperty('custom_sapo')}",
+            "provider": { "@id": "https://mpx.vn/#organization" }
+        }
+    </script>
+    {if $menuObj->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$menuObj->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

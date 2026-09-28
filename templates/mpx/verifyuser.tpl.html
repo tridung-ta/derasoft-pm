@@ -1,0 +1,34 @@
+{include file='head.tpl.html' title='head'}
+<body class="ed-auth-gate-body">
+<main class="ed-gate">
+  <div class="ed-gate__ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+  <header class="ed-gate__bar">
+    <a class="ed-gate__brand" href="/dang-nhap"><small>TẠP CHÍ VĂN HÓA VIỆT</small><strong>Văn học <em>&amp;</em> Nghệ thuật</strong></a>
+  </header>
+  <section class="ed-gate__stage">
+    <div class="ed-gate__story">
+      <span class="ed-gate__eyebrow">XÁC THỰC ĐỘC GIẢ</span>
+      <h1>Một bước cuối<br>để bắt đầu đọc.</h1>
+      <p>Xác thực email giúp bảo vệ thư viện cá nhân, bài đã lưu và tiến độ đọc được đồng bộ với tài khoản của bạn.</p>
+      <div class="ed-gate__note"><span>01</span><b>Bảo vệ tài khoản</b><span>02</span><b>Đồng bộ không gian đọc</b></div>
+    </div>
+    <div class="ed-gate__card ed-verify-card">
+      {if $success}
+        <div class="ed-verify-mark">✓</div>
+        <span class="ed-gate__card-kicker">XÁC THỰC THÀNH CÔNG</span>
+        <h2>Sẵn sàng đọc</h2>
+        <p>{$success|escape:'html'}</p>
+        <a class="ed-gate__submit" href="/dang-nhap"><span>Đăng nhập ngay</span><b>→</b></a>
+      {else}
+        <div class="ed-verify-mark">!</div>
+        <span class="ed-gate__card-kicker">KHÔNG THỂ XÁC THỰC</span>
+        <h2>Liên kết chưa hợp lệ</h2>
+        <p>{if $error}{$error[0]|escape:'html'}{else}Liên kết xác thực không hợp lệ hoặc đã hết hạn.{/if}</p>
+        <a class="ed-gate__submit" href="/dang-nhap"><span>Quay lại đăng nhập</span><b>→</b></a>
+      {/if}
+    </div>
+  </section>
+  <footer class="ed-gate__footer"><span>© 2026</span><span>Văn học &amp; Nghệ thuật · Phiên bản độc giả</span></footer>
+</main>
+{include file='editorial-script.tpl.html'}
+</body></html>

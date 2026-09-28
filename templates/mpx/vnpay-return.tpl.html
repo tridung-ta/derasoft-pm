@@ -1,0 +1,22 @@
+{include file='head.tpl.html' title='head'}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-payment-result"><div class="ed-shell"><section class="ed-payment-result__card">
+ <span class="ed-kicker">VNPAY</span>
+ {if !$paymentSignatureValid || !$paymentTransaction}
+  <h1>{if $lang == 'en'}Payment result cannot be verified{elseif $lang == 'zh'}&#26080;&#27861;&#39564;&#35777;&#25903;&#20184;&#32467;&#26524;{else}Kh&#244;ng th&#7875; x&#225;c minh k&#7871;t qu&#7843; thanh to&#225;n{/if}</h1>
+  <p>{if $lang == 'en'}The returned data is invalid or does not belong to your account.{elseif $lang == 'zh'}&#36820;&#22238;&#30340;&#25968;&#25454;&#26080;&#25928;&#25110;&#19981;&#23646;&#20110;&#24744;&#30340;&#24080;&#25143;&#12290;{else}D&#7919; li&#7879;u tr&#7843; v&#7873; kh&#244;ng h&#7907;p l&#7879; ho&#7863;c kh&#244;ng thu&#7897;c t&#224;i kho&#7843;n c&#7911;a b&#7841;n.{/if}</p>
+ {elseif $paymentTransaction.status == 1}
+  <h1>{if $lang == 'en'}Payment confirmed{elseif $lang == 'zh'}&#25903;&#20184;&#24050;&#30830;&#35748;{else}Thanh to&#225;n &#273;&#227; &#273;&#432;&#7907;c x&#225;c nh&#7853;n{/if}</h1>
+  <p>{if $lang == 'en'}Your Premium access has been activated.{elseif $lang == 'zh'}&#24744;&#30340; Premium &#26435;&#30410;&#24050;&#28608;&#27963;&#12290;{else}Quy&#7873;n Premium c&#7911;a b&#7841;n &#273;&#227; &#273;&#432;&#7907;c k&#237;ch ho&#7841;t.{/if}</p>
+ {elseif $paymentReportedSuccess}
+  <h1>{if $lang == 'en'}Payment is being confirmed{elseif $lang == 'zh'}&#27491;&#22312;&#30830;&#35748;&#25903;&#20184;{else}Thanh to&#225;n &#273;ang &#273;&#432;&#7907;c x&#225;c nh&#7853;n{/if}</h1>
+  <p>{if $lang == 'en'}VNPay reported success. Access will be activated after the secure server notification is processed.{elseif $lang == 'zh'}VNPay &#24050;&#36820;&#22238;&#25104;&#21151;&#65292;&#26381;&#21153;&#22120;&#23433;&#20840;&#36890;&#30693;&#22788;&#29702;&#21518;&#23558;&#28608;&#27963;&#26435;&#30410;&#12290;{else}VNPay &#273;&#227; b&#225;o th&#224;nh c&#244;ng. Quy&#7873;n s&#7869; &#273;&#432;&#7907;c k&#237;ch ho&#7841;t sau khi th&#244;ng b&#225;o m&#225;y ch&#7911; an to&#224;n &#273;&#432;&#7907;c x&#7917; l&#253;.{/if}</p>
+ {else}
+  <h1>{if $lang == 'en'}Payment was not completed{elseif $lang == 'zh'}&#25903;&#20184;&#26410;&#23436;&#25104;{else}Thanh to&#225;n ch&#432;a ho&#224;n t&#7845;t{/if}</h1>
+  <p>{if $lang == 'en'}No Premium access was granted. You can return and try again.{elseif $lang == 'zh'}&#26410;&#25480;&#20104; Premium &#26435;&#30410;&#65292;&#24744;&#21487;&#20197;&#36820;&#22238;&#37325;&#35797;&#12290;{else}Ch&#432;a c&#7845;p quy&#7873;n Premium. B&#7841;n c&#243; th&#7875; quay l&#7841;i v&#224; th&#7917; l&#7841;i.{/if}</p>
+ {/if}
+ <a class="ed-button" href="{$readingHubPath}">{if $lang == 'en'}Return to Reading Space{elseif $lang == 'zh'}&#36820;&#22238;&#38405;&#35835;&#31354;&#38388;{else}V&#7873; Kh&#244;ng gian &#273;&#7885;c{/if}</a>
+</section></div></main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+{include file='editorial-script.tpl.html'}
+</body></html>

@@ -1,0 +1,14 @@
+<div class="tab-bar">
+    <button id="btnTabMobile" class="btn-tab__mobile">
+        <p>Danh mục</p>
+        <p>▼</p>
+    </button>
+    {if $listTabs}
+    <ul class="tabs">
+        {foreach from=$listTabs key=name item=url name=tab}
+        <li{if $smarty.foreach.tab.iteration eq $currentTab} class="current" {/if}><a href="{$url}"
+                title="{$name}">{$name}</a></li>
+            {/foreach}
+    </ul>
+    {/if}
+</div>

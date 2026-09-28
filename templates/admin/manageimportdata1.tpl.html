@@ -1,0 +1,28 @@
+<div class="formContent">
+  <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+    <fieldset>
+      <h1>Nhập mới dữ liệu.</h1>
+      <p><strong>* {$locale->msg('required_fields')}</strong></p>
+      <br>
+      <p><label>Thuộc nhóm</label>
+        <select id="type" name="type">
+          <option value="1">Sản phẩm</option>
+        </select>
+      </p>
+      <p><label for="avatar"> Import</label>
+        <input type="file" name="linkfile" size="25" maxlength="255" /> <strong
+          style="margin-left:20px;">{$locale->msg('type')} : .xls, .xlsx (Ms.Excel 2003)</strong><br /><br />
+      </p>
+      <p class="btn">
+        <input type="hidden" name="op" value="manage">
+        <input type="hidden" name="act" value="import">
+        <input type="hidden" name="mod" value="data1">
+        <input type="submit" name="ok" id="ok" value="Upload" />
+      </p>
+    </fieldset>
+    <div class="title">
+      {if $importsuccess}<p><label for="mes" style="color: green; font-weight: bold; font-size: 14px;">{$importsuccess}</label></p>{/if}
+      {if $importfail}<p><label for="mes" style="color: red; font-weight: bold; font-size: 14px;">{$importfail}</label></p>{/if}
+    </div>
+  </form>
+</div>

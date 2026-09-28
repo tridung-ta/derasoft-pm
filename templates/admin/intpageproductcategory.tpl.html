@@ -1,0 +1,44 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $pId}<p><a href="/{$aScript}?op=intpage&act=productcategory&pId={$gfId}" title="{$locale->msg('back_group')}"><img src="/{$templatePath}/{$userTemplate}/images/icon_parent.png" alt="{$locale->msg('back_group')}" width="32" height="32" />...{$locale->msg('back')}</a></p>{/if}
+{if $listItems}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_name')}">{$locale->msg('name')}</a>{if $sk eq "name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','position','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_position')}">{$locale->msg('position')}</a>{if $sk eq "position"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('num_of_product')}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','viewed','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="S{$locale->msg('arrangement_by_view')}">{$locale->msg('num_of_view')}</a>{if $sk eq "viewed"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td>{$startNum+$no}</td>
+<td><a class="underline" href="/{$aScript}?op=intpage&act=productcategory&pId={$item->getId()}" title="{$locale->msg('view_list_group_child')}">{$item->getId()}</a></td>
+<td><a href="/{$aScript}?op=intpage&act=productcategory&pId={$item->getId()}" title="{$locale->msg('view_list_group_child')}">{$item->getName()}</a></td>
+<td>{$item->getPosition()}</td>
+<td>{$item->getNumProducts()}</td>
+<td>{$item->getViewed()}</td>
+<td>
+<a target="_blank" href="{$item->getUrl()}" title="{$locale->msg('first_view')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_preview.png" alt="{$locale->msg('first_view')}" width="16" height="16" /></a>
+<a href="JavaScript:AddLink('{$item->getUrl()}')" title="Link"><img src="/{$templatePath}/{$userTemplate}/images/ico_link.png" alt="Link" width="16" height="16" /></a></td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+<div class="paging">
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+</div>
+</form>
+{else}
+{$locale->msg('no_record')}
+{/if}
+</div>

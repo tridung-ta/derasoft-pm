@@ -1,0 +1,97 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_payment_method')}</h1>
+{if $validItem}
+{if $item}
+<!-- Load user info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select class="small" name="status" id="status">
+<option value="1"{if $item->getStatus() eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if $item->getStatus() eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="position">{$locale->msg('position')}</label>
+<input class="verysmall" type="text" value="{$item->getPosition()}" name="position" id="position" /></p>
+<p><label for="module">* {$locale->msg('module')}</label>
+<input class="medium" type="text" value="{$item->getModule()}" name="module" id="module" /></p>
+<p><label for="name">* {$locale->msg('name_method')}</label>
+<input class="medium" type="text" value="{$item->getName()}" name="name" id="name" /></p>
+<p><label for="fee">* {$locale->msg('payment_fee')}</label>
+<input class="verysmall right" type="text" value="{$item->getFee()|number_format}" name="fee" id="fee" />{$locale->msg('%')}</p>
+<p><label for="currencies">* {$locale->msg('payment_currencies')}</label>
+<input class="long" type="text" value="{$item->getCurrencies()}" name="currencies" id="currencies" />{$locale->msg('currency_note_payment')}</p>
+<p><label for="note">{$locale->msg('addon_description')}</label>
+<textarea rows="10" cols="20" name="note" id="note">{$item->getProperty('note')}</textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('note');</script>{/literal}
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="payment" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select class="small" name="status" id="status">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input class="verysmall" type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.module.error} class="errormsg"{/if}><label for="module">* {$locale->msg('module')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.module.value}{/if}" name="module" id="module" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label for="name">* {$locale->msg('name_method')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.fee.error} class="errormsg"{/if}><label for="fee">* {$locale->msg('payment_fee')}</label>
+<input class="verysmall right" type="text" value="{if isset($error.INPUT)}{$error.INPUT.fee.value}{/if}" name="fee" id="fee" />{$locale->msg('%')}</p>
+<p{if isset($error.INPUT) && $error.INPUT.currencies.error} class="errormsg"{/if}><label for="currencies">* {$locale->msg('payment_currencies')}</label>
+<input class="long" type="text" value="{if isset($error.INPUT)}{$error.INPUT.currencies.value}{/if}" name="currencies" id="currencies" />{$locale->msg('currency_note_payment')}</p>
+<p{if isset($error.INPUT) && $error.INPUT.note.error} class="errormsg"{/if}><label for="note">{$locale->msg('addon_description')}</label>
+<textarea rows="10" cols="20" name="note" id="note">{if isset($error.INPUT)}{$error.INPUT.note.value}{/if}</textarea></p>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('note');</script>{/literal}
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="payment" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>

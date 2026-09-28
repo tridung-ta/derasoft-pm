@@ -1,0 +1,120 @@
+{include file="$userTemplate/coreheader.tpl.html" title=siteheader}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=sitetopmenu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigationbar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title=showtabs}
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+
+<select name="module" id="module">
+    <option value="">Lọc theo đối tượng</option>
+    {if $listModule} {foreach from=$listModule item=itemadd}
+    <option value="{$itemadd->getId()}"{if $module eq $itemadd->getId()}selected="selected"{/if}>{$itemadd->getName()}</option>
+    {/foreach} {/if}
+</select>
+
+<select name="filter_type" id="filter_type">
+    <option value="" {if $filter_type eq "all"}selected="selected"{/if}>{$locale->msg('filter_type')}</option>
+    <option value="all" {if $filter_type eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+    <!-- <option value="0" {if $filter_type eq "0"}selected="selected"{/if}>{$amessages.status_user.0}</option> -->
+    <option value="1" {if $filter_type eq "1"}selected="selected"{/if}>{$amessages.type_option.1}</option>
+    <option value="2" {if $filter_type eq "2"}selected="selected"{/if}>{$amessages.type_option.2}</option>
+    <option value="3" {if $filter_type eq "3"}selected="selected"{/if}>{$amessages.type_option.3}</option>
+    <option value="4" {if $filter_type eq "4"}selected="selected"{/if}>{$amessages.type_option.4}</option>
+    <option value="5" {if $filter_type eq "5"}selected="selected"{/if}>{$amessages.type_option.5}</option>
+    <option value="6" {if $filter_type eq "6"}selected="selected"{/if}>{$amessages.type_option.6}</option>
+    <option value="7" {if $filter_type eq "7"}selected="selected"{/if}>{$amessages.type_option.7}</option>
+</select>
+
+<select name="filter_required" id="filter_required">
+    <option value="" {if $filter_required eq "all"}selected="selected"{/if}>{$locale->msg('option_requied_input')}</option>
+    <option value="all" {if $filter_required eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+    <option value="0" {if $filter_required eq "0"}selected="selected"{/if}>{$amessages.required_text.0}</option>
+    <option value="1" {if $filter_required eq "1"}selected="selected"{/if}>{$amessages.required_text.1}</option>
+</select>
+
+<select name="filter_appearance" id="filter_appearance">
+    <option value="" {if $filter_appearance eq "all"}selected="selected"{/if}>{$locale->msg('show_list')}</option>
+    <option value="all" {if $filter_appearance eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+    <option value="0" {if $filter_appearance eq "0"}selected="selected"{/if}>{$amessages.appearance_text.0}</option>
+    <option value="1" {if $filter_appearance eq "1"}selected="selected"{/if}>{$amessages.appearance_text.1}</option>
+</select>
+
+<select name="filter_status" id="filter_status">
+    <option value="" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('filter_status')}</option>
+    <option value="all" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+    <option value="0" {if $filter_status eq "0"}selected="selected"{/if}>{$amessages.status_user.0}</option>
+    <option value="1" {if $filter_status eq "1"}selected="selected"{/if}>{$amessages.status_user.1}</option>
+    <option value="2" {if $filter_status eq "2"}selected="selected"{/if}>{$amessages.status_user.2}</option>
+</select>
+
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="optionstructure" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+{if $mod eq "listvalue"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="optionstructure" />
+<input type="hidden" name="mod" value="listvalue" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+{if $mod eq "listobject"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="optionstructure" />
+<input type="hidden" name="mod" value="listobject" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title=showtabs}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=sitefooter}

@@ -1,0 +1,68 @@
+<div class="container-l flex flex-col gap-20">
+    <div class="flex flex-col gap-10 center-hor">
+        <h2 class="section-title text-center bold uppercase">{$messages['stage_services_title']}</h2>
+        <div class="title-border-bottom"></div>
+    </div>
+
+    <div class="js-slider-wrapper pos-rel expo-news">
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+        <div class="expo-news__swiper js-slider-3cols fill-view swiper">
+            <div class="swiper-wrapper">
+
+                <article class="swiper-slide col-3">
+                    <div class="hover-border-primary flex-1 expo-service-card bg-white flex flex-col pos-rel border-radius-10 overflow-hidden">
+                        <div class="expo-service-card__img pos-rel overflow-hidden">
+                            <img src="/templates/mpx/img/news/news.jpg" alt="{$messages['stage_service_booth_title']}" class="img-content">
+                            <div class="expo-service-card__badge border-radius-5 pos-abs bg-primary text-color-white bold item-padding-10-20">01</div>
+                        </div>
+                        <div class="expo-service-card__content flex flex-col gap-10 item-padding-20 flex-grow-1">
+                            <h3 class="bold uppercase">{$messages['stage_service_booth_title']}</h3>
+                            <p class="clamp-text text-color-deactive">{$messages['stage_service_booth_desc']}</p>
+                        </div>
+                        <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết"></a>
+                    </div>
+                </article>
+
+                <article class="swiper-slide col-3">
+                    <div class="hover-border-primary flex-1 expo-service-card bg-white flex flex-col pos-rel border-radius-10 overflow-hidden">
+                        <div class="expo-service-card__img pos-rel overflow-hidden">
+                            <img src="/templates/mpx/img/news/news.jpg" alt="{$messages['stage_service_activation_title']}" class="img-content">
+                            <div class="expo-service-card__badge border-radius-5 pos-abs bg-primary text-color-white bold item-padding-10-20">02</div>
+                        </div>
+                        <div class="expo-service-card__content flex flex-col gap-10 item-padding-20 flex-grow-1">
+                            <h3 class="bold uppercase">{$messages['stage_service_activation_title']}</h3>
+                            <p class="clamp-text text-color-deactive">{$messages['stage_service_activation_desc']}</p>
+                        </div>
+                        <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết"></a>
+                    </div>
+                </article>
+
+                <article class="swiper-slide col-3">
+                    <div class="hover-border-primary flex-1 expo-service-card bg-white flex flex-col pos-rel border-radius-10 overflow-hidden">
+                        <div class="expo-service-card__img pos-rel overflow-hidden">
+                            <img src="/templates/mpx/img/news/news.jpg" alt="{$messages['stage_service_lightbox_title']}" class="img-content">
+                            <div class="expo-service-card__badge border-radius-5 pos-abs bg-primary text-color-white bold item-padding-10-20">03</div>
+                        </div>
+                        <div class="expo-service-card__content flex flex-col gap-10 item-padding-20 flex-grow-1">
+                            <h3 class="bold uppercase">{$messages['stage_service_lightbox_title']}</h3>
+                            <p class="clamp-text text-color-deactive">{$messages['stage_service_lightbox_desc']}</p>
+                        </div>
+                        <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết"></a>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+
+    </div>
+
+    <div class="flex center-hor mt-20">
+        <p class="text-center expo-services__desc text-color-black">{$messages['stage_services_summary']}</p>
+    </div>
+
+</div>

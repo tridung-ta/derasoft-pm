@@ -1,0 +1,55 @@
+<div class="comments-container flex flex-col gap-20">
+    {if $items}
+        {foreach $items as $comment}
+        <article class="comment-item flex gap-20 item-padding-20">
+            <div class="comment-avatar">
+                <img src="/templates/mpx/img/icon/user-comment.svg" alt="" class="img-content">
+            </div>
+            <div class="flex flex-col gap-10 flex-1">
+                <div class="flex jus-sb center-ver">
+                    <div class="flex flex-col">
+                        <strong class="bold uppercase">{$comment->getFullName($lang)}</strong>
+                        <span class="text-xs text-color-deactive uppercase">{$comment->getDateCreated()}</span>
+                    </div>
+                    <div class="rate-stars flex gap-2">
+                        {section name=star loop=5}
+                            <span class="star {if $smarty.section.star.index < $comment->getStars()}active{/if}">★</span>
+                        {/section}
+                    </div>
+                </div>
+                <p class="text-sm">{$comment->getDetails($lang)}</p>
+            </div>
+        </article>
+        {/foreach}
+    {else}
+        <p class="text-center text-color-deactive">{$messages['no_comment']}</p>
+    {/if}
+</div>
+
+{if $totalPages > 1}
+<div class="review-pagination flex flex-col center-hor pa gap-20 item-padding-40">
+    <div class="flex center-hor gap-10" id="review-pagination-btns">
+        <!-- Prev -->
+        <div class="page-btn bg-white border-radius-5 cursor-pointer item-padding-10-20 {if $page <= 1}text-color-deactive{/if}"
+             {if $page > 1}data-page="{$page-1}"{/if}>&lt;</div>
+        <!-- Số trang -->
+        {for $p=1 to $totalPages}
+            {if $p == 1 || $p == $totalPages || ($p >= $page-2 && $p <= $page+2)}
+                <div class="page-btn bg-white border-radius-5 cursor-pointer item-padding-10-20 {if $p == $page}active border-none{/if}"
+                     data-page="{$p}"
+                     data-toggle-ignore="true">{$p}</div>
+            {elseif $p == $page-3 || $p == $page+3}
+                <span class="item-padding-10-20">...</span>
+            {/if}
+        {/for}
+        <!-- Next -->
+        <div class="page-btn bg-white border-radius-5 cursor-pointer item-padding-10-20 {if $page >= $totalPages}text-color-deactive{/if}"
+             {if $page < $totalPages}data-page="{$page+1}"{/if}>&gt;</div>
+    </div>
+    {assign var="from" value=($page-1)*$itemsPerPage+1}
+    {assign var="to"   value=($page*$itemsPerPage > $totalRows) ? $totalRows : $page*$itemsPerPage}
+    <strong class="text-xs uppercase text-color-deactive text-center">
+        {$messages['display_reviews']|replace:'{$from}':$from|replace:'{$to}':$to|replace:'{$totalRows}':$totalRows}
+    </strong>
+</div>
+{/if}

@@ -1,0 +1,55 @@
+/* Shared visual tokens for the public editorial experience. */
+:root {
+  --color-primary: #9e3027;
+  --color-primary-dark: #742018;
+  --color-secondary: #b9904f;
+  --color-bg-light: #fbf9f5;
+  --color-bg-subtle: #f2eee7;
+  --color-bg-dark: #211714;
+  --color-surface: #ffffff;
+  --color-text: #211d1a;
+  --color-text-muted: #716a64;
+  --color-border: #dcd4ca;
+  --color-error: #a92d24;
+  --color-success: #356b4d;
+  --color-focus: #9e3027;
+  --shadow-editorial: 0 22px 60px rgba(42, 31, 25, 0.12);
+  --font-family-display: "Times New Roman", Times, serif;
+  --font-family-body: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-size-body: 1rem;
+  --font-size-caption: 0.75rem;
+  --font-size-card-title: clamp(1.35rem, 1.8vw, 1.65rem);
+  --font-size-section-title: clamp(2rem, 3.2vw, 3.2rem);
+  --font-size-display: clamp(2.75rem, 4vw, 4.2rem);
+  --font-size-page-title: clamp(2.75rem, 5vw, 4.8rem);
+  --font-size-article-title: clamp(2.6rem, 4.5vw, 4.3rem);
+  --line-height-body: 1.65;
+  --line-height-heading: 1.12;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-primary: #d66a5e;
+  --color-primary-dark: #ef8a7f;
+  --color-secondary: #d7ad68;
+  --color-bg-light: #171311;
+  --color-bg-subtle: #241d19;
+  --color-bg-dark: #100d0c;
+  --color-surface: #211a17;
+  --color-text: #f2ebe5;
+  --color-text-muted: #b9aaa0;
+  --color-border: #493b34;
+  --color-error: #ff8b82;
+  --color-success: #7fc49d;
+  --color-focus: #ef8a7f;
+  --shadow-editorial: 0 22px 60px rgba(0, 0, 0, 0.34);
+}

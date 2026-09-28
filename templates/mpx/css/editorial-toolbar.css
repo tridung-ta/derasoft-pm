@@ -1,0 +1,35 @@
+/* Compact multilingual public toolbar. Loaded after literature-redesign.css. */
+.ed-toolbar{position:relative;background:rgba(251,249,245,.98);backdrop-filter:blur(14px)}
+.ed-toolbar .ed-header__utility{height:34px}
+.ed-toolbar .ed-header__utility-inner{min-height:34px}
+.ed-toolbar .ed-header__utility p{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase}
+.ed-toolbar__main{display:flex;min-height:82px;align-items:center;gap:clamp(20px,3vw,48px)}
+.ed-toolbar__brand{flex:0 0 auto;text-align:left;white-space:nowrap}
+.ed-toolbar__brand .ed-brand__eyebrow{margin-bottom:2px;font-size:.55rem;letter-spacing:.18em}
+.ed-toolbar__brand strong{font-size:clamp(1.45rem,2vw,2rem);letter-spacing:-.025em}
+.ed-toolbar__navigation{flex:1;margin-left:auto;border:0}
+.ed-toolbar__navigation .ed-nav{min-height:82px;justify-content:flex-end;gap:clamp(20px,2.5vw,42px)}
+.ed-toolbar__navigation .ed-nav>a{font-size:.76rem;white-space:nowrap}
+.ed-toolbar.is-scrolled .ed-toolbar__main{min-height:68px}
+.ed-toolbar.is-scrolled .ed-toolbar__navigation .ed-nav{min-height:68px}
+.ed-toolbar__main,.ed-toolbar__navigation .ed-nav{transition:min-height .2s ease}
+
+@media (max-width:980px){
+ .ed-toolbar__main{min-height:74px}
+ .ed-toolbar__brand strong{font-size:1.55rem}
+ .ed-toolbar__navigation .ed-nav{min-height:74px;gap:18px}
+ .ed-toolbar__navigation .ed-nav>a{font-size:.7rem}
+}
+
+@media (max-width:767px){
+ .ed-toolbar .ed-header__utility{display:none}
+ .ed-toolbar__main{min-height:72px;justify-content:space-between}
+ .ed-toolbar__brand .ed-brand__eyebrow{display:none}
+ .ed-toolbar__brand strong{font-size:1.45rem}
+ .ed-toolbar .ed-menu-toggle{display:flex;flex:0 0 44px}
+ .ed-toolbar__navigation{position:fixed;inset:72px 0 0;z-index:60;display:flex;visibility:hidden;flex-direction:column;margin:0;background:var(--ed-paper);opacity:0;transform:translateY(-10px);transition:.22s ease}
+ .ed-toolbar__navigation.is-open{visibility:visible;opacity:1;transform:none}
+ .ed-toolbar__navigation .ed-nav{width:100%;min-height:0;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;padding:18px 24px}
+ .ed-toolbar__navigation .ed-nav>a{min-height:52px;font-family:var(--ed-serif);font-size:1.2rem;font-weight:400;white-space:normal}
+ .ed-toolbar__navigation .ed-language--mobile{display:flex;margin:auto 24px 28px}
+}

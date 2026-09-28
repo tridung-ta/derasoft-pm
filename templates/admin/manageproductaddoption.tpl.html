@@ -1,0 +1,173 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_product_category')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="cat_id">Thuộc nhóm</label>
+<select name="cat_id" id="cat_id">
+<option value="28">&nbsp;&nbsp;&nbsp;l--Thương hiệu</option>
+<option value="32">&nbsp;&nbsp;&nbsp;l--Thương hiệu phụ Kiện</option>
+<option value="29">&nbsp;&nbsp;&nbsp;l--Hãng xe</option>
+<option value="30">&nbsp;&nbsp;&nbsp;l--Kích thước</option>
+<option value="31">&nbsp;&nbsp;&nbsp;l--Dung Lượng</option>
+<option value="33">&nbsp;&nbsp;&nbsp;l--Phân loại dòng xe chi tiết theo bình</option>
+</select></p>
+<div id="car_companys" style="display: none">
+    <p><label for="car_company">Thuộc hãng</label>
+        <select name="car_company" id="car_company">
+        <option value="0">&nbsp;&nbsp;&nbsp;l--Gốc</option>
+        {$productOptionsCombo}
+    </select>
+</p>
+
+<p><label for="list_size">Kích thước xe sử dụng</label>
+    <select name="list_size[]" id="list_size" multiple="multiple" style="height: 100px;">
+    <option value="0">Chọn</option>
+    {if $ListSize}
+    {foreach from=$ListSize item=items}
+    <option value="{$items->getId()}">{$items->getName()}</option>
+    {/foreach}
+    {/if}
+    </select>
+</p>
+<p><label for="list_camera">Xe sử dụng các camera nào</label>
+    <select name="list_camera[]" id="list_camera" multiple="multiple" style="height: 100px;">
+    <option value="0">Chọn</option>
+    {if $ListCamera}
+    {foreach from=$ListCamera item=items}
+    <option value="{$items->getId()}">{$items->getName()}</option>
+    {/foreach}
+    {/if}
+    </select>
+</p>
+<p><label for="list_cambien">Xe sử dụng các cảm biến nào</label>
+    <select name="list_cambien[]" id="list_cambien" multiple="multiple" style="height: 100px;">
+    <option value="0">Chọn</option>
+    {if $ListCamBien}
+    {foreach from=$ListCamBien item=items}
+    <option value="{$items->getId()}">{$items->getName()}</option>
+    {/foreach}
+    {/if}
+    </select>
+</p>
+<p><label for="list_fim">Xe sử dụng các phim cách nhiệt nào</label>
+    <select name="list_fim[]" id="list_fim" multiple="multiple" style="height: 100px;">
+    <option value="0">Chọn</option>
+    {if $ListFim}
+    {foreach from=$ListFim item=items}
+    <option value="{$items->getId()}">{$items->getName()}</option>
+    {/foreach}
+    {/if}
+    </select>
+</p>
+<p><label for="list_ppf">Xe sử dụng các PPF nào</label>
+    <select name="list_ppf[]" id="list_ppf" multiple="multiple" style="height: 100px;">
+    <option value="0">Chọn</option>
+    {if $ListPpf}
+    {foreach from=$ListPpf item=items}
+    <option value="{$items->getId()}">{$items->getName()}</option>
+    {/foreach}
+    {/if}
+    </select>
+</p>
+</div>
+
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" /></p>
+
+<p id="vanh" style="display: none" {if isset($error.INPUT) && $error.INPUT.vanh.error} class="errormsg"{/if}><label for="vanh">*Vành</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.vanh.value}{/if}" name="vanh" id="vanh" /></p>
+
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label for="name">*Tên</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" /></p>
+<p><label for="avatar"> {$locale->msg('avatar')}</label><input type="file" name="avatar" id="avatar" /></p>
+
+<br>
+
+<p{if isset($error.INPUT) && $error.INPUT.sapo.error} class="errormsg"{/if}><label for="sapo">Tóm tắt</label></p>
+<textarea rows="10" cols="20" name="sapo"id="sapo">{if isset($error.INPUT)}{$error.INPUT.sapo.value}{/if}</textarea>
+{literal}
+<script type="text/javascript">var editor = CKEDITOR.replace('sapo');</script>
+{/literal}
+<br>
+<p{if isset($error.INPUT) && $error.INPUT.detail.error} class="errormsg"{/if}><label for="detail">*Chi tiết</label></p>
+<textarea rows="10" cols="20" name="detail"id="detail">{if isset($error.INPUT)}{$error.INPUT.detail.value}{/if}</textarea>
+{literal}
+<script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>
+{/literal}
+
+
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{else}
+{$field->displayHTML('')}
+{/if}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="addoption" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formAdd','listcategory','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>
+<script>
+// Lấy phần tử select
+var selectElement = document.getElementById("cat_id");
+
+// Thêm sự kiện onchange
+selectElement.onchange = function() {
+    // Lấy giá trị của option được chọn
+    var selectedValue = selectElement.value;
+    // In giá trị của option được chọn ra console
+    console.log(selectedValue);
+    if (selectedValue == "29") {
+			$('#car_companys').css("display", "block");
+		
+    }else{
+        $('#car_companys').css("display", "none");
+
+    }
+    if (selectedValue == "30") {
+			$('#vanh').css("display", "block");
+
+    }    else  {
+			$('#vanh').css("display", "none");
+	
+    }
+};
+</script>

@@ -1,0 +1,98 @@
+{include file="$userTemplate/coreheader.tpl.html" title="siteheader"}
+<div id="main" class="left-content-right flex-col">
+<!-- <div id="content">
+<div class="innerContent">
+<div class="contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_login')}</div>
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{foreach from=$error.message item=item}
+<li>{$item}</li>
+{/foreach}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('login')}</h1>
+<form action="/{$aScript}" method="post" name="formLogin" autocomplete="off">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.username.error} class="errormsg"{/if}><label for="username">* {$locale->msg('username')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}" name="username" id="username" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.password.error} class="errormsg"{/if}><label for="password">* {$locale->msg('password')}</label>
+<input class="small" type="password" value="" name="password" id="password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.code.error} class="errormsg"{/if}><label for="code">Vui lòng nhập mã xác thực(nếu có)</label>
+<input class="small" type="code" value="" name="code" id="code" /></p>
+<input class="small" value="{$active_2fa}" name="active_2fa" id="active_2fa" hidden/></p>
+<p class="btn">
+<input type="hidden" value="admin" name="site" />
+<input type="hidden" value="login" name="op" />
+<input type="submit" value="{$locale->msg('button_login')}" title="Submit" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="Reset" name="btnReset" />
+<a href="/{$aScript}?op=forgotPassword">{$locale->msg('forgot_password')}</a>
+</p>
+</fieldset>
+<script type="text/javascript" language="JavaScript">
+document.forms['formLogin'].elements['username'].focus();
+</script>
+</form>
+</div>
+</div>
+</div> -->
+<!-- check cái mới -->
+<div id="" class="login__container flex">
+<div class="login__innerContent flex flex-col">
+<div class="login__contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_login')}</div>
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{foreach from=$error.message item=item}
+<li>{$item}</li>
+{/foreach}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="flex flex-col login__formContent">
+<h1>{$locale->msg('login')}</h1>
+<form action="/{$aScript}" method="post" name="formLogin" autocomplete="off">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.username.error} class="errormsg"{/if}><label for="username">* {$locale->msg('username')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}" name="username" id="username" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.password.error} class="errormsg"{/if}><label for="password">* {$locale->msg('password')}</label>
+<input class="small" type="password" value="" name="password" id="password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.code.error} class="errormsg"{/if}><label for="code">Vui lòng nhập mã xác thực(nếu có)</label>
+<input class="small" type="code" value="" name="code" id="code" /></p>
+<input class="small" value="{$active_2fa}" name="active_2fa" id="active_2fa" hidden/></p>
+<p class="login__button">
+<input type="hidden" value="admin" name="site" />
+<input type="hidden" value="login" name="op" />
+<input type="submit" value="{$locale->msg('button_login')}" title="Submit" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="Reset" name="btnReset" />
+<!-- <a href="/{$aScript}?op=forgotPassword">{$locale->msg('forgot_password')}</a> -->
+</p>
+</fieldset>
+<script type="text/javascript" language="JavaScript">
+document.forms['formLogin'].elements['username'].focus();
+</script>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="sitefooter"}

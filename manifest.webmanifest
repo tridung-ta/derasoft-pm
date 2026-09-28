@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Tạp chí Văn hóa Việt",
+  "short_name": "Văn hóa Việt",
+  "description": "Không gian văn học, nghệ thuật và văn hóa Việt Nam.",
+  "lang": "vi",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f3ee",
+  "theme_color": "#2b1d19",
+  "icons": [
+    {
+      "src": "/templates/mpx/img/logo/editorial-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/templates/mpx/img/logo/favicon.png",
+      "sizes": "100x100",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

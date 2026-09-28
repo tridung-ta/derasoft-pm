@@ -1,0 +1,104 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message|default:''}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message) && $error.message}
+  <li>{$error.message}</li>
+{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+    <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+        <fieldset>
+            <h1>Thêm tuyển dụng</h1>
+            <p><strong>* {$locale->msg('required_fields')}</strong></p>
+            <p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label>* Vị trí tuyển dụng</label>
+                <input class="medium" name="name" type="text"/>	
+            </p>
+
+            <p><label>Thu nhập</label>
+                <input class="medium" name="income"  type="text"/>
+            </p>
+            <p><label>Bằng cấp</label>
+                <input class="medium" name="degree"  type="text"/>
+            </p>
+            <p><label>Cấp bậc</label>
+                <input class="medium" name="rank" type="text"/>
+            </p>
+            <p><label>Giới tính</label>
+                <input class="medium" name="gender" type="text"/>
+            </p>
+            <p><label>Tuổi</label>
+                <input class="small" name="age" type="text"/>
+            </p>
+            <p><label>Kinh nghiệm</label>
+                <input class="medium" name="experience" type="text"/>
+            </p>
+            <p><label>Số lượng tuyển</label>
+                <input class="verysmall" name="number_recruits" type="number"/>
+            </p>
+            <p><label>Địa điểm làm việc</label>
+                <textarea rows="10" cols="20" name="job_location" id="job_location"></textarea>
+            </p>
+            <!-- <p><label>Địa chỉ</label>
+                <textarea rows="10" cols="20" name="location" id="location"></textarea>
+            </p> -->
+            
+            <p><label for="location">Tỉnh/Thành phố</label>
+                <select class="medium" name="location" id="location">
+                    <option value="">-- Chọn tỉnh/thành phố --</option>
+                    {foreach from=$listAreas item=area}
+                        <option value="{$area->getName()}" >
+                            {$area->getName()}
+                        </option>
+                    {/foreach}
+                </select>
+            </p>
+
+            <p><label>Ngày hết hạn</label>
+                <input class="medium" name="date_exp" type="date"/>
+            </p>
+            <!-- <p><label>Tóm tắt</label>
+                <textarea rows="10" cols="20" name="sapo" id="sapo"></textarea>
+            </p> -->
+            <br>
+            <p{if isset($error.INPUT) && $error.INPUT.detail.error} class="errormsg" {/if}><label for="detail">* Chi tiết</label></p>
+            <textarea rows="10" cols="20" name="detail" id="detail">{if isset($error.INPUT)}{$error.INPUT.detail.value}{/if}</textarea>
+            {literal}<script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>{/literal}
+            <br>
+            <p><label for="photos">{$locale->msg('upload_banner')}</label><input type="file" name="logo" id="logo" /></label></p>
+            
+            <br>
+
+            {if $fieldList}
+            <br /><h2>{$locale->msg('list_custom_field')}</h2>
+            {foreach key=no from=$fieldList item=field}
+            {if isset($error.INPUT)}
+            {assign var=field_name value=$field->getName()}
+            {$field->displayHTML($error.INPUT.$field_name.value)}
+            {else}
+            {$field->displayHTML('')}
+            {/if}
+            {/foreach}
+            {/if}
+
+            <br>
+            <input type="hidden" name="op" value="manage" />
+            <input type="hidden" name="act" value="recruitment" />
+            <input type="hidden" name="mod" value="add" />
+            <input type="hidden" name="doo" value="submit" />
+            <p class="btn">
+                <input type="submit" value="Thêm" />
+            </p>
+        </fieldset>
+    </form>
+</div>

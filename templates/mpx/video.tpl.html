@@ -1,0 +1,43 @@
+{include file='head.tpl.html' title='head'}
+<header class="container-f bg-black z-index-5">
+    {include file='header.tpl.html' title='header'}
+</header>
+<main class="literature-video-page">
+    {include file='breadcrumb.tpl.html' title='breadcrumb'}
+    <section class="literature-video-hero container-padding">
+        <div class="container-l">
+            <div class="literature-video-heading">
+                <span>NGHE &amp; NHÌN</span>
+                <h1>Video</h1>
+                <p>Những câu chuyện, cuộc đối thoại và tư liệu về văn học, nghệ thuật và văn hóa.</p>
+            </div>
+            <a class="literature-video-featured" href="https://www.youtube.com/@MelodyProductionworx" target="_blank" rel="noopener noreferrer">
+                <img src="/{$templatePath}/{$userTemplate}/img/literature/video/video-1.jpg" alt="Video nổi bật" loading="eager">
+                <span class="literature-video-play" aria-hidden="true">▶</span>
+                <div><small>VIDEO NỔI BẬT</small><h2>Khám phá các câu chuyện văn hóa và nghệ thuật</h2><p>Xem nội dung mới nhất trên kênh video chính thức.</p></div>
+            </a>
+        </div>
+    </section>
+    <section class="literature-video-library container-padding bg-white-secondary">
+        <div class="container-l">
+            <div class="literature-video-heading"><span>CHUYÊN MỤC</span><h2>Video &amp; Đối thoại nghệ thuật</h2></div>
+            <div class="literature-video-grid">
+                {foreach from=$videoCards item=videoCard}
+                <article class="literature-video-card">
+                    <a href="https://www.youtube.com/@MelodyProductionworx" target="_blank" rel="noopener noreferrer" aria-label="Xem video trên YouTube">
+                        <div class="literature-video-card__image"><img src="/{$templatePath}/{$userTemplate}/img/literature/video/{$videoCard.image}" alt="{$videoCard.title|escape:'html'}" loading="lazy"><span>▶</span></div>
+                        <div class="literature-video-card__body"><small>VĂN HÓA &amp; NGHỆ THUẬT</small><h3>{$videoCard.title|escape:'html'}</h3><p>Xem video và các nội dung liên quan trên kênh chính thức.</p></div>
+                    </a>
+                </article>
+                {/foreach}
+            </div>
+        </div>
+    </section>
+</main>
+<footer class="container-f bg-black center-ver flex flex-col">
+    {include file='footer.tpl.html' title='footer'}
+</footer>
+<div class="btntotop__container pos-fixed bg-white" id="btnToTop">{include file='rolltotop.tpl.html' title='rolltotop'}</div>
+{include file='script.tpl.html' title='script'}
+</body>
+</html>

@@ -1,0 +1,9 @@
+{if $topNav}
+<ul class="breadcrumb">
+{foreach from=$topNav key=name item=url name=nav}
+{if $smarty.foreach.nav.last}<li class="last">{$name}</li>
+{else}<li><a href="{$url}" title="{$name}">{$name}</a></li>
+{/if}
+{/foreach}
+</ul>
+{/if}

@@ -1,0 +1,41 @@
+<div class="js-slider-banner swiper fill-view">
+    <div class=" swiper-wrapper">
+        <div class="swiper-slide ">
+            <div class="item-padding-80-0 container-f flex pos-rel center-hor">
+                <div class="container-l flex flex-col gap-20 center-hor z-index-3">
+                    <div class="container-l nav-bar__container">
+                        {if $topNav}
+                        {foreach from=$topNav item=item}
+                        <a href="{$item['url']}" class="nav-bar__item text-color-white">{$item['name']}</a>
+                        {/foreach}
+                        {/if}
+                    </div>
+                    {if $banner->getContent() !== ''}
+                        {$banner->getContent()}
+                    {/if}
+                </div>
+                {if $banner}
+                    <div class="home-banner__blending pos-abs z-index-1">
+                        {assign var=bannerBackgroundList value=$banner->getFileImages($uploads)}
+                        {if $bannerBackgroundList && $bannerBackgroundList|@count > 0}
+                            {assign var=bannerBackground value=$bannerBackgroundList[0]}
+                            {if $bannerBackground}
+                                <img class="img-content" src="/{$bannerBackground->getPath()}/{$bannerBackground->getUrlO()}" alt="{$banner->getName()}">
+                            {/if}
+                        {/if}
+                    </div>
+                    <div class="home-banner__background pos-abs z-index-minus-1">
+                            {assign var=bannerMain value=$banner->getAvatarImage($uploads)}
+                            {if $bannerMain}
+                                <img class="img-content hero-banner__desktop" src="/{$bannerMain->getPath()}/{$bannerMain->getUrlO()}" alt="{$banner->getName()}">
+                                <img class="img-content hero-banner__mobile" src="/{$bannerMain->getPath()}/{$bannerMain->getUrlO()}" alt="{$banner->getName()}">
+                            {/if}
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+    <div class="swiper-pagination custom-dots"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+</div>

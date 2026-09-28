@@ -1,0 +1,97 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title="show-tabs"}
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<select name="filter_date_created" id="filter_date_created">
+<option value="">{$locale->msg('filter_order_date_created')}</option>
+<option value="all" {if $filter_date_created eq "all"}selected="selected"{/if} >{$locale->msg('all')}</option>
+<option value="onehour" {if $filter_date_created eq "onehour"}selected="selected"{/if} >{$amessages.status_times.1}</option>
+<option value="fourhours" {if $filter_date_created eq "fourhours"}selected="selected"{/if}  >{$amessages.status_times.2}</option>
+<option value="today" {if $filter_date_created eq "today"}selected="selected"{/if}  >{$amessages.status_times.3}</option>
+<option value="7" {if $filter_date_created eq "7"}selected="selected"{/if} >{$amessages.status_times.4}</option>
+<option value="30" {if $filter_date_created eq "30"}selected="selected"{/if} >{$amessages.status_times.5}</option>
+<option value="365" {if $filter_date_created eq "365"}selected="selected"{/if} >{$amessages.status_times.6}</option>
+</select>
+<select name="filter_status" id="filter_status">
+<option value="">{$locale->msg('filter_order_status')}</option>
+<option value="all" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="2" {if $filter_status eq "2"}selected="selected"{/if}>{$amessages.order_status.2}</option>
+<option value="3" {if $filter_status eq "3"}selected="selected"{/if}>{$amessages.order_status.3}</option>
+<option value="1" {if $filter_status eq "1"}selected="selected"{/if}>{$amessages.order_status.1}</option>
+<option value="4" {if $filter_status eq "4"}selected="selected"{/if}>{$amessages.order_status.4}</option>
+<option value="0" {if $filter_status eq "0"}selected="selected"{/if}>{$amessages.order_status.0}</option>
+<option value="5" {if $filter_status eq "5"}selected="selected"{/if}>{$amessages.order_status.5}</option>
+</select>
+<select name="filter_pic">
+<option value="">{$locale->msg('pic_name')}</option>
+{$filterPICCombo}
+</select>
+<select name="filter_payment_method" id="filter_payment_method">
+<option value="">{$locale->msg('filter_order_payment_method')}</option>
+<option value="all" {if $filter_payment_method eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="1" {if $filter_payment_method eq "1"}selected="selected"{/if}>{$amessages.order_payment_method.1}</option>
+<option value="2" {if $filter_payment_method eq "2"}selected="selected"{/if}>{$amessages.order_payment_method.2}</option>
+<option value="3" {if $filter_payment_method eq "3"}selected="selected"{/if}>{$amessages.order_payment_method.3}</option>
+<option value="4" {if $filter_payment_method eq "4"}selected="selected"{/if}>{$amessages.order_payment_method.4}</option>
+<option value="5" {if $filter_payment_method eq "5"}selected="selected"{/if}>{$amessages.order_payment_method.5}</option>
+<option value="6" {if $filter_payment_method eq "6"}selected="selected"{/if}>{$amessages.order_payment_method.6}</option>
+</select>
+<select name="filter_payment_status" id="filter_payment_status">
+<option value="">{$locale->msg('filter_order_payment_status')}</option>
+<option value="all" {if $filter_payment_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="0" {if $filter_payment_status eq "0"}selected="selected"{/if}>{$amessages.order_payment_status.0}</option>
+<option value="1" {if $filter_payment_status eq "1"}selected="selected"{/if}>{$amessages.order_payment_status.1}</option>
+<option value="2" {if $filter_payment_status eq "2"}selected="selected"{/if}>{$amessages.order_payment_status.2}</option>
+<option value="3" {if $filter_payment_status eq "3"}selected="selected"{/if}>{$amessages.order_payment_status.3}</option>
+</select>
+<select name="filter_delivery_vendor" id="filter_delivery_vendor">
+<option value="">{$locale->msg('filter_order_delivery_vendor')}</option>
+<option value="all" {if $filter_delivery_vendor eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="1" {if $filter_delivery_vendor eq "1"}selected="selected"{/if}>{$amessages.order_delivery_vendor.1}</option>
+<option value="2" {if $filter_delivery_vendor eq "2"}selected="selected"{/if}>{$amessages.order_delivery_vendor.2}</option>
+<option value="3" {if $filter_delivery_vendor eq "3"}selected="selected"{/if}>{$amessages.order_delivery_vendor.3}</option>
+<option value="4" {if $filter_delivery_vendor eq "4"}selected="selected"{/if}>{$amessages.order_delivery_vendor.4}</option>
+<option value="5" {if $filter_delivery_vendor eq "5"}selected="selected"{/if}>{$amessages.order_delivery_vendor.5}</option>
+</select>
+<select name="filter_delivery_status" id="filter_delivery_status">
+<option value="">{$locale->msg('filter_order_delivery_status')}</option>
+<option value="all" {if $filter_delivery_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="0" {if $filter_delivery_status eq "0"}selected="selected"{/if}>{$amessages.order_delivery_status.0}</option>
+<option value="1" {if $filter_delivery_status eq "1"}selected="selected"{/if}>{$amessages.order_delivery_status.1}</option>
+<option value="2" {if $filter_delivery_status eq "2"}selected="selected"{/if}>{$amessages.order_delivery_status.2}</option>
+<option value="3" {if $filter_delivery_status eq "3"}selected="selected"{/if}>{$amessages.order_delivery_status.3}</option>
+<option value="4" {if $filter_delivery_status eq "4"}selected="selected"{/if}>{$amessages.order_delivery_status.4}</option>
+</select>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title="show-tabs"}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

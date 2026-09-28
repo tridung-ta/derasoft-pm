@@ -1,0 +1,28 @@
+<div id="search-results-wrapper">
+    {if !empty($items)}
+    <div class="ed-archive-grid">
+        {foreach from=$items item=article name=archiveArticles}
+        {assign var=avatar value=$article->getAvatarImage($uploads)}
+        <article class="ed-card {if $smarty.foreach.archiveArticles.first && $page <= 1}ed-card--feature{/if}">
+            <a class="ed-card__link" href="{$article->getUrl($lang)|escape:'html'}">
+                <figure class="ed-card__media">{include file='editorial-card-media.tpl.html' article=$article avatar=$avatar lazy=true}{if $smarty.foreach.archiveArticles.first && $page <= 1}<span class="ed-card__badge">{if $lang == 'en'}NEWEST{elseif $lang == 'zh'}最新{else}MỚI NHẤT{/if}</span>{/if}</figure>
+                <div class="ed-card__body">
+                    <div class="ed-card__meta"><span>{include file='editorial-category-label.tpl.html' article=$article}</span><time>{$article->getDisplayDate()}</time></div>
+                    <h2>{$article->getTitle($lang)|escape:'html'}</h2>
+                    <p>{$article->getDescription($lang)|strip_tags}</p>
+                    <b>{if $lang == 'en'}Read article{elseif $lang == 'zh'}阅读全文{else}Đọc bài{/if} →</b>
+                </div>
+            </a>
+            <button class="ed-library-action ed-library-action--archive" type="button" data-library-save data-library-type="saved" data-library-key="{$article->getId()}" data-library-title="{$article->getTitle($lang)|escape:'html'}" data-library-url="{$article->getUrl($lang)|escape:'html'}" data-library-image="{$avatar|escape:'html'}" data-default-label="{if $lang == 'en'}Save article{elseif $lang == 'zh'}&#25910;&#34255;&#25991;&#31456;{else}L&#432;u b&#224;i vi&#7871;t{/if}" data-saved-label="{if $lang == 'en'}Saved{elseif $lang == 'zh'}&#24050;&#25910;&#34255;{else}&#272;&#227; l&#432;u{/if}" data-login-label="{if $lang == 'en'}Sign in to save{elseif $lang == 'zh'}&#30331;&#24405;&#21518;&#20445;&#23384;{else}&#272;&#259;ng nh&#7853;p &#273;&#7875; l&#432;u{/if}">{if $lang == 'en'}Save article{elseif $lang == 'zh'}&#25910;&#34255;&#25991;&#31456;{else}L&#432;u b&#224;i vi&#7871;t{/if}</button>
+        </article>
+        {/foreach}
+    </div>
+    {/if}
+    {if $totalPages > 1}
+    <nav class="ed-pagination" aria-label="{if $lang == 'en'}Pagination{elseif $lang == 'zh'}分页{else}Phân trang{/if}">
+        {if $page > 1}<a href="?{if $smarty.get.category}category={$smarty.get.category|escape:'url'}&amp;{/if}page={$page - 1}" aria-label="{if $lang == 'en'}Previous page{elseif $lang == 'zh'}上一页{else}Trang trước{/if}">←</a>{else}<span class="is-disabled">←</span>{/if}
+        {for $i = 1 to $totalPages}{if $i >= $page - 2 && $i <= $page + 2}{if $i == $page}<span class="is-active" aria-current="page">{$i}</span>{else}<a href="?{if $smarty.get.category}category={$smarty.get.category|escape:'url'}&amp;{/if}page={$i}">{$i}</a>{/if}{/if}{/for}
+        {if $page < $totalPages}<a href="?{if $smarty.get.category}category={$smarty.get.category|escape:'url'}&amp;{/if}page={$page + 1}" aria-label="{if $lang == 'en'}Next page{elseif $lang == 'zh'}下一页{else}Trang sau{/if}">→</a>{else}<span class="is-disabled">→</span>{/if}
+    </nav>
+    {/if}
+</div>

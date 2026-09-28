@@ -1,0 +1,46 @@
+{include file='head.tpl.html' title='head'}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-video-page ed-journal">
+    {include file='editorial-breadcrumb.tpl.html'}
+    <section class="ed-page-hero ed-page-hero--dark"><div class="ed-shell ed-page-hero__inner">
+        <span class="ed-kicker">{if $lang == 'en'}WATCH &amp; LISTEN{elseif $lang == 'zh'}视听空间{else}NGHE &amp; NHÌN{/if}</span>
+        <h1>{if $lang == 'zh'}视频{else}Video{/if}</h1>
+        <p>{if $lang == 'en'}Documentaries, conversations and visual stories about Vietnamese arts and culture.{elseif $lang == 'zh'}关于越南文学、艺术与文化的纪录片、访谈和影像故事。{else}Phim tài liệu, cuộc đối thoại và những câu chuyện bằng hình ảnh về văn học, nghệ thuật và văn hóa Việt Nam.{/if}</p>
+    </div></section>
+    {if $curatedVideos}
+    {assign var="featuredVideo" value=$curatedVideos[0]}
+    <section class="ed-watch"><div class="ed-shell"><div class="ed-watch__layout">
+        <div class="ed-watch__player"><iframe id="editorialVideoPlayer" src="https://www.youtube-nocookie.com/embed/{$featuredVideo.id|escape:'url'}?rel=0" title="{if $lang == 'en'}{$featuredVideo.title_en|escape:'html'}{elseif $lang == 'zh'}{$featuredVideo.title_zh|escape:'html'}{else}{$featuredVideo.title|escape:'html'}{/if}" loading="eager" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+        <div class="ed-watch__info">
+            <span class="ed-kicker">{if $lang == 'en'}NOW PLAYING{elseif $lang == 'zh'}正在播放{else}ĐANG PHÁT{/if}</span>
+            <h2 id="editorialVideoTitle">{if $lang == 'en'}{$featuredVideo.title_en|escape:'html'}{elseif $lang == 'zh'}{$featuredVideo.title_zh|escape:'html'}{else}{$featuredVideo.title|escape:'html'}{/if}</h2>
+            <p id="editorialVideoDescription">{if $lang == 'en'}{$featuredVideo.description_en|default:''|escape:'html'}{elseif $lang == 'zh'}{$featuredVideo.description_zh|default:''|escape:'html'}{else}{$featuredVideo.description|escape:'html'}{/if}</p>
+            <div class="ed-watch__source"><span>{if $lang == 'en'}Source{elseif $lang == 'zh'}来源{else}Nguồn{/if}</span><strong id="editorialVideoSource">{if $lang == 'en'}{$featuredVideo.source_en|default:''|escape:'html'}{elseif $lang == 'zh'}{$featuredVideo.source_zh|default:''|escape:'html'}{else}{$featuredVideo.source|escape:'html'}{/if}</strong></div>
+            <button id="editorialVideoSave" class="ed-library-action" type="button" data-library-save data-library-type="watch_later" data-library-key="{$featuredVideo.id|escape:'html'}" data-library-title="{if $lang == 'en'}{$featuredVideo.title_en|escape:'html'}{elseif $lang == 'zh'}{$featuredVideo.title_zh|escape:'html'}{else}{$featuredVideo.title|escape:'html'}{/if}" data-library-url="https://www.youtube.com/watch?v={$featuredVideo.id|escape:'url'}" data-library-image="https://i.ytimg.com/vi/{$featuredVideo.id|escape:'url'}/hqdefault.jpg" data-default-label="{if $lang == 'en'}Watch later{elseif $lang == 'zh'}&#31245;&#21518;&#35266;&#30475;{else}Xem sau{/if}" data-saved-label="{if $lang == 'en'}Saved to Reading Space{elseif $lang == 'zh'}&#24050;&#20445;&#23384;&#21040;&#38405;&#35835;&#31354;&#38388;{else}&#272;&#227; l&#432;u v&#224;o Kh&#244;ng gian &#273;&#7885;c{/if}" data-login-label="{if $lang == 'en'}Sign in to save{elseif $lang == 'zh'}&#30331;&#24405;&#21518;&#20445;&#23384;{else}&#272;&#259;ng nh&#7853;p &#273;&#7875; l&#432;u{/if}">{if $lang == 'en'}Watch later{elseif $lang == 'zh'}&#31245;&#21518;&#35266;&#30475;{else}Xem sau{/if}</button>
+            <a id="editorialVideoExternal" href="https://www.youtube.com/watch?v={$featuredVideo.id|escape:'url'}" target="_blank" rel="noopener noreferrer">{if $lang == 'en'}Open on YouTube{elseif $lang == 'zh'}在 YouTube 上观看{else}Mở trên YouTube{/if} ↗</a>
+        </div>
+    </div></div></section>
+    <section class="ed-video-library"><div class="ed-shell">
+        <header class="ed-section__head"><div><span class="ed-kicker">{if $lang == 'en'}VIDEO LIBRARY{elseif $lang == 'zh'}视频库{else}THƯ VIỆN VIDEO{/if}</span><h2>{if $lang == 'en'}Explore the collection{elseif $lang == 'zh'}探索影像收藏{else}Khám phá bằng hình ảnh{/if}</h2></div></header>
+        <div class="ed-video-filters" role="group" aria-label="{if $lang == 'en'}Filter videos{elseif $lang == 'zh'}筛选视频{else}Lọc video{/if}">
+            <button type="button" class="is-active" data-video-filter="all" aria-pressed="true">{if $lang == 'en'}All{elseif $lang == 'zh'}全部{else}Tất cả{/if}</button>
+            <button type="button" data-video-filter="documentary" aria-pressed="false">{if $lang == 'en'}Documentary{elseif $lang == 'zh'}纪录片{else}Tư liệu{/if}</button>
+            <button type="button" data-video-filter="art" aria-pressed="false">{if $lang == 'en'}Arts{elseif $lang == 'zh'}艺术{else}Nghệ thuật{/if}</button>
+            <button type="button" data-video-filter="culture" aria-pressed="false">{if $lang == 'en'}Culture{elseif $lang == 'zh'}文化{else}Văn hóa{/if}</button>
+        </div>
+        <div class="ed-video-grid ed-video-grid--selectable">
+        {foreach from=$curatedVideos item=video name=curatedVideoLoop}
+            <article class="ed-video-choice {if $smarty.foreach.curatedVideoLoop.first}is-active{/if}" data-video-type="{$video.type|default:'culture'|escape:'html'}"><button type="button" class="ed-video-choice__button" data-video-select data-video-id="{$video.id|escape:'html'}" data-video-title="{if $lang == 'en'}{$video.title_en|escape:'html'}{elseif $lang == 'zh'}{$video.title_zh|escape:'html'}{else}{$video.title|escape:'html'}{/if}" data-video-description="{if $lang == 'en'}{$video.description_en|default:''|escape:'html'}{elseif $lang == 'zh'}{$video.description_zh|default:''|escape:'html'}{else}{$video.description|escape:'html'}{/if}" data-video-source="{if $lang == 'en'}{$video.source_en|default:''|escape:'html'}{elseif $lang == 'zh'}{$video.source_zh|default:''|escape:'html'}{else}{$video.source|escape:'html'}{/if}" aria-pressed="{if $smarty.foreach.curatedVideoLoop.first}true{else}false{/if}">
+                <figure><img src="https://i.ytimg.com/vi/{$video.id|escape:'url'}/hqdefault.jpg" alt="{if $lang == 'en'}{$video.title_en|escape:'html'}{elseif $lang == 'zh'}{$video.title_zh|escape:'html'}{else}{$video.title|escape:'html'}{/if}" loading="lazy"><span class="ed-play">▶</span></figure>
+                <div><small>{if $video.type == 'documentary'}{if $lang == 'en'}Documentary{elseif $lang == 'zh'}纪录片{else}Tư liệu{/if}{elseif $video.type == 'art'}{if $lang == 'en'}Arts{elseif $lang == 'zh'}艺术{else}Nghệ thuật{/if}{else}{if $lang == 'en'}Culture{elseif $lang == 'zh'}文化{else}Văn hóa{/if}{/if}</small><h3>{if $lang == 'en'}{$video.title_en|escape:'html'}{elseif $lang == 'zh'}{$video.title_zh|escape:'html'}{else}{$video.title|escape:'html'}{/if}</h3><p>{if $lang == 'en'}{$video.description_en|default:''|escape:'html'}{elseif $lang == 'zh'}{$video.description_zh|default:''|escape:'html'}{else}{$video.description|escape:'html'}{/if}</p></div>
+            </button><button class="ed-library-action ed-library-action--card" type="button" data-library-save data-library-type="watch_later" data-library-key="{$video.id|escape:'html'}" data-library-title="{if $lang == 'en'}{$video.title_en|escape:'html'}{elseif $lang == 'zh'}{$video.title_zh|escape:'html'}{else}{$video.title|escape:'html'}{/if}" data-library-url="https://www.youtube.com/watch?v={$video.id|escape:'url'}" data-library-image="https://i.ytimg.com/vi/{$video.id|escape:'url'}/hqdefault.jpg" data-saved-label="{if $lang == 'en'}Saved{elseif $lang == 'zh'}已收藏{else}Đã lưu{/if}">{if $lang == 'en'}Watch later{elseif $lang == 'zh'}稍后观看{else}Xem sau{/if}</button></article>
+        {/foreach}
+        </div>
+    </div></section>
+    {else}<section class="ed-archive__content"><div class="ed-shell"><div class="ed-empty"><h2>{if $lang == 'en'}Video content is being updated{elseif $lang == 'zh'}视频内容正在更新{else}Nội dung video đang được cập nhật{/if}</h2></div></div></section>{/if}
+</main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+<button class="ed-back-top" id="btnToTop" type="button" aria-label="{if $lang == 'en'}Back to top{elseif $lang == 'zh'}返回顶部{else}Về đầu trang{/if}">↑</button>
+{include file='editorial-script.tpl.html'}
+<script defer src="/{$templatePath}/{$userTemplate}/js/editorial-video.js?v=20260922-2"></script>
+</body></html>

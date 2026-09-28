@@ -1,0 +1,62 @@
+<div
+    class="contact-section__container container-xs contact-form__background item-padding-40 bg-white-secondary border-radius-10">
+    <form class="flex flex-col gap-20 js-validate-form" data-_validated="true">
+        <div class="flex flex-col gap-10">
+            <!-- <span class="text-color-deactive italic text-sm">{$messages['contact']}</span> -->
+            <h2 class="uppercase bold">{$messages['contact_us']}</h2>
+            <div class="title-border-bottom"></div>
+        </div>
+
+        <div class="flex flex-wrap gap-20">
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['full_name']}</label>
+                <input type="text" name="name" placeholder="John Architect" required="" data-msg="{$messages['required_full_name']}"
+                    class="item-padding-10-20 border-radius-5 bg-white border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['email']}</label>
+                <input type="email" name="email" placeholder="name@architect.core" required=""
+                    class="item-padding-10-20 border-radius-5 bg-white border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-20">
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['phone']}</label>
+                <input type="text" name="phone_number" placeholder="{$messages['phone']}" required=""
+                    data-msg="SĐT phải có 10-11 số"
+                    class="item-padding-10-20 border-radius-5 bg-white border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['address']}</label>
+                <input type="text" name="address" placeholder="{$messages['address']}" required=""
+                    class="item-padding-10-20 border-radius-5 bg-white border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-10 form-group">
+            <label class="bold">{$messages['message']}</label>
+            <textarea name="description" rows="4" required="" minlength="10" data-msg="{$messages['min_content_length']}"
+                class="item-padding-10-20 border-radius-5 bg-white border-none fill-view"></textarea>
+            <span class="error-msg text-red text-xs"></span>
+        </div>
+
+        <div class="g-recaptcha" data-sitekey="6Ld6z_wsAAAAAO62WhfUGrt4k_NQP5ZLV2Mw3Qfe"></div>
+
+        <!-- <div class="flex flex-col gap-10 form-group">
+            <label class="bold">{$messages['captcha']}</label>
+            <input type="text" name="captcha" required=""
+                class="item-padding-10-20 border-radius-5 bg-white border-none fill-view">
+            <span class="error-msg text-red text-xs"></span>
+        </div> -->
+
+        <button type="submit" id="btn-submit-schedule"
+            class="bg-primary text-color-white border-radius-5 bold uppercase cursor-pointer btn-submit-large border-none">
+            {$messages['schedule_appointment']} &nbsp; →
+        </button>
+    </form>
+</div>

@@ -1,0 +1,33 @@
+{include file='head.tpl.html' title='head'}
+<main class="ed-auth-page ed-auth-shell">
+ <section class="ed-auth-visual">
+  <div class="ed-auth-visual__glow" aria-hidden="true"></div>
+  <header class="ed-auth-brand-row"><a class="ed-auth-brand" href="{$loginPath}"><small>{if $lang == 'en'}VIETNAMESE CULTURE JOURNAL{elseif $lang == 'zh'}&#36234;&#21335;&#25991;&#21270;&#26434;&#24535;{else}T&#7840;P CH&#205; V&#258;N H&#211;A VI&#7878;T{/if}</small><strong>{if $lang == 'en'}Literature <i>&amp;</i> Arts{elseif $lang == 'zh'}&#25991;&#23398; <i>&amp;</i> &#33402;&#26415;{else}V&#259;n h&#7885;c <i>&amp;</i> Ngh&#7879; thu&#7853;t{/if}</strong></a></header>
+  <div class="ed-auth-story">
+   <span class="ed-auth-kicker">{if $lang == 'en'}MEMBERS' READING SPACE{elseif $lang == 'zh'}&#20250;&#21592;&#38405;&#35835;&#31354;&#38388;{else}KH&#212;NG GIAN &#272;&#7884;C TH&#192;NH VI&#202;N{/if}</span>
+   <h1>{if $lang == 'en'}<span>Continue your</span><span>reading journey.</span>{elseif $lang == 'zh'}<span>&#32487;&#32493;&#24744;&#30340;</span><span>&#38405;&#35835;&#26053;&#31243;</span>{else}<span>Ti&#7871;p t&#7909;c h&#224;nh tr&#236;nh</span><span>&#273;&#7885;c c&#7911;a b&#7841;n.</span>{/if}</h1>
+   <p>{if $lang == 'en'}Return to saved stories, reading progress and videos you want to watch later.{elseif $lang == 'zh'}&#36820;&#22238;&#24050;&#25910;&#34255;&#30340;&#25991;&#31456;&#12289;&#38405;&#35835;&#36827;&#24230;&#21644;&#31245;&#21518;&#35266;&#30475;&#30340;&#35270;&#39057;&#12290;{else}Tr&#7903; l&#7841;i c&#225;c b&#224;i vi&#7871;t &#273;&#227; l&#432;u, ti&#7871;n &#273;&#7897; &#273;&#7885;c v&#224; nh&#7919;ng video b&#7841;n mu&#7889;n xem sau.{/if}</p>
+   <ul><li>{if $lang == 'en'}One account across devices{elseif $lang == 'zh'}&#19968;&#20010;&#36134;&#25143;&#65292;&#22810;&#35774;&#22791;&#21516;&#27493;{else}M&#7897;t t&#224;i kho&#7843;n tr&#234;n nhi&#7873;u thi&#7871;t b&#7883;{/if}</li><li>{if $lang == 'en'}Your library stays in sync{elseif $lang == 'zh'}&#38405;&#35835;&#36164;&#26009;&#33258;&#21160;&#21516;&#27493;{else}Th&#432; vi&#7879;n lu&#244;n &#273;&#432;&#7907;c &#273;&#7891;ng b&#7897;{/if}</li></ul>
+  </div>
+  <footer>&copy; 2026 &middot; {if $lang == 'en'}Literature &amp; Arts{elseif $lang == 'zh'}&#25991;&#23398;&#19982;&#33402;&#26415;{else}V&#259;n h&#7885;c &amp; Ngh&#7879; thu&#7853;t{/if}</footer>
+ </section>
+ <section class="ed-auth-panel">
+  <div class="ed-auth-panel__top"><span class="ed-auth-member-label">{if $lang == 'en'}MEMBER ACCESS{elseif $lang == 'zh'}&#20250;&#21592;&#20837;&#21475;{else}KHU V&#7920;C TH&#192;NH VI&#202;N{/if}</span><nav aria-label="Language"><a href="{$urlVi}"{if $lang != 'en' && $lang != 'zh'} class="is-active"{/if}>VI</a><a href="{$urlEn}"{if $lang == 'en'} class="is-active"{/if}>EN</a><a href="{$urlZh}"{if $lang == 'zh'} class="is-active"{/if}>&#20013;&#25991;</a></nav></div>
+  <div class="ed-auth-card">
+   <span class="ed-auth-kicker">{if $lang == 'en'}WELCOME BACK{elseif $lang == 'zh'}&#27426;&#36814;&#22238;&#26469;{else}CH&#192;O M&#7914;NG TR&#7902; L&#7840;I{/if}</span>
+   <h2>{if $lang == 'en'}<span>Sign in</span><span>to continue</span>{elseif $lang == 'zh'}<span>&#30331;&#24405;</span><span>&#20197;&#32487;&#32493;</span>{else}<span>&#272;&#258;NG NH&#7852;P</span><span>&#272;&#7874; TI&#7870;P T&#7908;C</span>{/if}</h2>
+   <p>{if $lang == 'en'}Use your username or registered email address.{elseif $lang == 'zh'}&#35831;&#20351;&#29992;&#29992;&#25143;&#21517;&#25110;&#24050;&#27880;&#20876;&#30340;&#30005;&#23376;&#37038;&#31665;&#12290;{else}S&#7917; d&#7909;ng t&#234;n t&#224;i kho&#7843;n ho&#7863;c email &#273;&#227; &#273;&#259;ng k&#253;.{/if}</p>
+   <form data-editorial-auth="login" novalidate>
+    <input type="hidden" name="op" value="login"><input type="hidden" name="csrf_token" value="{$csrf_token|escape:'html'}"><input type="hidden" name="next" value="{$authNext|escape:'html'}">
+    <label class="ed-auth-field"><span>{if $lang == 'en'}Username or email{elseif $lang == 'zh'}&#29992;&#25143;&#21517;&#25110;&#30005;&#23376;&#37038;&#31665;{else}T&#224;i kho&#7843;n ho&#7863;c email{/if}</span><input type="text" name="username" autocomplete="username" placeholder="{if $lang == 'en'}Enter username or email{elseif $lang == 'zh'}&#35831;&#36755;&#20837;&#29992;&#25143;&#21517;&#25110;&#30005;&#23376;&#37038;&#31665;{else}Nh&#7853;p t&#224;i kho&#7843;n ho&#7863;c email{/if}" required></label>
+    <label class="ed-auth-field"><span>{if $lang == 'en'}Password{elseif $lang == 'zh'}&#23494;&#30721;{else}M&#7853;t kh&#7849;u{/if}</span><span class="ed-auth-password"><input type="password" name="password" autocomplete="current-password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" required><button type="button" data-password-toggle aria-label="{if $lang == 'en'}Show password{elseif $lang == 'zh'}&#26174;&#31034;&#23494;&#30721;{else}Hi&#7879;n m&#7853;t kh&#7849;u{/if}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg></button></span></label>
+    <div class="ed-auth-form-meta"><span>{if $lang == 'en'}Secure member access{elseif $lang == 'zh'}&#23433;&#20840;&#30340;&#20250;&#21592;&#35775;&#38382;{else}Truy c&#7853;p th&#224;nh vi&#234;n an to&#224;n{/if}</span></div>
+    <div class="ed-auth-message" data-auth-message hidden role="alert"></div>
+    <button class="ed-auth-submit" type="submit"><span>{if $lang == 'en'}Sign in{elseif $lang == 'zh'}&#30331;&#24405;{else}&#272;&#259;ng nh&#7853;p{/if}</span><b>&rarr;</b></button>
+   </form>
+   <div class="ed-auth-alternate">{if $lang == 'en'}New to the journal?{elseif $lang == 'zh'}&#36824;&#27809;&#26377;&#36134;&#25143;&#65311;{else}Ch&#432;a c&#243; t&#224;i kho&#7843;n?{/if} <a href="{$registerPath}?next={$authNext|escape:'url'}">{if $lang == 'en'}Create an account{elseif $lang == 'zh'}&#21019;&#24314;&#36134;&#25143;{else}&#272;&#259;ng k&#253; ngay{/if}</a></div>
+  </div>
+ </section>
+</main>
+{include file='editorial-script.tpl.html'}
+</body></html>

@@ -1,0 +1,40 @@
+
+<div id="footer">
+<ul>
+<li><a href="/" title="{$locale->msg('home_page')}">{$locale->msg('home_page')}</a></li>
+<li><a href="/admin.php?op=support" title="{$locale->msg('support')}">{$locale->msg('support')}</a></li>
+<li><a href="/admin.php?op=helpdesk" title="{$locale->msg('helpdesk')}">{$locale->msg('helpdesk')}</a></li>
+</ul>
+<p>{$locale->msg('copy_right')}</p>
+</div>
+{if isset($urlPopup)}
+<!--Get URL Popup-->  
+<div class="popup2">
+<p class="btnClose2"><a href="javascript:;" class="close" title="Close">X Close</a></p>
+<div class="popupInner2">
+<form action="" method="post" name="formContact">
+<fieldset>
+<ul>
+<li>Get URL</li>
+</ul>
+<p>
+<label for="name">Relative link</label>
+<input type="text" value="" name="relative" id="valueRelative" /> 
+</p>
+<p>
+<label for="name">Permanent link</label>
+<input type="text" value="http://{$estore->getDomain()}" name="relative" id="valuePermanent" />  
+</p>
+</fieldset>
+</form>
+</div>
+</div>
+<!--end Get URL Popup-->
+{/if}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="/{$templatePath}/{$userTemplate}/scripts/common.js?ver=1.1"></script>
+<script type="text/javascript" src="/{$templatePath}/{$userTemplate}/scripts/forms.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+</body>
+</html>

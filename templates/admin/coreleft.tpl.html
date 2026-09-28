@@ -1,0 +1,334 @@
+{if $authUser}
+<div id="lev">
+<div class="levInner">
+<!-- html update new 16-6-2025 -->
+<!-- Start -->
+<button title="toggle button" id="toggleBtnMenu" class="toggle-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"/></svg>
+</button>
+<!-- End -->
+<ul>
+<li{if $op eq 'editorial'} class="current"{/if}><a href="/{$aScript}?op=editorial" title="Trung tâm biên tập">Trung tâm biên tập</a></li>
+<!-- <li{if $op eq 'dashboard'} class="current"{/if}><a href="/{$aScript}?op=dashboard" title="{$locale->msg('dash_board')}">{$locale->msg('dash_board')}</a>
+{if $op eq 'dashboard'}
+<ul>
+<li{if $act eq 'online'} class="current"{/if}><a href="/{$aScript}?op=dashboard&act=online" title="{$locale->msg('online_users')}">{$locale->msg('online_users')}</a></li>
+</ul>
+{/if}
+</li> -->
+<li{if $op eq 'manage'} class="current"{/if}><a href="/{$aScript}?op=manage" title="{$locale->msg('manage_website')}">{$locale->msg('manage_website')}</a>
+{if $op eq 'manage'}
+<ul>
+<!-- <li{if $act eq 'order'} class="current"{/if}><a href="/{$aScript}?op=manage&act=order" title="{$locale->msg('manage_order')}">{$locale->msg('manage_order')}</a>
+{if $act eq 'order'}
+<ul>
+<li{if isset($filter_status) && $filter_status eq "all"} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=order&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+<li{if isset($filter_date_created) && $filter_date_created eq 'today'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=order&mod=list&filter_date_created=today">{$amessages.status_times.3|default:''|strip_tags}</a></li>
+<li{if isset($filter_status) && $filter_status eq '2'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=order&mod=list&filter_status=2">{$amessages.order_status.2|default:''|strip_tags}</a></li>
+<li{if isset($filter_status) && $filter_status eq '3'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=order&mod=list&filter_status=3">{$amessages.order_status.3|default:''|strip_tags}</a></li>
+</ul>
+{/if}
+</li> -->
+<!-- <li{if $act eq 'customer'} class="current"{/if}><a href="/{$aScript}?op=manage&act=customer" title="{$locale->msg('manage_customer')}">{$locale->msg('manage_customer')}</a>
+{if $act eq 'customer'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=customer&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=customer&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+<!-- <li{if $act eq 'slug'} class="current"{/if}><a href="/{$aScript}?op=manage&act=slug" title="{$locale->msg('manage_slug')}">{$locale->msg('manage_slug')}</a>
+{if $act eq 'slug'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=slug&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=slug&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+<li{if $act eq 'product'} class="current"{/if}><a href="/{$aScript}?op=manage&act=product" title="{$locale->msg('manage_product')}">{$locale->msg('manage_product')}</a>
+{if $act eq 'product'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=add" title="{$locale->msg('add_new')}">Thêm mới</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=list" title="{$locale->msg('list_item')}">Danh sách</a></li>
+
+<!-- <li{if $mod eq 'addaccessory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=addaccessory" title="{$locale->msg('add_new')}">Thêm mới phụ kiện</a></li> -->
+<!-- <li{if $mod eq 'listaccessory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=listaccessory" title="{$locale->msg('list_item')}">Danh sách phụ kiện</a></li> -->
+
+<li{if $mod eq 'addcategory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=addcategory{if isset($pId) && $pId}&pId={$pId}{/if}" title="{$locale->msg('add_product_category')}">{$locale->msg('add_product_category')}</a></li>
+<li{if $mod eq 'listcategory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=listcategory" title="{$locale->msg('list_product_category')}">{$locale->msg('list_category')}</a></li>
+<!-- <li{if $mod eq 'addoption'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=addoption{if $pId}&pId={$pId}{/if}" title="{$locale->msg('add_product_option')}">{$locale->msg('add_product_option')}</a></li>
+<li{if $mod eq 'listoption'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=product&mod=listoption" title="{$locale->msg('list_product_option')}">{$locale->msg('list_product_option')}</a></li> -->
+</ul>
+{/if}
+
+
+
+<li{if $act eq 'article'} class="current"{/if}><a href="/{$aScript}?op=manage&act=article" title="{$locale->msg('manage_article')}">{$locale->msg('manage_article')}</a>
+{if $act eq 'article'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=article&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=article&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+<li{if $mod eq 'addcategory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=article&mod=addcategory" title="{$locale->msg('add_article_category')}">{$locale->msg('add_article_category')}</a></li>
+<li{if $mod eq 'listcategory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=article&mod=listcategory" title="{$locale->msg('list_article_category')}">{$locale->msg('list_article_category')}</a></li>
+</ul>
+{/if}
+</li>
+<li{if $act eq 'static'} class="current"{/if}><a href="/{$aScript}?op=manage&act=static" title="{$locale->msg('manage_static')}">Trang tĩnh/ Block</a>
+{if $act eq 'static'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=static&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=static&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>
+<li{if $act eq 'menu'} class="current"{/if}><a href="/{$aScript}?op=manage&act=menu" title="{$locale->msg('manage_menu')}">{$locale->msg('manage_menu')}</a>
+{if $act eq 'menu'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=menu&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=menu&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+<li{if $mod eq 'listcategory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=menu&mod=listcategory" title="{$locale->msg('list_menu_category')}">{$locale->msg('list_menu_category')}</a></li>
+</ul>
+{/if}
+</li>
+<li{if $act eq 'banner'} class="current"{/if}><a href="/{$aScript}?op=manage&act=ads" title="{$locale->msg('manage_banner')}">{$locale->msg('manage_banner')}</a>
+{if $act eq 'ads'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=ads&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=ads&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+<li{if $mod eq 'listcategory'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=ads&mod=listcategory" title="{$locale->msg('list_banner_category')}">{$locale->msg('list_banner_category')}</a></li>
+</ul>
+{/if}
+</li>
+<!-- <li><a href="/{$aScript}?op=manage&act=gallery" title="{$locale->msg('manage_gallery')}">{$locale->msg('manage_gallery')}</a></li>
+<li{if $act eq 'support'} class="current"{/if}><a href="/{$aScript}?op=manage&act=support" title="{$locale->msg('manage_support')}">{$locale->msg('manage_support')}</a>
+{if $act eq 'support'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=support&mod=add" title="{$locale->msg('add_support')}">{$locale->msg('add_support')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=support&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+<!-- <li{if $act eq 'csau'} class="current"{/if}><a href="/{$aScript}?op=manage&act=csau" title="Khách hàng nói về chúng tôi">Khách hàng nói về chúng tôi</a>
+{if $act eq 'csau'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=csau&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=csau&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+
+
+<!-- <li{if $act eq 'specifications'} class="current"{/if}><a href="/{$aScript}?op=manage&act=specifications" title="{$locale->msg('manage_comment')}">{$locale->msg('specifications')}</a></li> -->
+
+<li{if $act eq 'gallery'} class="current"{/if}><a href="/{$aScript}?op=manage&act=upload&mod=list" title="{$locale->msg('manage_gallery')}">{$locale->msg('manage_gallery')}</a>
+{if $act eq 'upload'}
+<ul>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=upload&mod=list" title="Thêm mới">Danh sách</a></li>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=upload&mod=add" title="Thêm mới">Thêm mới</a></li>
+</ul>
+{/if}
+</li>
+
+<!-- <li{if $act eq 'pdf'} class="current"{/if}><a href="/{$aScript}?op=manage&act=pdf" title="{$locale->msg('pdf')}">Quản lí PDF</a>
+{if $act eq 'pdf'}
+<ul>
+    <li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=pdf&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+    <li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=pdf&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+
+<li{if $act eq 'contact'} class="current"{/if}><a href="/{$aScript}?op=manage&act=contact" title="{$locale->msg('manage_contact')}">{$locale->msg('manage_contact')}</a>
+{if $act eq 'contact'}
+<ul>
+    <!-- <li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=contact&mod=add" title="{$locale->msg('create_contact')}">{$locale->msg('add_new')}</a></li> -->
+    <li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=contact&mod=list" title="{$locale->msg('list_contact')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>
+
+<!-- <li{if $act eq 'recruitment'} class="current"{/if}><a href="/{$aScript}?op=manage&act=recruitment" title="uyển dụng">Tuyển dụng</a>
+{if $act eq 'recruitment'}
+<ul>
+    <li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=recruitment&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+    <li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=recruitment&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+
+<li{if $act eq 'comment'} class="current"{/if}><a href="/{$aScript}?op=manage&act=comment" title="Đánh giá">Đánh giá</a></li>
+
+
+<li{if $act eq 'import'} class="current"{/if}><a href="/{$aScript}?op=manage&act=import&mod=data" title="Nhập liệu">Nhập/Xuất dữ liệu</a></li>
+
+<li{if $act eq 'pageblock'} class="current"{/if}><a href="/{$aScript}?op=manage&act=pageblock" title="Page Block">Sản phẩm/ Bài viết block</a></li>
+
+
+
+<!-- <li{if $act eq 'img'} class="current"{/if}><a href="/{$aScript}?op=manage&act=img&mod=varia" title="Hình ảnh cho biến">Hình ảnh cho biến</a></li> -->
+
+<!-- mangepoll-->
+<!--<li{if $act eq 'poll'} class="current"{/if}><a href="/{$aScript}?op=manage&act=poll" title="{$locale->msg('manage_poll')}">{$locale->msg('manage_poll')}</a>
+{if $act eq 'poll'}
+<ul>
+<li{if $mod eq 'addanswer'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=poll&mod=addanswer" title="{$locale->msg('add_answer')}">{$locale->msg('add_answer')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=poll&mod=list" title="{$locale->msg('list_answer')}">{$locale->msg('list_answer')}</a></li>
+<li{if $mod eq 'addquestion'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=poll&mod=addquestion" title="{$locale->msg('add_question')}">{$locale->msg('add_question')}</a></li>
+<li{if $mod eq 'listquestion'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=poll&mod=listquestion" title="{$locale->msg('list_question')}">{$locale->msg('list_question')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!--<li{if $act eq 'weblink'} class="current"{/if}><a href="/{$aScript}?op=manage&act=weblink" title="{$locale->msg('manage_weblink')}">{$locale->msg('manage_weblink')}</a>
+{if $act eq 'weblink'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=weblink&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=manage&act=weblink&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!--end change by Thai Nguyen-->
+</ul>
+</li>
+
+{/if}
+<!-- <li{if $op eq 'report'} class="current2"}{/if}><a href="/{$aScript}?op=report" title="{$locale->msg('report')}">{$locale->msg('report')}</a></li> -->
+{if $authUser->isSiteAdmin() || $authUser->isSiteFounder()}
+<li{if $op eq 'system'} class="current"}{/if}><a href="/{$aScript}?op=system" title="{$locale->msg('system')}">{$locale->msg('system')}</a>
+{if $op eq 'system'}
+<ul>
+<li{if $act eq 'config'} class="current"{/if}><a href="/{$aScript}?op=system&act=config" title="{$locale->msg('system_config')}">{$locale->msg('system_config')}</a>
+{if $act eq 'config'}
+<ul>
+<li{if $mod eq 'general'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=config&mod=general" title="{$locale->msg('general_config')}">{$locale->msg('general_config')}</a></li>
+<!-- <li{if $mod eq 'trademark'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=config&mod=trademark" title="Thông số trang thương hiệu">Thông số trang thương hiệu</a></li>
+<li{if $mod eq 'carcompany'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=config&mod=carcompany" title="Thông số trang hãng xe">Thông số trang hãng xe</a></li>
+<li{if $mod eq 'size'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=config&mod=size" title="Thông số trang theo kích thước">Thông số trang theo kích thước</a></li>
+<li{if $mod eq 'down'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=config&mod=down" title="{$locale->msg('site_down')}">{$locale->msg('site_down')}</a></li> -->
+</ul>
+{/if}
+</li>
+{if $authUser->isSiteAdmin() || $authUser->isSiteFounder()}
+<!-- <li{if $act eq 'staff'} class="current"{/if}><a href="/{$aScript}?op=system&act=staff" title="{$locale->msg('manage_staff')}">{$locale->msg('manage_staff')}</a> -->
+<li{if $act eq 'staff'} class="current"{/if}><a href="/{$aScript}?op=system&act=staff" title="{$locale->msg('manage_staff')}">Nhân viên</a>
+{if $act eq 'staff'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=staff&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=staff&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+{if $authUser->isSiteFounder()}<li{if $mod eq 'listTracking'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=staff&mod=listTracking" title="{$locale->msg('tracking_title')}">{$locale->msg('tracking_title')}</a></li>{/if}
+</ul>
+{/if}
+</li>
+<li{if $act eq 'master'} class="current"{/if}><a href="/{$aScript}?op=system&act=master" title="{$locale->msg('manage_master_data')}">{$locale->msg('manage_master_data')}</a>
+{if $act eq 'master'}
+<ul>
+<li{if $mod eq 'countrylist' || $mod eq 'countryadd' || $mod eq 'countryedit' || $mod eq 'countrycleantrash'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=master&mod=countrylist" title="{$locale->msg('manage_master_data_country')}">{$locale->msg('manage_master_data_country')}</a></li>
+<li{if $mod eq 'arealist' || $mod eq 'areaadd' || $mod eq 'areaedit' || $mod eq 'areacleantrash'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=master&mod=arealist" title="{$locale->msg('manage_master_data_area')}">{$locale->msg('manage_master_data_area')}</a></li>
+<li{if $mod eq 'wardlist' || $mod eq 'wardadd' || $mod eq 'wardedit' || $mod eq 'wardcleantrash'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=master&mod=wardlist" title="{$locale->msg('manage_master_data_ward')}">{$locale->msg('manage_master_data_ward')}</a></li>
+<li{if $mod eq 'unitlist' || $mod eq 'unitadd' || $mod eq 'unitedit' || $mod eq 'unitcleantrash'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=master&mod=unitlist" title="{$locale->msg('manage_master_data_unit')}">{$locale->msg('manage_master_data_unit')}</a></li>
+</ul>
+{/if}
+</li>
+<!--<li{if $act eq 'shipping'} class="current"{/if}><a href="/{$aScript}?op=system&act=shipping" title="{$locale->msg('method_delivery')}">{$locale->msg('method_delivery')}</a>
+{if $act eq 'shipping'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=shipping&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=shipping&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!--<li{if $act eq 'payment'} class="current"{/if}><a href="/{$aScript}?op=system&act=payment" title="{$locale->msg('system_payment_method')}">{$locale->msg('system_payment_method')}</a>
+{if $act eq 'payment'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=payment&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=payment&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!--<li{if $act eq 'currency'} class="current"{/if}><a href="/{$aScript}?op=system&act=currency" title="{$locale->msg('system_currency')}">{$locale->msg('system_currency')}</a>
+{if $act eq 'currency'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=currency&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=currency&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!--<li{if $act eq 'language'} class="current"{/if}><a href="/{$aScript}?op=system&act=language" title="{$locale->msg('system_language')}">{$locale->msg('system_language')}</a>
+{if $act eq 'language'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=language&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=language&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!-- <li{if $act eq 'email'} class="current"{/if}><a href="/{$aScript}?op=system&act=email" title="{$locale->msg('system_email_template')}">{$locale->msg('system_email_template')}</a>
+{if $act eq 'email'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=email&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=email&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li> -->
+
+<li{if $act eq 'optionstructure'} class="current"{/if}><a href="/{$aScript}?op=system&act=optionstructure" title="{$locale->msg('custom_field')}">{$locale->msg('manage_custom_option')}</a>
+{if $act eq 'optionstructure'}
+<ul>
+    <li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=optionstructure&mod=list" title="{$locale->msg('list_custom_options')}">{$locale->msg('list_custom_options')}</a></li>
+    <li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=optionstructure&mod=add" title="{$locale->msg('add_custom_options')}">{$locale->msg('add_custom_options')}</a></li>
+    <li{if $mod eq 'listvalue'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=optionstructure&mod=listvalue" title="{$locale->msg('custom_list_field_value')}">{$locale->msg('custom_list_field_value')}</a></li>
+    <li{if $mod eq 'listobject'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=optionstructure&mod=listobject" title="{$locale->msg('custom_list_field_object')}">{$locale->msg('custom_list_field_object')}</a></li>
+    <li{if $mod eq 'listobjectadd'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=optionstructure&mod=listobjectadd" title="{$locale->msg('add_new_object')}">{$locale->msg('add_new_object')}</a></li>
+</ul>
+{/if}
+</li>
+
+<li{if $act eq 'field'} class="current"{/if}><a href="/{$aScript}?op=system&act=field" title="{$locale->msg('system_custom_field')}">{$locale->msg('system_custom_field')}</a>
+{if $act eq 'field'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=field&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=field&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>
+
+<li{if $act eq 'customproductoption'} class="current"{/if}><a href="/{$aScript}?op=system&act=customproductoption" title="{$locale->msg('custom_field')}">Product options</a>
+{if $act eq 'customproductoption'}
+<ul>
+    <li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=customproductoption&mod=list" title="Danh sách options">Danh sách options</a></li>
+    <li{if $mod eq 'listdefault'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=customproductoption&mod=listdefault" title="Danh sách option mặc định">Danh sách option mặc định</a></li>
+    <li{if $mod eq 'listdefaultadd'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=customproductoption&mod=listdefaultadd" title="Thêm mới option mặc định">Thêm mới option mặc định</a></li>
+</ul>
+{/if}
+</li>
+<!--<li{if $act eq 'event'} class="current"{/if}><a href="/{$aScript}?op=system&act=event" title="{$locale->msg('system_event')}">{$locale->msg('system_event')}</a>
+{if $act eq 'event'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=event&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=event&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+<!--<li{if $act eq 'addon'} class="current"{/if}><a href="/{$aScript}?op=system&act=addon" title="{$locale->msg('system_addon')}">{$locale->msg('system_addon')}</a>
+{if $act eq 'addon'}
+<ul>
+<li{if $mod eq 'add'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=addon&mod=add" title="{$locale->msg('add_new')}">{$locale->msg('add_new')}</a></li>
+<li{if $mod eq 'list'} class="currentsub"{/if}><a href="/{$aScript}?op=system&act=addon&mod=list" title="{$locale->msg('list_item')}">{$locale->msg('list_item')}</a></li>
+</ul>
+{/if}
+</li>-->
+{/if}
+</ul>
+{/if}
+</li>
+{/if}
+<li{if $op eq 'profile'} class="current"}{/if}><a href="/{$aScript}?op=profile" title="{$locale->msg('profile')}">{$locale->msg('profile')}</a>
+{if $op eq 'profile'}
+<ul>
+<li{if $act eq 'information'} class="current"{/if}><a href="/{$aScript}?op=profile&act=information" title="{$locale->msg('system_profile')} ">{$locale->msg('system_profile')}</a></li>
+<li{if $act eq 'password'} class="current"{/if}><a href="/{$aScript}?op=profile&act=password" title="{$locale->msg('change_password')}">{$locale->msg('change_password')}</a></li>
+</ul>
+{/if}
+</li>
+</ul>
+</div>
+</div>
+{/if}

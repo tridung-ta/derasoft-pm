@@ -1,0 +1,173 @@
+{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        {if $bannerDesktop}
+            {assign var=bannerD value=$bannerDesktop->getAvatarImage($uploads)}
+            {if $bannerD}
+            <section class="container-f swiper js-slider-wrapper">
+                <div class="container-f js-slider-banner js-slider-ratio overflow-hidden">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide ">
+                            <div class="overflow-hidden fill-view pos-rel">
+                                <picture>
+                                    <source media="(min-width: 1024px)"
+                                        srcset="/{$bannerD->getPath()}/{$bannerD->getUrlO()}">
+                                    {if $bannerMobile}
+                                        {assign var=bannerM value=$bannerMobile->getAvatarImage($uploads)}
+                                        {if $bannerM}
+                                        <source media="(max-width: 768px)"
+                                            srcset="{$bannerM->getPath()}/{$bannerM->getUrlO()}">
+                                        {/if}
+                                    {/if}
+                                    <img class="img-content" src="/{$bannerD->getPath()}/{$bannerD->getUrlO()}"
+                                        alt="{$bannerDesktop->getName()}">
+                                </picture>
+                                <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết dự án"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {/if}
+        {/if}
+        {if $mpxDoingBlock}
+            <section class="container-f container-padding flex center-hor bg-white">
+                {$mpxDoingBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $mpxProductCategoriesBlock}
+            <section class="container-f container-padding flex center-hor bg-white-secondary expo-services">
+                {$mpxProductCategoriesBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $mpxExhibitionsBlock}
+            <section class="container-f container-padding flex center-hor bg-white">
+            {$mpxExhibitionsBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $listTechnologies}
+            <section class="container-f container-padding flex center-hor bg-black expo-equipment">
+                <div class="container-l flex flex-col gap-30 fill-view">
+                    <div class="flex flex-col gap-10 center-hor">
+                        <h2 class="section-title text-center bold uppercase text-color-white">{$messages['stage_technology_equipment_title']}</h2>
+                        <div class="title-border-bottom fill-view"></div>
+                    </div>
+                    <div class="js-slider-wrapper pos-rel expo-equipment-slider">
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="expo-equipment__swiper js-slider-5cols fill-view swiper">
+                            <div class="swiper-wrapper">
+                                {foreach from=$listTechnologies item=technology}
+                                    <article class="swiper-slide col-5">
+                                        <div
+                                            class=" flex-1 expo-equip-card flex flex-col center-ver text-center border-radius-5 item-padding-20 gap-10">
+                                            <div class="expo-equip-card__img ratio-1x1 overflow-hidden">
+                                                {assign var=avatar value=$technology->getAvatarImage($uploads)}
+                                                {if $avatar}
+                                                <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$technology->getName($lang)}" class="img-icon">
+                                                {else}
+                                                <img src="/templates/mpx/img/logo/no-image.webp" alt="No image" class="img-icon">
+                                                {/if}
+                                            </div>
+                                            <div class="flex flex-col gap-10">
+                                                <h3 class="bold uppercase text-color-primary text-sm">{$technology->getName($lang)}</h3>
+                                                <p class="text-sm text-color-white clamp-text">{$technology->getDescription($lang)|strip_tags}</p>
+                                            </div>
+                                        </div>
+                                        <a href="/{$technology->getSlug()}" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết dự án"></a>
+                                    </article>
+                                {/foreach}
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <div class="flex center-hor mt-20">
+                        <p class="text-center text-sm text-color-white w-70">{$messages['stage_technology_selection_desc']}</p>
+                    </div>
+
+                </div>
+            </section>
+        {/if}
+        {if $mpxWhyChooseBlock}
+            <section class="container-f container-padding flex center-hor bg-white-secondary expo-reasons">
+                {$mpxWhyChooseBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $deploymentProcessBlock}
+            <section class="container-f container-padding flex center-hor bg-white expo-process">
+                {$deploymentProcessBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $exhibitionProjectsBlock}
+            <section class="container-f container-padding flex center-hor bg-white expo-stages">
+                {$exhibitionProjectsBlock->getDetail($lang)}
+            </section>
+        {/if}
+        <section class="container-f container-padding flex center-hor bg-white-secondary expo-projects">
+            {include file='component/expo-projects.tpl.html' title='footer'}
+        </section>
+       <section class="container-padding">
+                {include file='component/service-section.tpl.html' title='service section'}
+        </section>
+        {if $faqBlock}
+            <section class="container-f container-padding flex center-hor bg-white expo-faq">
+                {$faqBlock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $contactBlock}
+            <section class="container-f flex center-hor pos-rel advise-section__container">
+                {$contactBlock->getDetail($lang)}
+            </section>
+        {/if}
+    </main>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Dịch vụ Sân khấu",
+        "url": "{$rootUrl}/{$slug}",
+        "description": "{$serviceStageMenu->getProperty('custom_sapo')}",
+        "provider": {
+            "@id": "https://mpx.vn/#organization"
+        },
+        "areaServed": "VN",
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Các dịch vụ Sân khấu của MPX",
+            "itemListElement": [
+                {foreach from=$childServiceStageMenu item=child name=services}
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "{$child->getName()}",
+                        "url": "{$rootUrl}{$child->getUrl()}"
+                    }
+                }{if !$smarty.foreach.services.last},{/if}
+                {/foreach}
+            ]
+        }
+    }
+    </script>
+    {if $serviceStageMenu->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$serviceStageMenu->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

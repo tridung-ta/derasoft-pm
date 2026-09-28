@@ -1,0 +1,64 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $pId}<p><a href="/{$aScript}?op=manage&act=article&mod=list&pId={$gfId}" title="{$locale->msg('back_group')}"><img src="/{$templatePath}/{$userTemplate}/images/icon_parent.png" alt="{$locale->msg('back_group')}" width="32" height="32" />...{$locale->msg('back')}</a></p>{/if}
+{if $listItems}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <thead>
+            <tr>
+            <th><input type="checkbox" name="all" id="all" value="1" class="box3" onclick="toggleAllChecks('formType');" /></th>
+            <th>{$locale->msg('numbers')}</th>
+            <th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+            <th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('name')}</a>{if $sk eq "name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+            <!-- <th>{$locale->msg('avatar')}</th> -->
+            <th>{$locale->msg('url')}</th>
+            <th>{$locale->msg('system_status')}</th>
+            <th>{$locale->msg('actions')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach key=no from=$listItems item=item}
+            <tr{if $no%2 eq 0} class="bgType"{/if}>
+            <td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+            <td>{$startNum+$no}</td>
+            <td>{$item->getId()}</td>
+            <td>{$item->getName()}</td>
+            <!-- <td><img src="/{$estore->getProperty('custom_name_file_img')}/{$item->getUrlL()}" width="100" /></td> -->
+            <td><a href="/{$estore->getProperty('custom_name_file_img')}/{$item->getUrlL()}">{$item->getUrlL()}</a></td>
+            <td>{$item->getStatusTextBackend()}</td>
+            
+            <td>
+            <a href="/{$aScript}?op=manage&act=uploadimg&mod=symboliclinkedit&caid={$item->getId()}&id={$item->getId()}" title="{$locale->msg('edit')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png" alt="{$locale->msg('edit')}" width="16" height="16" /></a>
+            <a href="javascript:formSubmit('formType','symboliclinklist','deleteimg',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+            <!-- <a class="copy-link-image"  title="Copy" style="cursor: pointer;"><input type="hidden" class="link-image" value="{$item->getUrlL()}"><img src="/{$templatePath}/{$userTemplate}/images/ico_copy.png" alt="Copy Img" width="16" height="16"/> -->
+            <!-- <a href="/{$aScript}?op=manage&act=uploadimg&mod=symboliclink&id={$item->getId()}" title="Symbolic link"><img src="/{$templatePath}/{$userTemplate}/images/iconSymboliclink.png" alt="Symbolic link" width="16" height="16" /></a> -->
+            </a>
+            </td>
+            </tr>
+            {/foreach}
+            </tbody>
+            </table>
+</div>
+<div class="paging">
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+</div>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="uploadimg" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="pId" value="{$pId}" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+
+{/if}
+</div>

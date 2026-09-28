@@ -1,0 +1,57 @@
+<div class="sidebar-widget flex flex-col gap-20">
+    <div class="archive-header flex flex-col gap-10">
+        {if ($isFollowStageProduct == true)}
+        <h3 class="widget-title bold uppercase">{$messages['products_stage']}</h3>
+        {elseif ($isFollowExhibitionProduct == true)}
+        <h3 class="widget-title bold uppercase">{$messages['products_exhibition']}</h3>
+        {else}
+        <h3 class="widget-title bold uppercase">{$messages['services']}</h3>
+        {/if}
+        <div class="title-border-bottom__left"></div>
+    </div>
+    {if $childCate}
+    <div class="widget-list flex flex-col gap-10">
+        {foreach from=$childCate item=category}
+            <a href="{$category->getUrl($lang)}" class="">{$category->getName($lang)}</a>
+        {/foreach}
+    </div>
+    {/if}
+</div>
+
+{if $recentProjects}
+<div class="sidebar-widget flex flex-col gap-20">
+    <div class="archive-header flex flex-col gap-10">
+        <h3 class="widget-title bold uppercase">{$messages['recent_projects']}</h3>
+        <div class="title-border-bottom__left"></div>
+    </div>
+    <div class="widget-posts flex  gap-20">
+        {foreach from=$recentProjects item=project}
+            <article class="post-mini hover-border-primary flex gap-10 center-ver pos-rel  border-radius-5 overflow-hidden">
+                <div class="post-mini__img border-radius-5 overflow-hidden">
+                    {assign var="avatar" value=$project->getAvatarImage($uploads)}
+                    {if $avatar}
+                        <img src="/{$avatar->getPath()}/{$avatar->getUrlM()}" class="img-content" alt="{$project->getTitle($lang)}">
+                    {else}
+                        <img src="/templates/mpx/img/news/news.jpg" class="img-content" alt="{$project->getTitle($lang)}">
+                    {/if}
+                </div>
+                <div class="post-mini__info flex flex-col gap-10">
+                    <h4 class="post-mini__title bold clamp-text">{$project->getTitle($lang)}
+                    </h4>
+                    <div class="flex gap-20">
+                        <div class="news-item__date flex gap-10">
+                            <img class="img-icon" src="/templates/mpx/img/icon/clock.svg" alt="clock">
+                            <p>{$project->getDisplayDate()}</p>
+                        </div>
+                        <div class="news-item__view flex gap-10">
+                            <img class="img-icon" src="/templates/mpx/img/icon/eye.svg" alt="eye">
+                            <p>{$project->getViewed()}</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="/{$project->getSlug()}" class="widget-posts__link pos-abs"></a>
+            </article>
+        {/foreach}
+    </div>
+</div>
+{/if}

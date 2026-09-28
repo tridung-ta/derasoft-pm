@@ -1,0 +1,85 @@
+{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        <section class="page-header container-f item-padding-20-30 bg-white flex center-hor">
+
+            <div class="page-header__container container-m flex flex-col center-hor gap-20">
+
+                <div class="page-header__content flex flex-col center-hor gap-10">
+                    <h1 class="page-header__title section-title text-center bold uppercase">
+                        {$h1|default:'Dịch vụ & Bài viết của MPX'}
+                    </h1>
+                    {if $description !== ''}
+                    <p class="page-header__desc text-center text-color-gray">
+                        {$description}
+                    </p>
+                    {/if}
+                </div>
+                <div class="page-header__actions flex center-hor gap-20 flex-wrap">
+                    <a href="/dich-vu-cua-mpx"
+                        class="btn-padding border-radius-5 bold cursor-point btn-outline-primary transition-all">
+                        {$messages['service_experience']}
+                    </a>
+                    <a href="/lien-he"
+                        class="btn-padding border-radius-5 bold cursor-point bg-primary text-color-white transition-all">
+                        {$messages['contact']}
+                    </a>
+                </div>
+
+            </div>
+        </section>
+        <section class="archive-section container-f container-padding bg-white-secondary">
+            <div class="container-l flex flex-wrap gap-20">
+                <div class="archive-main  flex flex-col gap-20">
+                    <!-- <div class="archive-header flex flex-col gap-10">
+                        <h1 class="section-title bold uppercase">{$messages['all_case_studies']}</h1>
+                        <div class="title-border-bottom"></div>
+                    </div> -->
+                    <div class="filter-group flex center-ver gap-10">
+                        <label class="text-color-gray">{$messages['field']}:</label>
+                        <div class="native-select-wrapper pos-rel">
+                            <select class="native-select cursor-point" id="articleGroupSelect" data-base-url="/{$articleCategoryObj->getSlug()}">
+                                <option value="" {if $currentGroup == ''}selected{/if}>
+                                    All
+                                </option>
+                                {foreach from=$articleGroupList item=group}
+                                    <option value="{$group->getSlug()}" {if $currentGroup == $group->getSlug()}selected{/if}>
+                                        {$group->getName()}
+                                    </option>
+                                {/foreach}
+                            </select>
+                            <span class="native-select__icon pos-abs flex center-ver">
+                                <svg width="10" height="6" viewBox="0 0 10 6" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 1L5 5L9 1" stroke="#333" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </span>
+
+                        </div>
+                    </div>
+                    {include file='listarticlesfromsearch.tpl.html' title='listarticlesfromsearch'}
+                </div>
+                <aside class="archive-sidebar bg-white item-padding-20 border-radius-5 flex flex-col gap-20">
+                    {include file='component/sidebar-second.tpl.html' title='sidebar'}
+                </aside>
+            </div>
+        </section>
+    </main>
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

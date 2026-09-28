@@ -1,0 +1,57 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+<div class="contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_user')}</div>
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_new_user')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.username.error} class="errormsg"{/if}><label for="username">* {$locale->msg('username')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}" name="username" id="username" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.password.error} class="errormsg"{/if}><label for="password">* {$locale->msg('password')}</label>
+<input class="small" type="password" value="{if isset($error.INPUT)}{$error.INPUT.password.value}{/if}" name="password" id="password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.confirm_password.error} class="errormsg"{/if}><label for="confirm_password">* {$locale->msg('confirm_password')}</label>
+<input class="small" type="password" value="{if isset($error.INPUT)}{$error.INPUT.confirm_password.value}{/if}" name="confirm_password" id="confirm_password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.fullname.error} class="errormsg"{/if}><label for="fullname">* {$locale->msg('fullname')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.fullname.value}{/if}" name="fullname" id="fullname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">* {$locale->msg('email')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p><label for="email">{$locale->msg('address')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p><label for="telephone">{$locale->msg('telephone')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.telephone.value}{/if}" name="telephone" id="telephone" /></p>
+<p><label for="user_group">{$locale->msg('user_group')}</label>
+<select class="small"  name="user_group" id="user_group">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.user_group.value eq 1}selected="selected"{/if}>{$locale->msg('employment')}</option>
+<option value="2"{if isset($error.INPUT) && $error.INPUT.user_group.value eq 2}selected="selected"{/if}>{$locale->msg('managerment')}</option>
+{if $authUser->isSiteFounder()}<option value="3"{if isset($error.INPUT) && $error.INPUT.user_group.value eq 3}selected="selected"{/if}>{$locale->msg('founder')}</option>{/if}
+</select></p>
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="add" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>

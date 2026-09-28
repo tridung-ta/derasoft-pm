@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="{if $lang == 'en'}en{elseif $lang == 'zh'}zh-Hans{else}vi{/if}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    {if !empty($pageTitle)}
+        {assign var="metaTitle" value=$pageTitle|strip_tags|escape:'html'}
+    {else}
+        {assign var="metaTitle" value=$estore->getProperty('custom_meta_title')|strip_tags|escape:'html'}
+    {/if}
+    {if !empty($pageDescription)}
+        {assign var="metaDescription" value=$pageDescription|strip_tags|escape:'html'}
+    {else}
+        {assign var="metaDescription" value=$estore->getProperty('custom_meta_description')|strip_tags|escape:'html'}
+    {/if}
+    {if !empty($pageKeywords)}
+        {assign var="metaKeywords" value=$pageKeywords|strip_tags|escape:'html'}
+    {else}
+        {assign var="metaKeywords" value=$estore->getProperty('custom_meta_keyword')|strip_tags|escape:'html'}
+    {/if}
+
+    <title>{$metaTitle}</title>
+    <meta name="description" content="{$metaDescription}">
+    <meta name="keywords" content="{$metaKeywords}">
+    <meta name="robots" content="index,follow,max-image-preview:large">
+    <meta name="theme-color" content="#2b1d19">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Văn hóa Việt">
+    {if $currentUrlx1}<link rel="canonical" href="{$currentUrlx1|escape:'html'}">{/if}
+
+    <meta property="og:type" content="{$typeweb|default:'website'}">
+    <meta property="og:title" content="{$metaTitle}">
+    <meta property="og:description" content="{$metaDescription}">
+    <meta property="og:image" content="{$logoimg1|default:$logoimg}">
+    {if $currentUrlx1}<meta property="og:url" content="{$currentUrlx1|escape:'html'}">{/if}
+    <meta property="og:site_name" content="{if $lang == 'en'}Literature &amp; Arts{elseif $lang == 'zh'}文学与艺术{else}Văn học &amp; Nghệ thuật{/if}">
+
+    <link rel="icon" type="image/png" href="/{$templatePath}/{$userTemplate}/img/logo/favicon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/{$templatePath}/{$userTemplate}/img/logo/favicon.png">
+    {literal}<script>(function(){try{var theme=localStorage.getItem('editorial-theme');if(!theme&&window.matchMedia('(prefers-color-scheme: dark)').matches)theme='dark';document.documentElement.setAttribute('data-theme',theme==='dark'?'dark':'light');}catch(error){}})();</script>{/literal}
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/base.css">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-design-tokens.css?v=20260923-2">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/literature-redesign.css?v=20260925-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-reader.css?v=20260916-1">
+<link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-library.css?v=20260925-1">
+<link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-auth.css?v=20260923-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-toolbar.css?v=20260916-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-edition.css?v=20260923-3">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-components.css?v=20260923-6">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-rating.css?v=20260923-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-comments.css?v=20260925-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-author.css?v=20260924-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-tags.css?v=20260924-1">
+    <link rel="stylesheet" href="/{$templatePath}/{$userTemplate}/css/editorial-membership.css?v=20260925-1">
+
+    <script>window.csrfToken = '{$csrf_token}';</script>
+    {if $breadcrumbJson}<script type="application/ld+json">{$breadcrumbJson nofilter}</script>{/if}
+</head>
+<body>

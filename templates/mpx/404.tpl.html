@@ -1,0 +1,56 @@
+﻿{include file='head.tpl.html' title='head'}
+
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor">
+        <section class="flex bg-gray container-f">
+            <div class=" container-l nav-bar__container">
+                <a href="/" class="nav-bar__item">
+                    {if $lang == 'vn'}
+                    Trang chủ
+                    {elseif $lang == 'en'}
+                    Home
+                    {elseif $lang == 'zh'}
+                    首页
+                    {/if}
+                </a>
+                <a href="javascript:void(0)" class="nav-bar__item">
+                    {if $lang == 'vn'}
+                    Không tìm thấy trang
+                    {elseif $lang == 'en'}
+                    Page not found
+                    {elseif $lang == 'zh'}
+                    找不到页面
+                    {/if}
+                </a>
+            </div>
+        </section>
+        <section class="container-f container-padding bg-white">
+            <div class="flex center-ver flex-col pagenotfound-container container-xs">
+                <img src="/{$templatePath}/{$userTemplate}/img/404/404.webp" alt="">
+                <a href="{if $lang == 'vn'}/{else}/{$lang}/{/if}" class="btn btn-primary">
+                    {if $lang == 'vn'}
+                    Quay lại trang chủ
+                    {elseif $lang == 'en'}
+                    Back to home
+                    {elseif $lang == 'zh'}
+                    返回首页
+                    {/if}
+                </a>
+            </div>
+        </section>
+    </main>
+    <footer class="container-f bg-black center-ver">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    <!-- <section class="cta-floating container-s flex gap-20">
+        {include file='cta-floating.tpl.html' title='cta-floating'}
+    </section> -->
+    <section class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </section>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

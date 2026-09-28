@@ -1,0 +1,37 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field key=key}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+	<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+		<fieldset>
+			<h1>{$locale->msg('upload_file')}</h1>
+			<p><strong>* {$locale->msg('required_fields')}</strong></p>
+			<br>
+			<p><label for="files">{$locale->msg('upload_file')}</label>
+			<input type="file" multiple="multiple"name="files[]" id="files[]" /></p>
+			<p><label>{$locale->msg('allow_file_types')}</label>{$allowed_file_types}</p>
+			<input type="hidden" name="op" value="manage" />
+			<input type="hidden" name="act" value="upload" />
+			<input type="hidden" name="mod" value="add" />
+			<input type="hidden" name="doo" value="submit" />
+			<input type="hidden" name="sCode" value="{$sCode}_" />
+			<input type="hidden" name="lang" value="{$lang}" />
+			<p class="btn">
+				<input type="submit" value="Thêm" />
+			</p>
+		</fieldset>
+	</form>
+</div>

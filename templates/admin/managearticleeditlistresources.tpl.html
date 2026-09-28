@@ -1,0 +1,46 @@
+<p><label for="avatar">{$locale->msg('avatar')}</label>
+<input type="file"  name="avatar" id="avatar" /></p>
+<p>
+{assign var=avatar value=$item->getProperty('avatar')}
+{if $avatar}
+<div class="listPhoto">
+<ul>
+<li>
+<a href="/upload/{$storeId}/articles/a_{$avatar}" target="_blank"><img src="/upload/{$storeId}/articles/a_{$avatar}" width="100" /></a><a href="/{$aScript}?op=manage&act=article&mod=edit&id={$item->getId()}&doo=delAvatar&avatar={$avatar}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+</ul>
+</div>
+{/if}
+</p>
+<p><label for="files">{$locale->msg('attachments')}</label><input type="file" name="files[]" id="files[]" /></p>
+{assign var=videos value=$item->getProperty('videos')}
+{assign var=files value=$item->getProperty('files')}
+{if $videos || $files}
+<p>
+<div class="listFile">
+<ul>
+{if $videos}
+{foreach from=$videos item=video}
+<li><a href="/{$aScript}?op=manage&act=article&mod=edit&id={$item->getId()}&doo=delVideo&video={$video}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a><a href="/upload/{$storeId}/articles/{$video}" target="_blank">{$video}</a></li>
+{/foreach}
+{/if}
+{if $files}
+{foreach from=$files item=file}
+<li><a href="/{$aScript}?op=manage&act=article&mod=edit&id={$item->getId()}&doo=delFile&file={$file}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a><a href="/upload/{$storeId}/articles/{$file}" target="_blank">{$file}</a></li>
+{/foreach}
+{/if}        
+</ul>
+</div>
+</p>
+{/if}
+{assign var=photos value=$item->getProperty('photos')}
+{if $photos}
+<p>
+<div class="listPhoto">
+<ul>
+{foreach from=$photos item=photo}
+<li><a href="/upload/{$storeId}/articles/l_{$photo}" target="_blank"><img src="/upload/{$storeId}/articles/a_{$photo}" width="100" /></a><a href="/{$aScript}?op=manage&act=article&mod=edit&id={$item->getId()}&doo=delPhoto&photo={$photo}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+{/foreach}
+</ul>
+</div>
+</p>
+{/if}

@@ -1,0 +1,169 @@
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+<div class="contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('config_general_notes')}</div>
+{if $error}{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">{foreach from=$input item=field}{if $field.error}<li>{$field.message}</li>{/if}{/foreach}<li>{$error.message}</li></ul>
+</div>
+{/if}{/if}
+{if $success}
+<div class="infoBox">
+<h2>{$success}</h2>
+</div>
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('system_config_general')}</h1>
+{if $item}
+<!-- Load estore info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="private_domain">{$locale->msg('domain')}</label><strong>{$item->getDomain()}</strong></p>
+<!--<p><label for="private_domain">*{$locale->msg('price_room')}</label>
+<input type="text" name="price_room" value="{$item->getProperty('price_room')}"  class="small"/> VNĐ</p>-->
+<p><label for="template_domain">{$locale->msg('web_interface')}</label>
+<select class="medium" name="domain_template_id" id="domain_template_id">
+{$domainTemplates}
+</select></p>
+<p><label for="site_name">* {$locale->msg('site_name')}</label>
+<input class="medium" type="type" value="{$item->getName()}" name="site_name" id="site_name" /></p>
+<p><label for="email">* {$locale->msg('site_keywords')}</label>
+<input type="type" value="{$item->getKeywords()}" name="keywords" id="keywords" /></p>
+<p><label for="site_description">* {$locale->msg('site_description')}</label>
+<textarea rows="10" cols="20" name="site_description" id="site_description">{$item->getDescription()}</textarea></p>
+<!-- <p><label for="currency">* {$locale->msg('currency')}</label>
+<input class="small" type="type" value="{$item->getCurrency()}" name="currency" id="currency" />({$locale->msg('currency_type')})</p> -->
+<!-- <p><label for="company">{$locale->msg('name_company')}</label>
+<input type="type" value="{$item->getCompany()}" name="company" id="company" /></p>
+<p><label for="address">{$locale->msg('address')}</label>
+<input type="type" value="{$item->getAddress()}" name="address" id="address" /></p> -->
+<p><label for="email">{$locale->msg('email_add')}</label>
+<input class="medium" type="type" value="{$item->getEmail()}" name="email" id="email" /></p>
+<p><label for="tel">{$locale->msg('telephone')}</label>
+<input class="small" type="type" value="{$item->getTel()}" name="tel" id="tel" /></p>
+
+<div class="boxTyle">
+<label for="admin_logo">{$locale->msg('admin_logo')}</label>
+<input class="selectPhoto" type="type" value="{$item->getProperty('admin_logo')}" name="admin_logo" id="admin_logo" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('admin_logo')}</h4>
+<p>{$locale->msg('admin_logo_hint')}</p>
+</div>
+</div>
+</div>
+<div class="boxTyle">
+<label for="store_logo">{$locale->msg('store_logo')}</label>
+<input class="selectPhoto" type="type" value="{$item->getProperty('store_logo')}" name="store_logo" id="store_logo" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('store_logo')}</h4>
+<p>{$locale->msg('store_logo_hint')}</p>
+</div>
+</div>
+</div>
+
+{if $fieldOptionList}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+    {assign var=field_name value=$field->getFieldName()}
+    {assign var=fieldId value=$field->getId()}
+    {if isset($error.INPUT.$field_name)}
+    {$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+    {else}
+    {$field->displayHTML($allFieldValues[$fieldId]|default:'','')}
+    {/if}
+{/foreach}
+{/if}
+
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="config" />
+<input type="hidden" name="mod" value="general" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','general','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.price_room.error} class="errormsg"{/if}><label for="price_room">* {$locale->msg('price_room')}</label>
+<input class="small" type="type" value="{if isset($error.INPUT)}{$error.INPUT.price_room.value}{/if}" name="price_room" id="site_name" /> VNĐ</p>
+<p{if isset($error.INPUT) && $error.INPUT.private_domain.error} class="errormsg"{/if}><label for="private_domain">* {$locale->msg('domain')}</label><strong>{$estore->getDomain()}</strong></p>
+<p><label for="template_domain">{$locale->msg('web_interface')}</label>
+<select name="template_domain" id="template_domain">
+{$domainTemplates}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.site_name.error} class="errormsg"{/if}><label for="site_name">* {$locale->msg('site_name')}</label>
+<input class="medium" type="type" value="{if isset($error.INPUT)}{$error.INPUT.site_name.value}{/if}" name="site_name" id="site_name" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.keywords.error} class="errormsg"{/if}><label for="keywords">* {$locale->msg('site_keywords')}</label>
+<input type="type" value="{if isset($error.INPUT)}{$error.INPUT.keywords.value}{/if}" name="keywords" id="keywords" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.site_description.error} class="errormsg"{/if}><label for="site_description">* {$locale->msg('site_description')}</label>
+<textarea rows="10" cols="20" name="site_description" id="site_description">{if isset($error.INPUT)}{$error.INPUT.site_description.value}{/if}</textarea></p>
+<p{if isset($error.INPUT) && $error.INPUT.currency.error} class="errormsg"{/if}><label for="currency">* {$locale->msg('currency')}</label>
+<input class="small" type="type" value="{if isset($error.INPUT)}{$error.INPUT.currency.value}{/if}" name="currency" id="currency" />({$locale->msg('currency_type')})</p>
+<p{if isset($error.INPUT) && $error.INPUT.company.error} class="errormsg"{/if}><label for="company">{$locale->msg('name_company')}</label>
+<input type="type" value="{if isset($error.INPUT)}{$error.INPUT.company.value}{/if}" name="company" id="company" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.address.error} class="errormsg"{/if}><label for="address">{$locale->msg('address')}</label>
+<input class="long" type="type" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">{$locale->msg('email_add')}</label>
+<input class="medium" type="type" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.tel.error} class="errormsg"{/if}><label for="tel">{$locale->msg('telephone')}</label>
+<input class="small" type="type" value="{if isset($error.INPUT)}{$error.INPUT.tel.value}{/if}" name="tel" id="tel" /></p>
+
+<p{if isset($error.INPUT) && $error.INPUT.admin_logo.error} class="errormsg"{/if}><label for="admin_logo">{$locale->msg('admin_logo')}</label>
+<input class="selectPhoto" type="type" value="{if isset($error.INPUT)}{$error.INPUT.admin_logo.value}{/if}" name="admin_logo" id="admin_logo" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.store_logo.error} class="errormsg"{/if}><label for="store_logo">{$locale->msg('store_logo')}</label>
+<input class="selectPhoto" type="type" value="{if isset($error.INPUT)}{$error.INPUT.store_logo.value}{/if}" name="store_logo" id="store_logo" /></p>
+<br />
+
+{if $fieldOptionList}
+<br /><h2 style="text-transform: capitalize;">{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{/if}
+{/foreach}
+{/if}
+
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{/if}
+{/foreach}
+{/if}
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="config" />
+<input type="hidden" name="mod" value="general" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="Submit" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="Reset" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','general','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+</div>
+</div>

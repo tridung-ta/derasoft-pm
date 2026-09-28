@@ -1,0 +1,49 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_event_template')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="can_del">{$locale->msg('enable_delete')}</label>
+<select name="can_del" id="can_del" class="small">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.can_del.value eq 1} selected="selected"{/if}>{$locale->msg('yes')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.can_del.value eq 0} selected="selected"{/if}>{$locale->msg('no')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label for="name">* {$locale->msg('event_name')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" />{$locale->msg('exemple_event')}</p>
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="event" />
+<input type="hidden" name="mod" value="add" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>

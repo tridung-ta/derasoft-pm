@@ -1,0 +1,232 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+<ul class="tabs">
+<li><a title="{$locale->msg('list_item')}" href="javascript:void(0);" onClick="javascript:formSubmit('formClean','list','',0);">{$locale->msg('list_item')}</a></li>
+<li class="current"><a title="{$locale->msg('edit_order')}" href="javascript:void(0);">{$locale->msg('edit_order')}</a></li>
+<li><a title="{$locale->msg('clean_trash')}" href="javascript:void(0);">{$locale->msg('clean_trash')}</a></li>
+</ul>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_order')}</h1>
+{if $validItem}
+{if isset($item)}
+<!-- Load order info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<!-- Info Customer buy-->
+<p><label for="status">{$locale->msg('status_order')} </label>
+<select name="status" id="status">
+<option value="0"{if $item->getStatus() eq "0"} selected="selected"{/if}>{$amessages.status_payment.0}</option>
+<option value="1"{if $item->getStatus() eq "1"} selected="selected"{/if}>{$amessages.status_payment.1}</option>
+<option value="2"{if $item->getStatus() eq "2"} selected="selected"{/if}>{$amessages.status_payment.2}</option>
+<option value="3"{if $item->getStatus() eq "3"} selected="selected"{/if}>{$amessages.status_payment.3}</option>
+<option value="4"{if $item->getStatus() eq "4"} selected="selected"{/if}>{$amessages.status_payment.4}</option>
+<option value="5"{if $item->getStatus() eq "5"} selected="selected"{/if}>{$amessages.status_payment.5}</option>
+<option value="6"{if $item->getStatus() eq "6"} selected="selected"{/if}>{$amessages.status_payment.6}</option>
+<option value="7"{if $item->getStatus() eq "7"} selected="selected"{/if}>{$amessages.status_payment.7}</option>
+</select></p>
+
+<p><h3>Technical Contact Person</h3></p>
+<p><label for="name">First name</label>
+<input type="text" value="{$item->getProperty('tech_firstName')}" name="tech_firstName" id="tech_firstName" /></p>
+<p><label for="position">Last name</label>
+<input type="text" value="{$item->getProperty('tech_lastName')}" name="tech_lastName" id="tech_lastName" /></p>
+<p><label for="name">Job title / position</label>
+<input type="text" value="{$item->getProperty('tech_title')}" name="tech_title" id="tech_title" /></p>
+<p><label for="position">Organization name</label>
+<input type="text" value="{$item->getProperty('tech_company')}" name="tech_company" id="tech_company" /></p>
+<p><label for="position">Address 1</label>
+<input type="text" value="{$item->getProperty('tech_address1')}" name="tech_address1" id="tech_address1" /></p>
+<p><label for="position">Address 2</label>
+<input type="text" value="{$item->getProperty('tech_address2')}" name="tech_address2" id="tech_address2" /></p>
+<p><label for="position">City</label>
+<input type="text" value="{$item->getProperty('tech_city')}" name="tech_city" id="tech_city" /></p>
+<p><label for="position">Mã số thuế</label>
+<input type="text" value="{$item->getProperty('tech_mst')}" name="tech_mst" id="tech_mst" /></p>
+<p><label for="position">ZIP code</label>
+<input type="text" value="{$item->getProperty('tech_postal')}" name="tech_postal" id="tech_postal" /></p>
+<p><label for="position">E-mail</label>
+<input type="text" value="{$item->getProperty('tech_email')}" name="tech_email" id="tech_email" /></p>
+<p><label for="position">Phone</label>
+<input type="text" value="{$item->getProperty('tech_work_phone')}" name="tech_work_phone" id="tech_work_phone" /></p>
+<p><label for="position">Fax</label>
+<input type="text" value="{$item->getProperty('tech_fax_phone')}" name="cell" id="tech_fax_phone" /></p>
+
+<p><h3>Organizational  Contact Person</h3></p>
+<p><label for="name">First name</label>
+<input type="text" value="{$item->getProperty('org_firstName')}" name="org_firstName" id="org_firstName" /></p>
+<p><label for="position">Last name</label>
+<input type="text" value="{$item->getProperty('org_lastName')}" name="org_lastName" id="org_lastName" /></p>
+<p><label for="name">Job title / position</label>
+<input type="text" value="{$item->getProperty('org_title')}" name="org_title" id="org_title" /></p>
+<p><label for="position">Organization name</label>
+<input type="text" value="{$item->getProperty('org_company')}" name="org_company" id="org_company" /></p>
+<p><label for="position">Address 1</label>
+<input type="text" value="{$item->getProperty('org_address1')}" name="org_address1" id="org_address1" /></p>
+<p><label for="position">Address 2</label>
+<input type="text" value="{$item->getProperty('org_address2')}" name="org_address2" id="org_address2" /></p>
+<p><label for="position">City</label>
+<input type="text" value="{$item->getProperty('org_city')}" name="org_city" id="org_city" /></p>
+<p><label for="position">Mã số thuế</label>
+<input type="text" value="{$item->getProperty('org_mst')}" name="org_mst" id="org_mst" /></p>
+<p><label for="position">ZIP code</label>
+<input type="text" value="{$item->getProperty('org_postal')}" name="org_postal" id="org_postal" /></p>
+<p><label for="position">E-mail</label>
+<input type="text" value="{$item->getProperty('org_email')}" name="org_email" id="org_email" /></p>
+<p><label for="position">Phone</label>
+<input type="text" value="{$item->getProperty('org_work_phone')}" name="org_work_phone" id="org_work_phone" /></p>
+<p><label for="position">Fax</label>
+<input type="text" value="{$item->getProperty('org_fax_phone')}" name="org_fax_phone" id="org_fax_phone" /></p>
+
+<p><h3>Billing Contact Person</h3></p>
+<p><label for="name">First name</label>
+<input type="text" value="{$item->getProperty('bill_firstName')}" name="bill_firstName" id="bill_firstName" /></p>
+<p><label for="position">Last name</label>
+<input type="text" value="{$item->getProperty('bill_lastName')}" name="bill_lastName" id="bill_lastName" /></p>
+<p><label for="name">Job title / position</label>
+<input type="text" value="{$item->getProperty('bill_title')}" name="bill_title" id="bill_title" /></p>
+<p><label for="position">Organization name</label>
+<input type="text" value="{$item->getProperty('bill_company')}" name="bill_company" id="bill_company" /></p>
+<p><label for="position">Address 1</label>
+<input type="text" value="{$item->getProperty('bill_address1')}" name="bill_address1" id="bill_address1" /></p>
+<p><label for="position">Address 2</label>
+<input type="text" value="{$item->getProperty('bill_address2')}" name="bill_address2" id="bill_address2" /></p>
+<p><label for="position">City</label>
+<input type="text" value="{$item->getProperty('bill_city')}" name="bill_city" id="bill_city" /></p>
+<p><label for="position">Mã số thuế</label>
+<input type="text" value="{$item->getProperty('bill_mst')}" name="bill_mst" id="bill_mst" /></p>
+<p><label for="position">ZIP code</label>
+<input type="text" value="{$item->getProperty('bill_postal')}" name="bill_postal" id="bill_postal" /></p>
+<p><label for="position">E-mail</label>
+<input type="text" value="{$item->getProperty('bill_email')}" name="bill_email" id="bill_email" /></p>
+<p><label for="position">Phone</label>
+<input type="text" value="{$item->getProperty('bill_work_phone')}" name="bill_work_phone" id="bill_work_phone" /></p>
+<p><label for="position">Fax</label>
+<input type="text" value="{$item->getProperty('bill_fax_phone')}" name="bill_fax_phone" id="bill_fax_phone" /></p>
+
+
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<p><label for="status">{$locale->msg('status_order')}</label>
+<select name="status" id="status">
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$amessages.status_payment.0}</option>
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$amessages.status_payment.1}</option>
+<option value="2"{if isset($error.INPUT) && $error.INPUT.status.value eq 2} selected="selected"{/if}>{$amessages.status_payment.2}</option>
+<option value="3"{if isset($error.INPUT) && $error.INPUT.status.value eq 3} selected="selected"{/if}>{$amessages.status_payment.3}</option>
+<option value="4"{if isset($error.INPUT) && $error.INPUT.status.value eq 4} selected="selected"{/if}>{$amessages.status_payment.4}</option>
+<option value="5"{if isset($error.INPUT) && $error.INPUT.status.value eq 5} selected="selected"{/if}>{$amessages.status_payment.5}</option>
+<option value="6"{if isset($error.INPUT) && $error.INPUT.status.value eq 6} selected="selected"{/if}>{$amessages.status_payment.6}</option>
+<option value="7"{if isset($error.INPUT) && $error.INPUT.status.value eq 7} selected="selected"{/if}>{$amessages.status_payment.7}</option>
+</select></p>
+<p><h3>{$locale->msg('buyer_info')}</h3></p>
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label for="name">* {$locale->msg('fullname')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.address.error} class="errormsg"{/if}><label for="address">* {$locale->msg('address')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">* {$locale->msg('email')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.cell.error} class="errormsg"{/if}><label for="cell">* {$locale->msg('telephone')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.cell.value}{/if}" name="cell" id="cell" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.tel.error} class="errormsg"{/if}><label for="tel">* {$locale->msg('cell')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.tel.value}{/if}" name="tel" id="tel" /></p>
+<p><h3>{$locale->msg('recipient')}</h3></p>
+<p{if isset($error.INPUT) && $error.INPUT.rname.error} class="errormsg"{/if}><label for="rname">* {$locale->msg('fullname')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.rname.value}{/if}" name="rname" id="rname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.raddress.error} class="errormsg"{/if}><label for="raddress">* {$locale->msg('address')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.raddress.value}{/if}" name="raddress" id="raddress" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.rcell.error} class="errormsg"{/if}><label for="rcell">*{$locale->msg('telephone')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.rcell.value}{/if}" name="rcell" id="rcell" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.rtel.error} class="errormsg"{/if}><label for="rtel">* {$locale->msg('cell')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.rtel.value}{/if}" name="rtel" id="rtel" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.rnote.error} class="errormsg"{/if}><label for="rnote">{$locale->msg('note_info')}</label>
+<textarea rows="10" cols="20" name="rnote" id="rnote">{if isset($error.INPUT)}{$error.INPUT.rnote.value}{/if}</textarea></p>
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{/if}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>
+<div class="tableContent hidden">
+<div class="contType">
+<h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_clean_trash')}</div>
+<form name="formClean" id="formClean" action="/{$aScript}" method="post">
+<fieldset>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="cleantrash" />
+<input type="hidden" name="lang" value="{$lang}" />
+<p class="btn"><input type="submit" value="{$locale->msg('button_ok')}" title="{$locale->msg('button_ok')}" name="btnSubmit2" />
+<input type="button" onClick="javascript:formSubmit('formClean','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

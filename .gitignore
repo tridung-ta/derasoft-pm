@@ -1,0 +1,30 @@
+# Environment-specific configuration and secrets
+/includes/config.inc.php
+.env
+.env.*
+!.env.example
+
+# Generated Smarty cache
+/templates_c/*
+!/templates_c/.gitkeep
+
+# Database dumps and local data
+/*.sql
+/*.dump
+/*.sqlite
+
+# Backups and deployment archives
+*.bak
+*.bak-*
+*.zip
+
+# Editor and operating-system files
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db
+
+# Runtime files
+/debug/
+/logs/
+*.log

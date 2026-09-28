@@ -1,0 +1,53 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_new_article')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" class="small" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.fullname.error} class="errormsg"{/if}><label for="fullname">* {$locale->msg('name')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.fullname.value}{/if}" name="fullname" id="fullname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.telephone.error} class="errormsg"{/if}><label for="telephone">{$locale->msg('telephone')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.telephone.value}{/if}" name="telephone" id="telephone" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.cellphone.error} class="errormsg"{/if}><label for="cellphone">{$locale->msg('mobile')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.cellphone.value}{/if}" name="cellphone" id="cellphone" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.nick_yahoo.error} class="errormsg"{/if}><label for="nick_yahoo">{$locale->msg('nick_yahoo')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.nick_yahoo.value}{/if}" name="nick_yahoo" id="nick_yahoo" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.nick_skype.error} class="errormsg"{/if}><label for="nick_skype"> {$locale->msg('nick_skype')}</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.nick_skype.value}{/if}" name="nick_skype" id="nick_skype" /></p>
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="support" />
+<input type="hidden" name="mod" value="add" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>

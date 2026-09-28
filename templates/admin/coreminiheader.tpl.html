@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="index, follow" />
+<meta name="keywords" content="DeraCMS, e-commerce solution, administration page" />
+<meta name="description" content="DeraCMS for E-store" />
+<title>DeraCMS Internal pages listing</title>
+<link rel="stylesheet" type="text/css" href="/{$templatePath}/{$userTemplate}/css/screen.css" media="all" />
+{literal}<script  language="JavaScript">
+<!-- 
+function AddLink(txtLink) 
+{
+    var dialog = window.opener.CKEDITOR.dialog.getCurrent();
+        dialog.setValueOf('info','url',txtLink);  
+        dialog.setValueOf('info','protocol','');  
+        window.close(); // closes the popup window
+} 
+-->
+</script>{/literal}
+</head>
+<body>
+<div id="wrapper">
+<div id="header">
+{if $estore->getProperty('admin_logo')}
+<h1><img src="{$estore->getProperty('admin_logo')}" width="181" height="51" alt="Logo" /></h1>
+{/if}
+</div>

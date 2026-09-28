@@ -1,0 +1,62 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+{if $listAddon}
+<form style="width: 100%;" id="formType" name="formType" method="post" action="/{$aScript}" enctype="multipart/form-data">
+<table style="width: 100%;" class="ui-datepicker-calendar"  border="0" cellpadding="0" cellspacing="0">
+				<thead>
+					<tr> 
+						<th><span>{$locale->msg('code')}</span></th>
+                        <th><span>{$locale->msg('new_addon')}</span></th>
+                        <th><span>{$locale->msg('event')}</span></th>
+                        <th><span>{$locale->msg('description')}</span></th>
+						<th><span>{$locale->msg('install')}</span></th>
+					</tr>
+				</thead>
+				<tbody>
+                {foreach from=$listAddon key=i item=item}
+                    <tr> 
+                        <td><span>{$i+1}</span></td>
+                        <td>
+                        <span>{$listAddon.$i.name}</span>
+                        <input type="hidden" name="name[{$i}]" value="{$listAddon.$i.name}" />
+                        </td>
+                        <td>
+                        <span>{$listAddon.$i.event}</span>
+                        <input type="hidden" name="event[{$i}]" value="{$listAddon.$i.event}" />
+                        </td>
+                        <td>
+                        <span>{$listAddon.$i.description}</span>
+                        <input type="hidden" name="description[{$i}]" value="{$listAddon.$i.description}" />
+                        </td>
+                        <td><span>
+                        <a onclick="return confirmAction()" href="javascript:formSubmit('formType','scan','install',{$i});" title="{$locale->msg('enable')}"><img src="/{$templatePath}/{$userTemplate}/images/package-install.png" alt="{$locale->msg('enable')}" width="16" height="16" /></a>
+                        </span></td>                                   
+					</tr>
+                {/foreach}	
+				</tbody>
+</table>
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="addon" />
+<input type="hidden" name="mod" value="scan" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+<div class="errorBox">
+{$locale->msg('not_addon')}
+</div>
+{/if}

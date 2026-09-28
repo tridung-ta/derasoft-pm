@@ -1,0 +1,105 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+  <h2>{$locale->msg('error_notes')}:</h2>
+  <ul class="listStyle">
+    {foreach from=$input item=field}
+      {if $field.error}<li>{$field.message}</li>{/if}
+    {/foreach}
+    <li>{$error.message}</li>
+  </ul>
+</div>
+{/if}
+{/if}
+
+<div class="formContent">
+    <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+        <fieldset>
+            <h1>Cập nhật tuyển dụng</h1>
+            <p><strong>* {$locale->msg('required_fields')}</strong></p>
+            <p><label>* Vị trí tuyển dụng</label>
+                <input class="medium" name="name" type="text" value="{$recruitmentsData->getName()}"/>	
+            </p>
+            <p><label>Slug</label>
+                <input class="medium" name="slug" type="text" value="{$recruitmentsData->getSlug()}"/>	
+            </p>
+            <p><label>Thu nhập</label>
+                <input class="medium" name="income" type="text" value="{$recruitmentsData->getIncome()}"/>
+            </p>
+            <p><label>Bằng cấp</label>
+                <input class="medium" name="degree" type="text" value="{$recruitmentsData->getDegree()}"/>
+            </p>
+            <p><label>Cấp bậc</label>
+                <input class="medium" name="rank" type="text" value="{$recruitmentsData->getRank()}"/>
+            </p>
+            <p><label>Giới tính</label>
+                <input class="medium" name="gender" type="text" value="{$recruitmentsData->getGender()}"/>
+            </p>
+            <p><label>Tuổi</label>
+                <input class="small" name="age" type="text" value="{$recruitmentsData->getAge()}"/>
+            </p>
+            <p><label>Kinh nghiệm</label>
+                <input class="medium" name="experience" type="text" value="{$recruitmentsData->getExperience()}"/>
+            </p>
+
+            <p><label>Số lượng tuyển</label>
+                <input class="verysmall" name="number_recruits" type="number" value="{$recruitmentsData->getNumberRecruits()}"/>
+            </p>
+            <p><label>Địa điểm làm việc</label>
+                <textarea rows="10" cols="20" name="job_location" id="job_location">{$recruitmentsData->getJobLocation()}</textarea>
+            </p>
+            <!-- <p><label>Địa chỉ</label>
+                <textarea rows="10" cols="20" name="job_location" id="location">{$recruitmentsData->getLocation()}</textarea>
+            </p> -->
+            <p><label for="location">Tỉnh/Thành phố</label>
+                <select class="medium" name="location" id="location">
+                    <option value="">-- Chọn tỉnh/thành phố --</option>
+                    {$provinceOptions nofilter}
+            </select>
+            </p>
+
+            <p><label>Ngày hết hạn</label>
+                <input name="date_exp"  type="date" value="{$recruitmentsData->getDateExp()}"/>
+            </p>
+            <!-- <p><label>Tóm tắt</label>
+                <textarea rows="10" cols="20" name="sapo" id="sapo">{$recruitmentsData->getProperty('sapo')}</textarea>
+            </p> -->
+            <br>
+            <p><label for="detail">* Chi tiết</label></p>
+            <textarea rows="10" cols="20" name="detail" id="detail">{$recruitmentsData->getProperty('detail')}</textarea>
+            {literal}<script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>{/literal}
+            <br>
+            <!-- <p><label for="files">Hình ảnh đính kèm</label><input type="file" multiple="multiple" name="files[]" id="files[]" /></p> -->
+            <p><label for="logo">Hình ảnh đính kèm</label><input type="file" name="logo" id="logo" /></p>
+
+
+            <p>
+            <div class="listPhoto">
+            <ul>
+            <li><a href="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlFromId({$recruitmentsData->getProperty('avatar')})}" target="_blank"><img src="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlAFromId({$recruitmentsData->getProperty('avatar')})}" width="100" /></a><a href="/{$aScript}?op=manage&act=recruitment&mod=edit&id={$recruitmentsData->getId()}&doo=delPhoto&photo={$recruitmentsData->getProperty('avatar')}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+            </ul>
+            </div>
+            </p>
+           
+            {if $fieldList}
+            <br /><h2>{$locale->msg('list_custom_field')}</h2>
+            {foreach key=no from=$fieldList item=field}
+            {$field->displayHTML($recruitmentsData->getProperty($field->getName()))}
+            {/foreach}
+            {/if}
+
+            <br>
+            <input type="hidden" name="op" value="manage" />
+            <input type="hidden" name="act" value="recruitment" />
+            <input type="hidden" name="mod" value="edit" />
+            <input type="hidden" name="doo" value="submit" />
+            <input type="hidden" name="id" value="{$recruitmentsData->getId()}" />
+            <p class="btn">
+                <input type="submit" value="Cập nhật" />
+            </p>
+        </fieldset>
+    </form>
+</div>

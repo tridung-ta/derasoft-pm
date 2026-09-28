@@ -1,0 +1,18 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+<div class="innerContent">
+<select id="filemanager" onchange="MM_jump('gallery_frame',this,'/plugins/filemanager/browse.php?type=')">
+<option value="1">1</option>
+<option value="images">images</option>
+<option value="flash">flash</option>
+<option value="files">files</option>
+</select>
+<iframe id="gallery_frame" name="gallery_frame" src="/plugins/filemanager/browse.php?type=1" frameborder="0" width="100%" height="500"></iframe>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

@@ -1,0 +1,37 @@
+{assign var=editorialSlug value=$article->getSlug()}
+{assign var=editorialCategorySlug value=$article->getCategorySlug()}
+{if $avatar}
+<img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'mot-khoang-troi-trong-trang-sach'}
+<img src="/templates/mpx/img/literature/editorial/poetry.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'cau-chuyen-ben-hien-nha'}
+<img src="/templates/mpx/img/literature/editorial/prose.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'am-nhac-va-nhip-dieu-cuoc-song'}
+<img src="/templates/mpx/img/literature/editorial/music.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'sac-mau-trong-doi-song-duong-dai'}
+<img src="/templates/mpx/img/literature/editorial/fine-art.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'san-khau-noi-cau-chuyen-duoc-thap-sang'}
+<img src="/templates/mpx/img/literature/editorial/theatre.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'giu-gin-gia-tri-van-hoa-trong-doi-song-moi'}
+<img src="/templates/mpx/img/literature/editorial/culture.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'khong-gian-van-hoa-nghe-thuat-chinh-thuc-ra-mat'}
+<img src="/templates/mpx/img/literature/editorial/news.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialSlug eq 'video-gioi-thieu-khong-gian-van-hoa-nghe-thuat'}
+<img src="/templates/mpx/img/literature/editorial/video.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'tho'}
+<img src="/templates/mpx/img/literature/editorial/poetry.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'van-xuoi'}
+<img src="/templates/mpx/img/literature/editorial/prose.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'am-nhac'}
+<img src="/templates/mpx/img/literature/editorial/music.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'my-thuat'}
+<img src="/templates/mpx/img/literature/editorial/fine-art.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'san-khau-nghe-thuat'}
+<img src="/templates/mpx/img/literature/editorial/theatre.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'van-hoa'}
+<img src="/templates/mpx/img/literature/editorial/culture.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{elseif $editorialCategorySlug eq 'tin-tuc-moi'}
+<img src="/templates/mpx/img/literature/editorial/news.jpg" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{else}
+<img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="{$article->getTitle($lang)|escape:'html'}"{if $imageClass} class="{$imageClass}"{/if}{if $lazy} loading="lazy"{/if}>
+{/if}

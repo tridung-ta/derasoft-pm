@@ -1,0 +1,14 @@
+<div class="item-pages">
+<label for="pagenumber">{$locale->msg('items_per_page')}</label>
+<select name="pagenumber" id="pagenumber" onchange="MM_jumpMenu('parent',this,0)">
+<option{if $ipp eq 2} selected="selected"{/if} value="2" >2</option>
+<option{if $ipp eq 10} selected="selected"{/if} value="10" >10</option>
+<option{if $ipp eq 20} selected="selected"{/if} value="20" >20</option>
+<option{if $ipp eq 30} selected="selected"{/if} value="30" >30</option>
+<option{if $ipp eq 50} selected="selected"{/if} value="50" >50</option>
+<option{if $ipp eq 100} selected="selected"{/if} value="100" >100</option>
+<option{if $ipp eq 200} selected="selected"{/if} value="200" >200</option>
+<option{if $ipp eq 500} selected="selected"{/if} value="500" >500</option>
+<option{if $ipp eq 1000} selected="selected"{/if} value="1000" >1000</option>
+</select>
+</div>

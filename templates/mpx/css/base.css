@@ -1,0 +1,106 @@
+:root {
+  --primary-color: #F36523;
+  --white-color: #ffffff;
+  --second-white-color: #F8F8F8;
+  --black-color: #000000;
+  --gray-color: #D9D9D9;
+  --deactive-color: #64748B;
+  --new-color-13-8: #1155cc;
+  --error-color: #CB241C;
+  --header-h: 64px;
+  --footer-h: 80px;
+  --gap: 20px;
+  --black-gray-color: #171717;
+  --font-size-base: 16px;
+  --font-roboto: 'Roboto', Arial, sans-serif;
+  --font-dancing: 'Dancing Script', cursive;
+}
+
+main {
+  position: relative;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+img {
+  width: 100%;
+  height: auto;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+button {
+  font-family: var(--font-roboto);
+  cursor: pointer;
+  border: transparent;
+  background-color: transparent;
+}
+
+input:focus {
+  outline: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--white-color);
+  font-family: var(--font-roboto);
+  overflow-x: hidden;
+  position: relative;
+}
+
+header,
+footer,
+section {
+  justify-content: center;
+}
+
+header {
+  z-index: 2;
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  background-color: var(--white-color);
+  box-shadow: 1px 1px 10px 3px rgba(0, 0, 0, 0.15);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0px;
+  margin: 0px;
+  font-weight: bold;
+  color: var(--black-color);
+  text-transform: uppercase;
+}
+
+a {
+  text-decoration: none;
+  color: var(--black-color);
+  cursor: pointer;
+}
+
+p {
+  line-height: 1.5;
+  color: var(--black-color);
+  font-size: calc(var(--font-size-base) - 2px);
+}
+
+input,
+textarea{
+    caret-color: var(--black-color);
+}
+
+li{
+  color: var(--black-color);
+}

@@ -1,0 +1,33 @@
+{if $homeTrending}
+<section class="ed-section ed-trending">
+    <div class="ed-shell">
+        <header class="ed-section__head">
+            <div>
+                <span class="ed-kicker">{if $lang == 'en'}TRENDING NOW{elseif $lang == 'zh'}热门内容{else}ĐANG ĐƯỢC QUAN TÂM{/if}</span>
+                <h2>{if $lang == 'en'}Most-read stories{elseif $lang == 'zh'}热门文章{else}Bài viết được đọc nhiều{/if}</h2>
+                <p>{if $lang == 'en'}Stories attracting readers over the past seven days.{elseif $lang == 'zh'}过去七天最受读者关注的内容。{else}Những nội dung thu hút độc giả trong 7 ngày gần nhất.{/if}</p>
+            </div>
+            <span class="ed-trending__period">{if $lang == 'en'}Last 7 days{elseif $lang == 'zh'}&#36807;&#21435; 7 &#22825;{else}7 ng&#224;y g&#7847;n &#273;&#226;y{/if}</span>
+        </header>
+        <div class="ed-home-grid ed-trending__grid">
+            {foreach from=$homeTrending item=article name=trendingArticles}
+            {assign var="avatar" value=$article->getAvatarImage($uploads)}
+            <article class="ed-card ed-trending__card">
+                <a class="ed-card__link" href="{$article->getUrl($lang)|escape:'html'}">
+                    <figure class="ed-card__media">
+                        {include file='editorial-card-media.tpl.html' article=$article avatar=$avatar lazy=true}
+                        <span class="ed-card__badge">#{$smarty.foreach.trendingArticles.iteration}</span>
+                    </figure>
+                    <div class="ed-card__body">
+                        <div class="ed-card__meta"><span>{include file='editorial-category-label.tpl.html' article=$article}</span><time>{$article->getDisplayDate()}</time></div>
+                        <h3>{$article->getTitle($lang)|escape:'html'}</h3>
+                        <p>{$article->getDescription($lang)|strip_tags|escape:'html'}</p>
+                        <b>{if $lang == 'en'}Read article{elseif $lang == 'zh'}阅读全文{else}Đọc bài{/if} →</b>
+                    </div>
+                </a>
+            </article>
+            {/foreach}
+        </div>
+    </div>
+</section>
+{/if}

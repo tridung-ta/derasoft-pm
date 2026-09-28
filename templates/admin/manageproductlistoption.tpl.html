@@ -1,0 +1,77 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $pId}<p><a href="/{$aScript}?op=manage&act=product&mod=listoption&pId={$gfId}" title="{$locale->msg('back_group')}"><img src="/{$templatePath}/{$userTemplate}/images/icon_parent.png" alt="{$locale->msg('back_group')}" width="32" height="32" />...{$locale->msg('back')}</a></p>{/if}
+{if $listItems}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th><input type="checkbox" name="all" id="all" value="1" class="box3" onClick="toggleAllChecks('formType');" /></th>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('product_category')}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_name')}">{$locale->msg('name')}</a>{if $sk eq "name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','type','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('sort_by_type')}">{$locale->msg('custom_field_type')}</a>{if $sk eq "type"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','status','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_status')}">{$locale->msg('system_status')}</a>{if $sk eq "status"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+<td>{$startNum+$no}</td>
+<td>{$item->getId()}</td>
+<td>{if $item->getPcId()==28}Thương Hiệu{else if $item->getPcId()==32} Thương hiệu phụ kiện {else if $item->getPcId()==29} Hãng xe{else if $item->getPcId()==31} Dung Lượng{else if $item->getPcId()==33} Phân loại dòng xe chi tiết theo bình {else} Kích thước{/if}</td>
+<td><a href="/{$aScript}?op=manage&act=product&mod=listoption&pId2={$item->getId()}&pId={$item->getPcId()}" title="{$locale->msg('view_list_group_child')}">{$item->getName()}</a></td>
+
+<td><input type="text" name="positions[{$item->getId()}]" value="{$item->getPosition()}" /></td>
+<td>{$item->getStatusTextBackend()}</td>
+<td>
+<div class="cell-content">
+<a href="/{$aScript}?op=manage&act=product&mod=editoption&id={$item->getId()}&lang={$lang}" title="{$locale->msg('edit')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png" alt="{$locale->msg('edit')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','listoption','enable',{$item->getId()});" title="{$locale->msg('enable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_enable.png" alt="{$locale->msg('enable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','listoption','disable',{$item->getId()});" title="{$locale->msg('disable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_disable.png" alt="{$locale->msg('disable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','listoption','delete',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+{if $item->getHome()}
+<a href="javascript:formSubmit('formType','listoption','deletehome',{$item->getId()});" title="{$locale->msg('disable_home')}"><img src="/{$templatePath}/{$userTemplate}/images/delete_home.gif" alt="{$locale->msg('disable_home')} width="16" height="16" /></a>
+{else}
+<a href="javascript:formSubmit('formType','listoption','sethome',{$item->getId()});" title="{$locale->msg('enable_home')}"><img src="/{$templatePath}/{$userTemplate}/images/home_ico.gif" alt="{$locale->msg('enable')}" width="16" height="16" /></a>
+{/if}
+</div>
+</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+</div>
+<div class="paging">
+<p class="listBtn">
+<a title="{$locale->msg('button_enable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','listoption','changeposition','0');;">{$locale->msg('button_update')}</a>
+<a title="{$locale->msg('button_enable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','listoption','enable','0');;">{$locale->msg('button_enable')}</a>
+<a title="{$locale->msg('button_disable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','listoption','disable','0');">{$locale->msg('button_disable')}</a>
+<a title="{$locale->msg('button_delete')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','listoption','delete','0');">{$locale->msg('button_delete')}</a>
+</p>
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+</div>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="listoption" />
+<input type="hidden" name="pId" value="{$pId}" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+{$locale->msg('no_record')}
+{/if}
+</div>

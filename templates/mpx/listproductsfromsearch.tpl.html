@@ -1,0 +1,91 @@
+<div id="search-results-wrapper">
+    {if !empty($items)}
+        <div class="archive-container flex flex-wrap gap-20">
+            {foreach from=$items item=product}
+            <article class="col-3 literature-product-card">
+                <div class="news-item bg-white flex hover-border-primary flex-col pos-rel border-radius-5 shadow-sm">
+                    <div class="news-item__img">
+                        {assign var=avatar value=$product->getAvatarImage($uploads)}
+                        {if $avatar}
+                        <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$product->getName($lang)|escape:'html'}" class="img-content" loading="lazy"/>
+                        {else}
+                        <img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="No image" class="img-content"/>
+                        {/if}
+                    </div>
+                    <div class="news-item__content item-padding-20 flex flex-col gap-10 flex-1 jus-sb">
+                        <div class="flex flex-col gap-10 jus-sb ">
+                            {if $isProductCate}
+                                <div class="rate-stars flex">
+                                    {section name=star loop=5}
+                                        <span class="star {if $smarty.section.star.index < $product->getStar()}active{/if}">★</span>
+                                    {/section}
+                                </div>
+                             {else}
+                                <div class="flex gap-20">
+                                    <div class="news-item__date flex gap-10">
+                                        <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/clock.svg" alt="Thời gian"/>
+                                        <p>{$product->getDateCreated()|date_format:"%d/%m/%Y"}</p>
+                                    </div>
+                                    <div class="news-item__view flex gap-10">
+                                        <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/eye.svg" alt="Lượt xem"/>
+                                        <p>{$product->getViewed()}</p>
+                                    </div>
+                                </div>
+                              {/if}
+                                <h4 class="news-item__title clamp-text bold">{$product->getName($lang)|escape:'html'}</h4>
+                                <p class="news-item__desc clamp-text">{$product->getDescription($lang)|strip_tags}</p>
+                        </div>
+                        <button type="button" class="news-btn btn-padding flex gap-10 center-hor center-ver text-color-white border-radius-5 cursor-point bg-primary uppercase">
+                            <p class="text-color-white">{$messages['view_details']}</p>
+                            <p class="text-color-white">➔</p>
+                        </button>
+                    </div>
+                    <a href="{$product->getUrl($lang)|escape:'html'}" class="pos-abs cover-all" aria-label="{$product->getName($lang)|escape:'html'}"></a>
+                </div>
+            </article>
+            {/foreach}
+        </div>
+    {else}
+        <p class="text-center">{$messages['no_data']}</p>
+    {/if}
+
+    {if $totalPages > 1}
+        <div class="archive-pagination flex center-hor gap-10 item-padding-20" data-ajax="1">
+            {if $page > 1}
+                <a href="?page={$page - 1}" class="pagination-btn border-radius-5 prev">&lt;</a>
+            {else}
+                <button type="button" class="pagination-btn border-radius-5 prev" disabled>&lt;</button>
+            {/if}
+
+            {if $page > 3}
+                <a href="?page=1" class="pagination-btn border-radius-5">1</a>
+                {if $page > 4}
+                    <span class="pagination-btn border-radius-5 dots">...</span>
+                {/if}
+            {/if}
+
+            {for $i = 1 to $totalPages}
+                {if $i >= $page - 2 && $i <= $page + 2}
+                    {if $i == $page}
+                        <button type="button" class="pagination-btn border-radius-5 active">{$i}</button>
+                    {else}
+                        <a href="?page={$i}" class="pagination-btn border-radius-5">{$i}</a>
+                    {/if}
+                {/if}
+            {/for}
+
+            {if $page < $totalPages - 2}
+                {if $page < $totalPages - 3}
+                    <span class="pagination-btn border-radius-5 dots">...</span>
+                {/if}
+                <a href="?page={$totalPages}" class="pagination-btn border-radius-5">{$totalPages}</a>
+            {/if}
+
+            {if $page < $totalPages}
+                <a href="?page={$page + 1}" class="pagination-btn border-radius-5 next">&gt;</a>
+            {else}
+                <button type="button" class="pagination-btn border-radius-5 next" disabled>&gt;</button>
+            {/if}
+        </div>
+    {/if}
+</div>

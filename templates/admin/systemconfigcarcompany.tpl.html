@@ -1,0 +1,44 @@
+<div class="tableContent">
+    {if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+    {if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+    <div class="contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('config_site_down_notes')}</div>
+    {if $error}{if $error.invalid || $error.message}
+    {assign var=input value=$error.INPUT}
+    <div class="errorBox">
+    <h2>{$locale->msg('error_notes')}:</h2>
+    <ul class="listStyle">{foreach from=$input item=field}{if $field.error}<li>{$field.message}</li>{/if}{/foreach}<li>{$error.message}</li></ul>
+    </div>
+    {/if}{/if}
+    {if $success}
+    <div class="infoBox">
+    <h2>{$success}</h2>
+    </div>
+    {/if}
+    <div class="formContent">
+    <h1>{$locale->msg('carcompany')}</h1>
+    {if $item}
+    <!-- Load estore info -->
+    <form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+    <fieldset>
+        {if $fieldList}
+        <br /><h2>{$locale->msg('list_custom_field')}</h2>
+        {foreach key=no from=$fieldList item=field}
+        {$field->displayHTML($item->getProperty($field->getName()))}
+        {/foreach}
+        {/if}
+    <p class="btn">
+    <input type="hidden" name="op" value="system" />
+    <input type="hidden" name="act" value="config" />
+    <input type="hidden" name="mod" value="carcompany" />
+    <input type="hidden" name="doo" value="submit" />
+    <input type="hidden" name="sCode" value="{$sCode}_" />
+    <input type="hidden" name="lang" value="{$lang}" />
+    <input type="submit" value="{$locale->msg('button_submit')}" title="Submit" name="btnSubmit" />
+    <input type="reset" value="{$locale->msg('button_reset')}" title="Reset" name="btnReset" />
+    <input type="button" onclick="javascript:formSubmit('formEdit','carcompany','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+    </p>
+    </fieldset>
+    </form>
+    {/if}
+    </div>
+    </div>

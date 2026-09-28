@@ -1,0 +1,24 @@
+<div class="formContent">
+  <h1>Xuất dữ liệu</h1>
+  <form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data">
+    <fieldset>
+      <p><label>Lưu ý</label>
+        mỗi lần chỉ có thể xuất tối đa 5.000 dữ liệu.
+      </p>
+      <p id="type"><label for="type">Loại</label>
+        <input type="radio" name="type" id="type" class="box" value="1" checked="checked"><label for="type" class="lbl"> Danh sách lốp xe</label>
+        <input type="radio" name="type" id="type" class="box" value="2"><label for="type" class="lbl"> Danh sách kính thước</label>
+        <input type="radio" name="type" id="type" class="box" value="3"><label for="type" class="lbl"> Danh sách hãng xe</label>
+        <input type="radio" name="type" id="type" class="box" value="4"><label for="type" class="lbl"> Danh sách dòng gai</label>
+      </p>
+      <br />
+      <p class="btn">
+        <input type="hidden" name="op" value="manage" />
+        <input type="hidden" name="act" value="export" />
+        <input type="hidden" name="mod" value="data" />
+        <input type="hidden" name="doo" value="submit" />
+        <input type="submit" value="Xuất danh sách" title="Xuất danh sách" name="btnSubmit" />
+      </p>
+    </fieldset>
+  </form>
+</div>

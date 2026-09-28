@@ -1,0 +1,66 @@
+<div class="review-overview flex flex-col gap-20 item-padding-20">
+    <div class="review-badge bg-deactive text-color-white border-radius-5 item-padding-10-20">
+        <strong class="uppercase">{$messages['overview']}</strong>
+    </div>
+
+    <div class="review-score-box flex gap-20 center-ver">
+        <h2 class="score-number bold text-color-primary">{$objectInfo->getStar()}</h2>
+        <div class="flex flex-col gap-5">
+            <div class="rate-stars flex">
+                {section name=star loop=5}
+                    <span class="star {if $smarty.section.star.index < $objectInfo->getStar()}active{/if}">★</span>
+                {/section}
+            </div>
+            <strong class="uppercase text-xs text-color-black">
+                {$messages.total_reviews|replace:'{count}':$objectInfo->getCommentCount()}
+            </strong>
+        </div>
+    </div>
+
+    <ul class="review-chart flex flex-col gap-10">
+        {foreach $starStats as $star => $stat}
+            <li class="chart-item flex center-ver gap-10">
+                <strong class="text-xs chart-label">{$star} {$messages['star']}</strong>
+                <div class="chart-track flex-1 bg-white-secondary overflow-hidden">
+                    <div class="chart-fill bg-black" style="width: {$stat.percent}%"></div>
+                </div>
+                <strong class="text-xs chart-count">{$stat.count}</strong>
+            </li>
+        {/foreach}
+    </ul>
+
+    <div class="review-filter flex flex-col gap-20">
+        <h3 class="bold uppercase text-sm">{$messages['filter_by_star']}</h3>
+        <div class="flex flex-wrap gap-10" id="review-filter-btns">
+            <div class="filter-btn active bg-white-secondary flex gap-5 center-ver border-radius-5 cursor-pointer text-xs" data-star="0">
+                <p>{$messages['all']}</p>
+            </div>
+            {for $s=5 to 1 step=-1}
+                <div class="filter-btn bg-white-secondary flex gap-5 center-ver border-radius-5 cursor-pointer text-xs" data-star="{$s}">
+                    <p>{$messages['reviews']} {$s} ★</p>
+                </div>
+            {/for}
+        </div>
+    </div>
+
+    <div class="btn-write__container flex">
+        <button class="btn-write-review flex-1 bg-primary text-color-white border-none border-radius-5 bold uppercase cursor-pointer item-padding-20-30">
+            {$messages['write_review']}
+        </button>
+    </div>
+</div>
+
+<!-- Vùng AJAX — data-attribute truyền biến cho JS -->
+<div class="review-list flex-1 flex flex-col gap-30"
+     id="review-dynamic-wrapper"
+     data-pid="{$objectInfo->getId()}"
+     data-per-page="{$itemsPerPage}">
+
+    <h3 class="review-list-title bold text-primary uppercase item-padding-20-40">
+        {$messages['review_list']}
+    </h3>
+
+    <div id="review-dynamic">
+        {include file="component/comment-list.tpl.html" title="comment-list"}
+    </div>
+</div>

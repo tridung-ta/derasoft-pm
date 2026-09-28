@@ -1,0 +1,146 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field key=key}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_new_customer')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.username.error} class="errormsg"{/if}><label for="username">* {$locale->msg('username')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}" name="username" id="username" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.password.error} class="errormsg"{/if}><label for="title">* {$locale->msg('password')}</label>
+<input type="password" class="small" value="" name="password" id="password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.cpassword.error} class="errormsg"{/if}><label for="cpassword">* {$locale->msg('confirm_password')}</label>
+<input type="password" class="small" value="" name="cpassword" id="cpassword" /></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select class="small" name="status" id="status">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="group_id">* {$locale->msg('customer_group_name')}</label>
+<select class="large" name="group_id" id="group_id">
+{if isset($customerGroupsCombo)}{$customerGroupsCombo}{/if}
+</select></p>
+{literal}<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>{/literal}
+{literal}<script>
+$(document).ready(function(){
+    $('#country_id').change(function(){
+        var countryID = $(this).val();
+        $('#area_id').html('<option>Đang tải...</option>');
+        $('#ward_id').html('<option>Chọn phường, xã</option>');
+        if(countryID){
+            $.ajax({
+                type: 'POST',
+                url: 'ajaxadmin.php',
+                data: {op: 'loadareas', country_id: countryID},
+                success: function(html){
+                    $('#area_id').html(html);
+                }
+            });
+        } else {
+            $('#area_id').html('<option>Chọn tỉnh, thành</option>');
+        }
+    });
+
+    $('#area_id').change(function(){
+        var areaID = $(this).val();
+        $('#ward_id').html('<option>Đang tải...</option>');
+        if(areaID){
+            $.ajax({
+                type: 'POST',
+                url: 'ajaxadmin.php',
+                data: {op: 'loadwards', area_id: areaID},
+                success: function(html){
+                    $('#ward_id').html(html);
+                }
+            });
+        } else {
+            $('#ward_id').html('<option>Chọn phường, xã</option>');
+        }
+    });
+});
+</script>{/literal}
+<p{if isset($error.INPUT) && $error.INPUT.country_id.error} class="errormsg"{/if}><label for="country_id">* {$locale->msg('country_name')}</label><select class="large" name="country_id" id="country_id">
+<option value="">Chọn quốc gia</option>
+{if isset($countriesCombo)}{$countriesCombo}{/if}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.area_id.error} class="errormsg"{/if}><label for="area_id">* {$locale->msg('area_name')}</label><select class="large" name="area_id" id="area_id">
+<option value="">Chọn tỉnh, thành</option>
+{if isset($areasCombo)}{$areasCombo}{/if}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.ward_id.error} class="errormsg"{/if}><label for="ward_id">* {$locale->msg('ward_name')}</label><select class="large" name="ward_id" id="ward_id">
+<option value="">Chọn phường, xã</option>
+{if isset($areasCombo)}{$wardsCombo}{/if}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.fullname.error} class="errormsg"{/if}><label for="fullname">* {$locale->msg('fullname')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.fullname.value}{/if}" name="fullname" id="fullname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.address.error} class="errormsg"{/if}><label for="address">* {$locale->msg('address')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">* {$locale->msg('email')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.tel.error} class="errormsg"{/if}><label for="tel">* {$locale->msg('cell')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.tel.value}{/if}" name="tel" id="tel" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.company.error} class="errormsg"{/if}><label for="company">{$locale->msg('name_company')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.company.value}{/if}" name="company" id="company" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.tax_code.error} class="errormsg"{/if}><label for="tax_code">{$locale->msg('customer_tax_code')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.tax_code.value}{/if}" name="tax_code" id="tax_code" /></p>
+
+{if isset($fieldOptionList)}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{else}
+{$field->displayHTML('','')}
+{/if}
+{/foreach}
+{/if}
+
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="add" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden">
+<div class="contType"><h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_clean_trash')}</div>
+<form name="formClean" id="formClean" action="/{$aScript}" method="post">
+<fieldset>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="cleantrash" />
+<input type="hidden" name="lang" value="{$lang}" />
+<p class="btn"><input type="submit" value="{$locale->msg('button_ok')}" title="{$locale->msg('button_ok')}" name="btnSubmit2" />
+<input type="button" onClick="javascript:formSubmit('formClean','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>

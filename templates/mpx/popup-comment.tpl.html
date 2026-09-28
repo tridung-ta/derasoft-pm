@@ -1,0 +1,88 @@
+<div class="popup-comment__content container-ts z-index-3 bg-white item-padding-40 border-radius-10">
+    <form class="flex flex-col gap-20 js-validate-form" data-_validated="true">
+        <div class="popup-comment__header flex jus-sb">
+            <div class="flex flex-col gap-">
+                <span class="text-color-deactive italic text-sm">{$messages['customer_support']}</span>
+                <h2 class="uppercase bold">{$messages['product_pricing']}</h2>
+            </div>
+            <div class="popup-comment__close bg-deactive border-radius-5 center-ver center-hor">
+                <img src="/{$templatePath}/{$userTemplate}/img/icon/close.svg" class="img-content" alt="">
+            </div>
+        </div>
+        <div class="flex flex-col">
+            <label class="bold">{$messages['your_rating']}</label>
+            <div class="rate-stars flex gap-2" >
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+                <span class="star active">★</span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-20">
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['full_name']}</label>
+                <input type="text" placeholder="John Architect" required="" data-msg="{$messages['required_full_name']}" name="fullname"
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['email']}</label>
+                <input type="email" placeholder="name@architect.core" required="" name="email" data-msg="{$messages['required_email']}"
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-20">
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['phone']}</label>
+                <input type="text" placeholder="Số điện thoại" required="" name="tel" data-msg="{$messages['required_phone']}"
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+            <div class="flex-1 flex flex-col gap-10 form-group">
+                <label class="bold">{$messages['address']}</label>
+                <input type="text" placeholder="Địa chỉ" required="" name="address" data-msg="{$messages['required_address']}"
+                    class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view">
+                <span class="error-msg text-red text-xs"></span>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-10 form-group">
+            <label class="bold">{$messages['message']}</label>
+            <textarea rows="4" required="" minlength="10" data-msg="{$messages['min_content_length']}" name="details"
+                class="item-padding-10-20 border-radius-5 bg-white-secondary border-none fill-view"></textarea>
+            <span class="error-msg text-red text-xs"></span>
+        </div>
+
+        <div class="g-recaptcha" data-sitekey="6Ld6z_wsAAAAAO62WhfUGrt4k_NQP5ZLV2Mw3Qfe"></div>
+
+        <input hidden type="text" name="pid" value="{$objectInfo->getId()}"> 
+        {if $type == 'products'}
+        <input hidden type="text" name="object_name" value="{$objectInfo->getName($lang)}"> 
+        {elseif $type == 'articles'}
+        <input hidden type="text" name="object_name" value="{$objectInfo->getTitle($lang)}">
+        {/if}
+        <input hidden type="text" name="type" value="{$type}"> 
+
+        <!-- <div class="flex flex-col gap-10 form-group">
+            <label class="bold">{$messages['captcha']}</label>
+            <input type="text" required=""
+                class="item-padding-10-20 border-radius-5 bg-white-second border-none fill-view">
+            <span class="error-msg text-red text-xs"></span>
+        </div> -->
+
+        <div class="flex gap-20">
+            <button type="submit"
+                class="bg-white text-color-primary border-radius-5 bold uppercase cursor-pointer btn-submit-large border-none">
+                {$messages['cancel']} &nbsp; →
+            </button>
+            <button type="submit" id="btn-submit-comment-form"
+                class="bg-primary text-color-white border-radius-5 bold uppercase cursor-pointer btn-submit-large border-none">
+                {$messages['submit_message']} &nbsp; →
+            </button>
+        </div>
+    </form>
+</div>

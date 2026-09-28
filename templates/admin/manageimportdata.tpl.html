@@ -1,0 +1,80 @@
+<div class="formContent">
+  <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+    <fieldset>
+      <h1>Nhập dữ liệu.</h1>
+      <p><strong>* {$locale->msg('required_fields')}</strong></p>
+      <br>
+      <p><label>Thuộc nhóm</label>
+        <select id="type" name="type">
+          <option value="1">Bài viết</option>
+          <option value="2">FAQ Schema</option>
+        </select>
+      </p>
+      <p id="faq-type" style="display:none;">
+          <label>Module</label>
+          <span style="display:flex; gap:20px; align-items:center;">
+              <label>
+                  <input type="radio" name="moduleType" value="menu">
+                  Menu
+              </label>
+              <label>
+                  <input type="radio" name="moduleType" value="detailProduct">
+                  Chi tiết sản phẩm
+              </label>
+              <label>
+                  <input type="radio" name="moduleType" value="detailArticle">
+                  Chi tiết bài viết
+              </label>
+          </span>
+      </p>
+      <p><label for="avatar"> Import</label>
+        <input type="file" name="linkfile" size="25" maxlength="255" /> <strong
+          style="margin-left:20px;">{$locale->msg('type')} : .xls, .xlsx (Ms.Excel 2003)</strong><br /><br />
+      </p>
+      <p><label for="avatar"> File mẫu bài viết</label>
+        <a href="/upload/files/import-bai-viet-mau.xlsx">Download</a>
+      </p>
+      <p><label for="avatar"> File mẫu Schema FAQ Module Menu</label>
+        <a href="/upload/files/File-import-mau-schema-faq.xlsx">Download</a>
+      </p>
+      <p><label for="avatar"> File mẫu Schema FAQ Chi tiết sản phẩm</label>
+        <a href="/upload/files/File-import-mau-schema-faq-chi-tiet-san-pham.xlsx">Download</a>
+      </p>
+      <p><label for="avatar"> File mẫu Schema FAQ Chi tiết bài viết</label>
+        <a href="/upload/files/File-import-mau-schema-faq-chi-tiet-bai-viet.xlsx">Download</a>
+      </p>
+      <p class="btn">
+        <input type="hidden" name="op" value="manage">
+        <input type="hidden" name="act" value="import">
+        <input type="hidden" name="mod" value="data">
+        <input type="submit" name="ok" id="ok" value="Upload" />
+      </p>
+    </fieldset>
+    <div class="title">
+      {if $importsuccess}<p><label for="mes" style="color: green; font-weight: bold; font-size: 14px;">{$importsuccess}</label></p>{/if}
+      {if $importfail}<p><label for="mes" style="color: red; font-weight: bold; font-size: 14px;">{$importfail}</label></p>{/if}
+
+      {if $dataArray}
+      <br>
+      <table width="20%" border="0" cellspacing="0" cellpadding="0">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+          {foreach from=$dataArray item=item}
+          <tr class="bgType">
+            <td>{$item['id']}</td>
+            <td>{$item['name']}</td>
+            <td>{$importfail}</td>
+          </tr>
+          {/foreach}
+        </tbody>
+      </table>
+      {/if}
+    </div>
+  </form>
+</div>

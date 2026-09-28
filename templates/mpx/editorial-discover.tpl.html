@@ -1,0 +1,17 @@
+<section class="ed-discover" aria-labelledby="ed-discover-title">
+  <div class="ed-shell">
+    <div class="ed-discover__heading">
+      <div>
+        <span class="ed-kicker">{if $lang == 'en'}EXPLORE{elseif $lang == 'zh'}探索{else}KHÁM PHÁ{/if}</span>
+        <h2 id="ed-discover-title">{if $lang == 'en'}Follow your curiosity{elseif $lang == 'zh'}发现感兴趣的故事{else}Chọn điều bạn muốn đọc{/if}</h2>
+      </div>
+      <p>{if $lang == 'en'}A clear path through literature, art, current stories and moving images.{elseif $lang == 'zh'}从文学、艺术、最新动态到影像，轻松找到感兴趣的内容。{else}Từ trang văn, nghệ thuật đến tin mới và câu chuyện bằng hình ảnh — bắt đầu ở nơi bạn yêu thích.{/if}</p>
+    </div>
+    <div class="ed-discover__grid">
+      <a href="{$publicBase}/van-tho"><span>01</span><strong>{if $lang == 'en'}Literature{elseif $lang == 'zh'}文学{else}Văn thơ{/if}</strong><small>{if $lang == 'en'}Poetry &amp; prose{elseif $lang == 'zh'}诗歌与散文{else}Thơ &amp; văn xuôi{/if}</small><b aria-hidden="true">↗</b></a>
+      <a href="{$publicBase}/nghe-thuat"><span>02</span><strong>{if $lang == 'en'}Arts &amp; Culture{elseif $lang == 'zh'}艺术与文化{else}Nghệ thuật &amp; Văn hóa{/if}</strong><small>{if $lang == 'en'}Music, visual arts &amp; theatre{elseif $lang == 'zh'}音乐、美术与戏剧{else}Âm nhạc, mỹ thuật &amp; sân khấu{/if}</small><b aria-hidden="true">↗</b></a>
+      <a href="{$publicBase}/tin-tuc"><span>03</span><strong>{if $lang == 'en'}News{elseif $lang == 'zh'}新闻{else}Tin tức{/if}</strong><small>{if $lang == 'en'}New cultural perspectives{elseif $lang == 'zh'}最新文化动态{else}Góc nhìn văn hóa mới{/if}</small><b aria-hidden="true">↗</b></a>
+      <a href="{$publicBase}/video"><span>04</span><strong>{if $lang == 'zh'}视频{else}Video{/if}</strong><small>{if $lang == 'en'}Stories in motion{elseif $lang == 'zh'}影像中的故事{else}Câu chuyện bằng hình ảnh{/if}</small><b aria-hidden="true">↗</b></a>
+    </div>
+  </div>
+</section>

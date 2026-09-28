@@ -1,0 +1,107 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($pId) && isset($gfId)}<p><a href="/{$aScript}?op=manage&act=article&mod=list&pId={$gfId}" title="{$locale->msg('back_group')}"><img src="/{$templatePath}/{$userTemplate}/images/icon_parent.png" alt="{$locale->msg('back_group')}" width="32" height="32" />...{$locale->msg('back')}</a></p>{/if}
+{if isset($listItems)}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th><input type="checkbox" name="all" id="all" value="1" class="box3" onClick="toggleAllChecks('formType');" /></th>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','s.id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "s.id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','slug','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_slug')}">{$locale->msg('slug')}</a>{if $sk eq "slug"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','module','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_frontend_module')}">{$locale->msg('frontend_module')}</a>{if $sk eq "module"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('object_id')}</tth>
+<th>{$locale->msg('post_title')}<br />
+<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','creator_name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_poster')}">User</a>{if $sk eq "creator_name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','date_created','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_date_created')}">Time</a>{if $sk eq "date_created"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+</th>
+<th>{$locale->msg('update_title')}<br />
+<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','updater_name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_updater')}">User</a>{if $sk eq "updater_name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+&nbsp;<a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','date_updated','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_date_updated')}">Time</a>{if $sk eq "date_updated"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}
+</th>
+{if isset($customValueName)}
+    {foreach from=$customValueName item=name}
+    <th>{$name}</th>
+    {/foreach}
+{/if}
+<th><a href="javascript:void(0)" onClick="javascript:MM_sortField('parent','{$sk}','s.status','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_status')}">{$locale->msg('system_status')}</a>{if $sk eq "s.status"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+{assign var=properties value=$item->getProperties()}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+<td>{$startNum+$no}</td>
+<td>{$item->getId()}</td>
+<td>{$item->getSlug()}</td>
+<td>{$item->getModule()}</td>
+<td>{$item->getObjectId()}</td>
+<td>{$item->getCreatorName()}<br />{$item->getDateCreated()}</td>
+<td>{$item->getUpdaterName()}<br />{$item->getDateUpdated()}</td>
+{if isset($customValueName)}
+{foreach from=$customValueName key=index item=fieldName}
+    {assign var="fieldId" value=$customFieldsMapping[$fieldName]}
+    <td>
+        {if isset($customValueField[$item->getId()][$fieldId])}
+            {$customValueField[$item->getId()][$fieldId]}
+        {else}
+        {/if}
+    </td>
+{/foreach}
+{/if}
+<td>{$item->getStatusTextBackend()}</td>
+<td class="check">
+<div class="cell-content">
+<a href="/{$aScript}?op=manage&act=slug&mod=edit&id={$item->getId()}&lang={$lang}" title="{$locale->msg('edit')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png" alt="{$locale->msg('edit')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','enable',{$item->getId()});" title="{$locale->msg('enable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_enable.png" alt="{$locale->msg('enable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','disable',{$item->getId()});" title="{$locale->msg('disable')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_disable.png" alt="{$locale->msg('disable')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','delete',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+<a href="javascript:formSubmit('formType','list','duplicate',{$item->getId()});" title="{$locale->msg('copy')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_copy.png" alt="Copy" width="16" height="16" /></a>
+<a target="_blank" href="{$item->getSlug()}" title="{$locale->msg('first_view')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_preview.png" alt="{$locale->msg('first_view')}" width="16" height="16" /></a>
+<span class="check"><a rel="{$item->getSlug()}" href="#" title="{$locale->msg('link')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_link.png" alt="{$locale->msg('link')}" width="16" height="16" /></a><span>
+</div>
+</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+</div>
+<div class="paging">
+<p class="listBtn">
+<a title="{$locale->msg('button_enable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','enable','0');;">{$locale->msg('button_enable')}</a>
+<a title="{$locale->msg('button_disable')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','disable','0');">{$locale->msg('button_disable')}</a>
+<a title="{$locale->msg('button_delete')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','delete','0');">{$locale->msg('button_delete')}</a>
+</p>
+{include file="$userTemplate/corepager.tpl.html" title="pager"}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title="ipp"}
+
+</div>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="slug" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="filter_status" value="{$filter_status}">
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+{$locale->msg('no_record')}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="slug" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="" />
+</form>
+{/if}
+</div>

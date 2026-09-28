@@ -1,0 +1,141 @@
+{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        <section class="page-header container-f item-padding-20-30 bg-white flex center-hor">
+
+            <div class="page-header__container container-m flex flex-col center-hor gap-20">
+
+                <div class="page-header__content flex flex-col center-hor gap-10">
+                    <h1 class="page-header__title section-title text-center bold uppercase">
+                        {$h1|default:'Các dự án mà Melody Productionworx đã triển khai'}
+                    </h1>
+                    {if $description !== ''}
+                    <p class="page-header__desc text-center text-color-gray">
+                        {$description}
+                    </p>
+                    {/if}
+                </div>
+                <div class="page-header__actions flex center-hor gap-20 flex-wrap">
+                    <a href="/dich-vu-cua-mpx"
+                        class="btn-padding border-radius-5 bold cursor-point btn-outline-primary transition-all">
+                        {$messages['service_experience']}
+                    </a>
+                    <a href="/lien-he"
+                        class="btn-padding border-radius-5 bold cursor-point bg-primary text-color-white transition-all">
+                        {$messages['contact']}
+                    </a>
+                </div>
+
+            </div>
+        </section>
+        <section class="archive-section container-f container-padding bg-white-secondary">
+            <div class="container-l flex flex-wrap gap-20">
+                <div class="archive-main  flex flex-col gap-20">
+                    <!-- <div class="archive-header flex flex-col gap-10">
+                        <h1 class="section-title bold uppercase">{$messages['all_case_studies']}</h1>
+                        <div class="title-border-bottom"></div>
+                    </div> -->
+                    {if $slug == 'case-study-cua-mpx'}
+                    <div class="filter-group flex center-ver gap-10">
+                        <label class="text-color-gray">{$messages['field']}:</label>
+                        <div class="native-select-wrapper pos-rel">
+                            <select class="native-select cursor-point" id="categoryChildSelect" name="linhVuc">
+                                <option value="-1">All</option>
+                                {foreach from=$childOfCategory item=child}
+                                    {assign var='menuCate' value=$menus->getObject($child->getId(),'route_id')}
+                                    <option value="{$menuCate->getUrlByLang($lang)}">{$child->getName()}</option>
+                                {/foreach}
+                            </select>
+
+                            <span class="native-select__icon pos-abs flex center-ver">
+                                <svg width="10" height="6" viewBox="0 0 10 6" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 1L5 5L9 1" stroke="#333" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                            </span>
+
+                        </div>
+                    </div>
+                    {/if}
+                    {include file='listarticlesfromsearch.tpl.html' title='listarticlesfromsearch'}
+                </div>
+                <aside class="archive-sidebar bg-white item-padding-20 border-radius-5 flex flex-col gap-20">
+                    {include file='component/sidebar-second.tpl.html' title='sidebar'}
+                </aside>
+            </div>
+        </section>
+    </main>
+    {if $slug == 'case-study-cua-mpx'}
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Case Study - Các dự án thực tế của MPX",
+        "url": "{$rootUrl}/{$categoryObj->getSlug()}",
+        "description": "{$categoryObj->getDescription($lang)}",
+        "publisher": { "@id": "{$rootUrl}/#organization" },
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Danh mục Dự án",
+            "itemListElement": [
+                {foreach from=$childCate item=child name=casestudy}
+                {
+                    "@type": "Offer",
+                    "position": {$smarty.foreach.casestudy.iteration},
+                    "name": "{$child->getName()}",
+                    "url": "{$rootUrl}{$child->getUrl()}"
+                }{if !$smarty.foreach.casestudy.last},{/if}
+                {/foreach}
+            ]
+        }
+        }
+    </script>
+    {else}
+        <script type="application/ld+json">
+            {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "Dự án về {$categoryObj->getName($lang)} MPX đã thực hiện",
+            "url": "{$rootUrl}/{$categoryObj->getSlug()}",
+            "description": "{$categoryObj->getDescription($lang)}",
+            "publisher": { "@id": "{$rootUrl}/#organization" },
+            "mainEntity": {
+            "@type": "ItemList",
+            "name": "Case Study về {$categoryObj->getName($lang)}",
+                "itemListElement": [
+                {foreach from=$items item=objectItem name=listItems}
+                {
+                    "@type": "ListItem",
+                    "position": {$smarty.foreach.listItems.iteration},
+                    "name": "{$objectItem->getTitle()|escape:'javascript'}",
+                    "url": "{$rootUrl}/{$objectItem->getSlug()}"
+                }{if !$smarty.foreach.listItems.last},{/if}
+                {/foreach}
+                ]
+            }
+            }
+        </script> 
+    {/if}
+    {if $menuObject->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$menuObject->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

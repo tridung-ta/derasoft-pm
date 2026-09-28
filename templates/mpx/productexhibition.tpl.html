@@ -1,0 +1,236 @@
+{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        {if $bannerDesktop}
+            {assign var=bannerD value=$bannerDesktop->getAvatarImage($uploads)}
+            {if $bannerD}
+            <section class="container-f swiper js-slider-wrapper">
+                <div class="container-f js-slider-banner js-slider-ratio overflow-hidden">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide ">
+                            <div class="overflow-hidden fill-view pos-rel">
+                                <picture>
+                                    <source media="(min-width: 1024px)"
+                                        srcset="/{$bannerD->getPath()}/{$bannerD->getUrlO()}">
+                                    {if $bannerMobile}
+                                        {assign var=bannerM value=$bannerMobile->getAvatarImage($uploads)}
+                                        {if $bannerM}
+                                        <source media="(max-width: 768px)"
+                                            srcset="{$bannerM->getPath()}/{$bannerM->getUrlO()}">
+                                        {/if}
+                                    {/if}
+                                    <img class="img-content" src="/{$bannerD->getPath()}/{$bannerD->getUrlO()}"
+                                        alt="{$bannerDesktop->getName()}">
+                                </picture>
+                                <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết dự án"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {/if}
+        {/if}
+        {if $mpx_exhibition_solutions && $mpx_exhibition_solutions->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor expo-power bg-white">
+                {$mpx_exhibition_solutions->getDetail($lang)}
+            </section>
+        {/if}
+        {if $listExhibitionSolutions}
+            <section class="container-f container-padding bg-white-secondary">
+                <div class="container-l flex flex-col gap-20 expo-booth__container">
+                    <div class="expo-booth__header flex jus-sb center-ver">
+                        <h2 class="expo-booth__title bold uppercase">{$messages['featured_exhibition_booth_samples_title']}</h2>
+                        <a href="{$menuCaseStudy->getUrlByLang($lang)}" class="expo-booth__view-all text-color-primary text-sm">{$messages['view_all_booth_samples_label']}
+                            &rarr;</a>
+                    </div>
+                    <div class="expo-booth__list flex flex-wrap gap-20">
+                        {foreach from=$listExhibitionSolutions item=item}
+                            <article class="expo-booth__card col-4">
+                                <div
+                                    class="flex-1 hover-border-primary flex flex-col border-radius-5 overflow-hidden pos-rel custom-item__low fill-height">
+                                    <div class="expo-booth__thumbnail ratio-16x9 overflow-hidden">
+                                        {assign var=avatar value=$item->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlO()}" alt="{$item->getName($lang)}"
+                                            class="expo-booth__img img-content">
+                                        {else}
+                                        <img src="/templates/mpx/img/logo/no-image.webp" alt="{$item->getName($lang)}"
+                                            class="expo-booth__img img-content">
+                                        {/if}
+                                    </div>
+                                    <div class="expo-booth__info flex flex-col gap-10 item-padding-20 bg-white flex-1 jus-sb">
+                                        <h3 class="expo-booth__name bold text-color-black">{$item->getName($lang)}</h3>
+                                        <p class="expo-lightbox__desc text-sm text-color-black clamp-text">{$item->getDescription($lang)|strip_tags}</p>
+                                        <b class="expo-booth__link text-color-primary text-sm mt-auto">{$messages['view_details']}
+                                            &rarr;</b>
+                                    </div>
+                                    <a href="{$item->getUrl($lang)}" class="pos-abs cover-all"></a>
+                                </div>
+                            </article>
+                        {/foreach}
+                    </div>
+                </div>
+            </section>
+        {/if}
+        {if $exhibitionAccessories}
+            <section class="container-f container-padding bg-white-secondary">
+                <div class="container-l flex flex-col gap-20 expo-booth__container">
+                    <div class="expo-booth__header flex jus-sb center-ver">
+                        <h2 class="expo-booth__title bold uppercase">{$messages['accessories_exhibition']}</h2>
+                        <a href="{$menuCaseStudy->getUrlByLang($lang)}" class="expo-booth__view-all text-color-primary text-sm">{$messages['view_all_booth_samples_label']}
+                            &rarr;</a>
+                    </div>
+                    <div class="expo-booth__list flex flex-wrap gap-20">
+                        {foreach from=$exhibitionAccessories item=item}
+                            <article class="expo-booth__card col-4">
+                                <div
+                                    class="flex-1 hover-border-primary flex flex-col border-radius-5 overflow-hidden pos-rel custom-item__low fill-height">
+                                    <div class="expo-booth__thumbnail ratio-16x9 overflow-hidden">
+                                        {assign var=avatar value=$item->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlO()}" alt="{$item->getName($lang)}"
+                                            class="expo-booth__img img-content">
+                                        {else}
+                                        <img src="/templates/mpx/img/logo/no-image.webp" alt="{$item->getName($lang)}"
+                                            class="expo-booth__img img-content">
+                                        {/if}
+                                    </div>
+                                    <div class="expo-booth__info flex flex-col gap-10 item-padding-20 bg-white flex-1 jus-sb">
+                                        <h3 class="expo-booth__name bold text-color-black">{$item->getName($lang)}</h3>
+                                        <p class="expo-lightbox__desc text-sm text-color-black clamp-text">{$item->getDescription($lang)|strip_tags}</p>
+                                        <b class="expo-booth__link text-color-primary text-sm mt-auto">{$messages['view_details']}
+                                            &rarr;</b>
+                                    </div>
+                                    <a href="{$item->getUrl($lang)}" class="pos-abs cover-all"></a>
+                                </div>
+                            </article>
+                        {/foreach}
+                    </div>
+                </div>
+            </section>
+        {/if}
+        {if $solutionLightBox}
+            <section class="container-f container-padding bg-white-secondary">
+                <div class="container-l flex flex-col gap-20 expo-booth__container">
+                    <div class="expo-booth__header flex jus-sb center-ver">
+                        <h2 class="expo-booth__title bold uppercase">{$messages['solution_lightbox_title']}</h2>
+                        <a href="{$menuCaseStudy->getUrlByLang($lang)}" class="expo-booth__view-all text-color-primary text-sm">{$messages['view_all_booth_samples_label']}
+                            &rarr;</a>
+                    </div>
+                    <div class="expo-booth__list flex flex-wrap gap-20">
+                        {foreach from=$solutionLightBox item=item}
+                            <article class="expo-booth__card col-4">
+                                <div
+                                    class="flex-1 hover-border-primary flex flex-col border-radius-5 overflow-hidden pos-rel custom-item__low fill-height">
+                                    <div class="expo-booth__thumbnail ratio-16x9 overflow-hidden">
+                                        {assign var=avatar value=$item->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlO()}" alt="{$item->getName($lang)}"
+                                            class="expo-booth__img img-content">
+                                        {else}
+                                        <img src="/templates/mpx/img/logo/no-image.webp" alt="{$item->getName($lang)}"
+                                            class="expo-booth__img img-content">
+                                        {/if}
+                                    </div>
+                                    <div class="expo-booth__info flex flex-col gap-10 item-padding-20 bg-white flex-1 jus-sb">
+                                        <h3 class="expo-booth__name bold text-color-black">{$item->getName($lang)}</h3>
+                                        <p class="expo-lightbox__desc text-sm text-color-black clamp-text">{$item->getDescription($lang)|strip_tags}</p>
+                                        <b class="expo-booth__link text-color-primary text-sm mt-auto">{$messages['view_details']}
+                                            &rarr;</b>
+                                    </div>
+                                    <a href="{$item->getUrl($lang)}" class="pos-abs cover-all"></a>
+                                </div>
+                            </article>
+                        {/foreach}
+                    </div>
+                </div>
+            </section>
+        {/if}
+        {if $listFeaturedProject}
+            <section class="container-f container-padding expo-project bg-white">
+                <div class="container-l flex flex-col gap-30 expo-project__container">
+                    <div class="expo-project__header flex jus-sb center-ver">
+                        <h2 class="expo-project__title bold uppercase">{$messages['featured_exhibition_projects_title']}</h2>
+                        <a href="/case-study-cua-mpx" class="expo-project__view-all text-color-primary text-sm">{$messages['view_all_projects_label']} &rarr;</a>
+                    </div>
+                    <div class="expo-project__list flex flex-wrap gap-20">
+                        {foreach from=$listFeaturedProject item=item}
+                            <article class="expo-project__card col-4">
+                                <div
+                                    class="custom-item__low flex-1 hover-border-primary flex flex-col border-radius-10 overflow-hidden pos-rel bg-white ">
+                                    <div class="expo-project__thumbnail overflow-hidden ratio-16x9">
+                                        {assign var=avatar value=$item->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                            <img src="/{$avatar->getPath()}/{$avatar->getUrlO()}" alt="{$item->getTitle($lang)}" class="img-content">
+                                        {else}
+                                            <img src="/templates/mpx/img/logo/no-image.webp" alt="{$item->getTitle($lang)}" class="img-content">
+                                        {/if}
+                                    </div>
+                                    <div class="expo-project__info flex flex-col gap-10 item-padding-20 flex-1">
+                                        <h3 class="expo-project__name bold text-color-black clamp-text">{$item->getTitle($lang)}</h3>
+                                        <p class="expo-project__desc text-sm text-color-black clamp-text">{$item->getDescription($lang)|strip_tags}</p>
+                                        <span class="expo-project__link text-color-primary text-sm mt-auto">{$messages['view_details']}
+                                            &rarr;</span>
+                                    </div>
+                                    <a href="{$item->getUrl($lang)}" class="pos-abs cover-all"></a>
+                                </div>
+                            </article>
+                        {/foreach}
+                    </div>
+                </div>
+            </section>
+        {/if}
+        {if $needHelpBlock && $needHelpBlock->getDetail($lang) != ''}
+            <section class="container-f pos-rel overflow-hidden mpx-cta">
+                {$needHelpBlock->getDetail($lang)}
+            </section>
+        {/if}
+    </main>
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Sản phẩm & Vật tư Triển lãm - MPX",
+        "url": "{$rootUrl}{$productExhibitionMenu->getUrl()}",
+        "description": "{$productExhibitionMenu->getProperty('custom_sapo')}",
+        "publisher": {
+            "@id": "https://mpx.vn/#organization"
+        },
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Các nhóm sản phẩm triển lãm",
+            "itemListElement": [
+                {foreach from=$childProductExhibitionMenu item=child name=services}
+                {
+                    "@type": "Offer",
+                    "position": {$smarty.foreach.services.iteration},
+                    "name": "{$child->getName()}",
+                    "url": "{$rootUrl}{$child->getUrl()}"
+                }{if !$smarty.foreach.services.last},{/if}
+                {/foreach}
+            ]
+        }
+        }
+    </script>
+    {if $productExhibitionMenu->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$productExhibitionMenu->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

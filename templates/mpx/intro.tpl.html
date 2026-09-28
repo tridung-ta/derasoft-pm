@@ -1,0 +1,155 @@
+
+{include file='head.tpl.html' title='head'} 
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        {if $listProductsAboutPage}
+        <section class="container-f container-padding bg-white-secondary">
+            <div class="container-l flex flex-col gap-30">
+                <div class=" flex flex-col center-hor guest-comment__title">
+                    <p class="text-color-black">{$messages['what_we_do']}</p>
+                    <h1 class="section-title bold uppercase text-color-black">{$messages['product_categories']}</h1>
+                    <div class="title-border-bottom"></div>
+                </div>
+                <div class="process-slider-wrapper pos-rel">
+                    <div class="swiper-button-prev custom-prev-btn"></div>
+                    <div class="swiper-button-next custom-next-btn"></div>
+                    <div class="service-intro__list fill-view swiper">
+                        <div class="swiper-wrapper">
+                            {foreach $listProductsAboutPage as $product}
+                            <article class="swiper-slide">
+                                <div
+                                    class="process-item__content border-radius-5 bg-white jus-sb flex flex-col pos-rel fill-view center-ver center-hor shadow-sm">
+                                    <div class="process-icon__box border-radius-5">
+                                        {assign var=avatar value=$product->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$product->getName($lang)}" class="img-content process-icon__img">
+                                        {else}
+                                        <img src="/{$templatePath}/{$userTemplate}/img/logo/no-image.webp" alt="{$product->getName($lang)}" class="img-content process-icon__img">
+                                        {/if}
+                                    </div>
+                                    <div class="item-padding-20-30 service-content flex flex-col gap-10 flex-1">
+                                        <h3 class="service-name text-center bold fill-view capitalize clamp-text">{$product->getName($lang)}</h3>
+                                        <p class="service-text text-center fill-view clamp-text">{$product->getDescription($lang)|strip_tags}</p>
+                                    </div>
+                                    <a href="/{$product->getSlug()}" class="pos-abs cover-all"
+                                        aria-label="Xem chi tiết {$product->getName($lang)}"></a>
+                                </div>
+                            </article>
+                            {/foreach}
+                        </div>
+
+                        <div class="swiper-pagination custom-dots"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {/if}
+        {if $intro}
+            {$intro->getDetail($lang)}
+        {/if}
+        {if $recentCaseStudies}
+        <section class="container-f container-padding flex center-hor bg-white-secondary">
+            <div class="container-l flex flex-col gap-30">
+                <div class=" flex flex-col center-hor  guest-comment__title">
+                    <p class="text-color-black">{$messages['recent_case_studies']}</p>
+                    <h2 class="section-title bold uppercase text-color-black">{$messages['recent_case_studies']}</h2>
+                    <div class="title-border-bottom__left"></div>
+                </div>
+                <div class="news-slider-wrapper pos-rel">
+                    <div class="swiper-button-prev custom-prev-btn"></div>
+                    <div class="swiper-button-next custom-next-btn"></div>
+                    <div class="news-swiper fill-view swiper">
+                        <div class="swiper-wrapper">
+                            {if $recentCaseStudies}
+                            {foreach $recentCaseStudies as $article}
+                            <article class="swiper-slide col-4">
+                                <div class="news-item hover-border-primary bg-white flex flex-col pos-rel border-radius-5 overflow-hidden">
+                                    <div class="news-item__img">
+                                        {assign var=avatar value=$article->getAvatarImage($uploads)}
+                                        {if $avatar}
+                                        <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$article->getTitle($lang)}"
+                                            class="img-content">
+                                        {else}
+                                        <img src="/{$templatePath}/{$userTemplate}/img/news/news.jpg" alt="{$article->getTitle($lang)}"
+                                            class="img-content">
+                                        {/if}
+                                    </div>
+                                    <div class="news-item__content item-padding-20 flex flex-1 flex-col gap-10 jus-sb">
+                                        <div class="news-item__info flex flex-col gap-10">
+                                            <div class="flex gap-20">
+                                                <div class="news-item__date flex gap-10">
+                                                    <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/clock.svg"
+                                                        alt="">
+                                                    <p>
+                                                        {$article->getDisplayDate()}
+                                                    </p>
+                                                </div>
+                                                <div class="news-item__view flex gap-10">
+                                                    <img class="img-icon" src="/{$templatePath}/{$userTemplate}/img/icon/eye.svg"
+                                                        alt="">
+                                                    <p>{$article->getViewed()}</p>
+                                                </div>
+                                            </div>
+                                            <h4 class="news-item__title clamp-text bold uppercase">{$article->getTitle($lang)}</h4>
+                                            <p class="news-item__desc clamp-text">
+                                                {$article->getDescription($lang)|strip_tags}
+                                            </p>
+                                        </div>
+                                        <button
+                                            class="news-btn btn-padding flex gap-5 center-hor center-ver text-color-white border-radius-5 cursor-point bg-primary uppercase flex gap-10 center-ver un-wrap">
+                                            <p class="text-color-white">{$messages['view_details']}</p>
+                                            <p class="text-color-white">➔</p>
+                                        </button>
+                                    </div>
+                                    <a href="{$article->getUrl($lang)}" class="pos-abs cover-all"></a>
+                                </div>
+                            </article>
+                            {/foreach}
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {/if}
+    </main>
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "url": "{$rootUrl}/{$slug}",
+            "name": "Giới thiệu về MELODY PRODUCTIONWORX (MPX)",
+            "description": "{$introMenu->getProperty('custom_sapo')|escape:'javascript'}",
+            "inLanguage": "vi-VN",
+            "publisher": {
+                "@id": "https://mpx.vn/#organization"
+            },
+            "mainEntity": {
+                "@type": "Corporation",
+                "name": "MELODY PRODUCTIONWORX",
+                "description": "Chúng tôi tập trung phát triển các giải pháp có tính ứng dụng cao, đáp ứng yêu cầu về an toàn kỹ thuật, tính thẩm mỹ và hiệu quả vận hành trong thực tế. Trong lĩnh vực sân khấu, MPX cung cấp các hệ thống palang đồng bộ, palang lập trình, sàn nâng sân khấu, sàn xoay, ray trượt chuyển động, motor điều khiển, truss và kết cấu chịu lực, phục vụ các chương trình live concert, lễ hội, sự kiện thương hiệu, truyền hình và nhiều dự án quy mô lớn. Đối với triển lãm, MPX triển khai thiết kế và thi công gian hàng, booth activation, hộp đèn quảng cáo cùng hệ thống phụ kiện trưng bày theo hướng thi công nhanh, tối ưu chi phí và dễ dàng tái sử dụng. Không chỉ cung cấp thiết bị, MPX còn đồng hành cùng khách hàng trong việc lựa chọn giải pháp phù hợp, đảm bảo sự đồng bộ giữa thiết kế, thi công và vận hành. Với kinh nghiệm thực hiện nhiều dự án thực tế, MPX cam kết mang đến các giải pháp kỹ thuật chuyên nghiệp, góp phần nâng cao hiệu quả trình diễn, nhận diện thương hiệu và thành công của mỗi chương trình."
+            }
+        }
+    </script>
+    {if $introMenu->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$introMenu->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+    {include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+    <div id="content">
+        {include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+        {include file="$userTemplate/coretabs.tpl.html" title=navigation-bar}
+        <div class="formContent">
+            <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+                <fieldset>
+                    <h1>Cập nhật ảnh.</h1>
+
+                    <p><label for="name">* Tên ảnh</label>
+                        <input type="text" value="{$detail->getName()}" name="title" id="title" />
+                    </p>
+                    <p><label for="name">* Tên ảnh</label>
+                        <input type="urll" value="{$detail->getUrlL()}" name="urll" id="urll" disabled />
+                    </p>
+                    <p>
+                        {assign var=avatar value=$detail->getUrlA()}
+                        {if $avatar}
+                    <div class="listPhoto">
+                        <ul>
+                            <li>
+                                <a href="/{$estore->getProperty('custom_name_file_img')}/{$avatar}" target="_blank"><img
+                                        src="/{$estore->getProperty('custom_name_file_img')}/{$avatar}"
+                                        width="100" /></a>
+                            </li>
+                        </ul>
+                    </div>
+                    {/if}
+                    </p>
+                    <br>
+                    <input type="hidden" name="op" value="manage" />
+                    <input type="hidden" name="act" value="uploadimg" />
+                    <input type="hidden" name="mod" value="symboliclinkedit" />
+                    <input type="hidden" name="doo" value="submit" />
+                    <input type="hidden" name="sCode" value="{$sCode}_" />
+                    <input type="hidden" name="lang" value="{$lang}" />
+                    <input type="hidden" name="id" value="{$detail->getId()}" />
+                    <input type="hidden" name="catid" value="{$detail->getCatId()}" />
+                    <p class="btn">
+                        <input type="submit" value="Cập nhật" />
+                    </p>
+                    {if $noti}
+                    <p><strong style="color: #ef0101;">Cập nhật thành công.</strong></p>
+                    {/if}
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

@@ -1,0 +1,12 @@
+{include file='head.tpl.html' title='head'}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-tag-archive">
+ <div class="ed-shell">
+  <header class="ed-tag-archive__head"><span class="ed-kicker">{if $lang == 'en'}TOPIC ARCHIVE{elseif $lang == 'zh'}主题归档{else}CHỦ ĐỀ{/if}</span><h1>#{$tagArchive.name|escape:'html'}</h1><p>{$tagTotalRows|number_format} {if $lang == 'en'}published articles{elseif $lang == 'zh'}篇已发布文章{else}bài viết đã xuất bản{/if}</p></header>
+  {if $tagArticles}<div class="ed-archive-grid">{foreach from=$tagArticles item=article}{assign var=avatar value=$article->getAvatarImage($uploads)}<article class="ed-card"><a class="ed-card__link" href="{$article->getUrl($lang)|escape:'html'}"><figure class="ed-card__media">{include file='editorial-card-media.tpl.html' article=$article avatar=$avatar lazy=true}</figure><div class="ed-card__body"><div class="ed-card__meta"><span>{include file='editorial-category-label.tpl.html' article=$article}</span><time>{$article->getDisplayDate()}</time></div><h2>{$article->getTitle($lang)|escape:'html'}</h2><p>{$article->getDescription($lang)|strip_tags|escape:'html'}</p><b>{if $lang == 'en'}Read article{elseif $lang == 'zh'}阅读全文{else}Đọc bài{/if} →</b></div></a></article>{/foreach}</div>{else}<div class="ed-tag-archive__empty"><h2>{if $lang == 'en'}No articles in this topic yet{elseif $lang == 'zh'}此主题暂无文章{else}Chưa có bài viết trong chủ đề này{/if}</h2><a href="{$publicHome}">{if $lang == 'en'}Return home{elseif $lang == 'zh'}返回首页{else}Trở về trang chủ{/if}</a></div>{/if}
+  {if $tagTotalPages > 1}<nav class="ed-pagination" aria-label="{if $lang == 'en'}Topic article pages{elseif $lang == 'zh'}主题文章分页{else}Phân trang bài viết theo chủ đề{/if}">{if $tagPage > 1}<a href="{$tagPath}?page={$tagPage-1}">←</a>{else}<span class="is-disabled">←</span>{/if}{for $i=1 to $tagTotalPages}{if $i >= $tagPage-2 && $i <= $tagPage+2}{if $i == $tagPage}<span class="is-active">{$i}</span>{else}<a href="{$tagPath}?page={$i}">{$i}</a>{/if}{/if}{/for}{if $tagPage < $tagTotalPages}<a href="{$tagPath}?page={$tagPage+1}">→</a>{else}<span class="is-disabled">→</span>{/if}</nav>{/if}
+ </div>
+</main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+{include file='editorial-script.tpl.html'}
+</body></html>

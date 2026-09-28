@@ -1,0 +1,261 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+    <h2>{$locale->msg('error_notes')}:</h2>
+    <ul class="listStyle">
+        {foreach from=$input item=field}
+        {if $field.error}<li>{$field.message}</li>{/if}
+        {/foreach}
+        <li>{$error.message}</li>
+    </ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+    <h1>{$locale->msg('edit_product')}</h1>
+    {if $validItem}
+    {if $item}
+    <!-- Load product info -->
+    <form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data">
+        <fieldset>
+            <p><strong>* {$locale->msg('required_fields')}</strong></p>
+            <p><label for="cat_id">{$locale->msg('of_procate')}</label>
+                <select name="cat_id" id="cat_id">
+                    {$categoryCombo}
+                </select>
+            </p>
+            <p><label for="status">{$locale->msg('system_status')}</label>
+                <select name="status" id="status" class="small">
+                    <option value="1" {if $item->getStatus() eq "1"} selected="selected"{/if}>{$locale->msg('enable')}
+                    </option>
+                    <option value="0" {if $item->getStatus() eq "0"} selected="selected"{/if}>{$locale->msg('disable')}
+                    </option>
+                </select>
+            </p>
+
+            <p><label for="trademark">Thương hiệu</label>
+                <select name="trademark" id="trademark">
+                    <option value="0">l--Chọn</option>
+                    {if $listproductOptions}
+                    {foreach from=$listproductOptions item=value}
+                    {if $value->getPcId() == 32}
+                    <option value="{$value->getId()}" {if $item->getTrademark() eq $value->getId()} selected="selected"
+                        {/if}>l--{$value->getName()}</option>
+                    {/if}
+                    {/foreach}
+                    {/if}
+                </select>
+            </p>
+            <p><label for="list_carcompany">Hãng xe</label>
+                <select name="list_carcompany[]" id="list_carcompany" multiple="multiple" style="height: 100px;">
+                    <option value="all" {if $item->getCarCompany() eq all}selected="selected"{/if}>All</option>
+                    {if $listproductOptions}
+                    {foreach from=$listproductOptions item=value}
+                    {if $value->getPcId() == '29'}
+                    <option value="{$value->getId()}" {if $value->
+                        getId()|in_array:$arraylistCat1}selected="selected"{/if}>{$value->getName()}</option>
+                    {/if}
+                    {/foreach}
+                    {/if}
+                </select>
+            </p>
+
+            <p><label for="name">Nhập text hãng xe</label>
+                <input type="text" value="{$item->getProperty('text_carcompany')}" name="text_carcompany"
+                    id="text_carcompany" />
+            </p>
+
+
+            <p><label for="position">{$locale->msg('position')}</label>
+                <input class="small" type="text" value="{$item->getPosition()}" name="position" id="position" />
+            </p>
+
+            <p><label for="slug">* {$locale->msg('slug')}</label>
+                <input type="text" value="{$item->getSlug()}" name="slug" id="slug" />
+            </p>
+            <p><label for="name">* {$locale->msg('product_name')}</label>
+                <input type="text" value="{$item->getName()}" name="name" id="name" />
+            </p>
+            <p><label for="keyword">* {$locale->msg('keyword')}</label>
+                <input type="text" value="{$item->getKeyword()}" name="keyword" id="keyword" />
+            </p>
+            <p><label for="viewed">* {$locale->msg('view')}</label>
+                <input type="text" value="{$item->getViewed()}" name="viewed" id="viewed" />
+            </p>
+            <p><label for="origin">Xuất xứ</label>
+                <select name="origin" id="origin">
+                    <option value="0">l--Chọn</option>
+                    {if $specificationsList}
+                    {foreach from=$specificationsList item=vaule}
+                    {if $vaule->getParentId() eq 6}
+                    <option value="{$vaule->getId()}" {if $item->getOrigin() eq $vaule->getId()}
+                        selected="selected"{/if}>l--{$vaule->getName()}</option>
+                    {/if}
+                    {/foreach}
+                    {/if}
+                </select>
+            </p>
+
+            <p><label for="usess">Công dụng</label>
+                <input type="text" value="{$item->getUses()}" name="usess" id="usess" />
+            </p>
+
+            <p><label for="price">Giá bán</label>
+                <input type="text" value="{$item->getPrice()}" name="price" id="price" />
+            </p>
+            <p><label for="market_price">Giá khuyến mãi</label>
+                <input type="text" value="{$item->getMarketPrice()}" name="market_price" id="market_price" />
+            </p>
+
+            <p><label for="spcode">Mã SP</label>
+                <input type="text" value="{$item->getSpcode()}" name="spcode" id="spcode" />
+            </p>
+
+            <p><label for="segment">Phân khúc</label>
+                <input type="text" value="{$item->getSegment()}" name="segment" id="segment" />
+            </p>
+
+            <p><label for="specifications">Thông số kỹ thuật</label>
+                <input type="text" value="{$item->getSpecifications()}" name="specifications" id="specifications" />
+            </p>
+
+            <p><label for="sizepk">Kích thước</label>
+                <input type="text" value="{$item->getSize()}" name="sizepk" id="sizepk" />
+            </p>
+
+            <p><label for="pileloca">Vị trí cọc</label>
+                <input type="text" value="{$item->getPileloca()}" name="pileloca" id="pileloca" />
+            </p>
+            <p><label for="techno">Công nghệ</label>
+                <input type="text" value="{$item->getTechno()}" name="techno" id="techno" />
+            </p>
+
+            <p><label for="description">Chính sách bảo hàng</label>
+                <textarea rows="10" cols="20" name="warranty_policy"
+                    id="warranty_policy">{$item->getGuarantee()}</textarea>
+            </p>
+            <br>
+            <p><label for="detail">*Giới thiệu</label></p>
+            <textarea rows="10" cols="20" name="description" id="description">{$item->getDescription()}</textarea>
+            {literal}
+            <script type="text/javascript">var editor = CKEDITOR.replace('description');</script>{/literal}
+            <p><label for="detail">*Chi tiết</label></p>
+            <textarea rows="10" cols="20" name="detail" id="detail">{$item->getDetail()}</textarea>
+            {literal}
+            <script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>{/literal}
+            <br>
+            <p><label for="tag">Tag</label>
+                <textarea rows="10" cols="20" name="tag" id="tag">{$item->getTag()}</textarea>
+            </p>
+            <br>
+            <p><label for="files">Hình ảnh đính kèm</label><input type="file" multiple="multiple" name="files[]"
+                    id="files[]" /></p>
+            {assign var=photos value=$item->getProperty('photos')}
+            {if $photos}
+            <p>
+            <div class="listPhoto">
+                <ul>
+                    {foreach from=$photos item=photo}
+                    <li><a href="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlFromId($photo)}"
+                            target="_blank"><img
+                                src="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlAFromId($photo)}"
+                                width="100" /></a><a
+                            href="/{$aScript}?op=manage&act=product&mod=editaccessory&id={$item->getId()}&doo=delPhoto&photo={$photo}"
+                            title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+                    {/foreach}
+                </ul>
+            </div>
+            </p>
+            {/if}
+
+            {if $fieldOptionList}
+            <br /><h2 style="text-transform: capitalize;">{$locale->msg('list_custom_options')}</h2>
+            {foreach key=no from=$fieldOptionList item=field}
+            {assign var=field_name value=$field->getFieldName()}
+            {if isset($error.INPUT.$field_name)}
+            {$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+            {else}
+            {$field->displayHTML($fieldValue->getValueFromIdField($id, $field->getId()),'')}
+            {/if}
+            {/foreach}
+            {/if}
+
+            {if $fieldList}
+            <br />
+            <h2>{$locale->msg('list_custom_field')}</h2>
+            {foreach key=no from=$fieldList item=field}
+            {$field->displayHTML($item->getProperty($field->getName()))}
+            {/foreach}
+            {/if}
+            <br />
+            <p class="btn">
+                <input type="hidden" name="op" value="manage" />
+                <input type="hidden" name="act" value="product" />
+                <input type="hidden" name="mod" value="editaccessory" />
+                <input type="hidden" name="doo" value="submit" />
+                <input type="hidden" name="sCode" value="{$sCode}_" />
+                <input type="hidden" name="id" value="{$item->getId()}" />
+                <input type="hidden" name="lang" value="{$lang}" />
+                <input type="hidden" name="arraylistCat" value="{$uniqueArray}" />
+                <input type="hidden" name="listidcar" value="" />
+                <input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}"
+                    name="btnSubmit" />
+                <input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}"
+                    name="btnReset" />
+                <input type="button" onclick="javascript:formSubmit('formEdit','list','cancel',0);"
+                    value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+                <a href="/{$item->getSlug()}" target="_blank"><input type="button" value="Xem trước" title="Xem trước"
+                        name="btnCancel" /></a>
+
+            </p>
+        </fieldset>
+    </form>
+
+    {/if}
+    {else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>
+<script>
+    var selectedValuesArray = [];
+    // Lấy phần tử select
+    var selectElement = document.getElementById("carcompany");
+    // Thêm sự kiện onchange
+    selectElement.onchange = function () {
+        // Lấy giá trị của option được chọn
+        var selectedValue = selectElement.value;
+        // In giá trị của option được chọn ra console
+        console.log(selectedValue);
+        var valtest = selectedValue;
+        var op = "loadcarcompany";
+        $.ajax({
+            type: 'POST',
+            url: '/ajax.php',
+            dataType: "json",
+            data: { op, valtest },
+            success: function (data) {
+                $('#' + data['nameProductOptions']).css('display', 'block');
+                // Thêm valtest vào mảng selectedValuesArray
+                selectedValuesArray.push(valtest);
+                $('input[name="listidcar"]').val(selectedValuesArray);
+
+            }
+        });
+    };
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var inputElement = document.querySelector('input[name="arraylistCat"]');
+        var value = inputElement.value;
+        var arrayFromString = value.split(',');
+        // Loop through the array
+        for (var i = 0; i < arrayFromString.length; i++) {
+
+            $('#' + arrayFromString[i]).css('display', 'block');
+        }
+
+    });
+</script>

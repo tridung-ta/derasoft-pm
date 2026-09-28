@@ -1,0 +1,64 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title="show-tabs"}
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{elseif $mod eq 'listTracking'}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<select name="filter_date">
+<option value="0" selected="selected">{$locale->msg('select_display')}</option>
+<option value="today"{if $filter_date eq 'today'} selected="selected"{/if}>{$locale->msg('in_today')}</option>
+<option value="1"{if $filter_date eq '1'} selected="selected"{/if}>{$locale->msg('from_yesterday')}</option>
+<option value="7"{if $filter_date eq '7'} selected="selected"{/if}>{$locale->msg('in_weekend')}</option>
+<option value="30"{if $filter_date eq '30'} selected="selected"{/if}>{$locale->msg('in_month')}</option>
+<option value="365"{if $filter_date eq '365'} selected="selected"{/if}>{$locale->msg('in_year')}</option>
+<option value="all"{if $filter_date eq 'all'} selected="selected"{/if}>{$locale->msg('all')}</option>
+</select>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="listTracking" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="{$username}" />
+</fieldset>
+</form>
+</div>
+{/if}
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod|strtolower}.tpl.html" title="show-tabs"}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

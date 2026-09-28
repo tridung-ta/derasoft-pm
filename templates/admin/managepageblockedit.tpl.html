@@ -1,0 +1,74 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+
+<div class="formContent">
+<h1>Trang: {if $menuObj}{$menuObj->getName()}{/if}</h1>
+
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit">
+<fieldset>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+    <th>{$locale->msg('numbers')}</th>
+    <th>Tên Block</th>
+    <th>Block Key</th>
+    <th>ID Sản phẩm/ Bài viết</th>
+    <!-- <th>{$locale->msg('actions')}</th> -->
+</tr>
+</thead>
+<tbody>
+{if $blockList}
+{foreach key=no from=$blockList item=block}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+    <td>{$no+1}</td>
+    <td>
+        <input type="text" name="block_label[]" value="{$block->getBlockLabel()|escape}" style="width:100%;font-size: small;font-weight: 700;" />
+    </td>
+    <td>
+        <input type="hidden" name="block_id[]" value="{$block->getId()}" />
+        <input type="text" name="block_key[]" value="{$block->getBlockKey()|escape}" style="width:100%" />
+    </td>
+    <td>
+        <input type="text"  name="object_ids[]" value="{$block->getObjectIds()|escape}" style="width:100%;font-size: small;font-weight: 700;" />
+    </td>
+    <!-- <td>
+        <a href="/{$aScript}?op=manage&act=pageblock&mod=edit&menu_id={$menu_id}&doo=delete&block_id={$block->getId()}"
+           onclick="return confirm('{$locale->msg('confirm_delete')}')"
+           title="{$locale->msg('delete')}">
+            <img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png"
+                 alt="{$locale->msg('delete')}" width="16" height="16" />
+        </a>
+    </td> -->
+</tr>
+{/foreach}
+{/if}
+
+{* Row thêm mới *}
+<tr class="newRow">
+    <td><em>Tạo mới</em></td>
+    <td><input type="text" name="new_block_label" value="" placeholder="vd: Sản phẩm nổi bật" style="width:100%" /></td>
+    <td><input type="text" name="new_block_key" value="" placeholder="vd: featured_products" style="width:100%" /></td>
+    <td><input type="text" name="new_object_ids" value="" style="width:100%" /></td>
+    <td></td>
+    <td></td>
+</tr>
+</tbody>
+</table>
+
+<br />
+<p class="btn">
+    <input type="hidden" name="op" value="manage" />
+    <input type="hidden" name="act" value="pageblock" />
+    <input type="hidden" name="mod" value="edit" />
+    <input type="hidden" name="doo" value="submit" />
+    <input type="hidden" name="menu_id" value="{$menu_id}" />
+    <input type="hidden" name="lang" value="{$lang}" />
+    <input type="submit" value="{$locale->msg('button_submit')}" name="btnSubmit" />
+    <input type="button" onClick="javascript:window.location='/{$aScript}?op=manage&act=pageblock&mod=list&lang={$lang}';"
+           value="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+
+</fieldset>
+</form>
+</div>

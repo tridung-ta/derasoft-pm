@@ -1,0 +1,209 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_product_option')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="cat_id">Option của sản phẩm</label>
+<select name="cat_id" id="cat_id" onchange="javascript:changlayout()">
+{$categoryCombo}
+</select></p>
+<!-- <p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label for="name">* {$locale->msg('name')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" />(Color, size, weight,...)</p>
+<p{if isset($error.INPUT) && $error.INPUT.title.error} class="errormsg"{/if}><label for="title">* {$locale->msg('title')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.title.value}{/if}" name="title" id="title" />{$locale->msg('color_size')}</p>
+<p{if isset($error.INPUT) && $error.INPUT.class.error} class="errormsg"{/if}><label for="class">{$locale->msg('css_class')}</label>
+<input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.class.value}{/if}" name="class" id="class" />(small, medium, long, left, right, center,...)</p>
+<p{if isset($error.INPUT) && $error.INPUT.type.error} class="errormsg"{/if}><label for="type">* {$locale->msg('custom_field_type')}</label>
+<select name="type" id="type" class="small" onChange="javascript:showFieldValueControl2(this);" onLoad="javascript:showFieldValueControl2(this);">
+{$typeCombo}
+</select>
+</p>
+<p id="value_p" {if isset($error.INPUT) && $error.INPUT.value.error} class="errormsg"{elseif $error.INPUT.type.value<=3} class="hidden"{/if}><label for="value_p">* {$locale->msg('custom_field_value')}:<br />{$locale->msg('format_item')}: KEY:VALUE<br />{$locale->msg('arow_antem')}</label>
+<textarea rows="10" cols="20" name="value" id="value">{if isset($error.INPUT)}{$error.INPUT.value.value}{/if}</textarea></p>
+<div id="value_wysiwyg_p" {if isset($error.INPUT) && $error.INPUT.value_wysiwyg.error} class="errormsg"{elseif $error.INPUT.type.value==3} class=""{else} class="hidden"{/if}>
+<p {if isset($error.INPUT) && $error.INPUT.value_wysiwyg.error} class="errormsg"{elseif $error.INPUT.type.value!=3} class=""{/if}><label for="value_wysiwyg">{$locale->msg('custom_field_default_value')}</label></p>
+<textarea rows="10" cols="20" name="value_wysiwyg" id="value_wysiwyg">{if isset($error.INPUT)}{$error.INPUT.value_wysiwyg.value}{/if}</textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('value_wysiwyg');</script>{/literal}
+<br />
+</div>
+<p  id="value_textarea_p" {if isset($error.INPUT) && $error.INPUT.value_textarea.error} class="errormsg"{elseif $error.INPUT.type.value!=2} class="hidden"{/if}><label for="value_textarea">{$locale->msg('custom_field_default_value')}</label>
+<textarea rows="10" cols="20" name="value_textarea" id="value_textarea">{if isset($error.INPUT)}{$error.INPUT.value_textarea.value}{/if}</textarea></p> -->
+<!-- <p id="value_textbox_p" {if isset($error.INPUT) && $error.INPUT.value_textbox.error} class="errormsg"{elseif $error.INPUT.type.value=='' || $error.INPUT.type.value==1} class=""{else} class="hidden"{/if}><label for="value_textbox">{$locale->msg('custom_field_default_value')}</label>
+<input type="text" name="value_textbox" id="value_textbox" value="{if isset($error.INPUT)}{$error.INPUT.value_textbox.value}{/if}" /></p> -->
+<!-- <div id="value_textbox_p" {if isset($error.INPUT) && $error.INPUT.value_textbox.error} class="errormsg"{elseif $error.INPUT.type.value=='' || $error.INPUT.type.value==1} class=""{else} class="hidden"{/if}><label for="value_textbox">Chọn hình thức của option</label>
+	<div class="checkedoption"><input type="radio" class="nhaplieu" onchange="javascript:showinfooption(this)" name="nhaplieu" data-show="true">Nhập thông tin cố định</div>
+	<div class="checkedoption"><input type="radio" class="nhaplieu" onchange="javascript:showinfooption(this)" name="nhaplieu" checked>Thông tin sẽ nhập trong phần sản phẩm</div>
+</div> -->
+{if $ObjectSize}
+<div class="option-show active-show" id="insert-data">
+	<label for="value_textbox">Thông tin nhập</label>
+	{if $Objectoption->getValue()==1}
+	<div class="box-option">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="3">Thông tin</th>
+						<th>Chênh lệch giá</th>
+						<th>Thao tác</th>
+					</tr>
+				</thead>
+				<tbody class="addcolsize">
+					{if $ObjectSize}
+					{foreach from=$ObjectSize key=i item=size}
+					<tr>
+						<td colspan="3"><input style="text-align: left;" type="text" name="kichco[]" class="kichco" value="{$size->getvalue()}" data-id={$id} onkeydown="javascript:xoaoption(this)" ></td>
+						<td ><input style="text-align: left;" type="text" name="chenhlech[]" class="chenhlech" value="{$size->getChenhlech()}"></td>
+						{if $i==0}
+						<td style="text-align: center;">
+						<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=delsize&idsize={$size->getId()}" class="" onClick="if(!confirm('Xác nhận xóa')) return false;"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png"></a>
+						{if $objectproduct->getProperty($Objectoption->getName())}
+								{if $objectproduct->getProperty($Objectoption->getName())==$size->getId()}
+								<a href="#" class="" ><i class="fa fa-check" style="font-size: 1.8em;color: green" aria-hidden="true"></i></a>
+								{else}
+								<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+								{/if}
+						{else}
+						<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$item->getId()}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+						{/if}
+						<a href="javascript:" class="addsize" onclick="javascript:addinput()"><img src="/{$templatePath}/{$userTemplate}/images/plus.png"></a>
+						</td>
+						{else}
+						<td style="text-align: center;"><a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}}&doo=delsize&idsize={$size->getId()}" class="" onClick="if(!confirm('Xác nhận xóa')) return false;"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png"></a>
+						{if $objectproduct->getProperty($Objectoption->getName())}
+								{if $objectproduct->getProperty($Objectoption->getName())==$size->getId()}
+								<a href="#" class="" ><i class="fa fa-check" style="font-size: 1.8em;color: green" aria-hidden="true"></i></a>
+								{else}
+								<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+								{/if}
+						{else}
+						<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$item->getId()}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+						{/if}
+						</td>
+						{/if}
+					</tr>
+					{/foreach}
+					{else}
+						<tr>
+						<td colspan="3"><input style="text-align: left;" type="text" name="kichco[]" class="kichco" value=""></td>
+						<td ><input style="text-align: left;" type="text" name="chenhlech[]" class="chenhlech" value=""></td>
+						<td style="text-align: center;">
+						<a href="javascript:" class="addsize" onclick="javascript:addinput()"><img src="/{$templatePath}/{$userTemplate}/images/plus.png"></a>
+						</td>
+					</tr>
+					{/if}
+
+				</tbody>
+			</table>
+	</div>
+	{else}
+	<div class="box-option">
+	
+		{foreach from=$ObjectSizePo key=i item=size}
+			<div class="option-value">
+				<input type="checkbox" class="delete_value"  name="valueoption[]" value="{$size->getId()}" {$productsize->checkedsize($size->getPid(),$id)} {if $productsize->checkedsize($size->getPid(),$id)!='0'} onclick="javascript:delete_value(this)" {/if} /><span>{$size->getvalue()}</span><span>Chênh lêch : {$size->getChenhlech()}</span>
+				<span>
+					{if $productsize->checkedsize($size->getPid(),$id)!='0'}Chọn mặc định :
+						{if $objectproduct->getProperty($Objectoption->getName())}
+								{if $objectproduct->getProperty($Objectoption->getName())==$size->getId()}
+								<a href="#" class="" ><i class="fa fa-check" style="font-size: 1.8em;color: green" aria-hidden="true"></i></a>
+								{else}
+								<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+								{/if}
+						{else}
+						<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+						{/if}
+					{/if}</span>
+			</div>
+		{/foreach}
+	</div>
+	{/if}
+</div>
+{else}
+<div class="option-show active-show" id="insert-data">
+	<label for="value_textbox">Thông tin nhập</label>
+	{if $Objectoption->getValue()==1}
+	<div class="box-option">
+			<table>
+				<thead>
+					<tr>
+						<th colspan="3">Thông tin</th>
+						<th>Chênh lệch giá</th>
+						<th>Thao tác</th>
+					</tr>
+				</thead>
+				<tbody class="addcolsize">
+					<tr>
+						<td colspan="3"><input style="text-align: left;" type="text" name="kichco[]" class="kichco" value=""></td>
+						<td ><input style="text-align: left;" type="text" name="chenhlech[]" class="chenhlech" value=""></td>
+						<td style="text-align: center;">
+						<a href="javascript:" class="addsize" onclick="javascript:addinput()"><img src="/{$templatePath}/{$userTemplate}/images/plus.png"></a>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+	</div>
+	{else}
+	<div class="box-option">
+	
+		{foreach from=$ObjectSizePo key=i item=size}
+			<div class="option-value">
+				<input type="checkbox" class="delete_value"  name="valueoption[]" value="{$size->getId()}" {$productsize->checkedsize($size->getPid(),$id)} {if $productsize->checkedsize($size->getPid(),$id)!='0'} onclick="javascript:delete_value(this)" {/if} /><span>{$size->getvalue()}</span><span>Chênh lêch : {$size->getChenhlech()}</span>
+				<span>
+					{if $productsize->checkedsize($size->getPid(),$id)!='0'}Chọn mặc định :
+						{if $objectproduct->getProperty($Objectoption->getName())}
+								{if $objectproduct->getProperty($Objectoption->getName())==$size->getId()}
+								<a href="#" class="" ><i class="fa fa-check" style="font-size: 1.8em;color: green" aria-hidden="true"></i></a>
+								{else}
+								<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+								{/if}
+						{else}
+						<a href="/{$aScript}?op=manage&act=product&mod=edit&id={$id}&doo=defaultsize&idvalue={$size->getId()}&idop={$idcombo}" class="" onClick="if(!confirm('Chọn default')) return false;"><i class="fa fa-check" style="font-size: 1.8em" aria-hidden="true"></i></a>
+						{/if}
+					{/if}</span>
+			</div>
+		{/foreach}
+	</div>
+	{/if}
+</div>
+{/if}
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="id" value="{$id}" id="id_product" />
+<input type="hidden" name="cid" value="{$pc}" id="id_cataproduct" />
+<input type="hidden" name="mod" value="addvalueoption" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>

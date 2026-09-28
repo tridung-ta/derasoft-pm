@@ -1,0 +1,9 @@
+<section class="flex bg-gray container-f ">
+    <div class="container-l nav-bar__container">
+        {if $topNav}
+        {foreach from=$topNav item=item}
+        <a href="{$item['url']}" class="nav-bar__item">{$item['name']}</a>
+        {/foreach}
+        {/if}
+    </div>
+</section>

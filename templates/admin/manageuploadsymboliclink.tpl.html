@@ -1,0 +1,42 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+    {include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+    <div id="content">
+        {include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+        {include file="$userTemplate/coretabs.tpl.html" title=navigation-bar}
+        <div class="formContent">
+            <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+                <fieldset>
+                    <h1>Thêm symbolic link ảnh.</h1>
+                    <p><strong>Link gốc: <a href="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlFromId($id)}" target="_blank">{$imgs->getUrlFromId($id)}</a></strong></p>
+                    <!-- {if $listsym}
+                    <div id="form_fields_container">
+                        {foreach key=no from=$listsym key=key item=itemDm}
+                        <div class="addcolsize">
+                            <p><label for="title">{$locale->msg('title')} {$key+1}</label><input type="text" value="{$itemDm->getName()}" name="title[]" id="title" class="long" /></p>
+                            <p><label for="link">Link {$key+1}</label><input type="text" value="{$itemDm->getUrlL()}" name="link[]" id="link" class="long" /></p>
+                        </div>
+                        {/foreach}
+                    </div>
+                    {/if} -->
+                    <div id="form_fields_container">
+                        <div class="addcolsize">
+                            <p><label for="title">{$locale->msg('title')}</label><input type="text" value="" name="title" id="title" class="long" /></p>
+                        </div>
+                    </div>
+                    
+                    <br>
+                    <input type="hidden" name="op" value="manage" />
+                    <input type="hidden" name="act" value="uploadimg" />
+                    <input type="hidden" name="mod" value="symboliclink" />
+                    <input type="hidden" name="doo" value="submit" />
+                    <input type="hidden" name="id" value="{$id}" />
+                    <input type="hidden" name="lang" value="{$lang}" />
+                    <p class="btn"><input type="submit" value="Lưu" /></p>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

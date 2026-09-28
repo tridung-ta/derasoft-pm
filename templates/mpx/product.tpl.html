@@ -1,0 +1,217 @@
+{include file='head.tpl.html' title='head'}
+    <header class="container-f bg-black z-index-5">
+        {include file='header.tpl.html' title='header'}
+    </header>
+    <main class="container-f flex flex-col center-hor pos-rel">
+        {include file='breadcrumb.tpl.html' title='breadcrumb'}
+        {if $bannerDesktop}
+            {assign var=bannerD value=$bannerDesktop->getAvatarImage($uploads)}
+            {if $bannerD}
+            <section class="container-f swiper js-slider-wrapper">
+                <div class="container-f js-slider-banner js-slider-ratio overflow-hidden">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide ">
+                            <div class="overflow-hidden fill-view pos-rel">
+                                <picture>
+                                    <source media="(min-width: 1024px)"
+                                        srcset="/{$bannerD->getPath()}/{$bannerD->getUrlO()}">
+                                    {if $bannerMobile}
+                                        {assign var=bannerM value=$bannerMobile->getAvatarImage($uploads)}
+                                        {if $bannerM}
+                                        <source media="(max-width: 768px)"
+                                            srcset="{$bannerM->getPath()}/{$bannerM->getUrlO()}">
+                                        {/if}
+                                    {/if}
+                                    <img class="img-content" src="/{$bannerD->getPath()}/{$bannerD->getUrlO()}"
+                                        alt="{$bannerDesktop->getName()}">
+                                </picture>
+                                <a href="javascript:void(0)" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết dự án"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {/if}
+        {/if}
+        {if $serviceMPXblock && $serviceMPXblock->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-white mpx-intro-equipment">
+                {$serviceMPXblock->getDetail($lang)}
+            </section>
+        {/if}
+        {if $stage_mechanical_equipment && $stage_mechanical_equipment->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-white-secondary">
+                {$stage_mechanical_equipment->getDetail($lang)}
+            </section>
+        {/if}
+        {if $exhibition_equipment_solutions && $exhibition_equipment_solutions->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-white-secondary">
+                {$exhibition_equipment_solutions->getDetail($lang)}
+            </section>
+        {/if}
+        {if $mpx_suitable_needs_title && $mpx_suitable_needs_title->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-white mpx-needs">
+                {$mpx_suitable_needs_title->getDetail($lang)}
+            </section>
+        {/if}
+        {if $featuredProducts}
+        <section class="container-f container-padding flex center-hor bg-white expo-equipment">
+            <div class="container-l flex flex-col gap-30 fill-view">
+                <div class="flex flex-col gap-10 center-hor">
+                    <h2 class="section-title text-center bold uppercase text-color-black">{$messages['featured_products_title']}</h2>
+                    <div class="title-border-bottom fill-view"
+                        style="width: 50px; margin: 0 auto; border-color: var(--primary-color);"></div>
+                </div>
+                <div class="js-slider-wrapper pos-rel expo-equipment-slider">
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="expo-equipment__swiper js-slider-6cols fill-view swiper">
+                        <div class="swiper-wrapper">
+                            {foreach from=$featuredProducts item=item}
+                                <article class="swiper-slide col-6">
+                                    <div
+                                        class="fill-height flex-1 expo-equip-card bg-white flex flex-col center-ver text-center border-radius-5 item-padding-20 gap-15 custom-item__low border border-color-gray border-radius-5">
+                                        <div class="expo-equip-card__img border-radius-5 overflow-hidden">
+                                            {assign var=avatar value=$item->getAvatarImage($uploads)}
+                                            {if $avatar}
+                                                <img src="/{$avatar->getPath()}/{$avatar->getUrlM()}" alt="{$item->getName($lang)}" class="img-icon">
+                                            {else}
+                                                <img src="/templates/mpx/img/logo/no-image.webp" alt="No image" class="img-icon">
+                                            {/if}
+                                        </div>
+                                        <div class="flex flex-col gap-5">
+                                            <h3 class="bold text-color-black text-sm">{$item->getName($lang)}</h3>
+                                            <p class="text-xs text-color-deactive clamp-text">{$item->getDescription($lang)|strip_tags}</p>
+                                        </div>
+                                    </div>
+                                </article>
+                            {/foreach}
+                        </div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="flex center-hor mt-10">
+                    <a href="#"
+                        class="btn-padding text-color-black border border-color-gray border-radius-5 bg-white bold text-xs flex center-ver gap-10 hover-bg-gray transition">
+                        {$messages['view_all_products_label']} <span>➔</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+        {/if}
+        {if $why_choose_mpx_title && $why_choose_mpx_title->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-black mpx-why-choose">
+                {$why_choose_mpx_title->getDetail($lang)}
+            </section>
+        {/if}
+        {if $usedProducts}
+            <section class="container-f container-padding flex center-hor bg-white mpx-applications">
+                <div class="container-l flex flex-col gap-40 fill-view">
+                    <div class="flex flex-col gap-10 center-hor">
+                        <h2 class="section-title text-center bold uppercase text-color-black">Thiết bị MPX đã được ứng dụng
+                            trong</h2>
+                        <div class="title-border-bottom fill-view"></div>
+                    </div>
+                    <div class="js-slider-wrapper pos-rel mpx-app-slider">
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="mpx-app__swiper js-slider-6cols fill-view swiper">
+                            <div class="swiper-wrapper">
+                                {foreach from=$usedProducts item=item}
+                                    <article class="swiper-slide col-6">
+                                        <div
+                                            class="cursor-pointer mpx-applications__item hover-border-primary fill-height flex flex-col bg-white border-radius-5 overflow-hidden border border-color-gray custom-item__low pos-rel">
+                                            <div class="ratio-1x1 overflow-hidden">
+                                                {assign var=avatar value=$item->getAvatarImage($uploads)}
+                                                {if $avatar}
+                                                <img src="/{$avatar->getPath()}/{$avatar->getUrlL()}" alt="{$item->getName($lang)}"
+                                                    class="img-content transition hover-scale">
+                                                {else}
+                                                <img src="/templates/mpx/img/logo/no-image.webp" alt="{$item->getName($lang)}"
+                                                    class="img-content transition hover-scale">
+                                                {/if}
+                                            </div>
+                                            <div class="flex flex-col gap-15 item-padding-20 flex-1 jus-sb">
+                                                <div class="flex flex-col gap-5">
+                                                    <h3 class="bold text-color-black text-sm  clamp-text">{$item->getName($lang)}</h3>
+                                                    <p class="text-xs text-color-deactive clamp-text">
+                                                        {$item->getDescription($lang)|strip_tags}
+                                                    </p>
+                                                </div>
+                                                <span  class="text-color-primary text-xs bold flex center-ver gap-5">
+                                                    {$messages['view_details']} <span>➔</span>
+                                                </span>
+                                            </div>
+                                            <a href="{$item->getUrl($lang)}" class="pos-abs cover-all z-index-2" aria-label="Xem chi tiết"></a>
+                                        </div>
+                                    </article>
+                                {/foreach}
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            </section>
+        {/if}
+        {if $implementation_process_title && $implementation_process_title->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-white-secondary expo-process">
+                {$implementation_process_title->getDetail($lang)}
+            </section>
+        {/if}
+        {if $faq_block && $faq_block->getDetail($lang) != ''}
+            <section class="container-f container-padding flex center-hor bg-white expo-faq">
+                {$faq_block->getDetail($lang)}
+            </section>
+        {/if}
+        {if $need_solutions && $need_solutions->getDetail($lang) != ''}
+            <section class="container-f flex center-hor pos-rel advise-section__container">
+                {$need_solutions->getDetail($lang)}
+            </section>
+        {/if}
+    </main>
+    <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Sản phẩm & Thiết bị Kỹ thuật Sân khấu, Triển lãm - MPX",
+        "url": "{$rootUrl}{$productMenu->getUrl()}",
+        "description": "{$productMenu->getProperty('custom_sapo')}",
+        "publisher": {
+            "@id": "https://mpx.vn/#organization"
+        },
+        "mainEntity": {
+            "@type": "ItemList",
+            "name": "Danh mục sản phẩm cốt lõi",
+            "itemListElement": [
+                {foreach from=$childProductMenu item=child name=services}
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "{$child->getName()}",
+                        "url": "{$rootUrl}{$child->getUrl()}"
+                    }
+                }{if !$smarty.foreach.services.last},{/if}
+                {/foreach}
+            ]
+        }
+        }
+    </script>
+    {if $productMenu->getProperty('custom_schema_faq') != ''}
+        <script type="application/ld+json">
+            {$productMenu->getProperty('custom_schema_faq')}
+        </script>
+    {/if}
+    <footer class="container-f bg-black center-ver flex flex-col item-padding-80-0 gap-30">
+        {include file='footer.tpl.html' title='footer'}
+    </footer>
+    {include file='CTA.tpl.html' title='call to action contact'}
+    <div class="btntotop__container pos-fixed bg-white" id="btnToTop">
+        {include file='rolltotop.tpl.html' title='rolltotop'}
+    </div>
+    <div class="popup-register__container pos-fixed z-index-2 center-ver center-hor container-f">
+        {include file='popup.tpl.html' title='popup'}
+    </div>
+    {include file='script.tpl.html' title='script'}
+</body>
+
+</html>

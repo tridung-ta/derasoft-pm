@@ -1,0 +1,126 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">    	
+<div class="contType2">
+<div class="infoType">
+<h3><a href="?op=manage&act=order&mod=list">{$locale->msg('view_all')}</a>{$locale->msg('list_order')}</h3>
+<form action="/{$aScript}" method="post" name="form">
+<fieldset>
+<input type="text" value="" name="kw" />
+<input type="submit" value="{$locale->msg('look')}" title="{$locale->msg('look')}" class="btnSubmit" />
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="order" />
+<input type="hidden" name="mod" value="list" />
+</fieldset>
+</form>
+{if $latestOrders}
+<table class="tblType" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<th>{$locale->msg('id')}</th>
+<th>{$locale->msg('manage_customer')}</th>
+<th>{$locale->msg('dtdd')}</th>
+<th class="right">{$locale->msg('value')} ({$estore->getProperty('currency')})</th>
+<th>{$locale->msg('system_status')}</th>
+</tr>
+{foreach key=no from=$latestOrders item=order}
+{assign var=costFrice value=$order->getOrderCost()}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td><a href="/{$aScript}?op=manage&act=order&mod=view&id={$order->getId()}">{$order->getId()}</a></td>
+<td>
+{if $order->getUserType() eq 1}<a href="/{$aScript}?op=manage&act=customer&mod=edit&id={$order->getUserId()}">{$order->getName()}</a>
+{elseif $order->getUserType() eq 2}<a href="/{$aScript}?op=system&act=staff&mod=edit&id={$order->getUserId()}">{$order->getName()}</a>
+{else}{$order->getName()}{/if}</td>
+<td>{$order->getCell()}</td>
+<td class="right">{$costFrice.subgrandTotal|number_format}</td>
+<td>{$order->getStatusTextBackend()}</td>
+</tr>
+{/foreach}
+</table>
+{else}
+{$locale->msg('now_no_order')}
+{/if}
+</div>
+<div class="infoType last">
+<h3>{$locale->msg('product_order_most')}</h3>
+{if $topOrderedProducts}
+<table class="tblType" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<th>{$locale->msg('numbers')}</th>
+<th>{$locale->msg('code')}</th>
+<th>{$locale->msg('sku')}</th>
+<th>{$locale->msg('product_name')}</th>
+<th class="right">{$locale->msg('price')} ({$estore->getCurrency()})</th>
+<th class="right">{$locale->msg('quantity')}</th>
+</tr>
+{foreach from=$topOrderedProducts item=product key=no}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td>{$no+1}</td>
+<td><a href="admin.php?op=manage&act=product&mod=edit&id={$product.product_id}">{$product.product_id}</a></td>
+<td>{$product.sku}</td>
+<td>{$product.name|truncate:50}</td>
+<td class="right">{$product.price|number_format}</td>
+<td class="right">{$product.total|number_format}</td>
+</tr>
+{/foreach}
+</table>
+{else}
+{$locale->msg('non_product_in_database')}
+{/if}
+</div>
+</div>
+<div class="contType2">
+<div class="infoType">
+<h3><a href="?op=dashboard&doo=updateStatistic">{$locale->msg('require_update')}</a>{$locale->msg('statistics')} {if $statistic}<span style="font-weight:normal">[{$locale->msg('update_at')} {$statistic.last_updated}]</span>{/if}</h3>
+<table class="tblType" width="100%" border="0" cellspacing="0" cellpadding="0">
+{if $statistic}
+<tr><td>{$locale->msg('total_product')}:</td><td>{$statistic.tp|number_format}</td></tr>
+<tr class="bgType"><td>{$locale->msg('product_in_month')}:</td><td>{$statistic.tpim|number_format}</td></tr>
+<tr><td>{$locale->msg('order_in_year')}:</td><td>{$statistic.oiy|number_format}</td></tr>
+<tr class="bgType"><td>{$locale->msg('order_in_month')}:</td><td>{$statistic.oim|number_format}</td></tr>
+<tr><td>{$locale->msg('revenues_in_year')}:</td><td>{$statistic.riy|number_format} {$estore->getProperty('currency')}</td></tr>
+<tr class="bgType"><td>{$locale->msg('revenues_in_month')}:</td><td>{$statistic.rim|number_format} {$estore->getProperty('currency')}</td></tr>
+<tr><td>{$locale->msg('total_posts')}:</td><td>{$statistic.te|number_format}</td></tr>
+<tr class="bgType"><td>{$locale->msg('posts_in_month')}:</td><td>{$statistic.eim|number_format}</td></tr>
+<tr><td>{$locale->msg('total_access')}:</td><td>{$statistic.hits|number_format}</td></tr>
+<tr class="bgType"><td>{$locale->msg('access_in_month')}:</td><td>{$statistic.him|number_format}</td></tr>
+<tr><td>{$locale->msg('access_today')}:</td><td>{$statistic.hid|number_format}</td></tr>
+{/if}
+<tr class="bgType"><td><a href="admin.php?op=dashboard&act=online">{$locale->msg('online_customers')}:</a></td><td>{$onlineUsers}</td></tr>
+</table>
+</div>
+<div class="infoType last">
+<h3>{$locale->msg('product_viewed_most')}</h3>
+{if $topViewedProducts}
+<table class="tblType" width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr>
+<th>{$locale->msg('numbers')}</th>
+<th>{$locale->msg('code')}</th>
+<th>{$locale->msg('sku')}</th>
+<th>{$locale->msg('product_name')}</th>
+<th class="right">{$locale->msg('price')} ({$estore->getProperty('currency')})</th>
+<th class="right">{$locale->msg('views')}</th>
+</tr>
+{foreach from=$topViewedProducts item=product key=no}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td>{$no+1}</td>
+<td><a href="admin.php?op=manage&act=product&mod=edit&id={$product.id}">{$product.id}</a></td>
+<td>{$product.sku}</td>
+<td>{$product.name|truncate:50}</td>
+<td class="right">{$product.price|number_format}</td>
+<td class="right">{$product.viewed|number_format}</td>
+</tr>
+{/foreach}
+</table>
+{else}
+{$locale->msg('non_product_in_database')}.
+{/if}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

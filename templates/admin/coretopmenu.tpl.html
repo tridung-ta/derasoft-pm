@@ -1,0 +1,20 @@
+{if $authUser}
+<div id="nav">
+{if $authUser}<p class="datetime">{$locale->msg('hello')} <a href="/{$aScript}?op=system&act=profile" title="{$locale->msg('system_profile')}"><strong>{$authUser->getFullname()}</strong></a> ({$authUser->getUsername()}) [{$authUser->getType()}]. [<a href="/{$aScript}?op=logout" title="{$locale->msg('log_out')}">{$locale->msg('log_out')}</a>]</p>{/if}
+<button title="top menu bar" class="btn-topMenuBar">
+    <p>Danh mục</p>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM64 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L96 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"/></svg>
+</button>
+<ul id="listmenu">
+<li><a href="/{$aScript}?op=dashboard" title="{$locale->msg('dash_board')}">{$locale->msg('dash_board')}</a></li>
+<li><a href="/{$aScript}?op=manage" title="{$locale->msg('manage_website')}">{$locale->msg('manage_website')}</a></li>
+<li><a href="/{$aScript}?op=system" title="{$locale->msg('system')}">{$locale->msg('system')}</a></li>
+</ul>
+</div>
+{else}
+<div id="nav">
+<ul id="listmenu">
+<li><a href="/" title="{$locale->msg('home_page')}">{$locale->msg('home_page')}</a></li>
+</ul>
+</div>
+{/if}

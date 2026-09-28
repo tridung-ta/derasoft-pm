@@ -1,0 +1,64 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $listItems}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<h2>{$locale->msg('list_action_log_user')} {$username}</h2>
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','username','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('sort_by_username')}">{$locale->msg('username')}</a>{if $sk eq "username"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','action','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('sort_by_action')}">{$locale->msg('action')}</a>{if $sk eq "action"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','date_created','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('sort_by_date')}">{$locale->msg('date_created')}</a>{if $sk eq "date_created"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','ip','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('sort_by_ip')}">{$locale->msg('ip')}</a>{if $sk eq "ip"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td>{$startNum+$no}</td>
+<td>{$item->getId()}</td>
+<td>{$item->getUsername()}</td>
+<td>{$item->getAction()}</td>
+<td>{$item->getDateCreated()}</td>
+<td>{$item->getIp()}</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+</div>
+<div class="paging">
+<div class="listCategory">
+<select name="from_date">
+<option value="0" selected="selected">----- {$locale->msg('select_time')} -----</option>
+<option value="365">{$locale->msg('from_year_ago')}</option>
+<option value="180">{$locale->msg('from_six_month')}</option>
+<option value="30">{$locale->msg('from_month_ago')}</option>
+<option value="7">{$locale->msg('from_week_ago')}</option>
+<option value="all">{$locale->msg('all')}</option>
+</select>
+<input type="button" value="{$locale->msg('delete_log')}" title="{$locale->msg('delete_log')}" class="btnSubmit2" name="btnSubmit2" onclick="javascript:formSubmit('formType','listTracking','clear','{$username}');" />
+</div>
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+</div>
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="staff" />
+<input type="hidden" name="mod" value="listTracking" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="{$username}" />
+</form>
+{else}
+{$locale->msg('no_record')}
+{/if}
+</div>

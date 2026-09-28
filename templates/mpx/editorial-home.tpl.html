@@ -1,0 +1,33 @@
+{include file='head.tpl.html' title='head'}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-home ed-journal">
+    <section class="ed-hero">
+        <div class="ed-shell ed-hero__grid">
+            <div class="ed-hero__copy">
+                <span class="ed-kicker">{if !empty($homeCover)}{if $lang == 'en'}COVER STORY{elseif $lang == 'zh'}封面故事{else}BÀI NỔI BẬT{/if}{else}{if $lang == 'en'}LITERATURE · ARTS · CULTURE{elseif $lang == 'zh'}文学 · 艺术 · 文化{else}VĂN HỌC · NGHỆ THUẬT · VĂN HÓA{/if}{/if}</span>
+                <h1>{if !empty($homeCover)}{$homeCover->getTitle($lang)|escape:'html'}{elseif $lang == 'en'}Where stories find their light{elseif $lang == 'zh'}让故事找到光芒{else}Nơi câu chuyện tìm thấy ánh sáng{/if}</h1>
+                <p>{if !empty($homeCover)}{$homeCover->getDescription($lang)|strip_tags|escape:'html'}{elseif $lang == 'en'}Discover works, voices and creative movements shaping contemporary Vietnamese cultural life.{elseif $lang == 'zh'}探索塑造当代越南文化生活的作品、声音与创意潮流。{else}Khám phá những tác phẩm, tiếng nói và dòng chảy sáng tạo làm nên đời sống văn hóa Việt Nam đương đại.{/if}</p>
+                <a class="ed-button" href="{if !empty($homeCover)}{$homeCover->getUrl($lang)|escape:'html'}{else}{$publicBase}/van-tho{/if}">{if !empty($homeCover)}{if $lang == 'en'}Read the story{elseif $lang == 'zh'}阅读文章{else}Đọc bài viết{/if}{elseif $lang == 'en'}Explore works{elseif $lang == 'zh'}探索作品{else}Khám phá tác phẩm{/if}<span aria-hidden="true">→</span></a>
+            </div>
+            <figure class="ed-hero__visual">
+                {if !empty($homeCover)}
+                    {assign var="coverAvatar" value=$homeCover->getAvatarImage($uploads)}
+                    <a href="{$homeCover->getUrl($lang)|escape:'html'}" aria-label="{$homeCover->getTitle($lang)|escape:'html'}">{include file='editorial-card-media.tpl.html' article=$homeCover avatar=$coverAvatar imageClass='' lazy=false}</a>
+                    <figcaption>{include file='editorial-category-label.tpl.html' article=$homeCover} · {$homeCover->getDisplayDate()}</figcaption>
+                {else}
+                    <img src="/{$templatePath}/{$userTemplate}/img/literature/author.jpg" width="1398" height="759" fetchpriority="high" decoding="async" alt="{if $lang == 'en'}Vietnamese literature and arts{elseif $lang == 'zh'}越南文学与艺术{else}Văn học và nghệ thuật Việt Nam{/if}">
+                    <figcaption>{if $lang == 'en'}Stories connect generations{elseif $lang == 'zh'}故事连接世代{else}Những câu chuyện kết nối nhiều thế hệ{/if}</figcaption>
+                {/if}
+            </figure>
+        </div>
+    </section>
+    {include file='editorial-timeline-section.tpl.html' sectionItems=$homeLatest isLatest=true}
+    {include file='editorial-trending.tpl.html'}
+    {include file='editorial-discover.tpl.html'}
+    {include file='editorial-timeline-section.tpl.html' sectionItems=$homeEarlier isLatest=false}
+    <section class="ed-manifesto"><div class="ed-shell"><span>“</span><blockquote>{if $lang == 'en'}Culture is memory in motion — carried forward by every story we choose to tell.{elseif $lang == 'zh'}文化是流动的记忆，由我们选择讲述的每一个故事延续。{else}Văn hóa là ký ức đang chuyển động — được tiếp nối qua mỗi câu chuyện chúng ta chọn kể.{/if}</blockquote></div></section>
+</main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+<button class="ed-back-top" id="btnToTop" type="button" aria-label="{if $lang == 'en'}Back to top{elseif $lang == 'zh'}返回顶部{else}Về đầu trang{/if}">↑</button>
+{include file='editorial-script.tpl.html'}
+</body></html>

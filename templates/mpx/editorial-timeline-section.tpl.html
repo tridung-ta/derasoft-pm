@@ -1,0 +1,34 @@
+<section class="ed-section {if !$isLatest}ed-section--earlier{/if}">
+    <div class="ed-shell">
+        <header class="ed-section__head ed-section__head--timeline">
+            <div>
+                <span class="ed-kicker">{if $isLatest}{if $lang == 'en'}LATEST STORIES{elseif $lang == 'zh'}最新内容{else}MỚI CẬP NHẬT{/if}{else}{if $lang == 'en'}FROM THE ARCHIVE{elseif $lang == 'zh'}往期内容{else}BÀI VIẾT TRƯỚC ĐÓ{/if}{/if}</span>
+                <h2>{if $isLatest}{if $lang == 'en'}Freshly published{elseif $lang == 'zh'}最新发布{else}Bài đăng mới{/if}{else}{if $lang == 'en'}Earlier stories{elseif $lang == 'zh'}往期文章{else}Nội dung đã đăng{/if}{/if}</h2>
+                <p>{if $isLatest}{if $lang == 'en'}The newest stories, works and cultural perspectives.{elseif $lang == 'zh'}最新的故事、作品与文化视角。{else}Những câu chuyện, tác phẩm và góc nhìn văn hóa vừa được xuất bản.{/if}{else}{if $lang == 'en'}Continue exploring previously published writing.{elseif $lang == 'zh'}继续探索此前发布的内容。{else}Tiếp tục khám phá những bài viết đã xuất bản trước đó.{/if}{/if}</p>
+            </div>
+        </header>
+        {if $sectionItems}
+        <div class="ed-home-grid {if !$isLatest}ed-home-grid--earlier{/if}">
+            {foreach from=$sectionItems item=article name=timelineArticles}
+            {assign var="avatar" value=$article->getAvatarImage($uploads)}
+            <article class="ed-card">
+                <a class="ed-card__link" href="{$article->getUrl($lang)|escape:'html'}">
+                    <figure class="ed-card__media">
+                        {include file='editorial-card-media.tpl.html' article=$article avatar=$avatar lazy=true}
+                        {if $isLatest}<span class="ed-card__badge">{if $lang == 'en'}NEW{elseif $lang == 'zh'}新{else}MỚI{/if}</span>{/if}
+                    </figure>
+                    <div class="ed-card__body">
+                        <div class="ed-card__meta"><span>{include file='editorial-category-label.tpl.html' article=$article}</span><time>{$article->getDisplayDate()}</time></div>
+                        <h3>{$article->getTitle($lang)|escape:'html'}</h3>
+                        <p>{$article->getDescription($lang)|strip_tags|escape:'html'}</p>
+                        <b>{if $lang == 'en'}Read article{elseif $lang == 'zh'}阅读全文{else}Đọc bài{/if} →</b>
+                    </div>
+                </a>
+            </article>
+            {/foreach}
+        </div>
+        {else}
+        <div class="ed-empty"><p>{if $lang == 'en'}No articles are available yet.{elseif $lang == 'zh'}暂无文章。{else}Chưa có bài viết trong khu vực này.{/if}</p></div>
+        {/if}
+    </div>
+</section>

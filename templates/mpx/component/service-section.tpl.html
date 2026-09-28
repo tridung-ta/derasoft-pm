@@ -1,0 +1,81 @@
+{if $articlesServices}
+<div class="container-l flex flex-col gap-30">
+    <div class="flex flex-col gap-10 center-hor">
+        <h2 class="section-title text-center bold uppercase">
+            {if $menuObj->getId() == 149}
+                {if $lang == 'vn'}
+                    Dịch vụ thi công gian hàng nổi bật
+                {elseif $lang == 'zh'}
+                    卓越展台搭建服务
+                {else}
+                    Outstanding Booth Construction Services
+                {/if}
+            {else if $menuObj->getId() == 151}
+                {if $lang == 'vn'}
+                    Dịch vụ thi công hộp đèn quảng cáo nổi bật
+                {elseif $lang == 'zh'}
+                    卓越灯箱搭建服务
+                {else}
+                    Outstanding Lightbox Construction Services
+                {/if}
+            {else if $menuObj->getId() == 154}
+                {if $lang == 'vn'}
+                    Dịch vụ thi công lắp đặt sân khấu nổi bật
+                {elseif $lang == 'zh'}
+                    卓越舞台搭建服务
+                {else}
+                    Outstanding Stage Construction Services
+                {/if}
+            {/if}
+        </h2>
+        <div class="title-border-bottom"></div>
+    </div>
+
+    <div class="flex gap-20 service-container">             
+        <div class="service-sidebar">
+            <div class="custom-item__low bg-white overflow-hidden border-radius-5">
+                <div class="service-sidebar__title bg-primary item-padding-10 flex center-ver gap-10">
+                    <p class="text-color-white">☰</p>
+                    <h3 class="text-color-white bold uppercase text-sm">{$messages['service_group']}</h3>
+                </div>
+                  <div class="flex flex-col list-desktop">
+                    <div class="service-sidebar__item item-padding-10 cursor-pointer active"
+                        data-group="all">
+                        {$messages['all']}
+                    </div>
+                    {foreach from=$articleGroupList item=group}
+                        <div class="service-sidebar__item item-padding-10 cursor-pointer"
+                            data-group="{$group->getId()}">
+                            {$group->getNameByLang($lang)|default:$group->getName()}
+                        </div>
+                    {/foreach}
+                </div> 
+                <div class="list-mobile">
+                   <select class="filter-select fill-view border-none outline-none bg-white text-sm cursor-pointer item-padding-10 border-radius-5 custom-item">
+                        <option value="all">
+                            {$messages['all']}
+                        </option>
+                        {foreach from=$articleGroupList item=group}
+                            <option value="{$group->getId()}">
+                                {$group->getNameByLang($lang)|default:$group->getName()}
+                            </option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-content pos-rel js-slider-wrapper overflow-hidden flex-1" id="service-content" data-category-id="{$articleCategoryObj->getId()}" data-lang="{$lang}">
+            <div class="flex jus-end">
+                <a href="{$childCategories->getUrl($lang)}" class="btn-custom-fit text-color-white item-padding-10-20 bg-primary">{$messages['see_more']}</a>
+            </div>
+            <div class="js-slider-4cols fill-view swiper">
+                <div class="swiper-wrapper">
+                   {include file="component/article-service-items.tpl.html"}
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{/if}

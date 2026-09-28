@@ -1,0 +1,106 @@
+<div class="formContent">
+    <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+        <fieldset>
+            <h1>Cập nhật thông số kỹ thuật</h1>
+            <p><strong>* {$locale->msg('required_fields')}</strong></p>
+            <p><label>Loại thông số</label>
+                <select id="type" name="type">
+                    <option value="1" {if $specificationsData->getParentId() eq 1}selected{/if}>Dòng gai</option>
+                    <option value="2" {if $specificationsData->getParentId() eq 2}selected{/if}>Thiết kế lốp</option>
+                    <option value="6" {if $specificationsData->getParentId() eq 6}selected{/if}>Xuất xứ</option>
+                    <option value="11" {if $specificationsData->getParentId() eq 11}selected{/if}>Công dụng</option>
+                    <option value="12" {if $specificationsData->getParentId() eq 12}selected{/if}>Nhu cầu</option>
+                    <option value="13" {if $specificationsData->getParentId() eq 13}selected{/if}>Phân khúc</option>
+                </select>
+            <div id="ativetrademark" style="display: none">
+                <!-- <p><label>Thuộc nhóm</label>
+                    <select id="cat_idds" name="cat_idds">
+                        {if $listspecifications}
+                        <option value="0">l--Gốc</option>
+                        {foreach from=$listspecifications item=value}
+                        <option value="{$value->getId()}"{if $specificationsData->getCatId() eq $value->getId()} selected="selected" {/if}>l--{$value->getName()}</option>
+                        {/foreach}
+                        {/if}
+                    </select>
+                </p> -->
+                <p><label for="trademark">Thương hiệu</label>
+                    <select name="trademark" id="trademark">
+                        <option value="0">l--Chọn</option>
+                        {if $listproductOptions}
+                        {foreach from=$listproductOptions item=value}
+                        {if $value->getPcId() == 28}
+                        <option value="{$value->getId()}" {if $specificationsData->getMcId() eq $value->getId()} selected="selected" {/if}>l--{$value->getName()}</option>
+                        {/if}
+                        {/foreach}
+                        {/if}
+                    </select>
+                </p>
+            </div>
+            <p><label>Tên thông số</label>
+                <input value="{$specificationsData->getName()}" name="name" type="text"
+                    autocomplete="off" />
+            </p>
+            <br>
+
+            <p><label for="files">Hình ảnh đính kèm</label><input type="file" multiple="multiple" name="files[]" id="files[]" /></p>
+            {assign var=photos value=$specificationsData->getProperty('photos')}
+            {if $photos}
+            <p>
+            <div class="listPhoto">
+            <ul>
+            {foreach from=$photos item=photo}
+            <li><a href="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlFromId({$photo})}" target="_blank"><img src="/{$estore->getProperty('custom_name_file_img')}/{$imgs->getUrlAFromId({$photo})}" width="100" /></a><a href="/{$aScript}?op=manage&act=specifications&mod=edit&id={$specificationsData->getId()}&doo=delPhoto&photo={$photo}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+            {/foreach}
+            </ul>
+            </div>
+            </p>
+            {/if}
+
+
+
+            <p><label for="detail">*Chi tiết</label></p>
+            <textarea rows="10" cols="20" name="detail" id="detail">{$specificationsData->getProperty('detail')}</textarea>
+            {literal}
+            <script type="text/javascript">var editor = CKEDITOR.replace('detail');</script>{/literal}
+            <br>
+            <input type="hidden" name="op" value="manage" />
+            <input type="hidden" name="act" value="specifications" />
+            <input type="hidden" name="mod" value="edit" />
+            <input type="hidden" name="doo" value="submit" />
+            <input type="hidden" name="id" value="{$specificationsData->getId()}" />
+            <input type="hidden" name="sCode" value="{$sCode}_" />
+            <input type="hidden" name="lang" value="{$lang}" />
+            <p class="btn">
+                <input type="submit" value="Cập nhật" />
+            </p>
+        </fieldset>
+    </form>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var selectElement = document.getElementById("type");
+        if (selectElement) {
+            var selectedValue = selectElement.value;
+
+            if (selectedValue == "1") {
+                $('#ativetrademark').css("display", "block");
+
+            } else {
+                $('#ativetrademark').css("display", "none");
+            }
+        }
+    });
+</script>
+<script>
+    document.getElementById("type").addEventListener("change", function () {
+        var selectedValue = this.value;
+
+        if (selectedValue == "1") {
+            $('#ativetrademark').css("display", "block");
+
+        } else {
+            $('#ativetrademark').css("display", "none");
+        }
+    });
+
+</script>

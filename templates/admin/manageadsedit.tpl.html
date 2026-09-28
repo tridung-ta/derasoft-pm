@@ -1,0 +1,294 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('update_banner')}</h1>
+{if $validItem}
+{if $item}
+<!-- Load product info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="cat_id">{$locale->msg('of_group')}</label>
+<select name="gId" id="gId" class="small">
+{$categoryCombo}
+</select></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1"{if $item->getStatus() eq "1"} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if $item->getStatus() eq "0"} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input class="verysmall" type="text" value="{$item->getPosition()}" name="position" id="position" /></p>
+{assign var=logo value=$item->getProperty('logo')}
+{assign var=logo_type value=$item->getProperty('logo_type')}
+{assign var=url_logo value=$item->getProperty('url_logo')}
+{assign var=url_logo_type value=$item->getProperty('url_logo_type')}
+{assign var=width value=$item->getProperty('width')}
+{assign var=height value=$item->getProperty('height')}
+{assign var=url value=$item->getProperty('url')}
+<div class="boxTyle">
+<label for="with">{$locale->msg('url_banner')}</label>
+<input type="text" value="{$url_logo}" name="urllogo" id="urllogo" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('url_banner')}</h4>
+<p>{$locale->msg('note_urllogo')}</p>
+</div>
+</div>
+</div>
+<p><label>{$locale->msg('banner_type_from_url')}</label>
+<select name="typeurl" class="small">
+<option value="img" {if $url_logo_type eq 'img'} selected="selected"{/if} >Image</option>
+<option value="swf" {if $url_logo_type eq 'swf'} selected="selected"{/if}>Flash</option>
+<option value="video" {if $url_logo_type eq 'video'} selected="selected"{/if}>Video</option>
+</select></p>
+
+<p><label for="photos">{$locale->msg('upload_banner')}</label><input type="file" name="logo" id="logo" /></label></p>
+<p>
+   {if $avatarImg}
+        <p>
+            <label></label>
+            <a href="{$avatarImg->getPath()}/{$avatarImg->getUrlO()}" target="_blank" rel="noopener noreferrer"><img src="{$avatarImg->getPath()}/{$avatarImg->getUrlA()}" /></a>
+            <a href="/{$aScript}?op=manage&act=ads&mod=edit&id={$item->getId()}&doo=delAvatar&lang={$lang}" style="color:#c00;font-size:12px;">Xóa</a>
+        </p> 
+    {/if}
+</p>
+
+
+<p><label for="files">Hình ảnh đính kèm</label><input type="file" multiple="multiple" name="files[]" id="files[]" /></p>
+    {if $files}
+        <div class="listPhoto">
+        <ul>
+        {foreach from=$files item=file}
+        <li><a href="{$file->getPath()}/{$file->getUrlL()}" target="_blank"><img src="{$file->getPath()}/{$file->getUrlA()}" width="100" /></a><a href="/{$aScript}?op=manage&act=ads&mod=edit&id={$item->getId()}&doo=delFile&file={$file->getId()}&lang={$lang}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a></li>
+        {/foreach}
+        </ul>
+        </div>
+    {/if}
+<p><label for="name">Tiêu đề</label>
+    <input type="text" value="{$item->getName()}" name="name" id="name" /></p>
+<p>
+<label for="url">Nội dung bổ sung</label></p>
+<textarea rows="10" cols="20" name="altcontent" id="altcontent">{$item->getContent()}</textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('altcontent');</script>{/literal}
+
+{if $fieldOptionList}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+    {assign var=field_name value=$field->getFieldName()}
+    {assign var=fieldId value=$field->getId()}
+    {if isset($error.INPUT.$field_name)}
+    {$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+    {else}
+    {$field->displayHTML($allFieldValues[$fieldId]|default:'','')}
+    {/if}
+{/foreach}
+{/if}
+
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+<br />
+</div>
+</div>
+<p>&nbsp;</p>
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="ads" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="cat_id">{$locale->msg('of_group')}</label>
+<select name="gId" id="gId">
+{$categoryCombo}
+</select></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" /></p>
+{assign var=logo value=$itemInfo->getProperty('logo')}
+{assign var=logo_type value=$itemInfo->getProperty('logo_type')}
+{assign var=width value=$itemInfo->getProperty('width')}
+{assign var=height value=$itemInfo->getProperty('height')}
+{assign var=url_logo value=$itemInfo->getProperty('url_logo')}
+{assign var=url_logo_type value=$itemInfo->getProperty('url_logo_type')}
+{assign var=url value=$itemInfo->getProperty('url')}
+<div class="boxTyle">
+<label for="with">{$locale->msg('url_logo')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.urllogo.value} {else}{$urllogo}{/if}" name="urllogo" id="urllogo" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('url_logo')}</h4>
+<p>{$locale->msg('note_urllogo')}</p>
+</div>
+</div>
+</div>
+<p><label>{$locale->msg('type_url_logo')}</label>
+<select name="typeurl">
+<option value="img" {if $typeurl eq 'img'} selected="selected"{/if} >Image</option>
+<option value="swf" {if $typeurl eq 'swf'} selected="selected"{/if}>Flash</option>
+<option value="video" {if $typeurl eq 'video'} selected="selected"{/if}>Video</option>
+</select></p>
+{if $url_logo}
+<div style="margin:10px 0 15px 210px">
+{if $url_logo_type eq 'img'}
+<img src="{$url_logo}" {if $width}width="{$width}"{/if} {if $height}height="{$height}"{/if} alt="Logo" />
+{elseif $url_logo_type eq 'swf'}
+<div id="url_logo">
+{$itemInfo->getContent()}
+</div>
+<script type='text/javascript'> 
+var s1 = new SWFObject('{$url_logo}','url_logo','{$width}','{$height}','9');
+s1.addParam('allowfullscreen','true');
+s1.addParam('allowscriptaccess','always');
+s1.addParam("wmode", "transparent");
+s1.addParam('flashvars','autostart=1');
+s1.write('url_logo');
+</script>
+{elseif $url_logo_type eq 'video'}
+<a target="_blank" href="{$url_logo}"><img src="/{$templatePath}/{$userTemplate}/images/video.png" width="100" height="100" /></a>
+{/if}
+</div>
+{/if}
+<div class="boxTyle">
+<label for="photos">{$locale->msg('upload_banner')}</label><input type="file" name="logo" id="logo" /></label>
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('upload_banner')}</h4>
+<p>{$locale->msg('note_logo')}</p>
+</div>
+</div>
+</div>
+{if $logo_type}
+<div style="margin:10px 0 15px 210px">
+{if in_array($logo_type, array("jpg", "gif", "png"))}
+<img src="/upload/{$storeId}/resources/{$logo}" {if $width}width="{$width}"{/if} {if $height}height="{$height}"{/if} alt="Logo"/>
+{elseif in_array($logo_type, array("mp4", "wmv", "flv", "f4v"))}
+{if $logo}
+ <embed width="{if $width}{$width}{else} 355{/if}" height="{if $height}{$height}{else}210{/if}" src="mediaplayer.swf" flashvars="file=/upload/{$storeId}/resources/{$logo}&amp;image=/{$templatePath}/{$userTemplate}/images/video.png">
+<a href="/{$aScript}?op=manage&act=ads&mod=edit&id={$item->getId()}&doo=delFile&file={$logo}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a>{/if}
+{elseif $logo_type eq "swf"}
+<div id="upload_banner">
+{$itemInfo->getContent()}
+</div>
+<script type='text/javascript'> 
+var s1 = new SWFObject('/upload/{$storeId}/resources/{$logo}','upload_banner','{$width}','{$height}','9');
+s1.addParam('allowfullscreen','true');
+s1.addParam('allowscriptaccess','always');
+s1.addParam("wmode", "transparent");
+s1.addParam('flashvars','autostart=1');
+s1.write('upload_banner');
+</script>
+<a href="/{$aScript}?op=manage&act=ads&mod=edit&id={$itemInfo->getId()}&doo=delFile&file={$logo}" title="{$locale->msg('delete_file')}" class="btnDelete">{$locale->msg('delete')}</a>
+{/if}
+</div>
+{/if}
+<div class="boxTyle">
+<label for="with">{$locale->msg('width')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.width.value} {else}{$width}{/if}" name="width" id="width" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('width')}</h4>
+<p>{$locale->msg('note_width_logo')}</p>
+</div>
+</div>
+</div>
+<div class="boxTyle">
+<label for="height">{$locale->msg('height')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.height.value} {else}{$height}{/if}" name="height" id="height" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('height')}</h4>
+<p>{$locale->msg('note_heigt_logo')}</p>
+</div>
+</div>
+</div>
+<div class="boxTyle">
+<label for="url">URL</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.url.value} {else}{$url}{/if}" name="url" id="url" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>URL</h4>
+<p>{$locale->msg('note_url_logo')}</p>
+</div>
+</div>
+</div>
+<div class="boxTyle">
+<label for="url">{$locale->msg('content_change')}</label>
+<textarea rows="10" cols="20" name="altcontent" id="altcontent">{if isset($error.INPUT)}{$error.INPUT.altcontent.value}{/if}</textarea>
+<div class="helpIcon"><a href="#" class="btnHelp">&nbsp;<img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('content_change')}</h4>
+<p>{$locale->msg('note_altcontent')}</p>
+</div>
+
+{if $fieldOptionList}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{/if}
+{/foreach}
+{/if}
+
+{if $fieldList}
+<br /><h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{$field->displayHTML($item->getProperty($field->getName()))}
+{/foreach}
+{/if}
+</div>
+</div>
+<p>&nbsp;</p>
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="ads" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>

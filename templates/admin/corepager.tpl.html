@@ -1,0 +1,13 @@
+{if $rowsPages.pages >= 1}
+<ul>
+<li class="first">{$locale->msg('page')}</li>
+{foreach from=$pager item=pageItem}
+{if $pageItem.current eq 1}
+<li class="current">{$pageItem.name}</li>
+{else}
+<li><a href="{$pageItem.url}">{$pageItem.name}</a></li>
+{/if}
+{/foreach}
+<li class="first">{$locale->msg('total_of')} {$rowsPages.rows|number_format} {$locale->msg('result_display')} {$rowsPages.pages|number_format} {$amessages.page|lower}.</li>
+</ul>
+{/if}

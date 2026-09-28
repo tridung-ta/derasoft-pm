@@ -1,0 +1,90 @@
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+{if $success}
+<div class="infoBox">
+<h2>{$success}</h2>
+</div>
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('sale_off_config')}</h1>
+{if $item}
+<!-- Load estore info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p>
+<label>{$locale->msg('sale_off_policy')}</label>
+<input type="radio" name="sale_off_policy" id="radio1" class="box" value="0"{if !$item->getProperty('sale_off_policy')} checked{/if} />
+<label for="radio1" class="lbl">{$amessages.sale_off_status.0}</label>
+<input type="radio" name="sale_off_policy" id="radio2" class="box" value="1"{if $item->getProperty('sale_off_policy') eq 1} checked{/if} />
+<label for="radio2" class="lbl">{$amessages.sale_off_status.1}</label>
+<input type="radio" name="sale_off_policy" id="radio3" class="box" value="2"{if $item->getProperty('sale_off_policy') eq 2} checked{/if} onclick="javascript:showControl('sale_off_program_id_p');" />
+<label for="radio2" class="lbl">{$amessages.sale_off_status.2}</label>
+</p>
+<p id="sale_off_program_id_p"{if $item->getProperty('sale_off_policy') ne 2} class="hidden"{/if}><label for="sale_off_program_id">{$locale->msg('select_sale_off_program')}</label>
+<select name="sale_off_program_id" id="sale_off_program_id">
+<option value="-1">{$locale->msg('select_sale_off_program_title')}</option>
+{$saleoffPrograms}
+</select></p>
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="config" />
+<input type="hidden" name="mod" value="saleoff" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','saleoff','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p>
+<label>{$locale->msg('sale_off_policy')}</label>
+<input type="radio" name="sale_off_policy" id="radio1" class="box" value="0"{if isset($error.INPUT) && !$error.INPUT.sale_off_policy.value} checked{/if} />
+<label for="radio1" class="lbl">{$amessages.sale_off_status.0}</label>
+<input type="radio" name="sale_off_policy" id="radio2" class="box" value="1"{if isset($error.INPUT) && $error.INPUT.sale_off_policy.value eq 1} checked{/if} />
+<label for="radio2" class="lbl">{$amessages.sale_off_status.1}</label>
+<input type="radio" name="sale_off_policy" id="radio2" class="box" value="2"{if isset($error.INPUT) && $error.INPUT.sale_off_policy.value eq 2} checked{/if} />
+<label for="radio2" class="lbl">{$amessages.sale_off_status.2}</label>
+</p>
+<p{if isset($error.INPUT) && $error.INPUT.sale_off_program_id.error} class="errormsg"{/if}><label for="sale_off_program_id">{$locale->msg('select_sale_off_program')}</label>
+<select name="sale_off_program_id" id="sale_off_program_id">
+<option value="-1">{$locale->msg('select_sale_off_program_title')}</option>
+{$saleoffPrograms}
+</select></p>
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="config" />
+<input type="hidden" name="mod" value="saleoff" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="Submit" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="Reset" name="btnReset" />
+<input type="button" onclick="javascript:formSubmit('formEdit','saleoff','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+</div>
+</div>

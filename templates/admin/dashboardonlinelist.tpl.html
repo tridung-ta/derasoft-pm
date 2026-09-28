@@ -1,0 +1,109 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="dashboard" />
+<input type="hidden" name="act" value="online" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+<ul class="tabs">
+<li class="current"><a title="{$locale->msg('list_item')}" href="javascript:;">{$locale->msg('list_item')}</a></li>
+</ul>
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $listItems}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th><input type="checkbox" name="all" id="all" value="1" class="box3" onClick="toggleAllChecks('formType');" /></th>
+<th>{$locale->msg('numbers')}</th>
+<th>{$locale->msg('username')}</th>
+<th>{$locale->msg('group_member')}</th>
+<th>IP</th>
+<th>{$locale->msg('time')}</th>
+<th>{$locale->msg('last_page_access')}</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td><input type="checkbox" name="ids[]" id="ids[]" value="{$item->getId()}" class="box3" /></td>
+<td>{$startNum+$no}</td>
+<td>
+{if $item->getUType() eq 0}{$item->getUserName()}
+{elseif $item->getUType() eq 4}<a href="/{$aScript}?op=manage&act=customer&mod=edit&id={$item->getUId()}&lang=vn">{$item->getUserName()}</a>
+{else}<a href="/{$aScript}?op=system&act=staff&mod=edit&id={$item->getUId()}&lang=vn">{$item->getUserName()}</a>{/if}
+</td>
+<td>
+{if $item->getUType() eq 0}{$locale->msg('guest')}
+{elseif $item->getUType() eq 4}{$locale->msg('member')}
+{else}{$amessages['type_user'][$item->getUType()]}{/if}
+</td>
+<td>{$item->getIp()}</td>
+<td>{$item->getLastUpdated()}</td>
+<td><a target="_blank" href="{$item->getLastPage()}">{$item->getLastPage()}</a></td>
+<td>
+<a href="javascript:formSubmit('formType','list','delete',{$item->getId()});" title="{$locale->msg('delete')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_delete.png" alt="{$locale->msg('delete')}" width="16" height="16" /></a>
+</td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+<div class="paging">
+<p class="listBtn">
+<a title="{$locale->msg('button_delete')}" href="javascript:void(0);" onClick="javascript:formSubmit('formType','list','delete','0');">{$locale->msg('button_delete')}</a>
+</p>
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+
+</div>
+<input type="hidden" name="op" value="dashboard" />
+<input type="hidden" name="act" value="online" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="" />
+<input type="hidden" name="kw" value="{$kw}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+<input type="hidden" name="id" value="" />
+</form>
+{else}
+{$locale->msg('no_record')}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="" />
+</form>
+{/if}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

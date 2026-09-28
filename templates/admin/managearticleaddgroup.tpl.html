@@ -1,0 +1,84 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_articlegroup')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1" {if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected" {/if}>{$locale->msg('enable')}</option>
+<option value="0" {if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected" {/if}>{$locale->msg('disable')}</option>
+</select>
+</p>
+
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg" {/if}><label for="name">* {$locale->msg('group_name')}:</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" /></p>
+
+<p{if isset($error.INPUT) && $error.INPUT.name_en.error} class="errormsg" {/if}><label for="name_en">* {$locale->msg('group_name_en')}:</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name_en.value}{/if}" name="name_en" id="name_en" /></p>
+
+<p{if isset($error.INPUT) && $error.INPUT.name_zh.error} class="errormsg" {/if}><label for="name_zh">* {$locale->msg('group_name_zh')}:</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name_zh.value}{/if}" name="name_zh" id="name_zh" /></p>
+<!-- 
+<p{if isset($error.INPUT) && $error.INPUT.description.error} class="errormsg" {/if}><label for="description">Nội dung :</label></p>
+<textarea rows="10" cols="20" name="description" id="description">{if isset($error.INPUT)}{$error.INPUT.description.value}{/if}</textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('description');</script>{/literal}
+<br>
+<p><label for="avatar">Hình ảnh sản phẩm:</label><input type="file" name="avatar" id="avatar" /></p> -->
+<!-- 
+<p><label for="files">Hình ảnh đính kèm:</label><input type="file" multiple="multiple" name="files[]" id="files[]" /></p> -->
+
+<br>
+{if isset($fieldList)}
+<br />
+<h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{else}
+{$field->displayHTML('')}
+{/if}
+{/foreach}
+{/if}
+
+<br />
+
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="article" />
+<input type="hidden" name="mod" value="addgroup" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="listidcar" value="" />
+<input type="submit" value="{$locale->msg('button_submit')}"
+title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}"
+title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button"
+onclick="javascript:formSubmit('formAdd','list','cancel',0);"
+value="{$locale->msg('button_cancel')}"
+title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>
+

@@ -1,0 +1,308 @@
+<div class="tableContent">
+  {if $result_code}
+  <div class="message">{$amessages.result_code.$result_code}</div>
+  {/if} {if $error_code}
+  <div class="message2">{$amessages.error_code.$error_code}</div>
+  {/if}
+
+  <div class="contType">
+    <h2>{$locale->msg('notes')}:</h2>
+    {$locale->msg('config_site_down_notes')}
+  </div>
+
+  {if $error} {if $error.invalid || $error.message} {assign var=input
+  value=$error.INPUT}
+
+  <div class="errorBox">
+    <h2>{$locale->msg('error_notes')}:</h2>
+
+    <ul class="listStyle">
+      {foreach from=$input item=field} {if $field.error}
+      <li>{$field.message}</li>
+      {/if} {/foreach}
+
+      <li>{$error.message}</li>
+    </ul>
+  </div>
+
+  {/if} {/if}
+
+  <div class="formContent">
+    <h1>Số lượt truy cập</h1>
+
+    <form action="/{$aScript}" method="post" name="formEdit" id="formEdit">
+      <fieldset>
+        <p class="date-picker">
+          <label for="month"> Chọn tháng </label>
+          <select id="month" name="month_select" style="width: 20%;"></select>
+          <label for="year"> Chọn năm </label>
+          <select id="year" name="year_select" style="width: 20%;"></select>
+        </p>
+        <p id="csscustom_click_phone">
+          <label for="custom_click_phone"> Số điện thoại </label>
+          <input type="text" value="{$counttel}" name="custom_click_phone" id="custom_click_phone" readonly />
+        </p>
+
+        <p id="csscustom_click_zalo">
+          <label for="custom_click_zalo"> Zalo </label>
+
+          <input
+            type="text"
+            value="{$countzalo}"
+            name="custom_click_zalo"
+            id="custom_click_zalo"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_fanpage">
+          <label for="custom_click_fanpage"> Fanpage </label>
+
+          <input
+            type="text"
+            value="{$countfanpage}"
+            name="custom_click_fanpage"
+            id="custom_click_fanpage"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_map">
+          <label for="custom_click_map"> Map </label>
+
+          <input
+            type="text"
+            value="{$countmap}"
+            name="custom_click_map"
+            id="custom_click_map"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_gg">
+          <label for="custom_click_gg"> Google </label>
+
+          <input
+            type="text"
+            value="{$countgoogle}"
+            name="custom_click_gg"
+            id="custom_click_gg"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_tt">
+          <label for="custom_click_tt"> Tiktok </label>
+
+          <input
+            type="text"
+            value="{$counttiktok}"
+            name="custom_click_tt"
+            id="custom_click_tt"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_youtube">
+          <label for="custom_click_youtube"> Youtube </label>
+
+          <input
+            type="text"
+            value="{$countyoutube}"
+            name="custom_click_youtube"
+            id="custom_click_youtube"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_mess">
+          <label for="custom_click_mess"> Mess fb </label>
+
+          <input
+            type="text"
+            value="{$countmess}"
+            name="custom_click_mess"
+            id="custom_click_mess"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_twitter">
+          <label for="custom_click_twitter"> Twitter </label>
+
+          <input
+            type="text"
+            value="{$counttwitter}"
+            name="custom_click_twitter"
+            id="custom_click_twitter"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_instagram">
+          <label for="custom_click_instagram"> Instagram </label>
+
+          <input
+            type="text"
+            value="{$countinstagram}"
+            name="custom_click_instagram"
+            id="custom_click_instagram"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_skype">
+          <label for="custom_click_skype"> Skype </label>
+
+          <input
+            type="text"
+            value="{$countskype}"
+            name="custom_click_skype"
+            id="custom_click_skype"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_telegram">
+          <label for="custom_click_telegram"> Telegram </label>
+
+          <input
+            type="text"
+            value="{$counttelegram}"
+            name="custom_click_telegram"
+            id="custom_click_telegram"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_pinterest">
+          <label for="custom_click_pinterest"> Pinterest </label>
+
+          <input
+            type="text"
+            value="{$countpinterest}"
+            name="custom_click_pinterest"
+            id="custom_click_pinterest"
+            readonly
+          />
+        </p>
+
+        <p id="csscustom_click_linkedin">
+          <label for="custom_click_linkedin"> Linkedin </label>
+
+          <input
+            type="text"
+            value="{$countlinkedin}"
+            name="custom_click_linkedin"
+            id="custom_click_linkedin"
+            readonly
+          />
+        </p>
+
+        <br />
+        <p class="btn">
+          <input type="hidden" name="op" value="system" />
+          <input type="hidden" name="act" value="config" />
+          <input type="hidden" name="mod" value="countclick" />
+          <input type="hidden" name="doo" value="submit" />
+          <input type="hidden" name="month" id="hiddenMonth" value="{$month}" />
+          <input type="hidden" name="year" id="hiddenYear" value="{$year}" />
+          <input
+            type="submit"
+            value="Xuất excel"
+            title="Submit"
+            name="btnSubmit"
+          />
+          <input
+            type="reset"
+            value="{$locale->msg('button_reset')}"
+            title="Reset"
+            name="btnReset"
+            id="btnReset"
+          />
+        </p>
+      </fieldset>
+    </form>
+  </div>
+</div>
+
+<script>
+  const monthSelect = document.getElementById("month");
+  const yearSelect = document.getElementById("year");
+  const hiddenMonth = document.getElementById("hiddenMonth").value;
+  const hiddenYear = document.getElementById("hiddenYear").value;
+
+  const months = [
+    "Tháng 1",
+    "Tháng 2",
+    "Tháng 3",
+    "Tháng 4",
+    "Tháng 5",
+    "Tháng 6",
+    "Tháng 7",
+    "Tháng 8",
+    "Tháng 9",
+    "Tháng 10",
+    "Tháng 11",
+    "Tháng 12",
+  ];
+
+  months.forEach(function (month, index) {
+    const option = document.createElement("option");
+    const monthValue = String(index + 1).padStart(2, "0");
+    option.value = monthValue;
+    option.textContent = month;
+    if (hiddenMonth === monthValue) {
+      option.selected = true;
+    }
+    monthSelect.appendChild(option);
+  });
+
+  const currentYear = new Date().getFullYear();
+  for (let year = currentYear - 10; year <= currentYear + 50; year++) {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    if (String(hiddenYear) === String(year)) {
+      option.selected = true;
+    }
+    yearSelect.appendChild(option);
+  }
+
+  if (!hiddenMonth) {
+    monthSelect.value = String(new Date().getMonth() + 1).padStart(2, "0");
+  }
+
+  if (!hiddenYear) {
+    yearSelect.value = currentYear;
+  }
+  monthSelect.addEventListener("change", redirectToLink);
+  yearSelect.addEventListener("change", redirectToLink);
+
+  function redirectToLink() {
+    const month = monthSelect.value;
+
+    const year = yearSelect.value;
+
+    if (month && year) {
+      const url =
+        "/admin.php" +
+        "?op=system" +
+        "&act=config" +
+        "&mod=countclick" +
+        "&month=" +
+        encodeURIComponent(month) +
+        "&year=" +
+        encodeURIComponent(year);
+
+      window.location.href = url;
+    }
+  }
+</script>
+
+<script>
+  document.getElementById("btnReset").addEventListener("click", function () {
+    window.location.href =
+      "/admin.php" + "?op=system" + "&act=config" + "&mod=countclick";
+  });
+</script>

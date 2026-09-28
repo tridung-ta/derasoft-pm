@@ -1,0 +1,18 @@
+.ed-reading-progress{position:fixed;z-index:100;top:0;right:0;left:0;height:3px;pointer-events:none}
+.ed-reading-progress span{display:block;width:0;height:100%;background:var(--ed-accent);transition:width .08s linear}
+.ed-reader-layout{display:grid;grid-template-columns:230px minmax(0,760px);align-items:start;justify-content:center;gap:64px}
+.ed-reader-layout .ed-article__content{width:100%;min-width:0}
+.ed-reader-tools{position:relative;font-family:var(--ed-sans)}
+.ed-reader-tools__inner{position:sticky;top:132px;padding:22px 0;border-top:1px solid var(--ed-line);border-bottom:1px solid var(--ed-line)}
+.ed-reader-tools nav{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.ed-reader-tools nav:empty{display:none}
+.ed-reader-tools nav a{color:var(--ed-muted);font-size:.76rem;line-height:1.45}
+.ed-reader-tools nav a:hover,.ed-reader-tools nav a.is-active{color:var(--ed-accent)}
+.ed-reader-tools nav a[data-level="3"]{padding-left:14px;font-size:.71rem}
+.ed-share{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:22px;padding-top:18px;border-top:1px solid var(--ed-line)}
+.ed-share>span{margin-bottom:2px;color:var(--ed-muted);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.ed-share button{padding:0;border:0;background:transparent;color:var(--ed-accent);font:600 .72rem var(--ed-sans);cursor:pointer}
+.ed-share button:hover{text-decoration:underline;text-underline-offset:3px}
+.ed-article__content h2,.ed-article__content h3{scroll-margin-top:150px}
+@media(max-width:960px){.ed-reader-layout{grid-template-columns:minmax(0,760px);gap:28px}.ed-reader-tools__inner{position:static}.ed-reader-tools nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ed-share{flex-direction:row;align-items:center;gap:18px}.ed-share>span{margin:0}}
+@media(max-width:767px){.ed-reader-layout{width:calc(100% - 32px)}.ed-reader-tools nav{grid-template-columns:1fr}.ed-reader-tools__inner{padding:18px 0}.ed-share{flex-wrap:wrap}.ed-article__content h2,.ed-article__content h3{scroll-margin-top:90px}}

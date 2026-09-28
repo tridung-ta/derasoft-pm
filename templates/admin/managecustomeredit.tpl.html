@@ -1,0 +1,208 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field key=key}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{if isset($error.message)}{$error.message}{/if}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_customer')}</h1>
+{literal}<script type="text/javascript" src="/ckeditor/ckeditor.js"></script>{/literal}
+{literal}<script>
+$(document).ready(function(){
+    $('#country_id').change(function(){
+        var countryID = $(this).val();
+        $('#area_id').html('<option>Đang tải...</option>');
+        $('#ward_id').html('<option>Chọn phường, xã</option>');
+        if(countryID){
+            $.ajax({
+                type: 'POST',
+                url: 'ajaxadmin.php',
+                data: {op: 'loadareas', country_id: countryID},
+                success: function(html){
+                    $('#area_id').html(html);
+                }
+            });
+        } else {
+            $('#area_id').html('<option>Chọn tỉnh, thành</option>');
+        }
+    });
+
+    $('#area_id').change(function(){
+        var areaID = $(this).val();
+        $('#ward_id').html('<option>Đang tải...</option>');
+        if(areaID){
+            $.ajax({
+                type: 'POST',
+                url: 'ajaxadmin.php',
+                data: {op: 'loadwards', area_id: areaID},
+                success: function(html){
+                    $('#ward_id').html(html);
+                }
+            });
+        } else {
+            $('#ward_id').html('<option>Chọn phường, xã</option>');
+        }
+    });
+});
+</script>{/literal}
+{if $validItem}
+{if isset($item)}
+<!-- Load product info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select class="small" name="status" id="status">
+<option value="1"{if $item->getStatus() eq "1"} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if $item->getStatus() eq "0"} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{$item->getUsername()}</strong></p>
+<div class="boxTyle">
+<label for="password">* {$locale->msg('password')}</label>
+<input type="password" class="small" value="" name="password" id="password" />
+<div class="helpIcon"><a href="#" class="btnHelp"><img src="/{$templatePath}/{$userTemplate}/images/help_button.gif" width="14" height="14" alt="Hint" /></a>
+<div class="alertPopup">
+<h4>{$locale->msg('password')}</h4>
+<p>{$locale->msg('leave_password_customer')}</p>
+</div>
+</div>
+</div>
+<p><label for="cpassword">* {$locale->msg('confirm_password')}</label>
+<input type="password" class="small" value="" name="cpassword" id="cpassword" /></p>
+<p><label for="group_id">* {$locale->msg('customer_group_name')}</label>
+<select class="medium" name="group_id" id="group_id">
+{$customerGroupsCombo}
+</select></p>
+<p><label for="country_id">* {$locale->msg('country_name')}</label><select class="medium" name="country_id" id="country_id">
+<option value="">Chọn quốc gia</option>
+{if isset($countriesCombo)}{$countriesCombo}{/if}
+</select></p>
+<p><label for="area_id">* {$locale->msg('area_name')}</label><select class="medium" name="area_id" id="area_id">
+<option value="">Chọn tỉnh, thành</option>
+{if isset($areasCombo)}{$areasCombo}{/if}
+</select></p>
+<p><label for="ward_id">* {$locale->msg('ward_name')}</label><select class="medium" name="ward_id" id="ward_id">
+<option value="">Chọn phường, xã</option>
+{if isset($wardsCombo)}{$wardsCombo}{/if}
+</select></p>
+<p><label for="name">* {$locale->msg('fullname')}</label>
+<input type="text" class="medium" value="{$item->getFullName()}" name="fullname" id="fullname" /></p>
+<p><label for="address">* {$locale->msg('address')}</label>
+<input type="text" value="{$item->getAddress()}" name="address" id="address" /></p>
+<p><label for="email">* {$locale->msg('email_add')}</label>
+<input type="text" class="medium" value="{$item->getEmail()}" name="email" id="email" /></p>
+<p><label for="tel">* {$locale->msg('cell')}</label>
+<input type="text" class="small" value="{$item->getTel()}" name="tel" id="tel" /></p>
+<p><label for="company">{$locale->msg('name_company')}</label>
+<input type="text" class="small" value="{$item->getCompany()}" name="company" id="company" /></p>
+<p><label for="tax_code">{$locale->msg('customer_tax_code')}</label>
+<input type="text" class="small" value="{$item->getTaxCode()}" name="tax_code" id="tax_code" /></p>
+{if isset($fieldOptionList)}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+    {assign var=field_name value=$field->getFieldName()}
+    {assign var=fieldId value=$field->getId()}
+    {if isset($error.INPUT.$field_name)}
+    {$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+    {else}
+    {$field->displayHTML($allFieldValues[$fieldId]|default:'','')}
+    {/if}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="username" value="{$item->getUserName()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" enctype="multipart/form-data" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select class="small" name="status" id="status">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p><label for="username">* {$locale->msg('username')}</label><strong>{if isset($error.INPUT)}{$error.INPUT.username.value}{/if}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.password.error} class="errormsg"{/if}><label for="password">* {$locale->msg('password')}</label>
+<input type="password" class="small" value="{if isset($error.INPUT)}{$error.INPUT.password.value}{/if}" name="password" id="password" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.cpassword.error} class="errormsg"{/if}><label for="cpassword">* {$locale->msg('confirm_password')}</label>
+<input type="password" class="small" value="{if isset($error.INPUT)}{$error.INPUT.cpassword.value}{/if}" name="cpassword" id="cpassword" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.group_id.error} class="errormsg"{/if}><label for="group_id">* {$locale->msg('customer_group_name')}</label>
+<select name="group_id" id="group_id">
+{$customerGroupsCombo}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.country_id.error} class="errormsg"{/if}><label for="country_id">* {$locale->msg('country_name')}</label><select name="country_id" id="country_id">
+<option value="">Chọn quốc gia</option>
+{$countriesCombo}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.area_id.error} class="errormsg"{/if}><label for="area_id">* {$locale->msg('area_name')}</label><select name="area_id" id="area_id">
+<option value="">Chọn tỉnh, thành</option>
+{$areasCombo}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.ward_id.error} class="errormsg"{/if}><label for="ward_id">* {$locale->msg('ward_name')}</label><select name="ward_id" id="ward_id">
+<option value="">Chọn phường, xã</option>
+{$wardsCombo}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.fullname.error} class="errormsg"{/if}><label for="fullname">* {$locale->msg('fullname')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.fullname.value}{/if}" name="fullname" id="fullname" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.address.error} class="errormsg"{/if}><label for="address">* {$locale->msg('address')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.address.value}{/if}" name="address" id="address" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.email.error} class="errormsg"{/if}><label for="email">* {$locale->msg('email_add')}</label>
+<input type="text" class="medium" value="{if isset($error.INPUT)}{$error.INPUT.email.value}{/if}" name="email" id="email" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.tel.error} class="errormsg"{/if}><label for="tel">* {$locale->msg('cell')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.tel.value}{/if}" name="tel" id="tel" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.company.error} class="errormsg"{/if}><label for="company">{$locale->msg('name_company')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.company.value}{/if}" name="company" id="company" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.tax_code.error} class="errormsg"{/if}><label for="tax_code">{$locale->msg('customer_tax_code')}</label>
+<input type="text" class="small" value="{if isset($error.INPUT)}{$error.INPUT.tax_code.value}{/if}" name="tax_code" id="tax_code" /></p>
+{if $fieldOptionList}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{/if}
+{/foreach}
+{/if}
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="customer" />
+<input type="hidden" name="mod" value="edit" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+{else}{$locale->msg('code_invalid')}...{/if}
+</div>
+</div>

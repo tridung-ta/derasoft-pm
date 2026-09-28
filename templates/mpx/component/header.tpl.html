@@ -1,0 +1,277 @@
+<header class="literature-header" data-public-header>
+    <div class="literature-header__inner">
+        <div class="literature-header__brand-row">
+            <a href="{$rootUrl}" class="literature-header__brand" aria-label="{$estore->getName()|escape:'html'}">
+                <img src="/{$templatePath}/{$userTemplate}/img/literature/logo-top.svg" alt="{$estore->getName()|escape:'html'}">
+            </a>
+        </div>
+        <div class="literature-header__nav-row">
+            <nav class="literature-header__nav" aria-label="Điều hướng chính">
+                {if !empty($menuTree)}
+                    {foreach $menuTree as $menuItem}
+                        <div class="literature-header__nav-item {if $menuItem.item->getUrl() == "/$slugActive"}active{/if}">
+                            <a class="literature-header__nav-link" href="{$menuItem.item->getUrlByLang($lang)|escape:'html'}">
+                                {$menuItem.item->getNameByLang($lang)|escape:'html'}
+                            </a>
+                            {if !empty($menuItem.children)}
+                                <div class="literature-header__submenu">
+                                    {foreach $menuItem.children as $child}
+                                        <a href="{$child.item->getUrlByLang($lang)|escape:'html'}">{$child.item->getNameByLang($lang)|escape:'html'}</a>
+                                    {/foreach}
+                                </div>
+                            {/if}
+                        </div>
+                    {/foreach}
+                {/if}
+            </nav>
+            <div class="literature-header__tools">
+                <div class="literature-header__language" aria-label="Ngôn ngữ">
+                    <a href="{$rootUrl}{$urlVi}" class="{if $lang == 'vn'}active{/if}" lang="vi">VI</a>
+                    <a href="{$rootUrl}{$urlEn}" class="{if $lang == 'en'}active{/if}" lang="en">EN</a>
+                    <a href="{$rootUrl}{$urlZh}" class="{if $lang == 'zh'}active{/if}" lang="zh">中文</a>
+                </div>
+                <button type="button" class="literature-header__menu-button" data-public-menu-toggle aria-label="Mở menu" aria-expanded="false" aria-controls="public-mobile-menu">
+                    <img src="/{$templatePath}/{$userTemplate}/img/icon/bars.svg" alt="">
+                </button>
+            </div>
+        </div>
+    </div>
+    <nav class="literature-header__mobile-nav" id="public-mobile-menu" aria-label="Điều hướng di động">
+        <div class="literature-header__mobile-list">
+            {if !empty($menuTree)}
+                {foreach $menuTree as $menuItem}
+                    <div class="literature-header__mobile-item">
+                        <a href="{$menuItem.item->getUrlByLang($lang)|escape:'html'}">{$menuItem.item->getNameByLang($lang)|escape:'html'}</a>
+                        {if !empty($menuItem.children)}
+                            <div class="literature-header__mobile-children">
+                                {foreach $menuItem.children as $child}
+                                    <a href="{$child.item->getUrlByLang($lang)|escape:'html'}">{$child.item->getNameByLang($lang)|escape:'html'}</a>
+                                {/foreach}
+                            </div>
+                        {/if}
+                    </div>
+                {/foreach}
+            {/if}
+        </div>
+        <div class="literature-header__mobile-languages" aria-label="Ngôn ngữ">
+            <a href="{$rootUrl}{$urlVi}" class="{if $lang == 'vn'}active{/if}" lang="vi">VI</a>
+            <a href="{$rootUrl}{$urlEn}" class="{if $lang == 'en'}active{/if}" lang="en">EN</a>
+            <a href="{$rootUrl}{$urlZh}" class="{if $lang == 'zh'}active{/if}" lang="zh">中文</a>
+        </div>
+    </nav>
+</header>
+
+{if false}
+<div class="container-f bg-primary">
+    <div class="container-l flex center-ver header-bar jus-sb">
+        <div class="flex center-ver gap-10">
+            <div class="top-menu__iconcontact flex center-ver gap-10 jus-sb">
+                <div class="top-menu__iconcontact-item flex gap-10 item-padding-10">
+                    <div class="top-menu__iconcontact-icon flex center-ver center-hor">
+                        <img class="img-icon"
+                            src="/{$templatePath}/{$userTemplate}/img/icon/phone.svg"
+                            alt="">
+                    </div>
+                    <p class="text-color-white">
+                        {$messages['247support']}: ({$estore->getTel()})
+                    </p>
+                </div>
+                <div class="top-menu__iconcontact-item flex gap-10 item-padding-10">
+                    <div class="top-menu__iconcontact-icon flex center-ver center-hor">
+                        <img class="img-icon"
+                            src="/{$templatePath}/{$userTemplate}/img/icon/envelope.svg"
+                            alt="">
+                    </div>
+                    <p class="text-color-white">
+                        {$estore->getEmail()}
+                    </p>
+                </div>
+            </div>
+        </div>
+            <div class="flex gap-10 center-ver">
+            <div class="lang-icon pos-rel ratio-1x1 {if $lang == 'vn'}active{/if}">
+                <img title="flag VN" src="/templates/mpx/img/icon/VN.svg" alt="">
+                <a href="{$rootUrl}{$urlVi}" class="pos-abs cover-all"></a>
+            </div>
+            <div class="lang-icon pos-rel ratio-1x1 {if $lang == 'en'}active{/if}">
+                <img title="flag EN" src="/templates/mpx/img/icon/EN.svg" alt="">
+                <a href="{$rootUrl}{$urlEn}" class="pos-abs cover-all"></a>
+            </div>
+            <div class="lang-icon pos-rel ratio-1x1 {if $lang == 'zh'}active{/if}">
+                <img title="flag CN" src="/templates/mpx/img/icon/CN.svg" alt="">
+                <a href="{$rootUrl}{$urlZh}" class="pos-abs cover-all"></a>
+            </div>
+        </div>
+        <!-- <div class="top-menu__container center-ver pos-rel">
+            <a class="text-color-white">
+                {if $lang == 'vn'}
+                    Tiếng Việt
+                {elseif $lang == 'en'}
+                    English
+                {elseif $lang == 'zh'}
+                    中文
+                {/if}
+                ▾
+            </a>
+            <div class="top-menu__list pos-abs bg-white z-index-1 item-padding-10 border-radius-5 flex-col gap-10">
+                {if $lang != 'vn'}
+                    <a href="{$rootUrl}{$urlVi}">
+                        Tiếng Việt
+                    </a>
+                {/if}
+
+                {if $lang != 'en'}
+                    <a href="{$rootUrl}{$urlEn}">
+                        English
+                    </a>
+                {/if}
+
+                {if $lang != 'zh'}
+                    <a href="{$rootUrl}{$urlZh}">
+                        中文
+                    </a>
+                {/if}
+            </div>
+        </div> -->
+    </div>
+</div>
+<div class="container-l flex pos-rel header-bottom jus-sb item-padding-10">
+    <a href="/" class="logo">
+        <img
+            title="logo trang chủ"
+            src="/{$templatePath}/{$userTemplate}/img/logo/logo-top.webp"
+            alt="">
+    </a>
+    <div class="flex gap-20 header-bottom__menu center-ver">
+        {if !empty($menuTree)}
+            {foreach $menuTree as $menuItem}
+                {if $menuItem.item->getUrl() == "/$slugActive"}
+                    {assign var=active value="active"}
+                {else}
+                    {assign var=active value=""}
+                {/if}
+                <div class="header-bottom__item pos-rel {$active} {if !empty($menuItem.children)}has-children{/if}">
+                    <a
+                        class="text-color-deactive uppercase bold"
+                        href="{$menuItem.item->getUrlByLang($lang)}">
+                        {$menuItem.item->getNameByLang($lang)}
+                        {if !empty($menuItem.children)}
+                            ▿
+                        {/if}
+                    </a>
+                    {if !empty($menuItem.children)}
+                        <div class="header-bottom__dropdown pos-abs bg-white z-index-1 border-radius-5">
+                            {foreach $menuItem.children as $child}
+                                <div class="header-bottom__dropdown-item pos-rel">
+                                    <a
+                                        class="un-wrap"
+                                        href="{$child.item->getUrlByLang($lang)}">
+                                        {$child.item->getNameByLang($lang)}
+                                    </a>
+                                    {if !empty($child.children)}
+                                        <div class="header-bottom__dropdown-item__lvtwo flex flex-col pos-abs bg-white border-radius-5 z-index-1">
+                                            {foreach $child.children as $child2}
+                                                <div class="item-padding-10 pos-rel {if !empty($child2.children)}has-children{/if}">
+                                                    <a href="{$child2.item->getUrlByLang($lang)}">
+                                                        {$child2.item->getNameByLang($lang)}
+                                                    </a>
+                                                    {if !empty($child2.children)}
+                                                        <div class="header-bottom__dropdown-item__lvthree flex flex-col pos-abs bg-white border-radius-5 z-index-2 overflow-hidden">
+                                                            {foreach $child2.children as $child3}
+                                                                <div class="item-padding-10">
+                                                                    <a href="{$child3.item->getUrlByLang($lang)}">
+                                                                        {$child3.item->getNameByLang($lang)}
+                                                                    </a>
+                                                                </div>
+                                                            {/foreach}
+                                                        </div>
+                                                    {/if}
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {/if}
+                                </div>
+                            {/foreach}
+                        </div>
+                    {/if}
+                </div>
+            {/foreach}
+        {/if}
+    </div>
+    <div class="flex gap-20 header-bottom__function">
+        <div class="cursor-pointer btn-register__cal bg-primary header-bottom__res flex center-ver gap-20 btn-padding border-radius-5">
+            <p class="uppercase text-color-white bold un-wrap">
+                {$messages.schedule}
+            </p>
+            <div class="header-bottom__icon">
+                <img
+                    class="img-icon"
+                    src="/{$templatePath}/{$userTemplate}/img/icon/arrow-right.svg"
+                    alt="icon-mui-ten">
+            </div>
+        </div>
+        <button class="menu-container__bar center-ver">
+            <img
+                class="img-icon"
+                src="/{$templatePath}/{$userTemplate}/img/icon/bars.svg"
+                alt="">
+        </button>
+    </div>
+    <div class="m-menu flex flex-col pos-abs bg-white jus-sb">
+        <div class="m-menu__root">
+            {if !empty($menuTree)}
+                {foreach $menuTree as $menuItem}
+                    <div class="m-menu__item flex flex-col active">
+                        <a
+                            href="{$menuItem.item->getUrlByLang($lang)}"
+                            class="text-color-deactive blod uppercase">
+                            {$menuItem.item->getNameByLang($lang)}
+                        </a>
+                        {if !empty($menuItem.children)}
+                            {foreach $menuItem.children as $child}
+                                <div class="m-menu__child-item">
+                                    <a
+                                        class="text-right text-color-deactive"
+                                        href="{$child.item->getUrlByLang($lang)}">
+                                        {$child.item->getNameByLang($lang)}
+                                        <span>▶</span>
+                                    </a>
+                                </div>
+                            {/foreach}
+                        {/if}
+                    </div>
+                {/foreach}
+            {/if}
+        </div>
+        <div class="m-land gap-10 center-hor jus-center">
+            <a class="m-land__item active">
+                {if $lang == 'vn'}
+                    Tiếng Việt
+                {elseif $lang == 'en'}
+                    English
+                {elseif $lang == 'zh'}
+                    中文
+                {/if}
+            </a>
+
+            {if $lang != 'vn'}
+                <a href="{$rootUrl}{$urlVi}" class="m-land__item">
+                    Tiếng Việt
+                </a>
+            {/if}
+
+            {if $lang != 'en'}
+                <a href="{$rootUrl}{$urlEn}" class="m-land__item">
+                    English
+                </a>
+            {/if}
+
+            {if $lang != 'zh'}
+                <a href="{$rootUrl}{$urlZh}" class="m-land__item">
+                    中文
+                </a>
+            {/if}
+        </div>
+    </div>
+</div>
+{/if}

@@ -1,0 +1,95 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title="show-tabs"}
+{if $mod eq "list"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<select name="filter_date_created" id="filter_date_created">
+<option value="">{$locale->msg('filter_date_posted')}</option>
+<option value="all" {if $filter_date_created eq "all"}selected="selected"{/if} >{$amessages.status_times.7}</option>
+<option value="onehour" {if $filter_date_created eq "onehour"}selected="selected"{/if} >{$amessages.status_times.1}</option>
+<option value="fourhours" {if $filter_date_created eq "fourhours"}selected="selected"{/if}  >{$amessages.status_times.2}</option>
+<option value="today" {if $filter_date_created eq "today"}selected="selected"{/if}  >{$amessages.status_times.3}</option>
+<option value="7" {if $filter_date_created eq "7"}selected="selected"{/if} >{$amessages.status_times.4}</option>
+<option value="30" {if $filter_date_created eq "30"}selected="selected"{/if} >{$amessages.status_times.5}</option>
+<option value="365" {if $filter_date_created eq "365"}selected="selected"{/if} >{$amessages.status_times.6}</option>
+</select>
+<select name="filter_date_updated" id="filter_date_updated">
+<option value="">{$locale->msg('filter_date_updated')}</option>
+<option value="all" {if $filter_date_updated eq "all"}selected="selected"{/if} >{$amessages.status_times.7}</option>
+<option value="onehour" {if $filter_date_updated eq "onehour"}selected="selected"{/if} >{$amessages.status_times.1}</option>
+<option value="fourhours" {if $filter_date_updated eq "fourhours"}selected="selected"{/if}  >{$amessages.status_times.2}</option>
+<option value="today" {if $filter_date_updated eq "today"}selected="selected"{/if}  >{$amessages.status_times.3}</option>
+<option value="7" {if $filter_date_updated eq "7"}selected="selected"{/if} >{$amessages.status_times.4}</option>
+<option value="30" {if $filter_date_updated eq "30"}selected="selected"{/if} >{$amessages.status_times.5}</option>
+<option value="365" {if $filter_date_updated eq "365"}selected="selected"{/if} >{$amessages.status_times.6}</option>
+</select>
+<select name="filter_status" id="filter_status">
+<option value="" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('filter_status')}</option>
+<option value="all" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+<option value="0" {if $filter_status eq "0"}selected="selected"{/if}>{$amessages.status_user.0}</option>
+<option value="1" {if $filter_status eq "1"}selected="selected"{/if}>{$amessages.status_user.1}</option>
+<option value="2" {if $filter_status eq "2"}selected="selected"{/if}>{$amessages.status_user.2}</option>
+</select>
+<select name="filter_categories">
+<option value="">{$locale->msg('filter_article_category')}</option>
+{$filterArticleCategoriesCombo}
+</select>
+<select name="filter_posters">
+<option value="">{$locale->msg('filter_poster')}</option>
+{$filterPostersCombo}
+</select>
+<select name="filter_updaters">
+<option value="">{$locale->msg('filter_updater')}</option>
+{$filterUpdatersCombo}
+</select>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="article" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{elseif $mod eq "listcategory"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="article" />
+<input type="hidden" name="mod" value="listcategory" />
+<input type="hidden" name="pId" value="{$pId}" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title="show-tabs"}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

@@ -1,0 +1,99 @@
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">{foreach from=$input item=field}{if $field.error}<li>{$field.message}</li>{/if}{/foreach}<li>{$error.message}</li></ul>
+</div>
+{/if}{/if}
+{if $success}
+<div class="infoBox">
+<h2>{$success}</h2>
+</div>
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('system_config_order')}</h1>
+{if $item}
+<!-- Load estore info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="order_on">{$locale->msg('allow_order')}</label>
+<input type="checkbox" name="order_on" value="1" id="order_on" class="box"{if $item->getProperty('order_on')} checked{/if} /></p>
+<p><label for="order_require_login">{$locale->msg('login_first_order')}</label>
+<input type="checkbox" name="order_require_login" value="1" id="order_require_login" class="box"{if $item->getProperty('order_require_login')} checked{/if} /></p>
+<p><label for="order_payment_online">{$locale->msg('order_payment_online')}</label>
+<input type="checkbox" name="order_payment_online" value="1" id="order_payment_online" class="box"{if $item->getProperty('order_payment_online')} checked{/if} /></p>
+<p><label for="order_status">*{$locale->msg('order_status_default')}</label>
+<select class="small" name="order_status" id="order_status">
+<option value="3" {if $order_status eq 3}selected="selected"{/if}>{$amessages.status_payment.3}</option>
+<option value="4" {if $order_status eq 4}selected="selected"{/if}>{$amessages.status_payment.4}</option>
+<option value="5" {if $order_status eq 5}selected="selected"{/if}>{$amessages.status_payment.5}</option>
+<option value="6" {if $order_status eq 6}selected="selected"{/if}>{$amessages.status_payment.6}</option>
+<option value="7" {if $order_status eq 7}selected="selected"{/if}>{$amessages.status_payment.7}</option>
+<option value="1" {if $order_status eq 1}selected="selected"{/if}>{$amessages.status_payment.1}</option>
+<option value="0" {if $order_status eq "0"}selected="selected"{/if}>{$amessages.status_payment.0}</option>
+</select>
+<p><label for="order_hours">* {$locale->msg('time_delivery_min')}</label>
+<input class="verysmall right" type="type" value="{$item->getProperty('order_hours')}" name="order_hours" id="order_hours" />{$locale->msg('hours_after')}</p>
+<p><label for="order_vat">* {$locale->msg('order_vat')}</label>
+<input class="verysmall right" type="type" value="{$item->getProperty('order_vat')}" name="order_vat" id="order_vat" />%</p>
+<p><label for="order_change_email">{$locale->msg('sendmail_on_change')}</label>
+<input type="checkbox" name="order_change_email" value="1" id="order_change_email" class="box"{if $item->getProperty('order_change_email')} checked{/if} /></p>
+<p><label for="order_allow_cancel">{$locale->msg('delete_on_unpayment')}</label>
+<input type="checkbox" name="order_allow_cancel" value="1" id="order_allow_cancel" class="box"{if $item->getProperty('order_allow_cancel')} checked{/if} /></p>
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="config" />
+<input type="hidden" name="mod" value="order" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+</p>
+</fieldset>
+</form>
+{else}
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p{if isset($error.INPUT) && $error.INPUT.order_on.error} class="errormsg"{/if}><label for="order_on">{$locale->msg('allow_order')}</label>
+<input type="checkbox" name="order_on" value="1" id="order_on" class="box"{if isset($error.INPUT) && $error.INPUT.order_on.value eq 1} checked{/if} /></p>
+<p><label for="order_require_login">{$locale->msg('login_first_order')}</label>
+<input type="checkbox" name="order_require_login" value="1" id="order_require_login" class="box"{if $item->getProperty('order_require_login')} checked{/if} /></p>
+<p><label for="order_status">* {$locale->msg('order_status_default')}</label>
+<select class="small" name="order_status" id="order_status">
+<option value="3" {if $order_status eq 3}selected="selected"{/if}>{$amessages.status_payment.3}</option>
+<option value="4" {if $order_status eq 4}selected="selected"{/if}>{$amessages.status_payment.4}</option>
+<option value="5" {if $order_status eq 5}selected="selected"{/if}>{$amessages.status_payment.5}</option>
+<option value="6" {if $order_status eq 6}selected="selected"{/if}>{$amessages.status_payment.6}</option>
+<option value="7" {if $order_status eq 7}selected="selected"{/if}>{$amessages.status_payment.7}</option>
+<option value="1" {if $order_status eq 1}selected="selected"{/if}>{$amessages.status_payment.1}</option>
+<option value="0" {if $order_status eq "0"}selected="selected"{/if}>{$amessages.status_payment.0}</option>
+</select>
+<p><label for="order_hours">* {$locale->msg('time_delivery_min')}</label>
+<input class="verysmall right" type="type" value="{$item->getProperty('order_hours')}" name="order_hours" id="order_hours" />{$locale->msg('hours_after')}</p>
+<p><label for="order_vat">* {$locale->msg('order_vat')}</label>
+<input class="verysmall right" type="type" value="{$item->getProperty('order_vat')}" name="order_vat" id="order_vat" />%</p>
+<p><label for="order_require_login">{$locale->msg('sendmail_on_change')}</label>
+<input type="checkbox" name="order_require_login" value="1" id="order_require_login" class="box"{if $item->getProperty('order_require_login')} checked{/if} /></p>
+<br />
+<p class="btn">
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="config" />
+<input type="hidden" name="mod" value="order" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="Submit" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="Reset" name="btnReset" />
+</p>
+</fieldset>
+</form>
+{/if}
+</div>
+</div>

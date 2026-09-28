@@ -1,0 +1,99 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+    <h2>{$locale->msg('error_notes')}:</h2>
+    <ul class="listStyle">
+        {foreach from=$input item=field}
+        {if $field.error}<li>{$field.message}</li>{/if}
+        {/foreach}
+        <li>{$error.message}</li>
+    </ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+    <h1>{$locale->msg('add_custom_options')}</h1>
+    <form action="/{$aScript}" method="post" name="formAdd" id="formAdd" >
+        <fieldset>
+            <p><strong>* {$locale->msg('required_fields')}</strong></p>
+            <p>
+                <label for="status">{$locale->msg('system_status')}</label>
+                <select name="status" id="status" class="small">
+                    <option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+                    <option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+                </select>
+            </p>
+            <p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+            <input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" /></p>
+            <p>
+                <label for="module">* {$locale->msg('object')}</label>
+                <select value="{if isset($error.INPUT)}{$error.INPUT.module.value}{/if}" name="module" id="module" class="small">
+                    {$objectCombo}
+                </select>
+            </p>
+            <p{if isset($error.INPUT) && $error.INPUT.field_name.error} class="errormsg"{/if}>
+                <label for="field_name">* {$locale->msg('name')}</label>
+                <input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.field_name.value}{/if}" name="field_name" id="field_name" />
+                (Color, size, weight,...)
+            </p>
+            <p{if isset($error.INPUT) && $error.INPUT.field_title.error} class="errormsg"{/if}><label for="field_title">* {$locale->msg('title')}</label>
+            <input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.field_title.value}{/if}" name="field_title" id="field_title" />{$locale->msg('color_size')}</p>
+            <p{if isset($error.INPUT) && $error.INPUT.field_class.error} class="errormsg"{/if}><label for="field_class">{$locale->msg('css_class')}</label>
+            <input class="small" type="text" value="{if isset($error.INPUT)}{$error.INPUT.field_class.value}{/if}" name="field_class" id="field_class" />(small, medium, long, left, right, center,...)</p>
+            <p{if isset($error.INPUT) && $error.INPUT.field_type.error} class="errormsg"{/if}><label for="field_type">* {$locale->msg('custom_field_type')}</label>
+                <select name="field_type" id="field_type" class="small" onChange="javascript:showFieldValueControl(this,'value_p');">
+                {$typeCombo}
+                </select>
+            </p>
+            <p>
+                <label for="required">* {$locale->msg('requied_input')}</label>
+                <label style="display: flex !important; gap: 25px; align-items: center;">
+                    <span><input type="radio" name="required" id="required_0" value="0" {if $required eq 0}checked{/if} style="width: 20px;"> Không </span>
+                    <span><input type="radio" name="required" id="required_1" value="1" {if $required eq 1}checked{/if} style="width: 20px;"> Có </span>
+                </label>
+            </p>
+
+            <p>
+                <label for="appearance">* {$locale->msg('show_in_list')}</label>
+                <label style="display: flex !important; gap: 25px; align-items: center;">
+                    <span><input type="radio" name="appearance" id="appearance_0" value="0" {if $appearance eq 0}checked{/if} style="width: 20px;"> Không </span>
+                    <span><input type="radio" name="appearance" id="appearance_1" value="1" {if $appearance eq 1}checked{/if} style="width: 20px;"> Có </span>
+                </label>
+            </p>
+            
+            <!-- <p>
+                <label for="required">* {$locale->msg('requied_input')}</label>
+                <select name="required" id="required" class="small" required>
+                    <option value="0">Không</option>
+                    <option value="1">Có</option>
+                </select>
+            </p>
+            <p>
+                <label for="appearance">* {$locale->msg('show_in_list')}</label>
+                <select name="appearance" id="appearance" class="small" required>
+                    <option value="0">Không</option>
+                    <option value="1">Có</option>
+                </select>
+            </p> -->
+            
+
+            <p id="value_p" {if isset($error.INPUT) && $error.INPUT.value.error} class="errormsg"{elseif $error.INPUT.field_type.value<=3} class="hidden"{/if}><label for="value">* {$locale->msg('custom_field_value')}:<br />{$locale->msg('format_item')}: KEY:VALUE<br />{$locale->msg('arow_antem')}</label>
+            <textarea rows="10" cols="20" name="value" id="value">{if isset($error.INPUT)}{$error.INPUT.value.value}{/if}</textarea></p>
+            
+            <p class="btn">
+                <input type="hidden" name="op" value="system" />
+                <input type="hidden" name="act" value="optionstructure" />
+                <input type="hidden" name="mod" value="add" />
+                <input type="hidden" name="doo" value="submit" />
+                <input type="hidden" name="sCode" value="{$sCode}_" />
+                <input type="hidden" name="lang" value="{$lang}" />
+                <input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+                <input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+                <input type="button" onClick="javascript:formSubmit('formAdd','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+            </p>
+        </fieldset>
+    </form>
+</div>

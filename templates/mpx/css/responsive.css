@@ -1,0 +1,347 @@
+@media screen and (max-width: 1550px) {
+
+    .news-slider-wrapper .swiper-button-next,
+    .guest-comment__wrapper .swiper-button-next,
+    .logo-brand-wrapper .swiper-button-next,
+    .project-slider-wrapper .swiper-button-next {
+        right: 10px;
+    }
+
+
+    .news-slider-wrapper .swiper-button-prev,
+    .guest-comment__wrapper .swiper-button-prev,
+    .logo-brand-wrapper .swiper-button-prev,
+    .project-slider-wrapper .swiper-button-prev {
+        left: 10px;
+    }
+}
+
+@media screen and (max-width: 1340px) {
+
+     .service-slider-wrapper {
+        aspect-ratio: 16 / 10;
+    }
+}
+
+@media screen and (max-width: 1250px) {
+
+     .service-slider-wrapper {
+        aspect-ratio: 16 / 11;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+
+    .process-slider-wrapper .swiper-button-next,
+    .process-slider-wrapper .swiper-button-prev,
+    .service-slider-wrapper .swiper-button-next,
+    .service-slider-wrapper .swiper-button-prev {
+        display: flex;
+    }
+
+     .service-slider-wrapper {
+        aspect-ratio: 16 / 7;
+    }
+}
+
+@media screen and (max-width: 1073px) {
+    .menu-container__bar {
+        display: flex;
+    }
+
+    .header-bottom__menu {
+        display: none !important;
+    }
+
+     .service-slider-wrapper {
+        aspect-ratio: 16 / 8;
+    }
+
+    
+    .hero-visual__container {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+
+    .archive-sidebar,
+    .archive-main,
+    .contact-section__container,
+    .footer-top__content {
+        width: 100%;
+    }
+
+    .service-mini,
+    .post-mini {
+        width: calc(100% / 2 - (20px / 2));
+    }
+
+    .widget-service,
+    .widget-posts {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+
+}
+
+@media screen and (max-width: 900px) {
+    .header-top .menu-container__item {
+        display: none !important;
+    }
+
+    .header-top .menu-container__bar {
+        display: flex !important;
+    }
+
+    .header-top {
+        align-items: center !important;
+    }
+
+    .header-top .header-container::after {
+        background: unset;
+    }
+
+    .company-info__logo {
+        max-width: 100%;
+    }
+
+    .footer-menu__container,
+    .company-info {
+        width: 100%;
+    }
+
+    .slide-container {
+        aspect-ratio: 440 / 622;
+    }
+
+    .expo-hero__title {
+        font-size: calc(var(--font-size-base) + 22px);
+    }
+
+    .expo-hero__description {
+        max-width: 300px;
+    }
+
+    .service-container {
+        flex-direction: column;
+    }
+
+    .service-sidebar,
+    .service-content {
+        width: calc(100% - var(--gap));
+    }
+
+    .list-desktop,
+    .service-sidebar__title {
+        display: none !important;
+    }
+
+    .list-mobile {
+        display: block;
+    }
+
+     .service-slider-wrapper {
+        aspect-ratio: 16 / 9;
+    }
+}
+
+@media screen and (max-width: 835px) {
+    .news-detail-wrapper {
+        flex-direction: column;
+    }
+
+    .news-detail__main {
+        max-width: 100%;
+    }
+
+    .news-detail__sidebar {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .news-top-wrapper {
+        flex-direction: column;
+    }
+
+    .news-top__left,
+    .news-top__right {
+        width: 100%;
+    }
+
+    .news-top__right {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+    }
+
+    .news-side-item {
+        width: calc(100% / 2 - 20px);
+    }
+
+    .section-title h1,
+    .section-title h2 {
+        font-size: calc(var(--font-size-base) + 2px);
+    }
+
+}
+
+/* @media screen and (min-width: 769px) {} */
+
+@media screen and (max-width: 768px) {
+
+    :root {
+        --font-size-base: 14px;
+    }
+
+    .container-padding {
+        padding: 30px 0px !important;
+    }
+
+    .footer-top img {
+        max-width: 260px;
+    }
+
+    .text-header-size {
+        font-size: calc(var(--font-size-base) + 10px);
+    }
+
+    .intro-image img,
+    .intro-image,
+    .history-image img,
+    .history-image,
+    .philosophy-image img,
+    .philosophy-image,
+    .calc-image,
+    .about-image,
+    .calc-image img,
+    .about-image img {
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        height: unset;
+    }
+
+    .home-banner__title {
+        font-size: calc(var(--font-size-base) + 18px);
+    }
+
+    .home-banner__desc {
+        font-size: calc(var(--font-size-base));
+    }
+
+    .hero-banner__desktop,
+    .swiper-button-next,
+    .swiper-button-prev,
+    .project-btn p:first-child,
+    .news-btn p:first-child {
+        display: none;
+    }
+
+    .hero-banner__mobile {
+        display: block;
+    }
+
+    .review-section {
+        flex-direction: column-reverse;
+    }
+
+    .service-content {
+        min-height: unset;
+    }
+
+
+    .detail-header__content h1 {
+        font-size: calc(var(--font-size-base) + 18px);
+    }
+
+    .banner__item {
+        aspect-ratio: 24 / 43;
+    }
+
+    .js-slider-ratio {
+        aspect-ratio: 16 / 9;
+    }
+
+}
+
+@media screen and (max-width : 650px) {
+     .service-slider-wrapper {
+        aspect-ratio: 16 / 11;
+    }
+}
+
+@media screen and (max-width: 590px) {
+    header {
+        padding-bottom: 0px;
+    }
+
+    .service-mini,
+    .post-mini,
+    .contact-card {
+        width: 100%;
+    }
+
+    .cta-floating {
+        top: unset;
+        flex-direction: row !important;
+        bottom: 0px;
+        right: 50%;
+        transform: translateX(50%);
+        padding: 10px 20px;
+        min-width: 100vw;
+        border-radius: 0px;
+    }
+
+    .cta-title {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 560px) {
+    .service-slider-wrapper {
+        aspect-ratio: 16 / 12;
+    }
+}
+
+@media screen and (max-width: 551px) {
+    .top-menu__container {
+        display: none;
+    }
+
+    .m-land {
+        display: flex;
+    }
+
+    .header-bar,
+    .header-bar>div,
+    .top-menu__iconcontact {
+        flex-grow: 1;
+    }
+}
+
+@media screen and (max-width: 530px) {
+    .service-slider-wrapper {
+        aspect-ratio: 16 / 14;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .service-slider-wrapper {
+        aspect-ratio: 16 / 12;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .footer-menu {
+        width: 100%;
+    }
+
+    .intro-content span:first-child {
+        font-size: calc(var(--font-size-base) + 12px);
+    }
+
+    .intro-content span:last-child {
+        font-size: calc(var(--font-size-base) - 4px);
+    }
+}

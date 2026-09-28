@@ -1,0 +1,153 @@
+{include file="$userTemplate/coreheader.tpl.html" title=site-header}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=site-top-menu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigation-bar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+<ul class="tabs">
+<li><a title="{$locale->msg('list_item')}" href="javascript:void(0);" onClick="javascript:formSubmit('formEdit','list','',0);">{$locale->msg('list_item')}</a></li>
+<li><a title="{$locale->msg('add_new')}" href="javascript:void(0);" onClick="javascript:formSubmit('formEdit','add','',0);">{$locale->msg('add_new')}</a></li>
+<li><a title="{$locale->msg('list_product_category')}" href="javascript:void(0);" onClick="javascript:formSubmit('formEdit','listcategory','',0);">{$locale->msg('list_product_category')}</a></li>
+<li class="current"><a title="{$locale->msg('edit_product_category')}" href="javascript:;">{$locale->msg('edit_product_category')}</a></li>
+<li><a title="{$locale->msg('clean_trash')}" href="javascript:void(0);">{$locale->msg('clean_trash')}</a></li>
+</ul>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+<div class="tableContent">
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $error}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+<li>{$error.message}</li>
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('edit_product_category')}</h1>
+{if $item}
+<!-- Load user info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><label for="name">* {$locale->msg('name_menu_group')}</label>
+<input type="text" value="{$item->getName()}" name="name" id="name" /></p>
+
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status">
+<option value="1"{if $item->getStatus() eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if $item->getStatus() eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p>
+<label>{$locale->msg('type_display_result')}</label>
+<input type="radio" name="sort_type" id="radio3" class="box" value="position"{if $item->getProperty('sort_type') eq "position"} checked{/if}/>
+<label for="radio2" class="lbl">{$locale->msg('parameter_position')}</label>
+<input type="radio" name="sort_type" id="radio2" class="box" value="created"{if $item->getProperty('sort_type') eq "created"} checked{/if} />
+<label for="radio2" class="lbl">{$locale->msg('time')}</label>
+</p>
+<p>
+<label>{$locale->msg('sort_by_result')}</label>
+<input type="radio" name="sort_dir" id="radio1" class="box" value="ASC"{if $item->getProperty('sort_dir') eq "ASC"} checked{/if} />
+<label for="radio1" class="lbl">{$locale->msg('asc')}</label>
+<input type="radio" name="sort_dir" id="radio2" class="box" value="DESC"{if $item->getProperty('sort_dir') eq "DESC"} checked{/if} />
+<label for="radio2" class="lbl">{$locale->msg('desc')}</label>
+</p>
+<p{if isset($error.INPUT) && $error.INPUT.ipp.error} class="errormsg"{/if}><label for="ipp">* {$locale->msg('num_result_display')}</label>
+<input type="text" value="{$item->getProperty('ipp')}" name="ipp" id="ipp" /></p>
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="menus" />
+<input type="hidden" name="mod" value="editcategory" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="id" value="{$item->getId()}" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','listcategory','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{else}
+<!-- Load submitted info -->
+<form action="/{$aScript}" method="post" name="formEdit" id="formEdit" >
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+<p><label for="parent_id">* {$locale->msg('of_procate')}</label>
+<select name="parent_id" id="parent_id">
+{$categoryCombo}
+</select></p>
+<p{if isset($error.INPUT) && $error.INPUT.slug.error} class="errormsg"{/if}><label for="slug">* {$locale->msg('slug')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.slug.value}{/if}" name="slug" id="slug" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg"{/if}><label for="name">* {$locale->msg('name_procate')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" /></p>
+<p{if isset($error.INPUT) && $error.INPUT.position.error} class="errormsg"{/if}><label for="position">{$locale->msg('position')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.position.value}{/if}" name="position" id="position" /></p>
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status">
+<option value="1"{if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected"{/if}>{$locale->msg('enable')}</option>
+<option value="0"{if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected"{/if}>{$locale->msg('disable')}</option>
+</select></p>
+<p>
+<label>{$locale->msg('type_display_result')}</label>
+<input type="radio" name="sort_type" id="radio3" class="box" value="position"{if !isset($error.INPUT) || $error.INPUT.sort_type.value eq "position"} checked{/if} />
+<label for="radio2" class="lbl">{$locale->msg('parameter_position')}</label>
+<input type="radio" name="sort_type" id="radio2" class="box" value="created"{if isset($error.INPUT) && $error.INPUT.sort_type.value eq "created"} checked{/if} />
+<label for="radio2" class="lbl">{$locale->msg('time')}</label>
+</p>
+<p>
+<label>{$locale->msg('sort_by_result')}</label>
+<input type="radio" name="sort_dir" id="radio1" class="box" value="ASC"{if !isset($error.INPUT) || $error.INPUT.sort_dir.value eq "ASC"} checked{/if} />
+<label for="radio1" class="lbl">{$locale->msg('asc')}</label>
+<input type="radio" name="sort_dir" id="radio2" class="box" value="DESC"{if isset($error.INPUT) && $error.INPUT.sort_dir.value eq "DESC"} checked{/if} />
+<label for="radio2" class="lbl">{$locale->msg('desc')}</label>
+</p>
+<p{if isset($error.INPUT) && $error.INPUT.ipp.error} class="errormsg"{/if}><label for="ipp">* {$locale->msg('items_per_page')}</label>
+<input type="text" value="{if isset($error.INPUT)}{$error.INPUT.ipp.value}{/if}" name="ipp" id="ipp" /></p>
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="menus" />
+<input type="hidden" name="mod" value="editcategory" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="id" value="{$id}" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="submit" value="{$locale->msg('button_submit')}" title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}" title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button" onClick="javascript:formSubmit('formEdit','listcategory','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+{/if}
+</div>
+</div>
+<div class="tableContent hidden">
+<div class="contType">
+<h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_clean_trash')}</div>
+<form name="formClean" id="formClean" action="/{$aScript}" method="post">
+<fieldset>
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="listcategory" />
+<input type="hidden" name="doo" value="cleantrash" />
+<input type="hidden" name="lang" value="{$lang}" />
+<p class="btn"><input type="submit" value="{$locale->msg('button_ok')}" title="{$locale->msg('button_ok')}" name="btnSubmit2" />
+<input type="button" onClick="javascript:formSubmit('formClean','listcategory','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+<div class="tableContent hidden"><center><img src="/{$templatePath}/{$userTemplate}/images/loading.gif" width="36" height="36" alt="Loading" /></center></div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=site-footer}

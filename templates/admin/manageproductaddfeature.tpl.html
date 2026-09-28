@@ -1,0 +1,128 @@
+{if isset($result_code)}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if isset($error_code)}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if isset($error)}
+{if $error.invalid || $error.message}
+{assign var=input value=$error.INPUT}
+<div class="errorBox">
+<h2>{$locale->msg('error_notes')}:</h2>
+<ul class="listStyle">
+{foreach from=$input item=field}
+{if $field.error}<li>{$field.message}</li>{/if}
+{/foreach}
+{if isset($error.message)}<li>{$error.message}</li>{/if}
+</ul>
+</div>
+{/if}
+{/if}
+<div class="formContent">
+<h1>{$locale->msg('add_product_features')}</h1>
+<form action="/{$aScript}" method="post" name="formAdd" id="formAdd" enctype="multipart/form-data">
+<fieldset>
+<p><strong>* {$locale->msg('required_fields')}</strong></p>
+
+<p><label for="status">{$locale->msg('system_status')}</label>
+<select name="status" id="status" class="small">
+<option value="1" {if isset($error.INPUT) && $error.INPUT.status.value eq 1} selected="selected" {/if}>{$locale->msg('enable')}</option>
+<option value="0" {if isset($error.INPUT) && $error.INPUT.status.value eq 0} selected="selected" {/if}>{$locale->msg('disable')}</option>
+</select>
+</p>
+
+<p{if isset($error.INPUT) && $error.INPUT.name.error} class="errormsg" {/if}><label for="name">* {$locale->msg('product_name')}:</label>
+<input class="medium" type="text" value="{if isset($error.INPUT)}{$error.INPUT.name.value}{/if}" name="name" id="name" /></p>
+
+<p{if isset($error.INPUT) && $error.INPUT.description.error} class="errormsg" {/if}><label for="description">Nội dung :</label></p>
+<textarea rows="10" cols="20" name="description" id="description">{if isset($error.INPUT)}{$error.INPUT.description.value}{/if}</textarea>
+{literal}<script type="text/javascript">var editor = CKEDITOR.replace('description');</script>{/literal}
+<br>
+<p><label for="avatar">Hình ảnh sản phẩm:</label><input type="file" name="avatar" id="avatar" /></p>
+<!-- 
+<p><label for="files">Hình ảnh đính kèm:</label><input type="file" multiple="multiple" name="files[]" id="files[]" /></p> -->
+
+<br>
+<!-- 
+<h2>Danh sách Product Options</h2>
+{if isset($valueDefault)}
+  <div id="options-wrapper">
+    {foreach from=$valueDefault item=option name=optionLoop}
+      <div class="option-block">
+        <div class="option-name-group">
+          <p>
+            <label style="font-weight: 700;">* Tên option</label>
+            <input type="text" name="option_names[]" value="{$option.name|escape}" placeholder="VD: Kích thước" required>
+          </p>
+        </div>
+        <div class="values-wrapper">
+          {foreach from=$option.value_default key=valName item=valPrice}
+            <div class="value-row" style="position: relative;">
+              <p>
+                <label>Tên giá trị</label>
+                <input type="text" name="value_names[{$smarty.foreach.optionLoop.index}][]" value="{$valName|escape}" placeholder="Tên giá trị" required>
+                <button type="button" class="remove-value-btn" style="margin-top: 10px; padding: 3px 5px; background-color: white; position: absolute; bottom: 40px; border: none; cursor: pointer;"><i class="fa fa-times fa-lg" style="color: red;"></i></button>
+              </p>
+              <p>
+                <label>Giá trị quy định</label>
+                <input type="number" name="value_modifiers[{$smarty.foreach.optionLoop.index}][]" value="{$valPrice|escape}" required>
+              </p>
+            </div>
+          {/foreach}
+        </div>
+        <button type="button" class="add-value-btn" data-index="{$smarty.foreach.optionLoop.index}" style="padding: 5px; margin-left: 395px; background-color: #283373; color: white; border-radius: 3px; cursor: pointer; border: none;">Thêm giá trị</button>
+        <button type="button" class="remove-option-btn" style="margin-top: 10px; background-color: crimson; color: white; padding: 5px 10px; border-radius: 3px; cursor: pointer; border: none;">Xóa option</button>
+      </div>
+    {/foreach}
+  </div>
+{else}
+  <div id="options-wrapper"></div>
+{/if} -->
+<!-- 
+<button type="button" id="add-option-btn" style="margin-bottom: 10px; padding: 7px; background-color: #283373; color: white; border-radius: 3px; cursor: pointer; border: none;">Thêm option</button>
+
+{if isset($fieldOptionList)}
+<br /><h2>{$locale->msg('list_custom_options')}</h2>
+{foreach key=no from=$fieldOptionList item=field}
+{assign var=field_name value=$field->getFieldName()}
+{if isset($error.INPUT.$field_name)}
+{$field->displayHTML($error.INPUT.$field_name.value, $error.INPUT.$field_name.error)}
+{else}
+{$field->displayHTML('','')}
+{/if}
+{/foreach}
+{/if} -->
+
+{if isset($fieldList)}
+<br />
+<h2>{$locale->msg('list_custom_field')}</h2>
+{foreach key=no from=$fieldList item=field}
+{if isset($error.INPUT)}
+{assign var=field_name value=$field->getName()}
+{$field->displayHTML($error.INPUT.$field_name.value)}
+{else}
+{$field->displayHTML('')}
+{/if}
+{/foreach}
+{/if}
+
+<br />
+
+<p class="btn">
+<input type="hidden" name="op" value="manage" />
+<input type="hidden" name="act" value="product" />
+<input type="hidden" name="mod" value="addfeature" />
+<input type="hidden" name="doo" value="submit" />
+<input type="hidden" name="sCode" value="{$sCode}_" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="listidcar" value="" />
+<input type="submit" value="{$locale->msg('button_submit')}"
+title="{$locale->msg('button_submit')}" name="btnSubmit" />
+<input type="reset" value="{$locale->msg('button_reset')}"
+title="{$locale->msg('button_reset')}" name="btnReset" />
+<input type="button"
+onclick="javascript:formSubmit('formAdd','list','cancel',0);"
+value="{$locale->msg('button_cancel')}"
+title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
+</div>
+

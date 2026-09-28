@@ -1,0 +1,136 @@
+{include file="$userTemplate/coreheader.tpl.html" title="site-header"}
+{literal}
+<style type="text/css">
+.ecc{padding:20px;color:#273142}.ecc *{box-sizing:border-box}.ecc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px}.ecc-head h2{margin:0 0 6px;font-size:26px}.ecc-head p{margin:0;color:#67758a}.ecc-badge{padding:7px 11px;border-radius:20px;background:#efe9ff;color:#5b3cc4;font-weight:bold}.ecc-alert{margin:0 0 16px;padding:13px 16px;border-radius:8px;background:#fff4dc;border:1px solid #efcf8a}.ecc-alert--ok{background:#e9f8ef;border-color:#9bd5ad;color:#176837}.ecc-alert--error{background:#fff0f0;border-color:#e9a2a2;color:#9e2626}.ecc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.ecc-stat,.ecc-panel{background:#fff;border:1px solid #dce2ea;border-radius:10px;box-shadow:0 2px 8px rgba(31,45,61,.05)}.ecc-stat{padding:18px}.ecc-stat span{display:block;color:#718096;font-size:12px;text-transform:uppercase;letter-spacing:.05em}.ecc-stat strong{display:block;margin-top:8px;font-size:28px;color:#263238}.ecc-panel{margin-bottom:20px;padding:20px}.ecc-panel h3{margin:0 0 5px;font-size:18px}.ecc-panel__intro{margin:0 0 18px;color:#718096}.ecc-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.ecc-field{padding:14px;background:#f7f9fc;border-radius:8px}.ecc-field label{display:block;margin-bottom:8px;font-weight:bold}.ecc-field small{display:block;margin-top:7px;color:#718096}.ecc select{width:100%;min-height:38px;padding:7px;border:1px solid #bfc9d6;border-radius:5px;background:#fff}.ecc select[multiple]{min-height:145px}.ecc-submit{margin-top:16px;padding:10px 18px;border:0;border-radius:5px;background:#5b3cc4;color:#fff;font-weight:bold;cursor:pointer}.ecc-summary{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}.ecc-language{padding:7px 10px;border-radius:6px;background:#f1f4f8}.ecc-table{width:100%;border-collapse:collapse}.ecc-table th,.ecc-table td{padding:10px;border-bottom:1px solid #e5e9ef;text-align:left;vertical-align:top}.ecc-table th{background:#f5f7fa;color:#52606d}.ecc-dot{display:inline-block;padding:4px 7px;border-radius:12px;font-size:11px;font-weight:bold}.ecc-dot--ok{background:#dff5e5;color:#17723a}.ecc-dot--missing{background:#fde7e7;color:#a72b2b}.ecc-issues{display:flex;gap:5px;flex-wrap:wrap}.ecc-issue{padding:3px 7px;border-radius:4px;background:#fff0dd;color:#8b4b00;font-size:11px}.ecc-actions a{white-space:nowrap}.ecc-empty{padding:18px;text-align:center;color:#718096}.ecc-top{margin:12px 0 0;padding-left:20px}.ecc-top li{margin:5px 0}.ecc-install code{font-weight:bold}@media(max-width:900px){.ecc-grid{grid-template-columns:repeat(2,1fr)}.ecc-feature-grid{grid-template-columns:1fr}}@media(max-width:560px){.ecc-grid{grid-template-columns:1fr}.ecc-head{display:block}.ecc-badge{display:inline-block;margin-top:10px}.ecc-panel{padding:13px}.ecc-table{display:block;overflow-x:auto}}
+.ecc-schedule{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.ecc-schedule input{width:100%;padding:7px;border:1px solid #ccd4df;border-radius:4px}.ecc-comment{max-width:520px;white-space:pre-wrap;overflow-wrap:anywhere}.ecc-moderate{display:flex;gap:5px;flex-wrap:wrap}.ecc-moderate button{padding:6px 9px;border:0;border-radius:4px;color:#fff;cursor:pointer}.ecc-approve{background:#198754}.ecc-reject{background:#b97800}.ecc-delete{background:#b42318}.ecc-filter{display:flex;align-items:center;gap:10px;margin:12px 0 18px}.ecc-filter select{width:auto;min-width:180px}@media(max-width:560px){.ecc-schedule{grid-template-columns:1fr}}
+.ecc-membership-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.ecc-membership-form{padding:16px;border:1px solid #dce2ea;border-radius:8px;background:#f8fafc}.ecc-membership-form h4{margin:0 0 14px}.ecc-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.ecc-form-grid label{display:block;font-weight:bold}.ecc-form-grid label span{display:block;margin-bottom:5px}.ecc-form-grid input,.ecc-form-grid textarea,.ecc-form-grid select{width:100%;min-height:38px;padding:7px;border:1px solid #bfc9d6;border-radius:5px;background:#fff}.ecc-form-grid textarea{min-height:76px;resize:vertical}.ecc-form-wide{grid-column:1/-1}.ecc-table-wrap{overflow-x:auto}.ecc-status{display:inline-block;padding:4px 7px;border-radius:12px;background:#edf1f5;font-size:11px;font-weight:bold}.ecc-status--active{background:#dff5e5;color:#17723a}@media(max-width:900px){.ecc-membership-grid{grid-template-columns:1fr}}@media(max-width:560px){.ecc-form-grid{grid-template-columns:1fr}.ecc-form-wide{grid-column:auto}}
+</style>
+{/literal}
+<div id="main">
+{include file="$userTemplate/coreleft.tpl.html" title="site-top-menu"}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title="navigation-bar"}
+<div class="ecc">
+  <div class="ecc-head">
+    <div><h2>Editorial Control Center</h2><p>Điều phối nội dung nổi bật, theo dõi đa ngôn ngữ và chất lượng bài viết tại một nơi.</p></div>
+    <span class="ecc-badge">V48</span>
+  </div>
+
+  {if !$featureTableReady || !$viewTableReady}
+  <div class="ecc-alert ecc-install">Cần chạy <code>database/20260921_v48_editorial_control_center.sql</code> trong phpMyAdmin để bật đầy đủ V48. Trang vẫn an toàn ở chế độ chỉ đọc cho tới khi cài bảng.</div>
+  {/if}
+  {if isset($editorialSaved)}<div class="ecc-alert ecc-alert--ok">Đã lưu cấu hình nội dung nổi bật.</div>{/if}
+  {if isset($editorialCommentSaved)}<div class="ecc-alert ecc-alert--ok">Đã cập nhật trạng thái bình luận.</div>{/if}
+  {if isset($editorialNewsletterSaved)}<div class="ecc-alert ecc-alert--ok">Đã cập nhật trạng thái subscriber Newsletter.</div>{/if}
+  {if isset($editorialMembershipSaved)}<div class="ecc-alert ecc-alert--ok">Đã cập nhật dữ liệu membership.</div>{/if}
+  {if isset($editorialError)}<div class="ecc-alert ecc-alert--error">{$editorialError|escape:'html'}</div>{/if}
+
+  <div class="ecc-grid">
+    <div class="ecc-stat"><span>Lượt đọc hôm nay</span><strong>{$editorialAnalytics.today|number_format}</strong></div>
+    <div class="ecc-stat"><span>7 ngày gần nhất</span><strong>{$editorialAnalytics.days7|number_format}</strong></div>
+    <div class="ecc-stat"><span>30 ngày gần nhất</span><strong>{$editorialAnalytics.days30|number_format}</strong></div>
+    <div class="ecc-stat"><span>Bài được đọc / 30 ngày</span><strong>{$editorialAnalytics.read_articles|number_format}</strong></div>
+  </div>
+
+  <section class="ecc-panel">
+    <h3>Nội dung tăng nhanh</h3>
+    <p class="ecc-panel__intro">Xếp theo lượt đọc trong 7 ngày gần nhất.</p>
+    {if $topGrowth}
+    <ol class="ecc-top">{foreach from=$topGrowth item=item}<li><a href="/{$aScript}?op=manage&amp;act=article&amp;mod=edit&amp;id={$item.id}">{$item.title|escape:'html'}</a> — <strong>{$item.views|number_format}</strong> lượt</li>{/foreach}</ol>
+    {else}<div class="ecc-empty">Chưa có dữ liệu theo ngày. Số liệu sẽ xuất hiện khi độc giả mở bài sau khi cài migration.</div>{/if}
+    {if $topCategory}<p><strong>Chuyên mục được quan tâm nhất / 30 ngày:</strong> {$topCategory.name|default:'Chưa phân loại'|escape:'html'} ({$topCategory.views|number_format} lượt)</p>{/if}
+  </section>
+
+  <section class="ecc-panel" id="editorial-comments">
+    <h3>Kiểm duyệt bình luận bài viết</h3>
+    <p class="ecc-panel__intro">Bình luận mới luôn ở trạng thái chờ duyệt. Nội dung chỉ xuất hiện công khai sau khi được duyệt.</p>
+    {if !$commentTableReady}
+      <div class="ecc-alert">Chưa cài bảng <code>dc_editorial_article_comments</code>.</div>
+    {else}
+      <form class="ecc-filter" action="/{$aScript}" method="get"><input type="hidden" name="op" value="editorial" /><label for="commentStatusFilter">Trạng thái</label><select id="commentStatusFilter" name="comment_status_filter"><option value="-1"{if $commentStatusFilter eq -1} selected="selected"{/if}>Tất cả</option><option value="0"{if $commentStatusFilter eq 0} selected="selected"{/if}>Chờ duyệt</option><option value="1"{if $commentStatusFilter eq 1} selected="selected"{/if}>Đã duyệt</option><option value="2"{if $commentStatusFilter eq 2} selected="selected"{/if}>Từ chối</option><option value="3"{if $commentStatusFilter eq 3} selected="selected"{/if}>Đã xóa</option></select><button class="ecc-submit" type="submit">Lọc</button></form>
+      {if $editorialCommentRows}
+      <table class="ecc-table"><thead><tr><th>ID</th><th>Thành viên</th><th>Bài viết</th><th>Nội dung</th><th>Ngày gửi</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>
+      {foreach from=$editorialCommentRows item=comment}
+       <tr><td>#{$comment.id}</td><td>{$comment.customer_name|escape:'html'}</td><td><a href="/{$aScript}?op=manage&amp;act=article&amp;mod=edit&amp;id={$comment.article_id}">{$comment.article_title|default:'Bài không còn tồn tại'|escape:'html'}</a></td><td><div class="ecc-comment">{$comment.content|escape:'html'}</div></td><td>{$comment.date_created|escape:'html'}</td><td>{if $comment.status eq 0}Chờ duyệt{elseif $comment.status eq 1}Đã duyệt{elseif $comment.status eq 2}Từ chối{else}Đã xóa{/if}</td><td><form class="ecc-moderate" action="/{$aScript}" method="post"><input type="hidden" name="op" value="editorial" /><input type="hidden" name="doo" value="moderate_comment" /><input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" /><input type="hidden" name="comment_id" value="{$comment.id}" /><button class="ecc-approve" type="submit" name="comment_status" value="1">Duyệt</button><button class="ecc-reject" type="submit" name="comment_status" value="2">Từ chối</button><button class="ecc-delete" type="submit" name="comment_status" value="3">Xóa</button></form></td></tr>
+      {/foreach}
+      </tbody></table>
+      {else}<div class="ecc-empty">Không có bình luận trong trạng thái này.</div>{/if}
+    {/if}
+  </section>
+
+  <section class="ecc-panel" id="editorial-newsletter">
+    <h3>Newsletter subscribers</h3>
+    <p class="ecc-panel__intro">Danh sách email đã chủ động đồng ý qua form Newsletter. Giai đoạn hiện tại chỉ ghi nhận pending; chưa gửi email hàng loạt.</p>
+    {if !$newsletterTableReady}
+      <div class="ecc-alert">Chưa cài bảng <code>dc_editorial_newsletter_subscribers</code>.</div>
+    {else}
+      <form class="ecc-filter" action="/{$aScript}" method="get"><input type="hidden" name="op" value="editorial" /><label for="newsletterStatusFilter">Trạng thái</label><select id="newsletterStatusFilter" name="newsletter_status_filter"><option value="-1"{if $newsletterStatusFilter eq -1} selected="selected"{/if}>Tất cả</option><option value="0"{if $newsletterStatusFilter eq 0} selected="selected"{/if}>Chờ xác nhận</option><option value="1"{if $newsletterStatusFilter eq 1} selected="selected"{/if}>Đang nhận tin</option><option value="2"{if $newsletterStatusFilter eq 2} selected="selected"{/if}>Đã hủy</option><option value="3"{if $newsletterStatusFilter eq 3} selected="selected"{/if}>Đã chặn</option></select><button class="ecc-submit" type="submit">Lọc</button></form>
+      {if $editorialNewsletterRows}<table class="ecc-table"><thead><tr><th>ID</th><th>Email</th><th>Ngôn ngữ</th><th>Nguồn</th><th>Consent</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>{foreach from=$editorialNewsletterRows item=subscriber}<tr><td>#{$subscriber.id}</td><td>{$subscriber.email|escape:'html'}</td><td>{$subscriber.language|upper|escape:'html'}</td><td>{$subscriber.source|escape:'html'}</td><td>{$subscriber.consented_at|default:$subscriber.date_created|escape:'html'}</td><td>{if $subscriber.status eq 0}Chờ xác nhận{elseif $subscriber.status eq 1}Đang nhận tin{elseif $subscriber.status eq 2}Đã hủy{else}Đã chặn{/if}</td><td><form class="ecc-moderate" action="/{$aScript}" method="post"><input type="hidden" name="op" value="editorial" /><input type="hidden" name="doo" value="manage_newsletter_subscriber" /><input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" /><input type="hidden" name="subscriber_id" value="{$subscriber.id}" />{if $subscriber.status eq 3}<button class="ecc-approve" type="submit" name="subscriber_status" value="0">Bỏ chặn</button>{else}<button class="ecc-delete" type="submit" name="subscriber_status" value="3">Chặn</button>{/if}</form></td></tr>{/foreach}</tbody></table>{else}<div class="ecc-empty">Chưa có subscriber trong trạng thái này.</div>{/if}
+    {/if}
+  </section>
+
+  <section class="ecc-panel" id="editorial-membership">
+    <h3>Membership và quyền đọc premium</h3>
+    <p class="ecc-panel__intro">Giai đoạn thử nghiệm: quản trị viên tạo gói và cấp quyền thủ công. Chưa kết nối hoặc thu tiền qua cổng thanh toán.</p>
+    {if !$membershipTableReady}
+      <div class="ecc-alert">Chưa cài bảng <code>dc_editorial_membership_plans</code> và <code>dc_editorial_subscriptions</code>.</div>
+    {else}
+      <div class="ecc-membership-grid">
+        <form class="ecc-membership-form" action="/{$aScript}" method="post">
+          <h4>Tạo gói thành viên</h4><input type="hidden" name="op" value="editorial" /><input type="hidden" name="doo" value="save_membership_plan" /><input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" />
+          <div class="ecc-form-grid"><label><span>Mã gói</span><input name="plan_code" maxlength="50" pattern="[a-z0-9_-]+" placeholder="monthly" required="required" /></label><label><span>Tên gói</span><input name="plan_name" maxlength="191" required="required" /></label><label><span>Giá hiển thị</span><input name="plan_price" type="number" min="0" step="0.01" value="0" required="required" /></label><label><span>Tiền tệ</span><input name="plan_currency" maxlength="3" value="VND" required="required" /></label><label><span>Thời hạn (ngày)</span><input name="plan_duration_days" type="number" min="1" max="3650" value="30" required="required" /></label><label><span>Vị trí</span><input name="plan_position" type="number" min="0" max="65535" value="0" /></label><label class="ecc-form-wide"><span>Mô tả</span><textarea name="plan_description"></textarea></label><label><span>Trạng thái</span><select name="plan_status"><option value="1">Đang mở</option><option value="0">Tạm tắt</option></select></label></div>
+          <button class="ecc-submit" type="submit">Tạo gói</button>
+        </form>
+        <form class="ecc-membership-form" action="/{$aScript}" method="post">
+          <h4>Cấp quyền thủ công</h4><input type="hidden" name="op" value="editorial" /><input type="hidden" name="doo" value="grant_editorial_subscription" /><input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" />
+          <div class="ecc-form-grid"><label class="ecc-form-wide"><span>Thành viên</span><select name="membership_customer_id" required="required"><option value="">— Chọn thành viên —</option>{foreach from=$editorialMembershipCustomers item=member}<option value="{$member.id}">#{$member.id} {$member.fullname|default:$member.username|escape:'html'} · {$member.email|escape:'html'}</option>{/foreach}</select></label><label class="ecc-form-wide"><span>Gói đang mở</span><select name="membership_plan_id" required="required"><option value="">— Chọn gói —</option>{foreach from=$editorialMembershipPlanRows item=plan}{if $plan.status eq 1}<option value="{$plan.id}">{$plan.name|escape:'html'} · {$plan.duration_days} ngày</option>{/if}{/foreach}</select></label><label><span>Bắt đầu (để trống = hiện tại)</span><input name="membership_starts_at" type="datetime-local" /></label><label><span>Kết thúc (để trống = theo gói)</span><input name="membership_ends_at" type="datetime-local" /></label><label class="ecc-form-wide"><span>Ghi chú nội bộ</span><textarea name="membership_note" maxlength="500"></textarea></label></div>
+          <button class="ecc-submit" type="submit">Cấp quyền</button>
+        </form>
+      </div>
+      <h4>Danh sách gói</h4>
+      {if $editorialMembershipPlanRows}<div class="ecc-table-wrap"><table class="ecc-table"><thead><tr><th>ID/Mã</th><th>Tên</th><th>Giá</th><th>Thời hạn</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>{foreach from=$editorialMembershipPlanRows item=plan}<tr><td>#{$plan.id} · {$plan.code|escape:'html'}</td><td>{$plan.name|escape:'html'}</td><td>{$plan.price|number_format:0:',':'.'} {$plan.currency|escape:'html'}</td><td>{$plan.duration_days} ngày</td><td>{if $plan.status eq 1}<span class="ecc-status ecc-status--active">Đang mở</span>{else}<span class="ecc-status">Tạm tắt</span>{/if}</td><td><form class="ecc-moderate" action="/{$aScript}" method="post"><input type="hidden" name="op" value="editorial" /><input type="hidden" name="doo" value="change_membership_plan_status" /><input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" /><input type="hidden" name="plan_id" value="{$plan.id}" />{if $plan.status eq 1}<button class="ecc-reject" type="submit" name="plan_status" value="0">Tạm tắt</button>{else}<button class="ecc-approve" type="submit" name="plan_status" value="1">Mở lại</button>{/if}</form></td></tr>{/foreach}</tbody></table></div>{else}<div class="ecc-empty">Chưa có gói membership.</div>{/if}
+      <h4>Quyền đã cấp gần đây</h4>
+      {if $editorialSubscriptionRows}<div class="ecc-table-wrap"><table class="ecc-table"><thead><tr><th>ID</th><th>Thành viên</th><th>Gói</th><th>Hiệu lực</th><th>Nguồn</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>{foreach from=$editorialSubscriptionRows item=subscription}<tr><td>#{$subscription.id}</td><td>{$subscription.username|default:$subscription.email|escape:'html'}<br /><small>#{$subscription.customer_id}</small></td><td>{$subscription.plan_name|default:$subscription.plan_code|escape:'html'}</td><td>{$subscription.starts_at|escape:'html'}<br />→ {$subscription.ends_at|escape:'html'}</td><td>{$subscription.source|escape:'html'}</td><td>{if $subscription.status eq 1}<span class="ecc-status ecc-status--active">Đang hiệu lực</span>{elseif $subscription.status eq 0}<span class="ecc-status">Chờ</span>{elseif $subscription.status eq 2}<span class="ecc-status">Hết hạn</span>{elseif $subscription.status eq 3}<span class="ecc-status">Đã hủy</span>{else}<span class="ecc-status">Đã thu hồi</span>{/if}</td><td>{if $subscription.status eq 0 || $subscription.status eq 1}<form class="ecc-moderate" action="/{$aScript}" method="post"><input type="hidden" name="op" value="editorial" /><input type="hidden" name="doo" value="revoke_editorial_subscription" /><input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" /><input type="hidden" name="subscription_id" value="{$subscription.id}" /><button class="ecc-delete" type="submit">Thu hồi</button></form>{else}—{/if}</td></tr>{/foreach}</tbody></table></div>{else}<div class="ecc-empty">Chưa cấp quyền membership.</div>{/if}
+    {/if}
+  </section>
+
+  <section class="ecc-panel">
+    <h3>Quản lý nội dung nổi bật</h3>
+    <p class="ecc-panel__intro">Giữ Ctrl/Cmd để chọn nhiều bài. Thứ tự chọn trong danh sách là thứ tự ưu tiên.</p>
+    <form action="/{$aScript}" method="post">
+      <input type="hidden" name="op" value="editorial" />
+      <input type="hidden" name="doo" value="save_features" />
+      <input type="hidden" name="csrf_token" value="{$editorialCsrf|escape:'html'}" />
+      <div class="ecc-feature-grid">
+        <div class="ecc-field"><label for="feature_cover">Cover Story</label><select id="feature_cover" name="feature_cover"><option value="0">— Tự động dùng bài mới nhất —</option>{foreach from=$editorialArticles item=item}<option value="{$item.id}"{if in_array($item.id,$activeFeatures.cover)} selected="selected"{/if}>#{$item.id} {$item.title|escape:'html'}</option>{/foreach}</select><div class="ecc-schedule"><input type="datetime-local" name="schedule_cover_start" value="{$featureSchedules.cover.start|default:''}" title="Bắt đầu" /><input type="datetime-local" name="schedule_cover_end" value="{$featureSchedules.cover.end|default:''}" title="Kết thúc" /></div><small>Tối đa 1 bài · có thể đặt lịch.</small></div>
+        <div class="ecc-field"><label for="feature_featured">Featured</label><select id="feature_featured" name="feature_featured[]" multiple="multiple">{foreach from=$editorialArticles item=item}<option value="{$item.id}"{if in_array($item.id,$activeFeatures.featured)} selected="selected"{/if}>#{$item.id} {$item.title|escape:'html'}</option>{/foreach}</select><div class="ecc-schedule"><input type="datetime-local" name="schedule_featured_start" value="{$featureSchedules.featured.start|default:''}" title="Bắt đầu" /><input type="datetime-local" name="schedule_featured_end" value="{$featureSchedules.featured.end|default:''}" title="Kết thúc" /></div><small>Tối đa 6 bài · dùng chung một lịch.</small></div>
+        <div class="ecc-field"><label for="feature_trending">Trending Override</label><select id="feature_trending" name="feature_trending_override[]" multiple="multiple">{foreach from=$editorialArticles item=item}<option value="{$item.id}"{if in_array($item.id,$activeFeatures.trending_override)} selected="selected"{/if}>#{$item.id} {$item.title|escape:'html'}</option>{/foreach}</select><div class="ecc-schedule"><input type="datetime-local" name="schedule_trending_override_start" value="{$featureSchedules.trending_override.start|default:''}" title="Bắt đầu" /><input type="datetime-local" name="schedule_trending_override_end" value="{$featureSchedules.trending_override.end|default:''}" title="Kết thúc" /></div><small>Tối đa 3 bài được ghim.</small></div>
+        <div class="ecc-field"><label for="feature_video">Video nổi bật</label><select id="feature_video" name="feature_video_featured"><option value="">— Tự động dùng video đầu tiên —</option>{foreach from=$editorialVideoChoices key=videoId item=videoTitle}<option value="{$videoId|escape:'html'}"{if $videoId eq $activeVideoFeature} selected="selected"{/if}>{$videoTitle|escape:'html'}</option>{/foreach}</select><div class="ecc-schedule"><input type="datetime-local" name="schedule_video_featured_start" value="{$featureSchedules.video_featured.start|default:''}" title="Bắt đầu" /><input type="datetime-local" name="schedule_video_featured_end" value="{$featureSchedules.video_featured.end|default:''}" title="Kết thúc" /></div><small>Chọn video mở đầu thư viện · có thể đặt lịch.</small></div>
+      </div>
+      <button class="ecc-submit" type="submit"{if !$featureTableReady} disabled="disabled"{/if}>Lưu cấu hình nổi bật</button>
+    </form>
+  </section>
+
+  <section class="ecc-panel">
+    <h3>Trung tâm đa ngôn ngữ</h3>
+    <div class="ecc-summary"><span class="ecc-language">VI: <strong>{$languageSummary.vn}/{$languageSummary.total}</strong></span><span class="ecc-language">EN: <strong>{$languageSummary.en}/{$languageSummary.total}</strong></span><span class="ecc-language">中文: <strong>{$languageSummary.zh}/{$languageSummary.total}</strong></span></div>
+    <table class="ecc-table"><thead><tr><th>Bài viết</th><th>Chuyên mục</th><th>VI</th><th>EN</th><th>中文</th><th></th></tr></thead><tbody>
+    {foreach from=$editorialArticles item=item}
+      <tr><td><strong>#{$item.id}</strong> {$item.title|escape:'html'}</td><td>{$item.category_name|default:'—'|escape:'html'}</td><td>{if $item.has_vn}<span class="ecc-dot ecc-dot--ok">✓</span>{else}<span class="ecc-dot ecc-dot--missing">Thiếu</span>{/if}</td><td>{if $item.has_en}<span class="ecc-dot ecc-dot--ok">✓</span>{else}<span class="ecc-dot ecc-dot--missing">Thiếu</span>{/if}</td><td>{if $item.has_zh}<span class="ecc-dot ecc-dot--ok">✓</span>{else}<span class="ecc-dot ecc-dot--missing">Thiếu</span>{/if}</td><td class="ecc-actions"><a href="/{$aScript}?op=manage&amp;act=article&amp;mod=edit&amp;id={$item.id}">Sửa bài</a></td></tr>
+    {/foreach}
+    </tbody></table>
+  </section>
+
+  <section class="ecc-panel">
+    <h3>Health Check nội dung <span class="ecc-badge">{$healthCount}</span></h3>
+    <p class="ecc-panel__intro">Ảnh lớn được cảnh báo từ 2 MB. Danh sách hiển thị tối đa 100 bài cần xử lý.</p>
+    {if $healthRows}
+    <table class="ecc-table"><thead><tr><th>Bài viết</th><th>Trạng thái</th><th>Cảnh báo</th><th></th></tr></thead><tbody>
+    {foreach from=$healthRows item=item}<tr><td><strong>#{$item.id}</strong> {$item.title|escape:'html'}</td><td>{if $item.status eq 1}Đang bật{else}Đã tắt{/if}</td><td><div class="ecc-issues">{foreach from=$item.issues item=issue}<span class="ecc-issue">{$issue|escape:'html'}</span>{/foreach}</div></td><td class="ecc-actions"><a href="/{$aScript}?op=manage&amp;act=article&amp;mod=edit&amp;id={$item.id}">Xử lý</a></td></tr>{/foreach}
+    </tbody></table>
+    {else}<div class="ecc-empty">Không phát hiện vấn đề nội dung.</div>{/if}
+  </section>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title="site-footer"}

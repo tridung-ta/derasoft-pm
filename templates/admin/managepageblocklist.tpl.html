@@ -1,0 +1,46 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+
+{if $pId}
+<div class="breadcrumb">
+    <a href="/{$aScript}?op=manage&act=pageblock&mod=list">{$amessages.list_item}</a>
+    &raquo; {$parentMenu->getName()}
+</div>
+{/if}
+
+{if $menuList}
+<div class="table-scroll-x">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+    <th>{$locale->msg('numbers')}</th>
+    <th>{$locale->msg('page_name')}</th>
+    <th>{$locale->msg('total_blocks')}</th>
+    <th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$menuList item=menu}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+    <td>{$no+1}</td>
+    <td>
+        <a href="/{$aScript}?op=manage&act=pageblock&mod=list&pId={$menu->getId()}">
+            {$menu->getName()}
+        </a>
+    </td>
+    <td>{$pageblocks->countByPage($menu->getId())}</td>
+    <td>
+        <a href="/{$aScript}?op=manage&act=pageblock&mod=edit&menu_id={$menu->getId()}"
+           title="{$locale->msg('edit')}">
+            <img src="/{$templatePath}/{$userTemplate}/images/ico_edit.png"
+                 alt="{$locale->msg('edit')}" width="16" height="16" />
+        </a>
+    </td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+</div>
+{else}
+{$locale->msg('no_record')}
+{/if}

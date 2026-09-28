@@ -1,0 +1,20 @@
+{include file='head.tpl.html' title='head'}
+<header>{include file='header.tpl.html' title='header'}</header>
+<main class="ed-author">
+ <div class="ed-shell">
+  <section class="ed-author__profile" aria-labelledby="authorName">
+   <div class="ed-author__avatar">
+    {if $authorAvatar}<img src="/{$authorAvatar->getPath()}/{$authorAvatar->getUrlL()}" alt="{$authorProfile.name|escape:'html'}">{else}<span aria-hidden="true">{$authorProfile.name|substr:0:1|escape:'html'}</span>{/if}
+   </div>
+   <div class="ed-author__copy"><span class="ed-kicker">{if $lang == 'en'}AUTHOR{elseif $lang == 'zh'}作者{else}TÁC GIẢ{/if}</span><h1 id="authorName">{$authorProfile.name|escape:'html'}</h1>{if $authorProfile.intro}<p>{$authorProfile.intro|escape:'html'}</p>{/if}<strong>{$authorTotalRows|number_format} {if $lang == 'en'}published articles{elseif $lang == 'zh'}篇已发布文章{else}bài viết đã xuất bản{/if}</strong></div>
+  </section>
+  <section class="ed-author__work" aria-labelledby="authorWorkTitle">
+   <header class="ed-section__head"><div><span class="ed-kicker">{if $lang == 'en'}SELECTED WORK{elseif $lang == 'zh'}作者文章{else}BÀI VIẾT{/if}</span><h2 id="authorWorkTitle">{if $lang == 'en'}Stories by {$authorProfile.name|escape:'html'}{elseif $lang == 'zh'}{$authorProfile.name|escape:'html'}的文章{else}Bài viết của {$authorProfile.name|escape:'html'}{/if}</h2></div></header>
+   <div class="ed-archive-grid">{foreach from=$authorArticles item=article}{assign var=avatar value=$article->getAvatarImage($uploads)}<article class="ed-card"><a class="ed-card__link" href="{$article->getUrl($lang)|escape:'html'}"><figure class="ed-card__media">{include file='editorial-card-media.tpl.html' article=$article avatar=$avatar lazy=true}</figure><div class="ed-card__body"><div class="ed-card__meta"><span>{include file='editorial-category-label.tpl.html' article=$article}</span><time>{$article->getDisplayDate()}</time></div><h3>{$article->getTitle($lang)|escape:'html'}</h3><p>{$article->getDescription($lang)|strip_tags|escape:'html'}</p><b>{if $lang == 'en'}Read article{elseif $lang == 'zh'}阅读全文{else}Đọc bài{/if} →</b></div></a></article>{/foreach}</div>
+   {if $authorTotalPages > 1}<nav class="ed-pagination" aria-label="{if $lang == 'en'}Author article pages{elseif $lang == 'zh'}作者文章分页{else}Phân trang bài viết tác giả{/if}">{if $authorPage > 1}<a href="{$authorPath}?page={$authorPage-1}">←</a>{else}<span class="is-disabled">←</span>{/if}{for $i=1 to $authorTotalPages}{if $i >= $authorPage-2 && $i <= $authorPage+2}{if $i == $authorPage}<span class="is-active">{$i}</span>{else}<a href="{$authorPath}?page={$i}">{$i}</a>{/if}{/if}{/for}{if $authorPage < $authorTotalPages}<a href="{$authorPath}?page={$authorPage+1}">→</a>{else}<span class="is-disabled">→</span>{/if}</nav>{/if}
+  </section>
+ </div>
+</main>
+<footer>{include file='footer.tpl.html' title='footer'}</footer>
+{include file='editorial-script.tpl.html'}
+</body></html>

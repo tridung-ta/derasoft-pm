@@ -1,0 +1,51 @@
+<div class="container-l flex flex-col gap-30">
+    <div class="flex flex-col gap-10 center-hor">
+        <h2 class="section-title text-center bold uppercase">{$messages['stage_intro_title']}</h2>
+        <div class="title-border-bottom"></div>
+    </div>
+    <div class="js-slider-wrapper pos-rel">
+        <div class="swiper-button-prev custom-prev-btn"></div>
+        <div class="swiper-button-next custom-next-btn"></div>
+        <div class="js-slider-3cols fill-view swiper">
+            <div class="swiper-wrapper">
+                <article class="swiper-slide col-3">
+                    <div class="flex-1 expo-intro__container item-padding-30 custom-item__low center-ver gap-20 bg-white flex flex-col pos-rel border-radius-5">
+                        <div class="expo-intro__img ratio-1x1">
+                            <img src="/{$templatePath}/{$userTemplate}/img/icon/avatar.svg" alt="{$messages['stage_intro_who_title']|escape:'html'}" class="img-content">
+                        </div>
+                        <div class="expo-intro__content flex flex-col gap-10">
+                            <h3 class="bold uppercase text-center">{$messages['stage_intro_who_title']}</h3>
+                            <p class="clamp-text text-center">{$messages['stage_intro_who_desc']}</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="swiper-slide col-3">
+                    <div class="flex-1 expo-intro__container item-padding-30 custom-item__low center-ver gap-20 bg-white flex flex-col pos-rel border-radius-5">
+                        <div class="expo-intro__img ratio-1x1">
+                            <img src="/{$templatePath}/{$userTemplate}/img/icon/lightbulb.svg" alt="{$messages['stage_intro_what_title']|escape:'html'}" class="img-content">
+                        </div>
+                        <div class="expo-intro__content flex flex-col gap-10">
+                            <h3 class="bold uppercase text-center">{$messages['stage_intro_what_title']}</h3>
+                            <p class="clamp-text text-center">{$messages['stage_intro_what_desc']}</p>
+                        </div>
+                    </div>
+                </article>
+                <article class="swiper-slide col-3">
+                    <div class="flex-1 expo-intro__container item-padding-30 custom-item__low center-ver gap-20 bg-white flex flex-col pos-rel border-radius-5">
+                        <div class="expo-intro__img ratio-1x1">
+                            <img src="/{$templatePath}/{$userTemplate}/img/icon/clock.svg" alt="{$messages['stage_intro_when_title']|escape:'html'}" class="img-content">
+                        </div>
+                        <div class="expo-intro__content flex flex-col gap-10">
+                            <h3 class="bold uppercase text-center">{$messages['stage_intro_when_title']}</h3>
+                            <p class="clamp-text text-center">{$messages['stage_intro_when_desc']}</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <div class="swiper-pagination custom-dots"></div>
+        </div>
+    </div>
+    <div class="flex center-hor">
+        <p class="text-center expo-intro__desc text-color-black">{$messages['stage_intro_summary']}</p>
+    </div>
+</div>

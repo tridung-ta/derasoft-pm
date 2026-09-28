@@ -1,0 +1,77 @@
+{include file="$userTemplate/coreheader.tpl.html" title=siteheader}
+<div id="main" class="left-content">
+{include file="$userTemplate/coreleft.tpl.html" title=sitetopmenu}
+<div id="content">
+{include file="$userTemplate/corenavigation.tpl.html" title=navigationbar}
+<div class="innerContent">
+<div id="tabContent" class="tabContent">
+{include file="$userTemplate/coretabs.tpl.html" title=showtabs}
+{if $mod eq "unitlist"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+
+<select name="filter_status" id="filter_status">
+    <option value="" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('filter_status')}</option>
+    <option value="all" {if $filter_status eq "all"}selected="selected"{/if}>{$locale->msg('all')}</option>
+    <option value="0" {if $filter_status eq "0"}selected="selected"{/if}>{$amessages.status_user.0}</option>
+    <option value="1" {if $filter_status eq "1"}selected="selected"{/if}>{$amessages.status_user.1}</option>
+    <option value="2" {if $filter_status eq "2"}selected="selected"{/if}>{$amessages.status_user.2}</option>
+</select>
+
+<select name="filter_date_created" id="filter_date_created">
+<option value="">{$locale->msg('filter_date_created')}</option>
+<option value="all" {if $filter_date_created eq "all"}selected="selected"{/if} >{$amessages.status_times.7}</option>
+<option value="onehour" {if $filter_date_created eq "onehour"}selected="selected"{/if} >{$amessages.status_times.1}</option>
+<option value="fourhours" {if $filter_date_created eq "fourhours"}selected="selected"{/if}  >{$amessages.status_times.2}</option>
+<option value="today" {if $filter_date_created eq "today"}selected="selected"{/if}  >{$amessages.status_times.3}</option>
+<option value="7" {if $filter_date_created eq "7"}selected="selected"{/if} >{$amessages.status_times.4}</option>
+<option value="30" {if $filter_date_created eq "30"}selected="selected"{/if} >{$amessages.status_times.5}</option>
+<option value="365" {if $filter_date_created eq "365"}selected="selected"{/if} >{$amessages.status_times.6}</option>
+</select>
+
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="master" />
+<input type="hidden" name="mod" value="unitlist" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if}
+
+<!-- {if $mod eq "listvalue"}
+<div class="search">
+<form action="/{$aScript}" method="post" name="formSearch">
+<fieldset>
+<input type="text" value="{$kw}" name="kw" />
+<input type="submit" value="{$locale->msg('search')}" title="{$locale->msg('search')}" name="btnSearch" class="btnSearch" />
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="unit" />
+<input type="hidden" name="mod" value="listvalue" />
+<input type="hidden" name="doo" value="search" />
+<input type="hidden" name="lang" value="{$lang}" />
+<input type="hidden" name="ipp" value="{$ipp}" />
+<input type="hidden" name="sk" value="{$sk}" />
+<input type="hidden" name="sd" value="{$sd}" />
+<input type="hidden" name="pg" value="{$pg}" />
+</fieldset>
+</form>
+</div>
+{/if} -->
+
+<div class="tableContent">
+{include file="$userTemplate/{$op}{$act}{$mod}.tpl.html" title=showtabs}
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{include file="$userTemplate/corefooter.tpl.html" title=sitefooter}

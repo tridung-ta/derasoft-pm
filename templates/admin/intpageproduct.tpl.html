@@ -1,0 +1,56 @@
+{if $result_code}<div class="message">{$amessages.result_code.$result_code}</div>{/if}
+{if $error_code}<div class="message2">{$amessages.error_code.$error_code}</div>{/if}
+{if $pId}<p><a href="/{$aScript}?op=intpage&act=product&pId={$gfId}" title="{$locale->msg('back_group')}"><img src="/{$templatePath}/{$userTemplate}/images/icon_parent.png" alt="{$locale->msg('back_group')}" width="32" height="32" />...{$locale->msg('back')}</a></p>{/if}
+{if $listItems}
+<form action="/{$aScript}" method="post" name="formType" id="formType">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<th>{$locale->msg('numbers')}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','id','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_code')}">{$locale->msg('code')}</a>{if $sk eq "id"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('images')}</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','name','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_name')}">{$locale->msg('product_infomation')}</a>{if $sk eq "name"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th class="right"><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','price','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_price')}">{$locale->msg('price')}</a>{if $sk eq "price"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if} ({$estore->getProperty('currency')})</th>
+<th><a href="javascript:void(0)" onclick="javascript:MM_sortField('parent','{$sk}','position','{if $sd eq "DESC"}ASC{else}DESC{/if}');" title="{$locale->msg('arrangement_by_position')}">{$locale->msg('position')}</a>{if $sk eq "position"}{if $sd eq "DESC"}&darr;{else}&uarr;{/if}{/if}</th>
+<th>{$locale->msg('posts_user')}</th>
+<th>{$locale->msg('actions')}</th>
+</tr>
+</thead>
+<tbody>
+{foreach key=no from=$listItems item=item}
+<tr{if $no%2 eq 0} class="bgType"{/if}>
+<td>{$startNum+$no}</td>
+<td>{$item->getId()}</td>
+<td>{assign var=avatar value=$item->getProperty('avatar')}
+{if $avatar}
+<img src="/upload/{$storeId}/products/a_{$avatar}" width="100" />
+{/if}
+</td>
+<td>{$locale->msg('name')}: {$item->getName()}<br />
+{$locale->msg('sku')}: {$item->getSku()}<br />
+{$locale->msg('slug')}: {$item->getSlug()}</td>
+<td class="right">{$item->getPrice()|number_format}</td>
+<td class="center">{$item->getPosition()}</td>
+<td>
+{assign var=userUpload value=$item->getProperty('user_upload')}
+{assign var=userUpdate value=$item->getProperty('user_update')}
+{if $userUpload}[P] {$userUpload} {$item->getDateCreated()|date_format:"%Y-%m-%d"}<br />{/if}
+{if $userUpdate}[U] {$userUpdate} {$item->getDateCreated()|date_format:"%Y-%m-%d"}{/if}
+</td>
+<td><a target="_blank" href="{$item->getUrl()}" title="{$locale->msg('first_view')}"><img src="/{$templatePath}/{$userTemplate}/images/ico_preview.png" alt="{$locale->msg('first_view')}" width="16" height="16" /></a>
+<a href="JavaScript:AddLink('{$item->getUrl()}')" title="Link"><img src="/{$templatePath}/{$userTemplate}/images/ico_link.png" alt="Link" width="16" height="16" /></a></td>
+</tr>
+{/foreach}
+</tbody>
+</table>
+<div class="paging">
+{include file="$userTemplate/corepager.tpl.html" title=pager}
+</div>
+<div class="infoType2">
+{include file="$userTemplate/corecomboipp.tpl.html" title=ipp}
+</div>
+</form>
+{else}
+{$locale->msg('no_record')}
+{/if}
+</div>

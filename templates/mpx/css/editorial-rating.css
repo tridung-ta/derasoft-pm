@@ -1,0 +1,18 @@
+.ed-rating { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr); gap:var(--ed-space-8,2rem); align-items:center; margin-top:var(--ed-space-10,3rem); margin-bottom:var(--ed-space-8,2rem); padding:clamp(1.5rem,4vw,3rem); border:1px solid var(--ed-border,#ded4c8); background:linear-gradient(135deg,var(--ed-surface,#fffaf3),var(--ed-surface-muted,#f3ece3)); }
+.ed-rating__copy h2 { margin:.45rem 0 .65rem; font-size:clamp(1.8rem,4vw,3rem); line-height:1; }
+.ed-rating__copy p { max-width:42rem; margin:0; color:var(--ed-text-muted,#705f53); }
+.ed-rating__panel { padding-left:var(--ed-space-6,1.5rem); border-left:1px solid var(--ed-border,#ded4c8); }
+.ed-rating__summary { display:flex; align-items:baseline; flex-wrap:wrap; gap:.25rem; }
+.ed-rating__summary strong { font-family:var(--ed-font-display,Georgia,serif); font-size:clamp(2.5rem,5vw,4rem); line-height:1; }
+.ed-rating__summary > span,.ed-rating__summary small,.ed-rating__status { color:var(--ed-text-muted,#705f53); }
+.ed-rating__summary small { flex-basis:100%; margin-top:.2rem; }
+.ed-rating__stars { display:flex; gap:.15rem; margin:1rem 0 .65rem; }
+.ed-rating__stars button { appearance:none; padding:.1rem; border:0; background:transparent; color:var(--ed-border-strong,#baa999); font-size:clamp(1.75rem,4vw,2.4rem); line-height:1; cursor:pointer; transition:color 160ms ease,transform 160ms ease; }
+.ed-rating__stars button:hover,.ed-rating__stars button:focus-visible { transform:translateY(-2px); outline:none; }
+.ed-rating__stars button:focus-visible { box-shadow:0 2px 0 var(--ed-accent,#b43125); }
+.ed-rating__stars button.is-active { color:var(--ed-accent,#b43125); }
+.ed-rating__stars button:disabled { cursor:wait; opacity:.65; }
+.ed-rating__status { min-height:1.5em; margin:0; font-size:.9rem; }
+.ed-rating.is-loading { opacity:.8; }
+@media (max-width:720px) { .ed-rating { grid-template-columns:1fr; gap:1.5rem; } .ed-rating__panel { padding:1.25rem 0 0; border-top:1px solid var(--ed-border,#ded4c8); border-left:0; } }
+@media (prefers-reduced-motion:reduce) { .ed-rating__stars button { transition:none; } }

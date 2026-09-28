@@ -1,0 +1,15 @@
+<div class="contType">
+<h2>{$locale->msg('notes')}:</h2>{$locale->msg('notes_clean_trash')}</div>
+<form name="formClean" id="formClean" action="/{$aScript}" method="post">
+<fieldset>
+<input type="hidden" name="op" value="system" />
+<input type="hidden" name="act" value="field" />
+<input type="hidden" name="mod" value="list" />
+<input type="hidden" name="doo" value="cleantrash" />
+<input type="hidden" name="lang" value="{$lang}" />
+<p class="btn"><input type="submit" value="{$locale->msg('button_ok')}" title="{$locale->msg('button_ok')}" name="btnSubmit2" />
+<input type="button" onclick="javascript:formSubmit('formClean','list','cancel',0);" value="{$locale->msg('button_cancel')}" title="{$locale->msg('button_cancel')}" name="btnCancel" />
+</p>
+</fieldset>
+</form>
+</div>
