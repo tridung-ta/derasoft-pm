@@ -11,7 +11,7 @@ include_once(ROOT_PATH.'classes/dao/users.class.php');
 include_once(ROOT_PATH.'classes/security/checklogin.class.php');
 $templateFile = defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? 'pm-login.tpl.html' : 'login.tpl.html';
 $template->assign('userTemplate',$userTemplate);
-$error = '';
+$error = array('message' => array());
 $site = $request->element("site");
 if(!$site) $site = '';
 if($_POST) {

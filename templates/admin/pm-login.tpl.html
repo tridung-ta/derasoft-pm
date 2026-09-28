@@ -19,7 +19,7 @@
 		<section class="panel" aria-labelledby="login-title">
 			<h2 id="login-title">Đăng nhập quản trị</h2>
 			<p class="hint">Sử dụng tài khoản quản trị hiện tại của bạn.</p>
-			{if $error && $error.message}
+			{if isset($error.message) && $error.message}
 				<div class="error" role="alert">{foreach from=$error.message item=message}{$message|escape}<br>{/foreach}</div>
 			{/if}
 			<form action="/{$aScript}" method="post" autocomplete="off">
