@@ -33,4 +33,8 @@ Sau khi cập nhật template, cần xóa các file đã biên dịch bên trong
 
 ## Tài liệu
 
-Kết quả khảo sát mã nguồn ban đầu nằm tại [`docs/AUDIT.md`](docs/AUDIT.md).
+- Kế hoạch chính thức: [`docs/PLAN_FINAL.md`](docs/PLAN_FINAL.md)
+- Kết quả audit: [`docs/AUDIT.md`](docs/AUDIT.md)
+- Baseline môi trường: [`docs/BASELINE.md`](docs/BASELINE.md)
+- Tiến độ theo phase: [`docs/PROGRESS.md`](docs/PROGRESS.md)
+- Quy ước migration: [`database/migrations/README.md`](database/migrations/README.md)
