@@ -17,6 +17,8 @@ include_once(ROOT_PATH.'classes/security/boot.class.php');
 $boots = new Boot();
 include_once(ROOT_PATH.'includes/pm_mode.inc.php');
 include_once(ROOT_PATH.'includes/config.inc.php');
+$aops[] = 'login';
+$aops[] = 'logout';
 $aops[] = 'editorial'; // V48 Editorial Control Center
 $aops[] = 'pm';
 include_once(ROOT_PATH.'includes/constant.inc.php');
