@@ -11,11 +11,11 @@ Ngày ghi nhận: 2026-09-30
 | PHP 8.3 portable | AVAILABLE | PHP 8.3.35 NTS tại `.tools/php83/`, toàn bộ thư mục bị Git ignore |
 | MySQL client | AVAILABLE | MySQL client 8.4.11 |
 | MySQL server | AVAILABLE | Windows service `MySQL84` đang chạy |
-| Local DB connection | NOT TESTED | Kết nối localhost bằng root không mật khẩu bị từ chối; không đọc credential thật và chưa có DB copy đã ẩn dữ liệu |
+| Local DB connection | PASS | `derasoft_pm_local` trên MySQL 8.4.11; ứng dụng kết nối bằng user local giới hạn database |
 | XAMPP/Laragon | NOT FOUND | Không thấy ở các đường dẫn Windows thông dụng |
 | Smarty | AVAILABLE | Bản nhúng 4.5.5 |
 | Composer vendor | NOT FOUND | `vendor/autoload.php` không tồn tại; Admin chỉ require khi file có mặt |
-| Web root local | NOT CONFIGURED | Repository chưa được cấu hình virtual host/document root local |
+| Web runtime local | PASS | PHP 8.3 built-in server phục vụ repository tại loopback trong smoke test |
 | Web root production | DOCUMENTED ONLY | `/domains/pm.dung.derasoft.com/public_html`; Phase 1 không truy cập production |
 
 ## PHP extension
@@ -37,13 +37,15 @@ Ngày ghi nhận: 2026-09-30
 | Hạng mục | Trạng thái | Bằng chứng/giới hạn |
 |---|---|---|
 | Render PM dashboard/profile/password/team | PASS | `php tests/smoke_pm_admin.php` |
-| Login Admin | NOT TESTED | Cần web server và DB local |
-| Logout Admin | NOT TESTED | Cần session web và DB local |
-| Dashboard dùng dữ liệu thật | NOT TESTED | Cần DB local |
+| Trang login Admin | PASS | HTTP 200, đúng title, không có fatal error |
+| Login sai | PASS | Trả lại trang login và thông báo thất bại, không có fatal error |
+| Login thành công | NOT TESTED | Không sử dụng hoặc in credential người dùng thật trong automated test |
+| Logout Admin | NOT TESTED | Cần phiên đăng nhập thành công |
+| Dashboard dùng dữ liệu thật | NOT TESTED | Cần phiên đăng nhập thành công |
 | CRUD nhân sự mẫu | NOT TESTED | Cần DB local; không kiểm thử trên production |
 | Pagination | SOURCE VERIFIED | `Url::genPager()` và nhiều module list đang sử dụng; chưa test runtime |
 | Upload | NOT TESTED | Thiếu DB/web server và `fileinfo` |
-| Tracking Data | SOURCE VERIFIED | DAO/call site có trong source; chưa ghi dữ liệu local |
+| Tracking Data | SOURCE VERIFIED | Bảng/DAO/call site đã xác nhận; không tạo log giả vào dữ liệu import |
 | Smarty + PhpSpreadsheet | PASS | PHP 8.3 ghi workbook XLSX tạm thời thành công, không có warning |
 | PHP 8.3 lint toàn repository | PARTIAL | 1.401 file được kiểm tra: 1.396 đạt, 5 file legacy/third-party lỗi cú pháp PHP 8.3 |
 | Legacy UI bị ẩn | SOURCE VERIFIED | `PM_HIDE_LEGACY` và redirect trong `admin.php`; chưa test URL runtime |
@@ -55,6 +57,15 @@ Ngày ghi nhận: 2026-09-30
 3. Import bản sao DB đã ẩn dữ liệu nhạy cảm; dùng credential chỉ nằm trong `includes/config.inc.php` đã bị ignore.
 4. Chạy smoke test trên local cho login/logout/dashboard/CRUD/pager/tracking/Excel.
 5. Không dùng database hoặc config production để thay cho baseline local.
+
+## Kết quả import local
+
+- Database đích mới: `derasoft_pm_local`.
+- MySQL: 8.4.11.
+- 76 bảng được import; `dc_users` có 8 dòng.
+- Không phát hiện username hoặc email trùng trong cùng `store_id`.
+- Không ghi đè database cũ; file dump vẫn bị Git ignore.
+- `includes/config.inc.php` local trỏ tới database mới và tiếp tục bị Git ignore.
 
 ## Cảnh báo tương thích đã quan sát
 

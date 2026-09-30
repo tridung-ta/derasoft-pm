@@ -25,7 +25,7 @@ Không tạo hoặc chạy migration. Không kết nối production.
 
 ### Status
 
-PARTIAL — baseline PHP 8.3 không cần DB đã hoàn tất; runtime baseline đang chờ DB local.
+COMPLETED WITH MANUAL AUTH CHECK — local PHP/DB/web baseline đạt; login thành công và logout cần người dùng kiểm thử bằng tài khoản thật.
 
 ### Environment
 
@@ -44,10 +44,13 @@ PARTIAL — baseline PHP 8.3 không cần DB đã hoàn tất; runtime baseline 
 - PM template smoke test đạt cho dashboard, profile, password và team.
 - Smarty 4.5.5 và PhpSpreadsheet smoke test ghi XLSX tạm thời thành công trên PHP 8.3, không có warning.
 - Lint 1.401 file PHP bằng PHP 8.3: 1.396 đạt, 5 file mail legacy/third-party không tương thích và đã ghi rõ trong `docs/BASELINE.md`.
+- Import dump vào database mới `derasoft_pm_local`; 76 bảng và 8 user, không ghi đè database khác.
+- Ứng dụng kết nối database local bằng user chỉ có quyền trên database dự án.
+- Public landing và Admin login trả HTTP 200 trên PHP 8.3; ca login sai hiển thị lỗi đúng và không fatal.
 
 ### Database
 
-Không có thay đổi database và chưa có migration SQL. Đã nhận dump local, xác minh hash và trích schema an toàn vào `docs/DB_SCHEMA.md`; chưa import vì chưa có login path/credential MySQL local dành riêng cho dự án.
+Không tạo migration SQL. Dump đã được import vào database local mới `derasoft_pm_local`; không tác động production hoặc database cũ. Schema baseline nằm tại `docs/DB_SCHEMA.md`.
 
 ### Known Issues
 
@@ -59,7 +62,8 @@ Không có thay đổi database và chưa có migration SQL. Đã nhận dump lo
 
 ### Remaining Before Phase 2
 
-- Import dump vào database local mới, sau đó kiểm tra login/logout, CRUD mẫu, tracking và Excel runtime.
+- Người dùng kiểm thử login thành công/logout bằng tài khoản thật; không ghi credential vào test tự động.
+- CRUD legacy, tracking có ghi dữ liệu và upload vẫn để manual check vì không tạo dữ liệu giả vào bản import.
 - Chốt ba quyết định nghiệp vụ với mentor trước phase liên quan; không cần đóng cứng chúng trong Phase 2.
 
 ### Git
@@ -69,4 +73,4 @@ Không có thay đổi database và chưa có migration SQL. Đã nhận dump lo
 
 ### Next Step
 
-Tạo login path MySQL local hoặc database/user local dành riêng cho dự án để import an toàn. Không dùng production làm môi trường phát triển.
+Thực hiện PLAN Phase 2 — Auth, Role & Permission. Không triển khai migration/auth trước khi plan Phase 2 được duyệt.
