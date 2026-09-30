@@ -22,6 +22,7 @@
 # Editor and operating-system files
 /.vscode/
 /.idea/
+/.tools/
 .DS_Store
 Thumbs.db
 

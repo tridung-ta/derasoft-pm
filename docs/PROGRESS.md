@@ -25,14 +25,14 @@ Không tạo hoặc chạy migration. Không kết nối production.
 
 ### Status
 
-PARTIAL — baseline không cần DB đã hoàn tất; runtime baseline đang chờ môi trường PHP 8.3 và DB local.
+PARTIAL — baseline PHP 8.3 không cần DB đã hoàn tất; runtime baseline đang chờ DB local.
 
 ### Environment
 
-- Local CLI hiện là PHP 8.5.10, chưa khớp production PHP 8.3.
+- PHP 8.3.35 portable đã được chuẩn bị trong `.tools/` bị Git ignore; PHP mặc định của máy vẫn là 8.5.10.
 - MySQL client 8.4.11 và service `MySQL84` có sẵn; chưa có credential/DB copy local để test ứng dụng.
 - Smarty 4.5.5 được nhúng trong source.
-- `fileinfo`, `gd`, `intl` chưa bật trong PHP CLI hiện tại.
+- PHP 8.3 portable đã bật `mysqli`, `mbstring`, `openssl`, `fileinfo`, `zip`, `gd`, `intl`.
 - Chưa phát hiện XAMPP/Laragon hoặc local web root đã cấu hình.
 
 ### Completed
@@ -42,7 +42,8 @@ PARTIAL — baseline không cần DB đã hoàn tất; runtime baseline đang ch
 - Chuẩn hóa thư mục và quy tắc migration tại `database/migrations/README.md`.
 - Lập hồ sơ môi trường và ma trận baseline tại `docs/BASELINE.md`.
 - PM template smoke test đạt cho dashboard, profile, password và team.
-- Smarty 4.5.5 và PhpSpreadsheet smoke test ghi XLSX tạm thời thành công; PHP 8.5 phát cảnh báo deprecated trong thư viện nhúng.
+- Smarty 4.5.5 và PhpSpreadsheet smoke test ghi XLSX tạm thời thành công trên PHP 8.3, không có warning.
+- Lint 1.401 file PHP bằng PHP 8.3: 1.396 đạt, 5 file mail legacy/third-party không tương thích và đã ghi rõ trong `docs/BASELINE.md`.
 
 ### Database
 
@@ -53,7 +54,7 @@ Không có thay đổi database. Chưa có migration SQL. Local DB chưa sẵn s
 - PHP local khác phiên bản production.
 - Chưa có local DB đã ẩn dữ liệu và web server/virtual host.
 - `vendor/autoload.php` không có; các thư viện nhúng cần được kiểm tra riêng.
-- PhpSpreadsheet/ZipStream nhúng phát cảnh báo deprecated trên PHP 8.5; cần xác nhận lại trên PHP 8.3.
+- Năm file PHPMailer/mail legacy không parse trên PHP 8.3; không nằm trong PM hiện tại nhưng phải xử lý có chọn lọc trước khi dùng email.
 - Auth legacy dùng MD5 và DAO legacy ghép chuỗi SQL; dự kiến xử lý Phase 2, chưa sửa Phase 1.
 
 ### Remaining Before Phase 2
@@ -68,4 +69,4 @@ Không có thay đổi database. Chưa có migration SQL. Local DB chưa sẵn s
 
 ### Next Step
 
-Cấu hình PHP 8.3 và cung cấp DB local đã ẩn dữ liệu để hoàn tất login/logout/CRUD/tracking runtime. Không tự chuyển sang Phase 2 khi các mục này còn `NOT TESTED`.
+Cung cấp DB local đã ẩn dữ liệu để hoàn tất login/logout/CRUD/tracking runtime. Không dùng production làm môi trường phát triển.

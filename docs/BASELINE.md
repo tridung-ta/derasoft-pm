@@ -7,7 +7,8 @@ Ngày ghi nhận: 2026-09-30
 | Thành phần | Trạng thái | Ghi chú |
 |---|---|---|
 | Source | AVAILABLE | `D:\derasoft-pm` |
-| PHP CLI | AVAILABLE | PHP 8.5.10 NTS; production mục tiêu PHP 8.3 nên chưa được xem là môi trường tương đương |
+| PHP CLI mặc định | AVAILABLE | PHP 8.5.10 NTS; không dùng làm chuẩn nghiệm thu production |
+| PHP 8.3 portable | AVAILABLE | PHP 8.3.35 NTS tại `.tools/php83/`, toàn bộ thư mục bị Git ignore |
 | MySQL client | AVAILABLE | MySQL client 8.4.11 |
 | MySQL server | AVAILABLE | Windows service `MySQL84` đang chạy |
 | Local DB connection | NOT TESTED | Kết nối localhost bằng root không mật khẩu bị từ chối; không đọc credential thật và chưa có DB copy đã ẩn dữ liệu |
@@ -25,9 +26,9 @@ Ngày ghi nhận: 2026-09-30
 | mbstring | AVAILABLE |
 | openssl | AVAILABLE |
 | zip | AVAILABLE |
-| fileinfo | MISSING |
-| gd | MISSING |
-| intl | MISSING |
+| fileinfo | AVAILABLE trong PHP 8.3 portable |
+| gd | AVAILABLE trong PHP 8.3 portable |
+| intl | AVAILABLE trong PHP 8.3 portable |
 
 `fileinfo` cần thiết cho kiểm tra MIME upload/import. `gd` và `intl` cần được xác nhận theo các module sẽ dùng. Môi trường chuẩn để nghiệm thu phải chạy PHP 8.3 với extension tương ứng production.
 
@@ -43,18 +44,28 @@ Ngày ghi nhận: 2026-09-30
 | Pagination | SOURCE VERIFIED | `Url::genPager()` và nhiều module list đang sử dụng; chưa test runtime |
 | Upload | NOT TESTED | Thiếu DB/web server và `fileinfo` |
 | Tracking Data | SOURCE VERIFIED | DAO/call site có trong source; chưa ghi dữ liệu local |
-| Smarty + PhpSpreadsheet | PASS WITH WARNINGS | Test ghi XLSX thành công; PhpSpreadsheet nhúng phát cảnh báo deprecated trên PHP 8.5 |
+| Smarty + PhpSpreadsheet | PASS | PHP 8.3 ghi workbook XLSX tạm thời thành công, không có warning |
+| PHP 8.3 lint toàn repository | PARTIAL | 1.401 file được kiểm tra: 1.396 đạt, 5 file legacy/third-party lỗi cú pháp PHP 8.3 |
 | Legacy UI bị ẩn | SOURCE VERIFIED | `PM_HIDE_LEGACY` và redirect trong `admin.php`; chưa test URL runtime |
 
 ## Điều kiện để hoàn tất runtime baseline
 
-1. Cài/chọn PHP 8.3 CLI và web runtime tương đương production.
-2. Bật tối thiểu `mysqli`, `mbstring`, `openssl`, `zip`, `fileinfo`; bổ sung `gd`/`intl` nếu module sử dụng.
-3. Tạo virtual host/document root local trỏ tới repository.
-4. Import bản sao DB đã ẩn dữ liệu nhạy cảm; dùng credential chỉ nằm trong `includes/config.inc.php` đã bị ignore.
-5. Chạy smoke test trên local cho login/logout/dashboard/CRUD/pager/tracking/Excel.
-6. Không dùng database hoặc config production để thay cho baseline local.
+1. Cấu hình web runtime PHP 8.3 tương đương bản portable đã kiểm tra.
+2. Tạo virtual host/document root local trỏ tới repository.
+3. Import bản sao DB đã ẩn dữ liệu nhạy cảm; dùng credential chỉ nằm trong `includes/config.inc.php` đã bị ignore.
+4. Chạy smoke test trên local cho login/logout/dashboard/CRUD/pager/tracking/Excel.
+5. Không dùng database hoặc config production để thay cho baseline local.
 
 ## Cảnh báo tương thích đã quan sát
 
-`php tests/smoke_pm_dependencies.php` hoàn thành thành công nhưng PHP 8.5 báo deprecated trong mã thư viện PhpSpreadsheet/ZipStream nhúng. Không sửa thư viện bên thứ ba trong Phase 1. Cần chạy lại bằng PHP 8.3 mục tiêu; nếu PHP 8.3 không cảnh báo thì ghi nhận đây là chênh lệch local, nếu vẫn cảnh báo thì lập kế hoạch nâng thư viện có kiểm soát.
+PHP 8.5 từng báo deprecated trong PhpSpreadsheet/ZipStream nhúng; chạy lại bằng PHP 8.3 mục tiêu không còn cảnh báo. Đây được ghi nhận là chênh lệch local, không sửa thư viện bên thứ ba trong Phase 1.
+
+Năm file legacy/third-party không parse trên PHP 8.3:
+
+- `classes/PHPMailer/extras/htmlfilter.php`
+- `classes/PHPMailer1/PHPMailerAutoload.php`
+- `classes/PHPMailer1/extras/htmlfilter.php`
+- `classes/PHPMailer1/test_script/index.php`
+- `classes/mail/getmxrr.php`
+
+Các file này không thuộc luồng PM hiện tại và không bị xóa. Trước khi tái sử dụng email ở phase sau phải chọn một PHPMailer tương thích, cô lập bản cũ và kiểm thử lại; không được nạp các file lỗi trên PHP 8.3.
