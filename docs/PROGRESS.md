@@ -47,7 +47,7 @@ PARTIAL — baseline PHP 8.3 không cần DB đã hoàn tất; runtime baseline 
 
 ### Database
 
-Không có thay đổi database. Chưa có migration SQL. Local DB chưa sẵn sàng để test runtime.
+Không có thay đổi database và chưa có migration SQL. Đã nhận dump local, xác minh hash và trích schema an toàn vào `docs/DB_SCHEMA.md`; chưa import vì chưa có login path/credential MySQL local dành riêng cho dự án.
 
 ### Known Issues
 
@@ -59,7 +59,7 @@ Không có thay đổi database. Chưa có migration SQL. Local DB chưa sẵn s
 
 ### Remaining Before Phase 2
 
-- Khi có DB local: kiểm tra schema, login/logout, CRUD mẫu, tracking và Excel runtime.
+- Import dump vào database local mới, sau đó kiểm tra login/logout, CRUD mẫu, tracking và Excel runtime.
 - Chốt ba quyết định nghiệp vụ với mentor trước phase liên quan; không cần đóng cứng chúng trong Phase 2.
 
 ### Git
@@ -69,4 +69,4 @@ Không có thay đổi database. Chưa có migration SQL. Local DB chưa sẵn s
 
 ### Next Step
 
-Cung cấp DB local đã ẩn dữ liệu để hoàn tất login/logout/CRUD/tracking runtime. Không dùng production làm môi trường phát triển.
+Tạo login path MySQL local hoặc database/user local dành riêng cho dự án để import an toàn. Không dùng production làm môi trường phát triển.
