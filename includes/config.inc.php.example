@@ -1,5 +1,5 @@
 <?php
-// Copy this file to config.inc.php and provide values outside Git.
+// Copy this file to config.inc.php and provide real values outside Git.
 $config = array();
 $config['db_type'] = 'mysql';
 $config['db_server'] = 'localhost';
@@ -8,8 +8,8 @@ $config['db_pwd'] = 'your-database-password';
 $config['db_name'] = 'your-database-name';
 $config['db_pconnect'] = 0;
 
-// Prefer server environment variables for payment credentials. These
-// constants are a fallback for hosting that cannot configure PHP-FPM env.
+// Prefer server environment variables for external service credentials.
+// Keep production keys and secrets in the hosting environment only.
 define('VNPAY_TMN_CODE', 'your-vnpay-tmn-code');
 define('VNPAY_HASH_SECRET', 'your-vnpay-hash-secret');
 define('VNPAY_RETURN_URL', 'https://example.com/thanh-toan/vnpay-return');

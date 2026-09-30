@@ -51,9 +51,9 @@ define('ADMIN_DEFAULT_TEMPLATE', 'admin');    # Default CMS template
 define('URL_TYPE', 2);                        # URL type: 1- query string, 2- SEO
 define('SUB_DOMAIN', 1);                    # Support sub domain
 define('PROTOCOL', 'https://');                # Protocol 'http://' or 'https://'
-define('ECOMMERCE_PROTOCOL', 'http://');    # Order, payment protocol 'http://' or 'https://'
+define('ECOMMERCE_PROTOCOL', 'https://');    # Secure order and payment protocol
 define("SITE", "DeraCMS 3.0");                # Main site name
-define('DOMAIN', 'dung.derasoft.com');        # Main domain name
+define('DOMAIN', 'pm.dung.derasoft.com');    # Default PM domain; contains no credentials
 define('SCRIPT', 'index.php');                # Script name
 define('ADMIN_SCRIPT', 'admin.php');        # Admin script name	
 define('ADMINCP_SCRIPT', 'admincp.php');    # Admincp script name
