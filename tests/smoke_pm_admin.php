@@ -37,6 +37,16 @@ foreach (array('dashboard', 'profile', 'password', 'team') as $section) {
 		fwrite(STDERR, "PM template failed for section: {$section}\n");
 		exit(1);
 	}
+	if ($section === 'profile' && (strpos($html, 'name="op" value="pm"') === false
+		|| strpos($html, 'name="act" value="profile"') === false)) {
+		fwrite(STDERR, "PM profile form is missing POST route fields.\n");
+		exit(1);
+	}
+	if ($section === 'password' && (strpos($html, 'name="op" value="pm"') === false
+		|| strpos($html, 'name="act" value="password"') === false)) {
+		fwrite(STDERR, "PM password form is missing POST route fields.\n");
+		exit(1);
+	}
 }
 
 echo "PM admin template smoke test passed.\n";
