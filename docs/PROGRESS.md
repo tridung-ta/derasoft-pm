@@ -80,7 +80,7 @@ Thực hiện PLAN Phase 2 — Auth, Role & Permission. Không triển khai migr
 
 ### Status
 
-BUILD/VERIFY COMPLETED — chờ người dùng kiểm thử đăng nhập tài khoản thật trước khi merge.
+COMPLETED — build, automated verification và kiểm thử thủ công tài khoản thật đều đạt.
 
 ### Completed
 
@@ -109,7 +109,8 @@ BUILD/VERIFY COMPLETED — chờ người dùng kiểm thử đăng nhập tài 
 - PM Admin template smoke: PASS.
 - Smarty/PhpSpreadsheet regression smoke: PASS.
 - PHP 8.3 lint toàn bộ file PHP thay đổi trong Phase 2: PASS.
-- Còn chờ manual test: đăng nhập bằng username, đăng nhập bằng email, logout và xác nhận dashboard theo role bằng tài khoản thật.
+- Người dùng xác nhận đăng nhập username, dashboard, cập nhật hồ sơ, đổi mật khẩu và logout hoạt động đúng trên local ngày 2026-10-02.
+- Đăng nhập bằng email đã có automated coverage ở tầng truy vấn nhưng chưa manual test vì người dùng chưa cấu hình email dùng để thử.
 
 ### Git
 
@@ -118,7 +119,10 @@ BUILD/VERIFY COMPLETED — chờ người dùng kiểm thử đăng nhập tài 
 - `ef047d4 feat(pm-rbac): add prepared role and permission data access`
 - `69d3e04 feat(pm-auth): upgrade legacy login and session security`
 - `a41fc96 feat(pm-rbac): enforce permissions in admin workspace`
+- `d8ca15e test(pm-auth): verify Phase 2 security boundaries`
+- `e2a11c0 fix(smarty): use writable local compile cache`
+- `2e5c55b fix(pm-auth): preserve form routes on account updates`
 
 ### Next Step
 
-Người dùng kiểm thử auth/RBAC local. Sau khi được xác nhận mới hoàn tất commit test/docs, push/merge Phase 2 và dừng; không sang Phase 3 khi chưa được duyệt.
+Merge Phase 2 vào `develop`, sau đó thực hiện PLAN Phase 3 — User, Role & Hourly Rate. Không tạo migration hoặc code Phase 3 trước khi plan được duyệt.
