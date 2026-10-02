@@ -13,9 +13,12 @@ class PmUsers {
             FROM dc_users u LEFT JOIN dc_pm_departments d ON d.store_id=u.store_id AND d.id=u.department_id
             WHERE '.implode(' AND ',$where).' ORDER BY u.fullname,u.id LIMIT ? OFFSET ?',$types,$params);
     }
-    public function count(int $storeId,string $q=''): int {
+    public function count(int $storeId,array $filters=[]): int {
         $sql='SELECT COUNT(*) total FROM dc_users WHERE store_id=? AND status<>2';$types='i';$params=[$storeId];
+        $q=(string)($filters['q']??'');
         if($q!==''){$sql.=' AND (fullname LIKE ? OR email LIKE ? OR username LIKE ?)';$term='%'.$q.'%';$types.='sss';array_push($params,$term,$term,$term);}
+        if(!empty($filters['department_id'])){$sql.=' AND department_id=?';$types.='i';$params[]=(int)$filters['department_id'];}
+        if(!empty($filters['role_id'])){$sql.=' AND EXISTS(SELECT 1 FROM dc_pm_user_roles fur WHERE fur.store_id=dc_users.store_id AND fur.user_id=dc_users.id AND fur.role_id=?)';$types.='i';$params[]=(int)$filters['role_id'];}
         return (int)$this->db->fetchOne($sql,$types,$params)['total'];
     }
     public function get(int $storeId,int $id): ?array {

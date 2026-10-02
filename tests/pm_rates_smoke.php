@@ -8,6 +8,9 @@ if (($config['db_name'] ?? '') !== 'derasoft_pm_local') exit("Refusing non-local
 $db=new DB();$service=new PmRateService($db);$fail=[];
 foreach([[null,null],[1,2]] as [$u,$r]){try{$service->validateRateOwner($u,$r);$fail[]='owner XOR accepted invalid input';}catch(InvalidArgumentException $e){}}
 $service->validateRateOwner(1,null);$service->validateRateOwner(null,1);
+foreach(['abc','-1','1.123','10000000000000','1e3'] as $invalidRate){
+    try{$service->saveRate(1,['user_id'=>1,'rate'=>$invalidRate,'effective_from'=>'2026-01-01'],1);$fail[]='invalid numeric rate accepted';}catch(InvalidArgumentException $e){}
+}
 
 $connection=$db->connection;$connection->begin_transaction();
 try {

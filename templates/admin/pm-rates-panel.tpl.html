@@ -1,0 +1,27 @@
+{if $canViewRates}
+<section class="card"><h2>Đơn giá và thời gian hiệu lực</h2>
+{if $canManageRates}
+<h3>Thêm đơn giá theo vai trò</h3>
+<form method="post">
+<input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_save"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}">
+<div class="grid">
+<label>Vai trò<select name="rate_role_id" required>{foreach from=$roles item=r}<option value="{$r.id}">{$r.name|escape}</option>{/foreach}</select></label>
+<label>VND/giờ<input name="rate" type="number" min="0" max="9999999999999.99" step="0.01" required></label>
+<label>Từ ngày<input name="effective_from" type="date" required></label>
+<label>Đến ngày (để trống nếu không giới hạn)<input name="effective_to" type="date"></label>
+</div><p><button>Lưu đơn giá vai trò</button></p>
+</form>{/if}
+<table><thead><tr><th>Nhân viên / Vai trò</th><th>Đơn giá</th><th>Hiệu lực</th><th>Trạng thái</th></tr></thead><tbody>
+{foreach from=$hourlyRates item=hr}
+<tr><td>{if $hr.user_id}Nhân viên: {$hr.user_name|default:'Không còn hoạt động'|escape}{else}Vai trò: {$hr.role_name|default:'Không còn hoạt động'|escape}{/if}</td>
+<td colspan="2">
+{if $canManageRates && $hr.status eq 1}
+<form method="post"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_save"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><input type="hidden" name="rate_id" value="{$hr.id}"><input type="hidden" name="rate_user_id" value="{$hr.user_id|escape}"><input type="hidden" name="rate_role_id" value="{$hr.role_id|escape}">
+<label>VND/giờ<input name="rate" type="number" min="0" max="9999999999999.99" step="0.01" value="{$hr.rate|escape}" required></label>
+<label>Từ ngày<input name="effective_from" type="date" value="{$hr.effective_from|escape}" required></label>
+<label>Đến ngày<input name="effective_to" type="date" value="{$hr.effective_to|escape}"></label><button>Lưu thay đổi</button></form>
+{else}{$hr.rate|escape} {$hr.currency|escape}/giờ — {$hr.effective_from|escape} → {$hr.effective_to|default:'Không giới hạn'|escape}{/if}
+</td><td>{if $hr.status eq 1}Đang áp dụng{if $canManageRates}<form method="post" onsubmit="return confirm('Ngừng áp dụng đơn giá này?')"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_deactivate"><input type="hidden" name="id" value="{$hr.id}"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="secondary">Ngừng áp dụng</button></form>{/if}{else}Đã ngừng áp dụng{/if}</td></tr>
+{foreachelse}<tr><td colspan="4">Chưa có đơn giá.</td></tr>{/foreach}
+</tbody></table></section>
+{/if}

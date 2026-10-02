@@ -131,7 +131,7 @@ Merge Phase 2 vào `develop`, sau đó thực hiện PLAN Phase 3 — User, Role
 
 ### Status
 
-BUILD/VERIFY COMPLETED — chờ kiểm thử thủ công User CRUD, role và rate trước khi merge.
+BUILD/VERIFY COMPLETED — bổ sung CRUD phòng ban và siết permission render/action; automation Phase 2–3 PASS. Chờ kiểm thử thủ công User CRUD, role và rate trước khi merge.
 
 ### Completed
 
@@ -140,6 +140,8 @@ BUILD/VERIFY COMPLETED — chờ kiểm thử thủ công User CRUD, role và ra
 - Thêm prepared DAO cho danh sách, tìm kiếm, tạo/sửa, khóa/mở khóa, soft delete user và gán nhiều role/role chính.
 - Thêm `PmRateService` với XOR owner ở application layer, kiểm tra overlap đối xứng và khóa owner rows `FOR UPDATE` trong transaction.
 - `resolveRate()` ưu tiên user rate, role chính rồi fallback 0 VND kèm cảnh báo.
+- Bổ sung màn hình thêm rate theo role, xem lịch sử, sửa khoảng hiệu lực và ngừng áp dụng rate; quyền xem/ghi được kiểm tra riêng.
+- Rate input được validate dạng số thập phân theo giới hạn schema; không cho đổi owner của rate khi sửa.
 - Thêm giao diện quản lý nhân sự responsive, role, rate, trạng thái và phân trang trong PM Admin.
 - Mọi mutation qua module có CSRF, permission, tenant check và ghi Tracking Data mô tả.
 

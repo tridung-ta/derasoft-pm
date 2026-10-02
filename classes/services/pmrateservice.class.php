@@ -19,7 +19,11 @@ class PmRateService {
         $roleId = isset($data['role_id']) && $data['role_id'] !== '' ? (int) $data['role_id'] : null;
         $from = (string) ($data['effective_from'] ?? '');
         $to = !empty($data['effective_to']) ? (string) $data['effective_to'] : null;
-        $rate = (float) ($data['rate'] ?? -1);
+        $rawRate = (string) ($data['rate'] ?? '');
+        if (!preg_match('/^\d{1,13}(?:\.\d{1,2})?$/D', $rawRate)) {
+            throw new InvalidArgumentException('Đơn giá phải là số không âm, tối đa 2 chữ số thập phân.');
+        }
+        $rate = (float) $rawRate;
         $currency = strtoupper((string) ($data['currency'] ?? 'VND'));
         $this->validateRateOwner($userId, $roleId);
         $this->validateDates($from, $to);
@@ -35,6 +39,14 @@ class PmRateService {
 
         $this->database->beginTransaction();
         try {
+            if ($rateId !== null) {
+                $existing = $this->database->fetchOne('SELECT user_id,role_id FROM dc_pm_hourly_rates WHERE store_id=? AND id=? AND status=1 FOR UPDATE','ii',[$storeId,$rateId]);
+                if (!$existing) throw new OutOfBoundsException('Không tìm thấy đơn giá trong tenant hiện tại.');
+                if (($existing['user_id'] === null ? null : (int)$existing['user_id']) !== $userId
+                    || ($existing['role_id'] === null ? null : (int)$existing['role_id']) !== $roleId) {
+                    throw new InvalidArgumentException('Không thể thay đổi nhân viên hoặc role của đơn giá đã tạo.');
+                }
+            }
             $this->lockOwnerRates($storeId, $userId, $roleId);
             if ($this->hasOverlappingRate($storeId, $userId, $roleId, $from, $to, $rateId)) {
                 throw new DomainException('Hourly rate effective period overlaps an existing rate.');
@@ -66,6 +78,26 @@ class PmRateService {
             $this->database->rollBack();
             throw $error;
         }
+    }
+
+    public function listRates(int $storeId): array {
+        return $this->database->fetchAll(
+            'SELECT hr.id,hr.user_id,hr.role_id,hr.rate,hr.currency,hr.effective_from,hr.effective_to,hr.status,
+                    u.fullname user_name,r.name role_name
+             FROM dc_pm_hourly_rates hr
+             LEFT JOIN dc_users u ON u.store_id=hr.store_id AND u.id=hr.user_id
+             LEFT JOIN dc_pm_roles r ON r.store_id=hr.store_id AND r.id=hr.role_id
+             WHERE hr.store_id=? ORDER BY hr.effective_from DESC,hr.id DESC','i',[$storeId]);
+    }
+
+    public function deactivateRate(int $storeId,int $rateId): void {
+        $this->database->beginTransaction();
+        try {
+            $row=$this->database->fetchOne('SELECT id FROM dc_pm_hourly_rates WHERE store_id=? AND id=? AND status=1 FOR UPDATE','ii',[$storeId,$rateId]);
+            if(!$row)throw new OutOfBoundsException('Không tìm thấy đơn giá đang hoạt động.');
+            $this->database->execute('UPDATE dc_pm_hourly_rates SET status=0 WHERE store_id=? AND id=?','ii',[$storeId,$rateId]);
+            $this->database->commit();
+        }catch(Throwable $error){$this->database->rollBack();throw $error;}
     }
 
     public function hasOverlappingRate(int $storeId, ?int $userId, ?int $roleId, string $from, ?string $to, ?int $excludeId = null): bool {
