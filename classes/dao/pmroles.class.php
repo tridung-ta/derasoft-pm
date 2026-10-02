@@ -32,6 +32,10 @@ class PmRoles {
         return $row ? $this->hydrate($row) : null;
     }
 
+    public function getActive(int $storeId): array {
+        return $this->database->fetchAll('SELECT id,code,name FROM dc_pm_roles WHERE store_id=? AND status=1 ORDER BY name','i',[$storeId]);
+    }
+
     private function hydrate(array $row): PmRoleInfo {
         return new PmRoleInfo(
             (int) $row['id'],
