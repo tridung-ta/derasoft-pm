@@ -129,7 +129,7 @@ class PmRateService {
             'iiss', [$storeId, $userId, $workDate, $workDate]
         );
         if ($rate) return $this->rateResult($rate, 'role', null);
-        return ['rate'=>0.0,'currency'=>'VND','source'=>'fallback','source_id'=>null,
+        return ['rate'=>0.0,'rate_decimal'=>'0.00','currency'=>'VND','source'=>'fallback','source_id'=>null,
             'warning'=>'Hourly rate is not configured for this user and date.'];
     }
 
@@ -153,7 +153,7 @@ class PmRateService {
     }
 
     private function rateResult(array $row, string $source, ?string $warning): array {
-        return ['rate'=>(float)$row['rate'],'currency'=>(string)$row['currency'],'source'=>$source,
+        return ['rate'=>(float)$row['rate'],'rate_decimal'=>(string)$row['rate'],'currency'=>(string)$row['currency'],'source'=>$source,
             'source_id'=>(int)$row['id'],'warning'=>$warning];
     }
 }

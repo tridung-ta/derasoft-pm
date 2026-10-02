@@ -81,3 +81,19 @@ Dump có 76 bảng, 478 khối `INSERT INTO`, 156 khối `ALTER TABLE`; không p
 - `PmProjectService` kiểm tra tham chiếu và quyền; mutation khóa project bằng FOR UPDATE
   để thao tác membership và task không chạy chồng lên nhau trong cùng dự án.
 - Soft delete project làm project/task không còn truy cập qua service dù membership vẫn được giữ.
+# Phase 5 increment 1 — additive schema
+
+Migration `004_create_pm_timesheets_audit.sql` thêm bốn bảng InnoDB, tenant-scoped:
+
+| Bảng | Nội dung / khóa |
+| --- | --- |
+| `dc_pm_system_settings` | UNIQUE(store_id, setting_key); ngưỡng giờ/ngày và hệ số OT |
+| `dc_pm_timesheet_days` | UNIQUE(store_id, user_id, work_date); snapshot ngưỡng/hệ số, khóa ghi theo ngày |
+| `dc_pm_timesheets` | Task/project/user/date/ca, hours/regular_hours/ot_hours, rate_snapshot, currency, cost, Draft status, soft delete |
+| `dc_pm_audit_logs` | Actor, entity, action, old/new JSON, created_at; cùng transaction nghiệp vụ |
+
+Chi phí dùng DECIMAL(18,2), đơn giá DECIMAL(15,2). Không sửa schema legacy.
+Rollback ứng dụng giữ bảng mới không sử dụng; không DROP hoặc xóa dữ liệu.
+Khóa sửa/xóa tính từ work_date qua cửa sổ 3 ngày lịch, không ghi trạng thái duyệt vào database.
+Cột status giữ giá trị mặc định để tương thích, không dùng cho vòng đời Phase 5.
+Seed `002_seed_pm_phase5_audit_permissions.sql` cộng thêm grant audit cho Admin/PM/HR theo store_id.

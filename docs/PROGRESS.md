@@ -195,3 +195,68 @@ BUILD và automated VERIFY đạt trên local; chờ nghiệm thu thao tác trì
 Nghiệm thu local tại `admin.php?op=pmprojects`: tạo/sửa dự án, thêm thành viên, tạo/giao task,
 chuyển trạng thái Kanban, thử gỡ thành viên còn task và soft delete. Thử thêm tài khoản PM
 và Employee để xác nhận trải nghiệm theo quyền. Chưa triển khai Phase 5 hoặc production.
+
+## Phase 5 — Timesheet, OT & Audit
+
+### Status
+
+BUILD và automated VERIFY hoàn tất theo phạm vi cập nhật ngày 2026-10-02: timesheet, OT,
+audit viewer, khóa tự động sau cửa sổ 3 ngày và ngoại lệ Admin. Workflow duyệt bị hoãn theo
+yêu cầu người dùng; Submitted/Approved/Rejected không thuộc phạm vi nghiệm thu Phase 5.
+Chưa xác nhận UAT bằng trình duyệt/tài khoản thật; không ghi nhận UAT PASS.
+
+### Completed
+
+- Giữ phần BUILD có sẵn trên `feature/pm-phase5-timesheet-ot`; không commit hoặc push.
+- Route `admin.php?op=pmtimesheets`, menu theo permission, giao diện Smarty responsive để tạo/sửa/ẩn timesheet của chính user; Admin xem và sửa bản ghi của mọi user trong tenant.
+- Chỉ ghi công vào task được giao, membership active và cùng tenant; các thao tác ghi kiểm tra CSRF.
+- Tổng giờ tối đa 24/ngày, phân bổ giờ thường/OT theo id trên mọi dự án; sửa/chuyển ngày/xóa mềm tính lại ngày liên quan.
+- Snapshot rate khi tạo/chuyển ngày; sửa cùng ngày giữ rate. Chi phí tính bằng CAST DECIMAL trong MySQL, không dùng float PHP để tính tiền.
+- Ledger khóa ngày theo tenant/user/date, snapshot ngưỡng và hệ số. Cửa sổ sửa/xóa là 3 ngày lịch theo giờ Việt Nam (work_date là ngày thứ nhất), tự khóa từ ngày thứ tư; kiểm tra server cả ngày cũ/mới, chặn backdate/future của non-Admin.
+- Admin sửa/xóa sau khóa, vẫn giữ owner và tính lại OT trên ngày của owner; audit riêng `admin_update_locked`/`admin_delete_locked`. Task lịch sử đã ẩn/đổi assignee vẫn sửa được khi Admin giữ nguyên task_id.
+- Route `admin.php?op=pmaudit`, lọc entity/action và phân trang. Admin xem toàn tenant và settings; PM xem dự án mình quản lý; HR tạm xem phòng ban active hiện tại, chưa có phòng ban chỉ xem cá nhân. PM/HR không nhận financial fields trong audit JSON. Phạm vi HR toàn công ty chưa được chốt.
+- Không xây endpoint duyệt, không reject-cả-ngày; cột status/permission approve đã có giữ nguyên không sử dụng. Quyết định hoãn workflow ghi trong `docs/AUDIT.md`.
+- Admin cấu hình ngưỡng/hệ số cho ngày mới; audit JSON nằm cùng transaction với mutation và recalculation.
+
+### Database
+
+- Backup `derasoft_pm_local` trước migration trong `.local/` được Git ignore; không in credential hoặc stage backup.
+- `004_create_pm_timesheets_audit.sql` chỉ CREATE TABLE IF NOT EXISTS cho settings, ledger, timesheets, audit logs.
+- Áp dụng hai lần trên local đều PASS; không thay đổi production hoặc dữ liệu legacy.
+- Backup local thêm trước seed `002_seed_pm_phase5_audit_permissions.sql`; seed cộng thêm permission `pm.audit.view` cho Admin/PM/HR theo tenant, chạy hai lần đều PASS. Không xóa grant hoặc sửa schema legacy.
+- Rollback ứng dụng giữ bảng cộng thêm và ngừng sử dụng route mới; không DROP bảng.
+
+### Verification — lệnh đã chạy
+
+Tất cả lệnh PHP dưới đây dùng `.tools/php83/php.exe` (PHP 8.3):
+
+- `tests/pm_phase5_migration.php --apply` (hai lần), sau đó `tests/pm_phase5_migration.php`: PASS schema InnoDB và tenant.
+- `tests/pm_timesheets_smoke.php`: PASS OT, tính lại khi sửa/xóa/chuyển ngày, rate và settings snapshot, chi phí DECIMAL với đơn giá lớn, rollback vượt 24 giờ, ownership/tenant/task boundaries, Admin settings và audit. Fixture transaction rollback, kiểm tra project fixture không còn tồn tại.
+- `tests/pm_timesheet_window_smoke.php`: PASS ranh giới ngày thứ ba/thứ tư, sửa/xóa/chuyển ngày/backdate sau khóa, future denial, Admin sửa/xóa bản ghi của user khác và task đã ẩn, tính lại OT đúng owner, audit riêng và fixture rollback.
+- `tests/pm_audit_smoke.php`: PASS tenant/role/PM project scopes, HR own/same/other/inactive department scopes, financial redaction, filter validation và fixture rollback.
+- `tests/pm_phase5_audit_permissions.php --apply` (hai lần): PASS tenant-scoped grants.
+- `tests/smoke_pm_timesheets.php`, `tests/smoke_pm_audit.php`: PASS render create/locked/read-only, escaping, Admin settings, audit details/filter/pagination/empty state.
+- Regression `tests/pm_auth_rbac_smoke.php`, `tests/pm_rates_smoke.php`, `tests/pm_departments_smoke.php`, `tests/pm_projects_smoke.php`, `tests/smoke_pm_admin.php`, `tests/smoke_pm_users.php`, `tests/smoke_pm_projects.php`, `tests/smoke_pm_dependencies.php`: PASS.
+- `-l` trên toàn bộ PHP mới/thay đổi của Phase 5: PASS.
+- `git -c safe.directory=D:/derasoft-pm diff --check`: PASS.
+
+### Security review
+
+Rà soát controller/service/view/migration: prepared queries, tenant + ownership scope, POST/CSRF, escape HTML,
+Admin-only settings, khóa 3 ngày kiểm tra server kể cả sau chờ ledger lock, override Admin có audit riêng,
+audit scopes và financial redaction, audit trong transaction. Không phát hiện lỗi còn mở trong phạm vi đã kiểm tra.
+Chưa chạy kiểm thử concurrency nhiều connection hoặc E2E HTTP/CSRF; không coi smoke service/template là UAT.
+
+### Next Step
+
+Nghiệm thu local tại `admin.php?op=pmtimesheets` và `admin.php?op=pmaudit`: tạo hai ca tổng trên 8 giờ,
+sửa/chuyển ngày/ẩn, thử vượt 24 giờ, xem bản ghi bị khóa và Admin sửa sau khóa, thử PM/HR audit scope.
+Xác nhận phạm vi đọc HR tạm thời, UAT trước merge. Workflow duyệt bị hoãn;
+không tự triển khai submit/approve/reject, production, commit hoặc merge.
+
+### Checkpoint tạm dừng — 2026-10-02
+
+Người dùng yêu cầu tạm dừng BUILD, tạo commit và push nhánh Phase 5 lên GitHub.
+Lưu phạm vi BUILD đã automated VERIFY tại `feature/pm-phase5-timesheet-ot`; chưa merge,
+chưa deploy và chưa ghi nhận UAT PASS. Tiếp tục nghiệm thu khi người dùng yêu cầu resume.
+Không đưa config bảo mật, backup database, log hoặc cache vào commit.

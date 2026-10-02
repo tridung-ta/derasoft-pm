@@ -153,9 +153,16 @@ Thứ tự khuyến nghị: Phase 1 lập local baseline và inventory DB/depend
 
 ### Chờ mentor xác nhận nghiệp vụ
 
+Quyết định Phase 5 cập nhật ngày 2026-10-02 theo yêu cầu người dùng:
+
+- Timesheet được sửa/xóa trong 3 ngày lịch kể từ work_date, tính work_date là ngày thứ nhất theo Asia/Ho_Chi_Minh. Ví dụ work_date 02/10 được sửa hết 04/10, khóa từ 00:00 05/10. Khóa tính khi đọc/ghi, không cần cron hoặc thao tác duyệt.
+- Admin sửa/xóa mọi bản ghi trong tenant kể cả sau khóa; audit riêng `admin_update_locked`/`admin_delete_locked`, vẫn tính lại OT cả ngày và giữ rate snapshot khi sửa cùng ngày.
+- Workflow duyệt timesheet bị hoãn, có thể bổ sung sau nếu mentor yêu cầu và sau khi phạm vi HR được chốt. Phase 5 không triển khai Submitted/Approved/Rejected, reject-cả-ngày hoặc endpoint duyệt. Cột status và permission approve đã có được giữ để tương thích, không dùng làm vòng đời Phase 5.
+- Audit Viewer: Admin xem toàn tenant và settings; PM xem lịch sử timesheet trong dự án mình quản lý; HR tạm xem phòng ban hiện tại đang active, chưa có phòng ban chỉ xem lịch sử cá nhân. PM/HR không nhận fields đơn giá, chi phí hoặc cấu hình trong JSON. Đây là phạm vi đọc tạm thời theo mặc định an toàn, chưa mở HR toàn công ty.
+
 1. Phạm vi HR xem đơn giá/chi phí: mặc định an toàn tạm thời là chỉ phòng ban được phân quyền; Admin xem toàn công ty.
 2. Quy tắc OT: mặc định tạm thời là phần tổng giờ vượt 8 giờ/ngày; cuối tuần, ngày lễ và khung giờ đặc biệt chưa tự suy diễn.
-3. Quy trình timesheet: mặc định tạm thời là nhân viên sửa/xóa khi còn Draft; khi Submit thì khóa và chờ PM/HR duyệt. Số ngày được chỉnh sửa cần mentor xác nhận.
+3. Workflow duyệt timesheet bị hoãn, có thể bổ sung sau nếu mentor yêu cầu và sau khi phạm vi HR được chốt. Phase 5 dùng cửa sổ sửa/xóa 3 ngày và ngoại lệ Admin đã chốt ở trên.
 
 Ba mặc định nghiệp vụ trên không được đóng cứng trong migration; phải cấu hình được hoặc hoãn triển khai đến phase liên quan nếu mentor chưa xác nhận.
 

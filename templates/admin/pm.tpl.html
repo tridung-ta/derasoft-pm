@@ -22,6 +22,8 @@
 				<a{if $section eq 'dashboard'} class="active" aria-current="page"{/if} href="/admin.php?op=pm&act=dashboard"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z"/></svg>Tổng quan</a>
 				{if $canViewTeam}<a href="/admin.php?op=pmusers"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Nhân sự</a>{/if}
 				{if $canViewProjects|default:false}<a href="/admin.php?op=pmprojects">Dự án & Công việc</a>{/if}
+				{if $canLogTime|default:false}<a href="/admin.php?op=pmtimesheets">Chấm công</a>{/if}
+				{if $canViewAudit|default:false}<a href="/admin.php?op=pmaudit">Nhật ký kiểm toán</a>{/if}
 				<div class="nav-label">Tài khoản</div>
 				<a{if $section eq 'profile'} class="active" aria-current="page"{/if} href="/admin.php?op=pm&act=profile"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg>Hồ sơ</a>
 				<a{if $section eq 'password'} class="active" aria-current="page"{/if} href="/admin.php?op=pm&act=password"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Đổi mật khẩu</a>
