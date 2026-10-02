@@ -149,6 +149,7 @@ Thứ tự khuyến nghị: Phase 1 lập local baseline và inventory DB/depend
 5. Giới hạn mặc định là 40 giờ/tuần và có thể ghi đè theo từng user/lịch làm việc.
 6. Giữ đường Admin legacy cho xử lý khẩn cấp bằng feature flag cấu hình cục bộ, mặc định tắt và không commit giá trị production.
 7. Phase 1 được dùng bản sao database production đã ẩn dữ liệu nhạy cảm để xác nhận schema; tuyệt đối không kết nối production trực tiếp.
+8. PM Timesheet là hệ thống multi-tenant kế thừa cơ chế `store_id` của DeraSoft. Mọi bảng `pm_*` phải có `store_id BIGINT UNSIGNED NOT NULL`; mọi unique key tenant-scoped phải chứa `store_id`; mọi query và permission check phải lọc theo tenant hiện tại của session. Giai đoạn hiện tại chỉ vận hành một store DeraSoft và lấy tenant từ cơ chế xác định store có sẵn, không tạo UI chọn hoặc quản lý store mới.
 
 ### Chờ mentor xác nhận nghiệp vụ
 

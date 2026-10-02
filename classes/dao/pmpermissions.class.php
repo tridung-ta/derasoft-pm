@@ -17,6 +17,7 @@ class PmPermissions {
              INNER JOIN dc_pm_user_roles ur ON ur.role_id = rp.role_id
              INNER JOIN dc_pm_roles r ON r.id = ur.role_id AND r.store_id = ur.store_id
              WHERE ur.store_id = ? AND ur.user_id = ? AND r.status = 1
+               AND p.store_id = ur.store_id AND rp.store_id = ur.store_id
              ORDER BY p.code ASC',
             'ii',
             [$storeId, $userId]
@@ -24,11 +25,11 @@ class PmPermissions {
         return array_column($rows, 'code');
     }
 
-    public function getByCode(string $code): ?PmPermissionInfo {
+    public function getByCode(int $storeId, string $code): ?PmPermissionInfo {
         $row = $this->database->fetchOne(
-            'SELECT id, code, name, module FROM dc_pm_permissions WHERE code = ?',
-            's',
-            [$code]
+            'SELECT id, code, name, module FROM dc_pm_permissions WHERE store_id = ? AND code = ?',
+            'is',
+            [$storeId, $code]
         );
         return $row ? new PmPermissionInfo(
             (int) $row['id'],
