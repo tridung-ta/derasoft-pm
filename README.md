@@ -1,36 +1,100 @@
+<p align="center">
+  <img src="docs/assets/repository-cover.svg" alt="DeraSoft PM — Project and Timesheet Management" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&amp;logoColor=white" alt="Local PHP 8.3">
+  <img src="https://img.shields.io/badge/Smarty-4.5-2563EB" alt="Smarty 4.5">
+  <img src="https://img.shields.io/badge/MySQL-InnoDB-4479A1?logo=mysql&amp;logoColor=white" alt="MySQL InnoDB">
+  <img src="https://img.shields.io/badge/Architecture-Custom_MVC-334155" alt="Custom MVC">
+</p>
+
 # DeraSoft PM
 
-Hệ thống quản lý dự án, phân bổ nguồn lực và chấm công được phát triển trên nền DeraSoft PHP + Smarty hiện có.
+**Project & timesheet management built by extending an existing PHP application.**
 
-## Trạng thái
+DeraSoft PM connects workforce management, projects, tasks and time tracking in a tenant-scoped workspace for Admin, Project Manager, HR and employees. It preserves the existing DeraSoft architecture while adding prepared queries, access boundaries and auditable business operations.
 
-Dự án đang ở giai đoạn thiết lập nền tảng. Giao diện và chức năng DeraCMS cũ được giữ trong mã nguồn nhưng đang bị ẩn thông qua chế độ PM.
+**Author:** [Tạ Trí Dũng](https://github.com/tridung-ta) · **Focus:** backend development, business rules and legacy integration.
 
-## Nguyên tắc phát triển
+> **Development status — 02 Oct 2026:** implementation and automated verification through Phase 5 are on [`feature/pm-phase5-timesheet-ot`](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase5-timesheet-ot). Browser UAT is pending. Development is paused at the user's request; this repository does not claim a production release.
 
-- Tái sử dụng kiến trúc hiện có, không viết lại framework khi chưa cần thiết.
-- Chức năng cũ ngoài phạm vi chỉ được ẩn, không xóa mã nguồn.
-- Thay đổi cơ sở dữ liệu phải có phương án sao lưu và không làm mất dữ liệu cũ.
-- Không commit cấu hình môi trường, thông tin đăng nhập, license, database dump, cache hoặc file backup.
-- Mỗi commit chỉ nên chứa một thay đổi hoàn chỉnh và có thể kiểm tra độc lập.
+## What the application does
 
-## Triển khai
+| Area | Implemented on the Phase 5 branch |
+| --- | --- |
+| Authentication & access | Legacy password upgrade, secure sessions, four roles and tenant-scoped permissions |
+| Workforce | User and department management, multiple roles and effective hourly rates |
+| Projects & tasks | Project members, task assignment, priorities, deadlines and four-column Kanban |
+| Timesheets | Task/date/shift entries, a 24-hour daily limit and recalculation after changes |
+| Overtime & costing | Daily OT across projects, stored rate snapshots and MySQL DECIMAL cost calculation |
+| Automatic locking | Three calendar days to edit; Admin corrections after locking receive separate audit actions |
+| Audit viewer | Tenant/project/department access scopes, financial-field redaction, filters and pagination |
 
-Document root trên hosting:
+Timesheet approval is intentionally deferred. Phase 5 has no Submitted/Approved/Rejected workflow. Cost dashboards, resource allocation and reporting are planned for later phases.
+
+## Engineering highlights
+
+- **Tenant isolation:** new business queries and access checks use the session's `store_id`.
+- **Consistent daily OT:** a unique user/day ledger is locked before writes; editing, moving or hiding an entry recalculates the affected days.
+- **Historical costing:** each timesheet stores its rate snapshot and cost; editing the same date preserves the original rate.
+- **Auditable transactions:** the business write, affected-row recalculation and JSON audit records commit or roll back together.
+- **Safe legacy extension:** additive migrations, soft deletes and compatibility paths preserve existing functionality.
+- **Server-side enforcement:** ownership, role permissions, CSRF checks and the edit window accompany escaped Smarty output.
+
+## Architecture
 
 ```text
-/domains/pm.dung.derasoft.com/public_html
+modules/admin/         Controllers and permission / CSRF checks
+classes/dao/           Prepared data access for new PM modules
+classes/services/      Business rules, transactions, OT and rate resolution
+templates/admin/       Smarty views
+database/migrations/   Versioned additive schema changes
+database/seeds/        Role and permission mappings
+tests/                 Local service and template smoke checks
+docs/                  Audit, plans, schema and verification records
 ```
 
-Các file cấu hình riêng phải được tạo trực tiếp trên môi trường triển khai và không đưa lên Git:
+**Stack:** plain PHP · Smarty · MySQL/InnoDB · custom MVC · embedded PhpSpreadsheet.
 
-```text
-includes/config.inc.php
-license/license.inc.php
+## Explore the work
+
+- [Latest implementation](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase5-timesheet-ot)
+- [Progress and commands actually run](https://github.com/tridung-ta/derasoft-pm/blob/feature/pm-phase5-timesheet-ot/docs/PROGRESS.md)
+- [Phase 5 scope and business rules](https://github.com/tridung-ta/derasoft-pm/blob/feature/pm-phase5-timesheet-ot/docs/PHASE5_PLAN.md)
+- [Architecture and security audit](https://github.com/tridung-ta/derasoft-pm/blob/feature/pm-phase5-timesheet-ot/docs/AUDIT.md)
+- [Database schema](https://github.com/tridung-ta/derasoft-pm/blob/feature/pm-phase5-timesheet-ot/docs/DB_SCHEMA.md)
+- [Portfolio / CV summary](docs/PORTFOLIO.md)
+
+## Local verification
+
+Use PHP 8.3 with the required extensions and a backed-up local database. See the [environment baseline](https://github.com/tridung-ta/derasoft-pm/blob/feature/pm-phase5-timesheet-ot/docs/BASELINE.md) and [migration conventions](database/migrations/README.md) before setup. Environment configuration and license files are supplied separately; the public repository is not a one-command installation package.
+
+After checking out the implementation branch and preparing the local schema, representative checks are:
+
+```sh
+php tests/pm_timesheets_smoke.php
+php tests/pm_timesheet_window_smoke.php
+php tests/pm_audit_smoke.php
+php tests/smoke_pm_timesheets.php
+php tests/smoke_pm_audit.php
 ```
 
-Sau khi cập nhật template, cần xóa các file đã biên dịch bên trong `templates_c/` nhưng giữ nguyên thư mục.
+These checks passed on the documented local environment. Database smoke fixtures use transactions and rollback. Automated service/template verification does not replace browser UAT or concurrent multi-connection testing.
 
-## Tài liệu
+## Roadmap
 
-Kết quả khảo sát mã nguồn ban đầu nằm tại [`docs/AUDIT.md`](docs/AUDIT.md).
+| Phase | Status |
+| --- | --- |
+| 0–2 · Audit, local baseline, auth & RBAC | Documented and verified |
+| 3–5 · Workforce, projects, timesheets & audit | BUILD / automated verification completed; UAT pending |
+| 6 · Cost aggregation & charts | Planned |
+| 7 · Resource allocation & overbooking | Planned |
+| 8 · Reports & Excel | Planned |
+| Release acceptance | Pending UAT and explicit deployment approval |
+
+## Tiếng Việt
+
+Hệ thống quản lý dự án và chấm công phát triển trên nền DeraSoft hiện có, không viết lại framework. Điểm chính gồm phân quyền theo tenant, quản lý nhân sự/dự án/task, tính OT theo tổng giờ ngày, snapshot đơn giá và audit log trong transaction. Chấm công được sửa/xóa trong ba ngày lịch tính từ ngày làm việc; Admin sửa sau khóa có audit riêng.
+
+Mã BUILD mới nhất nằm trên nhánh Phase 5 được dẫn ở trên. Công việc đang tạm dừng, chưa xác nhận UAT hoặc triển khai production. Các file cấu hình bảo mật, license, dữ liệu upload, database dump, cache và log không được đưa vào Git.
