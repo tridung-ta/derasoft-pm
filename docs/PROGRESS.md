@@ -25,7 +25,7 @@ Không tạo hoặc chạy migration. Không kết nối production.
 
 ### Status
 
-COMPLETED WITH MANUAL AUTH CHECK — local PHP/DB/web baseline đạt; login thành công và logout cần người dùng kiểm thử bằng tài khoản thật.
+COMPLETED — local PHP/DB/web baseline và login/logout thủ công đều đạt.
 
 ### Environment
 
@@ -48,6 +48,7 @@ COMPLETED WITH MANUAL AUTH CHECK — local PHP/DB/web baseline đạt; login th�
 - Ứng dụng kết nối database local bằng user chỉ có quyền trên database dự án.
 - Public landing và Admin login trả HTTP 200 trên PHP 8.3; ca login sai hiển thị lỗi đúng và không fatal.
 - Sửa route logout bị loại khỏi danh sách operation hợp lệ; logout hiện trả 302, xóa session/cookie và truy cập lại dashboard sẽ về trang login.
+- Người dùng xác nhận login, dashboard và logout hoạt động đúng trên local ngày 2026-10-02.
 
 ### Database
 
@@ -63,7 +64,6 @@ Không tạo migration SQL. Dump đã được import vào database local mới 
 
 ### Remaining Before Phase 2
 
-- Người dùng kiểm thử login thành công bằng tài khoản thật; logout đã được kiểm chứng bằng session local cô lập.
 - CRUD legacy, tracking có ghi dữ liệu và upload vẫn để manual check vì không tạo dữ liệu giả vào bản import.
 - Chốt ba quyết định nghiệp vụ với mentor trước phase liên quan; không cần đóng cứng chúng trong Phase 2.
 

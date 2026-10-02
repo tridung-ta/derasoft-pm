@@ -39,9 +39,9 @@ Ngày ghi nhận: 2026-09-30
 | Render PM dashboard/profile/password/team | PASS | `php tests/smoke_pm_admin.php` |
 | Trang login Admin | PASS | HTTP 200, đúng title, không có fatal error |
 | Login sai | PASS | Trả lại trang login và thông báo thất bại, không có fatal error |
-| Login thành công | NOT TESTED | Không sử dụng hoặc in credential người dùng thật trong automated test |
-| Logout Admin | NOT TESTED | Cần phiên đăng nhập thành công |
-| Dashboard dùng dữ liệu thật | NOT TESTED | Cần phiên đăng nhập thành công |
+| Login thành công | PASS (MANUAL) | Người dùng xác nhận bằng tài khoản thật ngày 2026-10-02 |
+| Logout Admin | PASS (MANUAL) | Người dùng xác nhận sau bản sửa `1577ac3` |
+| Dashboard dùng dữ liệu thật | PASS (MANUAL) | Dashboard PM hiển thị sau đăng nhập thành công |
 | CRUD nhân sự mẫu | NOT TESTED | Cần DB local; không kiểm thử trên production |
 | Pagination | SOURCE VERIFIED | `Url::genPager()` và nhiều module list đang sử dụng; chưa test runtime |
 | Upload | NOT TESTED | Thiếu DB/web server và `fileinfo` |
