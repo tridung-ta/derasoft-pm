@@ -12,8 +12,16 @@ if (!defined( 'ROOT_PATH' )) {
 }
 #session_start();
 
-# PHP>=7
-session_start(['cookie_lifetime' => 43200,'cookie_secure' => false,'cookie_httponly' => true]);
+# PHP>=7. Secure is enabled automatically when the request uses HTTPS.
+$pmSessionSecure = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
+	|| (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
+session_start([
+	'cookie_lifetime' => 43200,
+	'cookie_secure' => $pmSessionSecure,
+	'cookie_httponly' => true,
+	'cookie_samesite' => 'Lax',
+	'use_strict_mode' => true,
+]);
 
 # File manager
 $_SESSION['KCFINDER'] = array();
