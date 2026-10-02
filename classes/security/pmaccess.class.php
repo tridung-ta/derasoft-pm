@@ -27,17 +27,17 @@ class PmAccess {
         if ($projectId <= 0) {
             return false;
         }
-        if ($this->hasRole('ADMIN')) {
-            return true;
-        }
         // Project tables are introduced in their own phase. Fail closed until then.
         $table = $this->database->fetchOne(
             "SELECT COUNT(*) AS total FROM information_schema.tables
-             WHERE table_schema = DATABASE() AND table_name = 'dc_pm_project_members'"
+             WHERE table_schema = DATABASE() AND table_name IN ('dc_pm_projects','dc_pm_project_members')"
         );
-        if (!$table || (int) $table['total'] !== 1) {
+        if (!$table || (int) $table['total'] !== 2) {
             return false;
         }
+        $project=$this->database->fetchOne('SELECT manager_id FROM dc_pm_projects WHERE store_id=? AND id=? AND deleted_at IS NULL','ii',[$this->storeId,$projectId]);
+        if(!$project)return false;
+        if($this->hasRole('ADMIN')||($this->hasRole('PM')&&(int)$project['manager_id']===$this->userId))return true;
         return $this->database->fetchOne(
             'SELECT 1 FROM dc_pm_project_members
              WHERE store_id = ? AND project_id = ? AND user_id = ? AND status = 1 LIMIT 1',

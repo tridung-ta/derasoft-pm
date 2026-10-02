@@ -157,3 +157,41 @@ BUILD/VERIFY COMPLETED — bổ sung CRUD phòng ban và siết permission rende
 ### Next Step
 
 Kiểm thử thủ công trên local: danh sách/search, create/edit, lock/unlock, soft delete, multi-role/role chính và user rate. Sau khi được xác nhận mới commit phần nghiệm thu, push/merge Phase 3 và dừng trước Phase 4.
+
+### Follow-up 2026-10-02
+
+- Người dùng yêu cầu tiếp tục BUILD Phase 4 sau rà soát; lưu checkpoint source bổ sung Phase 3 bằng commit `417c6e6 feat(pm-workforce): complete department and hourly rate management`.
+- Lỗi include rate panel đã sửa; smoke render dùng template root `templates/` giống Admin thực tế.
+- Kiểm thử thủ công bằng tài khoản thật vẫn chưa được xác nhận; không ghi nhận UAT PASS.
+- Phase 4 branch kế thừa checkpoint Phase 3; chưa merge develop hoặc push remote.
+
+## Phase 4 — Project & Task
+
+### Status
+
+BUILD và automated VERIFY đạt trên local; chờ nghiệm thu thao tác trình duyệt bằng tài khoản thật.
+
+### Completed
+
+- Kế hoạch chi tiết: `docs/PHASE4_PLAN.md`; branch `feature/pm-phase4-project-task`.
+- Migration `003_create_pm_projects_tasks.sql` tạo ba bảng InnoDB tenant-scoped mới; đã áp dụng trên `derasoft_pm_local`, không sửa bảng legacy.
+- CRUD dự án với search/phân trang, manager, trạng thái, ngân sách và ngày; soft delete giữ dữ liệu.
+- Quản lý thành viên active; chặn gỡ manager hoặc người còn task được giao.
+- CRUD task, assignee trong phạm vi membership active, trạng thái/ưu tiên/giờ dự kiến/hạn.
+- Kanban bốn cột với form chỉnh sửa và chuyển trạng thái POST/CSRF.
+- PM chỉ quản lý dự án mình phụ trách; Admin vẫn phải lọc tenant; helper project access từ chối dự án không tồn tại/soft deleted.
+- Các view dùng relative includes, escape output và ẩn mutation forms theo quyền.
+
+### Verification
+
+- `tests/pm_phase4_migration.php`: PASS schema InnoDB và store_id.
+- `tests/pm_projects_smoke.php`: PASS CRUD, membership, assignee, Kanban, tenant và PM boundaries; fixture rollback được xác minh.
+- `tests/smoke_pm_projects.php`: PASS render các form/create/edit/read-only và escaping.
+- Regression auth/RBAC, users, rates, departments, Admin và dependencies Phase 2–3: PASS.
+- PHP 8.3 lint file mới/thay đổi và `git diff --check`: PASS.
+
+### Next Step
+
+Nghiệm thu local tại `admin.php?op=pmprojects`: tạo/sửa dự án, thêm thành viên, tạo/giao task,
+chuyển trạng thái Kanban, thử gỡ thành viên còn task và soft delete. Thử thêm tài khoản PM
+và Employee để xác nhận trải nghiệm theo quyền. Chưa triển khai Phase 5 hoặc production.

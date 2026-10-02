@@ -71,3 +71,13 @@ Dump có 76 bảng, 478 khối `INSERT INTO`, 156 khối `ALTER TABLE`; không p
 - XOR owner, kiểm tra khoảng ngày và overlap được thực thi tại `PmRateService`; trước kiểm tra overlap, service khóa các rate active cùng owner bằng `SELECT ... FOR UPDATE`.
 - Rate resolution ưu tiên user-specific, sau đó role chính, cuối cùng trả 0 VND kèm cảnh báo.
 - Migration local đã tenant hóa `dc_pm_permissions` và `dc_pm_role_permissions`, đồng thời widen `store_id` của các bảng Phase 2 lên BIGINT theo ngoại lệ đã được người dùng phê duyệt.
+
+## Phase 4 — Project & Task
+
+- `dc_pm_projects`: tenant, code unique `(store_id,code)`, manager_id, ngày, budget VND, status và deleted_at.
+- `dc_pm_project_members`: unique `(store_id,project_id,user_id)`, status active/inactive.
+- `dc_pm_tasks`: tenant/project, assignee nullable, status, priority, estimated_hours, due_date và deleted_at.
+- Ba bảng InnoDB/utf8mb4 được tạo bởi migration 003; không FK tới user/store MyISAM.
+- `PmProjectService` kiểm tra tham chiếu và quyền; mutation khóa project bằng FOR UPDATE
+  để thao tác membership và task không chạy chồng lên nhau trong cùng dự án.
+- Soft delete project làm project/task không còn truy cập qua service dù membership vẫn được giữ.

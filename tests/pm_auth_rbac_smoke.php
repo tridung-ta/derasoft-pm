@@ -76,8 +76,8 @@ $adminUser = $pmDb->fetchOne(
 );
 if ($adminUser) {
     $adminAccess = new PmAccess($db, (int) $adminUser['store_id'], (int) $adminUser['user_id']);
-    if (!$adminAccess->hasPermission('pm.rbac.manage') || !$adminAccess->hasProjectAccess(999999)) {
-        $failures[] = 'ADMIN bypass behavior failed';
+    if (!$adminAccess->hasPermission('pm.rbac.manage') || $adminAccess->hasProjectAccess(999999)) {
+        $failures[] = 'ADMIN permission or nonexistent project boundary failed';
     }
 }
 

@@ -94,6 +94,7 @@ $template->assign('error', $error);
 $template->assign('teamMembers', $teamMembers);
 $template->assign('teamCount', count($teamMembers));
 $template->assign('canViewTeam', $pmAccess->hasPermission('pm.team.view'));
+$template->assign('canViewProjects', $pmAccess->hasPermission('pm.projects.view'));
 $template->assign('pmRoleCodes', $pmAccess->getRoleCodes());
 $template->assign('profileUser', $userInfo);
 $displayName = trim((string) $userInfo->getFullName());
