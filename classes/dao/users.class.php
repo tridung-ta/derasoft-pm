@@ -9,6 +9,7 @@ Coder: Mai Minh
 **************************************************************************/
 include_once(ROOT_PATH."classes/database/model.class.php");
 include_once(ROOT_PATH."classes/dao/userinfo.class.php");
+include_once(ROOT_PATH."classes/security/pmauth.class.php");
 
 class Users extends Model {
 	var $table;
@@ -221,21 +222,19 @@ class Users extends Model {
 	}
 	
 	function authenticateUser($username,$password) {
-		if(!$username || !$password) return 0;
-		$username = str_replace(" ",'',$username);
-		$username = str_replace("\\",'',$username);
-		$username = str_replace("\"",'',$username);
-		$username = str_replace("'",'',$username);	
-		$password = md5($password);
-		$result = $this->select('`id`,`status`',"`store_id` = '".$this->store_id."' AND `username` = '$username' AND `password` = '$password'");# AND `status` = 1");
-		if($result) { # User o trang thai kich hoat, cho phep dang nhap
-			if($result[0]['status'] == 1) {
-				$last_login = array('last_login'=>date("Y-m-d H:i:s"));
-				$this->update($last_login,"`id`='".$result[0]['id']."'");
-				return $result[0]['id'];
-			} else return '-1';
-		}
-		return 0;
+		$auth = new PmAuth($this->_db);
+		return $auth->authenticate((int) $this->store_id, trim((string) $username), (string) $password);
+	}
+
+	function findUserIdByIdentity($identity) {
+		$auth = new PmAuth($this->_db);
+		return $auth->findUserIdByIdentity((int) $this->store_id, trim((string) $identity));
+	}
+
+	function changePasswordSecure($id = 0, $password = '') {
+		if(!$id || strlen((string) $password) < 8) return 0;
+		$auth = new PmAuth($this->_db);
+		return $auth->changePassword((int) $this->store_id, (int) $id, (string) $password) ? 1 : 0;
 	}
 	
 	function authenticateUserAdmin($username,$password) {

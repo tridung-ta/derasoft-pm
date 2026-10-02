@@ -27,12 +27,24 @@ foreach (array('dashboard', 'profile', 'password', 'team') as $section) {
 		'error' => '',
 		'teamMembers' => array($user),
 		'teamCount' => 1,
+		'canViewTeam' => true,
+		'pmRoleCodes' => array('ADMIN'),
 		'profileUser' => $user,
 		'displayName' => 'Dũng',
 	));
 	$html = $smarty->fetch('pm.tpl.html');
 	if (strpos($html, 'DeraSoft PM') === false) {
 		fwrite(STDERR, "PM template failed for section: {$section}\n");
+		exit(1);
+	}
+	if ($section === 'profile' && (strpos($html, 'name="op" value="pm"') === false
+		|| strpos($html, 'name="act" value="profile"') === false)) {
+		fwrite(STDERR, "PM profile form is missing POST route fields.\n");
+		exit(1);
+	}
+	if ($section === 'password' && (strpos($html, 'name="op" value="pm"') === false
+		|| strpos($html, 'name="act" value="password"') === false)) {
+		fwrite(STDERR, "PM password form is missing POST route fields.\n");
 		exit(1);
 	}
 }

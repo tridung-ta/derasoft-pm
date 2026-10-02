@@ -60,6 +60,7 @@ include_once(ROOT_PATH.'classes/data/translator.class.php');
 include_once(ROOT_PATH.'includes/functions.inc.php');
 include_once(ROOT_PATH.'classes/database/mysql.class.php');
 include_once(ROOT_PATH.'classes/template/smarty.class.php');
+include_once(ROOT_PATH.'includes/smarty_runtime.inc.php');
 include_once(ROOT_PATH.'classes/http/request.class.php');
 include_once(ROOT_PATH.'classes/http/url.class.php');
 include_once(ROOT_PATH.'classes/dao/users.class.php');
@@ -80,6 +81,7 @@ $url = new Url();
 // $template_dir = array(ROOT_PATH.TEMPLATE_PATH.'/default/');
 $template_dir = array(ROOT_PATH.TEMPLATE_PATH.'/default/');
 $template = new Smarty;
+configureSmartyCompileDir($template);
 $template->compile_check = TEMPLATE_COMPILE;
 $template->debugging = TEMPLATE_DEBUG;
 

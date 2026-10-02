@@ -26,6 +26,7 @@ include_once(ROOT_PATH.'classes/data/translator.class.php');
 include_once(ROOT_PATH.'includes/admin/functions.inc.php');
 include_once(ROOT_PATH.'classes/database/mysql.class.php');
 include_once(ROOT_PATH.'classes/template/smarty.class.php');
+include_once(ROOT_PATH.'includes/smarty_runtime.inc.php');
 include_once(ROOT_PATH.'classes/http/request.class.php');
 include_once(ROOT_PATH.'classes/http/url.class.php');
 include_once(ROOT_PATH.'classes/dao/users.class.php');
@@ -46,6 +47,7 @@ $db = new DB();
 
 # Template engine
 $template = new Smarty;
+configureSmartyCompileDir($template);
 $template->compile_check = true;
 $template->debugging = false;
 

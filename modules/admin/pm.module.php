@@ -1,10 +1,21 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
+
+$pmAccess = new PmAccess($db, (int) $storeId, (int) $userInfo->getId());
 $templateFile = 'pm.tpl.html';
 $allowedSections = array('dashboard', 'profile', 'password', 'team');
 $section = strtolower((string) $request->element('act'));
 if (!in_array($section, $allowedSections, true)) {
 	$section = 'dashboard';
 }
+
+$sectionPermissions = array(
+	'dashboard' => 'pm.dashboard.view',
+	'profile' => $_SERVER['REQUEST_METHOD'] === 'POST' ? 'pm.profile.update' : 'pm.profile.view',
+	'password' => 'pm.password.update',
+	'team' => 'pm.team.view',
+);
+requirePermission($sectionPermissions[$section]);
 
 if (empty($_SESSION['pm_csrf_token'])) {
 	$_SESSION['pm_csrf_token'] = bin2hex(random_bytes(32));
@@ -59,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$error = 'Mật khẩu xác nhận không khớp.';
 		} elseif (hash_equals($currentPassword, $newPassword)) {
 			$error = 'Mật khẩu mới phải khác mật khẩu hiện tại.';
-		} elseif ($users->updateData(array('password' => md5($newPassword)), $userInfo->getId())) {
+		} elseif ($users->changePasswordSecure($userInfo->getId(), $newPassword)) {
 			$notice = 'Mật khẩu đã được thay đổi.';
 		} else {
 			$error = 'Không thể đổi mật khẩu. Vui lòng thử lại.';
@@ -67,9 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	}
 }
 
-$teamMembers = $users->getObjects(1, '`status` <> 2', array('username' => 'ASC'), 200);
-if (!$teamMembers) {
-	$teamMembers = array();
+$teamMembers = array();
+if ($pmAccess->hasPermission('pm.team.view')) {
+	$teamMembers = $users->getObjects(1, '`status` <> 2', array('username' => 'ASC'), 200);
+	if (!$teamMembers) {
+		$teamMembers = array();
+	}
 }
 
 $template->assign('pageTitle', 'DeraSoft PM');
@@ -79,6 +93,8 @@ $template->assign('notice', $notice);
 $template->assign('error', $error);
 $template->assign('teamMembers', $teamMembers);
 $template->assign('teamCount', count($teamMembers));
+$template->assign('canViewTeam', $pmAccess->hasPermission('pm.team.view'));
+$template->assign('pmRoleCodes', $pmAccess->getRoleCodes());
 $template->assign('profileUser', $userInfo);
 $displayName = trim((string) $userInfo->getFullName());
 $template->assign('displayName', $displayName !== '' ? $displayName : $userInfo->getUsername());
