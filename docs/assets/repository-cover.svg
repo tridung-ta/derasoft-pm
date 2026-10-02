@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
+  <title id="title">DeraSoft PM — Project and Timesheet Management</title>
+  <desc id="desc">PHP, Smarty and MySQL. Projects, tasks, timesheets, daily overtime and audit.</desc>
+  <rect width="1200" height="340" rx="20" fill="#0f172a"/>
+  <rect x="48" y="48" width="5" height="116" rx="2" fill="#fb923c"/>
+  <text x="76" y="69" fill="#94a3b8" font-family="Arial,sans-serif" font-size="14" letter-spacing="3">ENGINEERING PORTFOLIO / TẠ TRÍ DŨNG</text>
+  <text x="76" y="126" fill="#f8fafc" font-family="Arial,sans-serif" font-size="48" font-weight="700">DeraSoft PM</text>
+  <text x="76" y="164" fill="#cbd5e1" font-family="Arial,sans-serif" font-size="21">Project &amp; Timesheet Management</text>
+  <text x="76" y="199" fill="#94a3b8" font-family="Arial,sans-serif" font-size="16">Tenant-scoped access · Daily overtime · Rate snapshots · Audit trails</text>
+  <g font-family="Arial,sans-serif" font-size="16" font-weight="700">
+    <rect x="76" y="244" width="158" height="48" rx="8" fill="#1e293b"/><text x="99" y="274" fill="#f8fafc">Projects &amp; tasks</text>
+    <text x="251" y="274" fill="#64748b">→</text>
+    <rect x="284" y="244" width="136" height="48" rx="8" fill="#1e293b"/><text x="308" y="274" fill="#f8fafc">Timesheets</text>
+    <text x="437" y="274" fill="#64748b">→</text>
+    <rect x="470" y="244" width="148" height="48" rx="8" fill="#1e293b"/><text x="494" y="274" fill="#f8fafc">OT &amp; costing</text>
+    <text x="635" y="274" fill="#64748b">→</text>
+    <rect x="668" y="244" width="106" height="48" rx="8" fill="#9a3412"/><text x="695" y="274" fill="#fff7ed">Audit</text>
+  </g>
+  <text x="1124" y="67" text-anchor="end" fill="#cbd5e1" font-family="Arial,sans-serif" font-size="14">PHP · Smarty · MySQL</text>
+  <text x="1124" y="292" text-anchor="end" fill="#94a3b8" font-family="Arial,sans-serif" font-size="13">Legacy extension / Custom MVC</text>
+</svg>
