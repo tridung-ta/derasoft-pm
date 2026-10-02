@@ -22,10 +22,12 @@
 # Editor and operating-system files
 /.vscode/
 /.idea/
+/.tools/
 .DS_Store
 Thumbs.db
 
 # Runtime files
 /debug/
 /logs/
+/.local/
 *.log
