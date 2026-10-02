@@ -22,10 +22,6 @@ class PmAuth {
         if (!$user) {
             return 0;
         }
-        if ((int) $user['status'] !== 1) {
-            return -1;
-        }
-
         $modernHash = (string) ($user['password_hash'] ?? '');
         $verified = $modernHash !== '' && password_verify($password, $modernHash);
         $legacyVerified = false;
@@ -35,6 +31,9 @@ class PmAuth {
         }
         if (!$verified && !$legacyVerified) {
             return 0;
+        }
+        if ((int) $user['status'] !== 1) {
+            return -1;
         }
 
         $newHash = null;

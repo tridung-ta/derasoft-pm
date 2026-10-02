@@ -27,6 +27,8 @@ foreach (array('dashboard', 'profile', 'password', 'team') as $section) {
 		'error' => '',
 		'teamMembers' => array($user),
 		'teamCount' => 1,
+		'canViewTeam' => true,
+		'pmRoleCodes' => array('ADMIN'),
 		'profileUser' => $user,
 		'displayName' => 'Dũng',
 	));

@@ -75,3 +75,50 @@ Không tạo migration SQL. Dump đã được import vào database local mới 
 ### Next Step
 
 Thực hiện PLAN Phase 2 — Auth, Role & Permission. Không triển khai migration/auth trước khi plan Phase 2 được duyệt.
+
+## Phase 2 — Auth, Role & Permission
+
+### Status
+
+BUILD/VERIFY COMPLETED — chờ người dùng kiểm thử đăng nhập tài khoản thật trước khi merge.
+
+### Completed
+
+- Mở rộng `dc_users` bằng cột nullable `password_hash`; giữ nguyên cột MD5 để tương thích tài khoản cũ.
+- Tạo bốn bảng RBAC InnoDB: `dc_pm_roles`, `dc_pm_permissions`, `dc_pm_user_roles`, `dc_pm_role_permissions`.
+- Seed idempotent bốn role `ADMIN`, `PM`, `HR`, `EMPLOYEE`, 18 permission và mapping ban đầu cho user legacy active.
+- Thêm adapter prepared statement riêng cho code PM mới, không rewrite lớp `Model` legacy.
+- Login hỗ trợ username hoặc email duy nhất trong store; tài khoản MD5 được nâng hash sau lần xác thực thành công.
+- Mật khẩu đổi từ PM chỉ ghi `password_hash`; không xóa hash legacy.
+- Regenerate session ID sau login; cookie dùng HttpOnly, SameSite=Lax, strict mode và Secure trên HTTPS.
+- Thêm `requirePermission()` và `requireProjectAccess()`; project access fail closed cho tới khi bảng thành viên dự án được tạo ở phase dự án.
+- Tích hợp permission vào dashboard, hồ sơ, đổi mật khẩu và danh sách nhân sự; menu nhân sự được ẩn khi không có quyền.
+
+### Database
+
+- Migration: `database/migrations/001_create_pm_auth_rbac.sql`.
+- Seed: `database/seeds/001_seed_pm_auth_rbac.sql`.
+- Đã chạy và xác minh trên `derasoft_pm_local`; không kết nối hoặc thay đổi production.
+- Migration chỉ cộng thêm schema. Không có `DROP`, `RENAME`, `TRUNCATE` hoặc xóa dữ liệu.
+- Rollback ứng dụng: có thể quay lại code cũ và để nguyên cột/bảng mới chưa dùng; project policy không cho rollback bằng DROP.
+
+### Verification
+
+- Phase 2 schema và seed: PASS.
+- Password primitives, 4 role, permission boundaries và legacy mappings: PASS.
+- PM Admin template smoke: PASS.
+- Smarty/PhpSpreadsheet regression smoke: PASS.
+- PHP 8.3 lint toàn bộ file PHP thay đổi trong Phase 2: PASS.
+- Còn chờ manual test: đăng nhập bằng username, đăng nhập bằng email, logout và xác nhận dashboard theo role bằng tài khoản thật.
+
+### Git
+
+- Branch: `feature/pm-phase2-auth-role`.
+- `b231629 feat(pm-auth): add RBAC schema and default roles`
+- `ef047d4 feat(pm-rbac): add prepared role and permission data access`
+- `69d3e04 feat(pm-auth): upgrade legacy login and session security`
+- `a41fc96 feat(pm-rbac): enforce permissions in admin workspace`
+
+### Next Step
+
+Người dùng kiểm thử auth/RBAC local. Sau khi được xác nhận mới hoàn tất commit test/docs, push/merge Phase 2 và dừng; không sang Phase 3 khi chưa được duyệt.
