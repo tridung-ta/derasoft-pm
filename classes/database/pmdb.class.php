@@ -30,6 +30,22 @@ class PmDb {
         return $affectedRows;
     }
 
+    public function beginTransaction(): void {
+        if (!$this->connection->begin_transaction()) {
+            throw new RuntimeException('Unable to begin PM database transaction.');
+        }
+    }
+
+    public function commit(): void {
+        if (!$this->connection->commit()) {
+            throw new RuntimeException('Unable to commit PM database transaction.');
+        }
+    }
+
+    public function rollBack(): void {
+        $this->connection->rollback();
+    }
+
     private function prepareAndExecute(string $sql, string $types, array $params): mysqli_stmt {
         if (strlen($types) !== count($params)) {
             throw new InvalidArgumentException('Prepared parameter count does not match type count.');
