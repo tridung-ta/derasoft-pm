@@ -126,3 +126,32 @@ COMPLETED — build, automated verification và kiểm thử thủ công tài kh
 ### Next Step
 
 Merge Phase 2 vào `develop`, sau đó thực hiện PLAN Phase 3 — User, Role & Hourly Rate. Không tạo migration hoặc code Phase 3 trước khi plan được duyệt.
+
+## Phase 3 — User, Role & Hourly Rate
+
+### Status
+
+BUILD/VERIFY COMPLETED — chờ kiểm thử thủ công User CRUD, role và rate trước khi merge.
+
+### Completed
+
+- Chốt và ghi nhận kiến trúc PM multi-tenant theo `store_id` kế thừa DeraSoft; hiện không thêm UI chọn tenant.
+- Thêm migration department, thuộc tính user và hourly rate; tenant hóa/widen schema RBAC Phase 2 theo ngoại lệ được duyệt.
+- Thêm prepared DAO cho danh sách, tìm kiếm, tạo/sửa, khóa/mở khóa, soft delete user và gán nhiều role/role chính.
+- Thêm `PmRateService` với XOR owner ở application layer, kiểm tra overlap đối xứng và khóa owner rows `FOR UPDATE` trong transaction.
+- `resolveRate()` ưu tiên user rate, role chính rồi fallback 0 VND kèm cảnh báo.
+- Thêm giao diện quản lý nhân sự responsive, role, rate, trạng thái và phân trang trong PM Admin.
+- Mọi mutation qua module có CSRF, permission, tenant check và ghi Tracking Data mô tả.
+
+### Verification
+
+- Phase 3 tenant schema: PASS trên `derasoft_pm_local`.
+- Owner XOR và overlap đối xứng, gồm rate mới mở vô hạn đè rate cũ có ngày kết thúc: PASS.
+- Phase 2 auth/RBAC regression: PASS.
+- PM Admin và PM users Smarty smoke: PASS.
+- PHP 8.3 lint các file Phase 3: PASS.
+- Không kết nối hoặc thay đổi production.
+
+### Next Step
+
+Kiểm thử thủ công trên local: danh sách/search, create/edit, lock/unlock, soft delete, multi-role/role chính và user rate. Sau khi được xác nhận mới commit phần nghiệm thu, push/merge Phase 3 và dừng trước Phase 4.

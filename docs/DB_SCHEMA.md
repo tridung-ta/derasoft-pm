@@ -61,3 +61,13 @@ Dump có 76 bảng, 478 khối `INSERT INTO`, 156 khối `ALTER TABLE`; không p
 - Xác nhận mapping `status` và `type` từ dữ liệu đang dùng.
 - Kiểm tra số dòng và kích thước bốn bảng liên quan.
 - Không hiển thị username, email, hash hoặc dữ liệu cá nhân trong log/test report.
+
+## Phase 3 — User, Department & Hourly Rate
+
+- Kiến trúc PM chính thức là multi-tenant; toàn bộ bảng `dc_pm_*` có `store_id BIGINT UNSIGNED NOT NULL` và query mới bắt buộc lọc tenant hiện tại.
+- `dc_users` được mở rộng cộng thêm `department_id BIGINT UNSIGNED NULL` và `weekly_limit_hours DECIMAL(5,2) NOT NULL DEFAULT 40.00`.
+- `dc_pm_departments` lưu phòng ban tenant-scoped, hỗ trợ trạng thái và soft delete.
+- `dc_pm_hourly_rates` lưu rate theo đúng một user hoặc một role, khoảng hiệu lực và VND mặc định.
+- XOR owner, kiểm tra khoảng ngày và overlap được thực thi tại `PmRateService`; trước kiểm tra overlap, service khóa các rate active cùng owner bằng `SELECT ... FOR UPDATE`.
+- Rate resolution ưu tiên user-specific, sau đó role chính, cuối cùng trả 0 VND kèm cảnh báo.
+- Migration local đã tenant hóa `dc_pm_permissions` và `dc_pm_role_permissions`, đồng thời widen `store_id` của các bảng Phase 2 lên BIGINT theo ngoại lệ đã được người dùng phê duyệt.
