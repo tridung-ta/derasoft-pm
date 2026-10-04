@@ -32,3 +32,11 @@ Không ghi production-ready, UAT hoàn tất, kết quả hiệu năng hoặc s�
 ## Tạm dừng
 
 Ngày 2026-10-02: chỉ chỉnh phần trình bày repository và danh tính Git. BUILD nghiệp vụ tiếp tục tạm dừng; chờ lệnh mới của người dùng. Workflow duyệt timesheet đã hoãn, UAT chưa xác nhận, chưa deploy production.
+
+## Phase 6 — local BUILD verified
+
+Phase 6 đã BUILD và automated VERIFY trên `feature/pm-phase6-cost-chart`, chưa được push/merge/deploy.
+Có thể bổ sung vào CV sau khi nghiệm thu: built a cost dashboard with stored timesheet costs,
+DECIMAL estimates, mixed-currency guards, scoped permissions, local Chart.js and visibility-aware 60-second polling.
+Evidence: service/HTTP/template/browser acceptance và regression ghi trong docs/PROGRESS.md.
+Không ghi UAT hoàn tất hoặc production-ready; link GitHub Phase 6 chỉ thêm sau khi người dùng cho phép push.

@@ -96,6 +96,7 @@ $template->assign('teamCount', count($teamMembers));
 $template->assign('canViewTeam', $pmAccess->hasPermission('pm.team.view'));
 $template->assign('canViewProjects', $pmAccess->hasPermission('pm.projects.view'));
 $template->assign('canLogTime', $pmAccess->hasPermission('pm.timesheets.own'));
+$template->assign('canViewCosts', $pmAccess->hasPermission('pm.costs.view') && ($pmAccess->hasRole('ADMIN') || $pmAccess->hasRole('PM')));
 $template->assign('canViewAudit', $pmAccess->hasPermission('pm.audit.view') && ($pmAccess->hasRole('ADMIN') || $pmAccess->hasRole('PM') || $pmAccess->hasRole('HR')));
 $template->assign('pmRoleCodes', $pmAccess->getRoleCodes());
 $template->assign('profileUser', $userInfo);

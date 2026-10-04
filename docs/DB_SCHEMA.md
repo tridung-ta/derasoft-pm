@@ -64,6 +64,7 @@ Dump có 76 bảng, 478 khối `INSERT INTO`, 156 khối `ALTER TABLE`; không p
 
 ## Phase 3 — User, Department & Hourly Rate
 
+
 - Kiến trúc PM chính thức là multi-tenant; toàn bộ bảng `dc_pm_*` có `store_id BIGINT UNSIGNED NOT NULL` và query mới bắt buộc lọc tenant hiện tại.
 - `dc_users` được mở rộng cộng thêm `department_id BIGINT UNSIGNED NULL` và `weekly_limit_hours DECIMAL(5,2) NOT NULL DEFAULT 40.00`.
 - `dc_pm_departments` lưu phòng ban tenant-scoped, hỗ trợ trạng thái và soft delete.
@@ -97,3 +98,6 @@ Rollback ứng dụng giữ bảng mới không sử dụng; không DROP hoặc 
 Khóa sửa/xóa tính từ work_date qua cửa sổ 3 ngày lịch, không ghi trạng thái duyệt vào database.
 Cột status giữ giá trị mặc định để tương thích, không dùng cho vòng đời Phase 5.
 Seed `002_seed_pm_phase5_audit_permissions.sql` cộng thêm grant audit cho Admin/PM/HR theo store_id.
+Phase 6 không thêm schema; seed `003_seed_pm_cost_permissions.sql` cộng thêm permission
+`pm.costs.view` và grant Admin/PM theo tenant. Cost service kiểm tra currency trước SUM(cost)
+trong consistent read transaction, mixed-currency trả null + cảnh báo, không quy đổi.

@@ -1,7 +1,7 @@
 <?php
 include_once(ROOT_PATH.'classes/services/pmtimesheetservice.class.php');
-requirePermission('pm.timesheets.own');
 $pmAccess=new PmAccess($db,(int)$storeId,(int)$userInfo->getId());
+requirePermission('pm.timesheets.own');
 $service=new PmTimesheetService($db,(int)$storeId,(int)$userInfo->getId());
 $templateFile='pm-timesheets.tpl.html';$notice='';$error='';$edit=null;
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));

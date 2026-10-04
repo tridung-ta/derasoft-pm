@@ -260,3 +260,119 @@ Người dùng yêu cầu tạm dừng BUILD, tạo commit và push nhánh Phase
 Lưu phạm vi BUILD đã automated VERIFY tại `feature/pm-phase5-timesheet-ot`; chưa merge,
 chưa deploy và chưa ghi nhận UAT PASS. Tiếp tục nghiệm thu khi người dùng yêu cầu resume.
 Không đưa config bảo mật, backup database, log hoặc cache vào commit.
+
+### Resume — 2026-10-02
+
+- Người dùng yêu cầu tiếp tục công việc và ghi nhớ cách trình bày GitHub chuyên nghiệp cho CV.
+- Lưu yêu cầu danh tính Git, commit có scope, staged files an toàn, README/portfolio trung thực và cập nhật theo phase trong `AGENTS.md`.
+- Danh tính Git local xác minh đúng Tạ Trí Dũng / GitHub noreply; nhánh Phase 5 đang sạch tại checkpoint trước thay đổi tài liệu resume.
+- Chuẩn bị `docs/PHASE6_PLAN.md` cho chi phí/biểu đồ. Status PLAN, chưa BUILD/seed/migration Phase 6, chờ duyệt theo quy trình phase.
+- Phase 5 chưa merge, chưa có xác nhận UAT. Resume không tự coi UAT đã hoàn tất.
+
+## Phase 6 — Cost & Chart
+
+### Status
+
+BUILD / automated VERIFY COMPLETED trên `feature/pm-phase6-cost-chart` theo plan đã duyệt,
+có bổ sung currency guard. Chờ UAT nghiệp vụ; chưa commit/push/merge/deploy Phase 6.
+
+### Completed
+
+- Prepared DAO `PmCosts` và `PmCostService`, route `admin.php?op=pmcosts`, menu theo permission.
+- Actual dùng cost đã lưu trên timesheet; tổng hours/regular/OT và chi phí theo project/task/user/department/primary role/ngày; không resolve lại rate cho actual.
+- Kiểm tra DISTINCT currency toàn tập trước mỗi SUM(cost), cùng transaction REPEATABLE READ/SERIALIZABLE. Mixed hoặc currency không hợp lệ: cost=null + warning, vẫn trả giờ. Kiểm tra riêng theo group, khoảng lọc và lifetime.
+- Estimate tại ngày định giá hiển thị, từ estimated_hours × current user/primary-role rate, SQL DECIMAL; thiếu assignee/rate hoặc mixed currency không trả tổng ước tính sai. Budget VND chỉ so sánh với actual lifetime/estimate VND đủ dữ liệu.
+- Actual của task đã ẩn vẫn giữ; project đã ẩn không vào view thường. Khoảng lọc inclusive, empty/error states và pagination project 20 dòng/trang.
+- Cảnh báo phân loại phòng ban/role hiện tại chưa có snapshot lịch sử. JOIN rate/primary role chọn một record, không JOIN membership vào aggregate để tránh double-counting.
+- Chart.js 4.5.1 local tại `js/vendor/chartjs-4.5.1/`, MIT license, npm SHA-512 integrity đã xác minh; hash asset ghi trong vendor README. Không runtime CDN.
+- Polling GET tại `pm_ajax.php?op=pmcosts`, module nội bộ `modules/ajax/pmcosts.module.php`, 60 giây khi tab hiện; abort khi ẩn, giữ bộ lọc và số liệu cũ khi lỗi. Endpoint legacy ajax.php không thay đổi.
+- Permission kiểm tra ở service/list/detail/polling; Admin toàn tenant, PM chỉ dự án phụ trách, HR/Employee fail closed. Session user active và tenant được xác minh lại ở endpoint JSON; no-store và allowlist cố định.
+- Smarty và JSON escape an toàn, refresh dùng textContent; estimate valuation date cập nhật cả khi polling sang ngày mới. Bảng hoạt động khi chart không tải được; sửa canvas overflow trên mobile.
+
+### Database
+
+Backup local trước seed đã tạo trong `.local/` được Git ignore. Seed `003_seed_pm_cost_permissions.sql`
+cộng thêm permission `pm.costs.view` và grant Admin/PM theo tenant, chạy idempotent hai lần PASS.
+Không migration schema mới, không rewrite legacy, không production. Fixture kiểm thử rollback.
+Rollback ứng dụng: ẩn route/menu costs, để nguyên grant không dùng; không xóa dữ liệu/bảng.
+
+### Acceptance — đủ 6 nhóm
+
+PHP dùng `.tools/php83/php.exe`:
+
+| Nhóm | Lệnh / bằng chứng | Kết quả |
+| --- | --- | --- |
+| 1. Actual / estimate / OT / rate | `tests/pm_costs_smoke.php`: actual DECIMAL, cost đã lưu không đổi khi rate_snapshot thay đổi, OT, valuation date, lifetime vs range, missing/mixed estimate | PASS |
+| 2. Filter / empty / pagination / JOIN | Cùng smoke: ngày invalid/reversed, input array, empty range, inclusive date, page 2, thêm membership/multi-role không nhân đôi chi phí | PASS |
+| 3. Permissions / IDOR / polling | Cùng smoke + `tests/pm_costs_http_smoke.php`: Admin/PM list/detail, HR/Employee denied, foreign tenant, live HTTP page/polling, auth/bad filters/allowlist/no-store/GET-only | PASS |
+| 4. DECIMAL / soft delete / currency | Cùng smoke: tiền lớn `1234567890123958.03`, task lịch sử, project hidden, mixed currency ở total/project/task/user/department/role/date/lifetime, homogeneous subrange, USD không so budget VND | PASS |
+| 5. Render / browser / polling | `tests/smoke_pm_costs.php`; `playwright-cli -s=pmphase6 run-code --filename=../tests/pm_costs_browser.js` từ `.local/`, server preview localhost:18767, dữ liệu giả | PASS |
+| 6. Regression / lint / review | Bộ regression Phase 2–5 bên dưới, PHP lint, Node syntax check, diff check và security review | PASS |
+
+Nhóm 5 kiểm tra desktop 1440×1000, mobile 390×844, Chart.js version, không page overflow,
+polling 60s dừng/resume qua visibilitychange, giữ filter, mixed-money chart không vẽ sai,
+escaping refresh, giữ số liệu khi 403 và table fallback khi asset chart bị chặn.
+Screenshot đã xem trong `.local/phase6-desktop.png`, `.local/phase6-mobile.png`; không công bố dữ liệu thật.
+Console lỗi 403/asset abort là tình huống cố ý trong test; favicon localhost 404 không thuộc lỗi JS ứng dụng.
+
+- `tests/pm_phase6_permissions.php --apply` hai lần, sau đó không --apply: PASS.
+- Regression: `pm_auth_rbac_smoke.php`, `pm_rates_smoke.php`, `pm_departments_smoke.php`, `pm_projects_smoke.php`, `pm_phase5_migration.php`, `pm_phase5_audit_permissions.php`, `pm_timesheets_smoke.php`, `pm_timesheet_window_smoke.php`, `pm_audit_smoke.php`, `smoke_pm_timesheets.php`, `smoke_pm_audit.php`, `smoke_pm_admin.php`, `smoke_pm_users.php`, `smoke_pm_projects.php`, `smoke_pm_dependencies.php` trong tests/: PASS.
+- PHP `-l`: admin.php, pm_ajax.php, pmcosts DAO/service, pm controller thay đổi, costs controller/AJAX và bốn PHP test Phase 6: PASS.
+- `node --check js/pmcosts.js`, `node --check tests/pm_costs_browser.js`, `node --check js/vendor/chartjs-4.5.1/chart.umd.js`: PASS.
+- `git -c safe.directory=D:/derasoft-pm diff --check` và kiểm tra whitespace cho file mới: PASS.
+
+### Security review / giới hạn
+
+Rà soát theo skill code-review: prepared filters, role/tenant/project boundaries, active session,
+fixed AJAX allowlist, GET-only/no-store, HTML/JSON escaping, DOM textContent, currency guards,
+consistent snapshot và không JOIN nhiều membership/role làm tăng số tiền. Không phát hiện lỗi còn mở trong phạm vi đã kiểm tra.
+Chưa UAT bằng thao tác tài khoản thật; browser dùng synthetic preview và HTTP dùng session test local.
+Chưa chạy benchmark dữ liệu lớn hoặc test concurrency nhiều connection; không tuyên bố performance/production-ready.
+
+### Next Step
+
+UAT local `admin.php?op=pmcosts` bằng Admin/PM: bộ lọc, project detail, actual vs lifetime,
+estimate và missing rate/currency warnings, responsive/polling. HR tài chính vẫn chưa mở.
+Chờ người dùng cho phép commit/push/merge/deploy; không tự chuyển Phase 7.
+
+### Phase 5 — sửa lỗi trang chấm công Forbidden (2026-10-02)
+
+Người dùng phát hiện `admin.php?op=pmtimesheets` trả Forbidden. Controller gọi
+`requirePermission()` trước khi khởi tạo `$pmAccess`, khiến kiểm tra quyền fail closed
+ngay cả với tài khoản được cấp quyền. Đã khởi tạo PmAccess trước kiểm tra quyền;
+không bỏ kiểm tra permission, ownership hoặc tenant.
+
+Bổ sung regression HTTP trong `tests/pm_costs_http_smoke.php` cho trang chấm công
+bằng session Admin và tài khoản không có role chi phí. Test tái hiện HTTP 403 trước sửa,
+sau sửa trả HTTP 200 và render lịch sử chấm công ở cả hai session.
+
+Lệnh `.tools/php83/php.exe` với `tests/pm_costs_http_smoke.php`,
+`tests/pm_timesheets_smoke.php`, `tests/pm_timesheet_window_smoke.php`,
+`tests/smoke_pm_timesheets.php`: PASS. PHP `-l` controller và HTTP test: PASS.
+`git -c safe.directory=D:/derasoft-pm diff --check`: PASS (chỉ cảnh báo LF/CRLF).
+Chưa xác nhận UAT trên session trình duyệt của người dùng tại cổng 8088.
+Giữ nguyên thay đổi Phase 6; chưa commit/push/merge/deploy.
+
+### Tiếp tục VERIFY / chuẩn bị UAT — 2026-10-02
+
+- Kiểm tra các controller PM: PmAccess được khởi tạo trước requirePermission.
+- Mở rộng `tests/pm_costs_http_smoke.php`: chấm công Admin/tài khoản không có role chi phí HTTP 200;
+  ID không tồn tại HTTP 403; Admin Audit Viewer HTTP 200, filter entity_type sai HTTP 400.
+- `.tools/php83/php.exe tests/pm_costs_http_smoke.php`, `tests/pm_audit_smoke.php`,
+  `tests/smoke_pm_audit.php`: PASS. Test không thay đổi dữ liệu nghiệp vụ tồn tại.
+- Bổ sung `docs/UAT_PHASE5_6.md`: checklist theo role, OT/khóa 3 ngày/audit,
+  actual/estimate/currency/scope/polling và kết quả chưa kiểm tra để người dùng nghiệm thu.
+- Chưa xác nhận UAT trên session thật tại cổng 8088; không chuyển Phase 7 hoặc push/merge/deploy.
+
+### Chuẩn bị Phase 7 — 2026-10-02
+
+Người dùng yêu cầu tiếp tục BUILD. Phase 6 đã hoàn tất BUILD/automated VERIFY;
+đã chuẩn bị `docs/PHASE7_PLAN.md` cho phân bổ nguồn lực/overbooking theo PLAN_FINAL.
+Status PLAN, chờ duyệt phạm vi quyền, ngưỡng ngày, overlap và lịch sử trước BUILD
+theo quy trình AGENTS.md. Chưa tạo nhánh Phase 7, chưa migration/seed hoặc thay đổi ứng dụng.
+Các thay đổi Phase 6 và bản sửa Forbidden vẫn được giữ nguyên; UAT Phase 5–6 chưa xác nhận.
+
+### Local checkpoint delivery
+
+Phase 6 checkpoint includes the verified implementation and related tests.
+Created retrospectively while completing Phase 9; no push/merge/deploy.

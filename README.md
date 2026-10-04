@@ -17,7 +17,7 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 
 **Author:** [Tạ Trí Dũng](https://github.com/tridung-ta) · **Focus:** backend development, business rules and legacy integration.
 
-> **Development status — 02 Oct 2026:** implementation and automated verification through Phase 5 are on [`feature/pm-phase5-timesheet-ot`](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase5-timesheet-ot). Browser UAT is pending. Development is paused at the user's request; this repository does not claim a production release.
+> **Development status — 04 Oct 2026:** Phase 6 locally built and automated-verified. Local checkpoint only; latest published code remains Phase 5. User UAT/production acceptance pending.
 
 ## What the application does
 
@@ -98,3 +98,9 @@ These checks passed on the documented local environment. Database smoke fixtures
 Hệ thống quản lý dự án và chấm công phát triển trên nền DeraSoft hiện có, không viết lại framework. Điểm chính gồm phân quyền theo tenant, quản lý nhân sự/dự án/task, tính OT theo tổng giờ ngày, snapshot đơn giá và audit log trong transaction. Chấm công được sửa/xóa trong ba ngày lịch tính từ ngày làm việc; Admin sửa sau khóa có audit riêng.
 
 Mã BUILD mới nhất nằm trên nhánh Phase 5 được dẫn ở trên. Công việc đang tạm dừng, chưa xác nhận UAT hoặc triển khai production. Các file cấu hình bảo mật, license, dữ liệu upload, database dump, cache và log không được đưa vào Git.
+
+## Local checkpoint
+
+Cost dashboard: stored DECIMAL actual cost, currency guards, local pinned Chart.js and scoped polling.
+
+Commands/results and limitations are recorded in docs/PROGRESS.md. No UAT/production-ready claim.
