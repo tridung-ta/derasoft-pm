@@ -11,6 +11,7 @@ if (!defined( 'ROOT_PATH' )) {
 	define('ROOT_PATH', dirname(__FILE__).'/');
 }
 #session_start();
+$pmSessionMode=defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY;
 
 # PHP>=7. Secure is enabled automatically when the request uses HTTPS.
 $pmSessionSecure = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
@@ -43,7 +44,15 @@ if($op != 'invalidurl') {
 	}
 	
 	if(isset($_SESSION['userId']) && $_SESSION['userId']) {
-		$userId = $_SESSION['userId'];
+		$userId = $pmSessionMode ? (int)$_SESSION['userId'] : $_SESSION['userId'];
+		if($pmSessionMode) {
+			include_once(ROOT_PATH.'classes/security/pmsessionguard.class.php');
+			$sessionStore=isset($_SESSION['storeId'])?(int)$_SESSION['storeId']:null;
+			if(!PmSessionGuard::valid($db,(int)$storeId,$userId,$sessionStore)) {
+				$_SESSION=[];$_SESSION['KCFINDER']=['disabled'=>true];session_regenerate_id(true);
+				http_response_code(401);$userId=0;$op='login';$pmSessionInvalidated=true;
+			}
+		}
 		$users = new Users($storeId);
 		$trackings = new Trackings($storeId);
 		$userInfo = $users->getObject($userId,'id');
@@ -52,8 +61,7 @@ if($op != 'invalidurl') {
 			$template->assign('authUser',$userInfo);
 			$_SESSION['storeId'] = $storeId;
 			# File manager
-			$_SESSION['KCFINDER']['disabled'] = false;
-			$_SESSION['KCFINDER']['uploadURL'] = "/upload";
+			if(!$pmSessionMode){$_SESSION['KCFINDER']['disabled'] = false;$_SESSION['KCFINDER']['uploadURL'] = "/upload";}
 		} else {
 			$_SESSION['userId'] = 0;
 			$op = 'login';

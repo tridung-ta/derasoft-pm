@@ -11,7 +11,7 @@
 <label>Đến ngày (để trống nếu không giới hạn)<input name="effective_to" type="date"></label>
 </div><p><button>Lưu đơn giá vai trò</button></p>
 </form>{/if}
-<table><thead><tr><th>Nhân viên / Vai trò</th><th>Đơn giá</th><th>Hiệu lực</th><th>Trạng thái</th></tr></thead><tbody>
+<p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>Nhân viên / Vai trò</th><th>Đơn giá</th><th>Hiệu lực</th><th>Trạng thái</th></tr></thead><tbody>
 {foreach from=$hourlyRates item=hr}
 <tr><td>{if $hr.user_id}Nhân viên: {$hr.user_name|default:'Không còn hoạt động'|escape}{else}Vai trò: {$hr.role_name|default:'Không còn hoạt động'|escape}{/if}</td>
 <td colspan="2">
@@ -21,7 +21,7 @@
 <label>Từ ngày<input name="effective_from" type="date" value="{$hr.effective_from|escape}" required></label>
 <label>Đến ngày<input name="effective_to" type="date" value="{$hr.effective_to|escape}"></label><button>Lưu thay đổi</button></form>
 {else}{$hr.rate|escape} {$hr.currency|escape}/giờ — {$hr.effective_from|escape} → {$hr.effective_to|default:'Không giới hạn'|escape}{/if}
-</td><td>{if $hr.status eq 1}Đang áp dụng{if $canManageRates}<form method="post" onsubmit="return confirm('Ngừng áp dụng đơn giá này?')"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_deactivate"><input type="hidden" name="id" value="{$hr.id}"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="secondary">Ngừng áp dụng</button></form>{/if}{else}Đã ngừng áp dụng{/if}</td></tr>
+</td><td>{if $hr.status eq 1}Đang áp dụng{if $canManageRates}<form method="post" data-pm-confirm="Ngừng áp dụng đơn giá này?"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_deactivate"><input type="hidden" name="id" value="{$hr.id}"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="secondary">Ngừng áp dụng</button></form>{/if}{else}Đã ngừng áp dụng{/if}</td></tr>
 {foreachelse}<tr><td colspan="4">Chưa có đơn giá.</td></tr>{/foreach}
-</tbody></table></section>
+</tbody></table></div></section>
 {/if}

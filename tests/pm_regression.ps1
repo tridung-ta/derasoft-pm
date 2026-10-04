@@ -15,7 +15,9 @@ try {
         'pm_reports_http_smoke', 'smoke_pm_reports', 'pm_import_migration',
         'pm_import_smoke', 'pm_import_http_smoke', 'smoke_pm_imports',
         'pm_email_unique_migration', 'pm_import_results_migration',
-        'pm_import_apply_smoke', 'pm_import_native_duplicate'
+        'pm_import_apply_smoke', 'pm_import_native_duplicate',
+        'pm_roles_batch_smoke', 'pm_ui_http_smoke', 'smoke_pm_ui', 'pm_explain_smoke',
+        'pm_session_guard_smoke'
     )
     foreach ($test in $tests) {
         & $php "tests/$test.php"

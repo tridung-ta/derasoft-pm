@@ -1,0 +1,5 @@
+<a class="pm-skip" href="#pm-main">Chuyển đến nội dung chính</a>
+<nav class="pm-module-nav" aria-label="Điều hướng DeraSoft PM">
+{foreach from=$pmNavigation|default:[] item=n}<a href="{$n.url|escape}"{if $n.current} aria-current="page"{/if}>{$n.label|escape}</a>{foreachelse}<a href="?op=pm">Tổng quan</a>{/foreach}
+{if isset($pmNavigation) && $pmNavigation && $op|default:'' != 'pm'}<form method="post" action="admin.php"><input type="hidden" name="op" value="logout"><input type="hidden" name="csrf_token" value="{$csrfToken|default:''|escape}"><button type="submit">Đăng xuất</button></form>{/if}
+</nav>

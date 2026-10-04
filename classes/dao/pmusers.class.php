@@ -66,4 +66,14 @@ class PmUsers {
     public function roles(int $storeId,int $userId): array {
         return $this->db->fetchAll('SELECT role_id,is_primary FROM dc_pm_user_roles WHERE store_id=? AND user_id=?','ii',[$storeId,$userId]);
     }
+    public function rolesForUsers(int $storeId,array $userIds): array {
+        if(count($userIds)>100)throw new InvalidArgumentException('Role batch is limited to 100 users.');
+        foreach($userIds as $id)if(!is_int($id)||$id<=0)throw new InvalidArgumentException('Invalid user ID.');
+        $userIds=array_values(array_unique($userIds));$grouped=array_fill_keys($userIds,[]);
+        if(!$userIds)return $grouped;
+        $placeholders=implode(',',array_fill(0,count($userIds),'?'));
+        $rows=$this->db->fetchAll('SELECT user_id,role_id,is_primary FROM dc_pm_user_roles WHERE store_id=? AND user_id IN ('.$placeholders.') ORDER BY user_id,role_id','i'.str_repeat('i',count($userIds)),[$storeId,...$userIds]);
+        foreach($rows as $row)$grouped[(int)$row['user_id']][]=['role_id'=>$row['role_id'],'is_primary'=>$row['is_primary']];
+        return $grouped;
+    }
 }

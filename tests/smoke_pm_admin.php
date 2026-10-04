@@ -32,7 +32,7 @@ foreach (array('dashboard', 'profile', 'password', 'team') as $section) {
 		'profileUser' => $user,
 		'displayName' => 'Dũng',
 	));
-	$html = $smarty->fetch('pm.tpl.html');
+	$html = $smarty->fetch('pm.tpl.html');if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-'.$section.'.html',str_replace('<head>','<head><base href="/">',$html));
 	if (strpos($html, 'DeraSoft PM') === false) {
 		fwrite(STDERR, "PM template failed for section: {$section}\n");
 		exit(1);

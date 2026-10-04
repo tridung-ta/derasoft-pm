@@ -17,7 +17,7 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 
 **Author:** [Tạ Trí Dũng](https://github.com/tridung-ta) · **Focus:** backend development, business rules and legacy integration.
 
-> **Development status — 04 Oct 2026:** Phase 8 locally built and automated-verified. Local checkpoint only; latest published code remains Phase 5. User UAT/production acceptance pending.
+> **Development status — 04 Oct 2026:** Phases 6–9 are built and automated-verified locally on `feature/pm-phase9-ui-security`; local commits are prepared per phase. These changes are not pushed. The latest published implementation remains [Phase 5](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase5-timesheet-ot). Final user UAT and production acceptance remain pending.
 
 ## What the application does
 
@@ -31,7 +31,11 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 | Automatic locking | Three calendar days to edit; Admin corrections after locking receive separate audit actions |
 | Audit viewer | Tenant/project/department access scopes, financial-field redaction, filters and pagination |
 
-Timesheet approval is intentionally deferred. Phase 5 has no Submitted/Approved/Rejected workflow. Cost dashboards, resource allocation and reporting are planned for later phases.
+Timesheet approval is intentionally deferred. Phase 5 has no Submitted/Approved/Rejected workflow. Reports/XLSX and personnel import are locally implemented.
+
+**Locally verified Phase 6:** cost dashboard with stored actual costs, DECIMAL estimates, mixed-currency warnings (no invalid totals), Admin/PM project scopes, pinned local Chart.js and polling every 60 seconds while the tab is visible. Service, HTTP, template and synthetic-browser acceptance passed.
+
+**Locally verified Phase 7:** weekly allocations, time-bound daily/weekly capacity overrides, half-open interval overlap warnings, scoped workload totals and capacity suggestions. Allocation/audit writes are transactional; sorted user/day mutexes were exercised with two MySQL connections. Suggestions never change assignments automatically. Service, HTTP, template and synthetic-browser checks passed; user UAT and publication remain pending.
 
 ## Engineering highlights
 
@@ -88,19 +92,31 @@ These checks passed on the documented local environment. Database smoke fixtures
 | --- | --- |
 | 0–2 · Audit, local baseline, auth & RBAC | Documented and verified |
 | 3–5 · Workforce, projects, timesheets & audit | BUILD / automated verification completed; UAT pending |
-| 6 · Cost aggregation & charts | Planned |
-| 7 · Resource allocation & overbooking | Planned |
-| 8 · Reports & Excel | Planned |
+| 6 · Cost aggregation & charts | Locally built / automated verified; not yet published, UAT pending |
+| 7 · Resource allocation & overbooking | Locally built / automated verification completed; unpublished, UAT pending |
+| 8 · Reports & Excel | Reports/XLSX and resumable personnel import locally built / automated verified; unpublished, UAT pending |
+| 9 · UI/accessibility, query and security hardening | Locally built / automated verified; coverage limits documented, UAT pending |
 | Release acceptance | Pending UAT and explicit deployment approval |
 
 ## Tiếng Việt
 
 Hệ thống quản lý dự án và chấm công phát triển trên nền DeraSoft hiện có, không viết lại framework. Điểm chính gồm phân quyền theo tenant, quản lý nhân sự/dự án/task, tính OT theo tổng giờ ngày, snapshot đơn giá và audit log trong transaction. Chấm công được sửa/xóa trong ba ngày lịch tính từ ngày làm việc; Admin sửa sau khóa có audit riêng.
 
-Mã BUILD mới nhất nằm trên nhánh Phase 5 được dẫn ở trên. Công việc đang tạm dừng, chưa xác nhận UAT hoặc triển khai production. Các file cấu hình bảo mật, license, dữ liệu upload, database dump, cache và log không được đưa vào Git.
+Mã đã công bố mới nhất nằm trên nhánh Phase 5 được dẫn ở trên. Phase 6–9 đã BUILD và kiểm thử local, có checkpoint commit local theo phase, chưa push/merge; UAT và production chưa xác nhận. Các file cấu hình bảo mật, license riêng của ứng dụng, dữ liệu upload, database dump, cache và log không được đưa vào Git.
 
-## Local checkpoint
+Local Phase 8 import supports Admin-only XLSX preview/staging, per-row Apply results,
+duplicate-key handling and resume with a connection-owned batch lock. The approved tenant
+email UNIQUE index preserves the legacy MyISAM engine. New accounts remain inactive until
+Admin provisions a password and explicitly activates them. MyISAM writes and PM journal
+writes are not one atomic transaction. Successful Apply/crash scenarios use a temporary
+transactional user mirror; native duplicate rejection is checked on the actual local table.
 
-Costs, allocations, bounded explicit-string XLSX reports and Admin personnel import with per-row resume/provenance. Legacy dc_users remains MyISAM; approved tenant email UNIQUE blocks duplicates. Native MyISAM crash window remains untested; no atomic whole-file claim.
+Run the current local regression suite with `./tests/pm_regression.ps1` (41 scripts;
+requires the documented local DB and PHP setup). This runner does not apply migrations.
 
-Commands/results and limitations are recorded in docs/PROGRESS.md. No UAT/production-ready claim.
+Local Phase 9 adds shared accessible navigation/forms/table regions, exact tenant-scoped
+batch role lookup (20 role queries → 1), active-session checks, PM login/logout CSRF and
+local-only CSP-compatible assets. The 41-script regression suite and synthetic browser
+matrix passed. Authenticated HTTP UI coverage is Admin/Employee; PM/HR service fixtures
+are distinct from authenticated UI sessions. See [verification and remaining coverage](docs/PHASE9_VERIFY.md).
+EXPLAIN of 62 local query shapes is evidence of query/index selection, not a production benchmark.

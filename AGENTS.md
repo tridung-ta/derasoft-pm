@@ -37,7 +37,7 @@ Dự án xây dựng hệ thống quản lý dự án và chấm công trên n�
 
 ## Quy trình mỗi phase
 
-PLAN → chờ duyệt → BUILD → VERIFY → security review → cập nhật `docs/PROGRESS.md` → báo cáo. Sau Phase 0 chỉ nộp audit và dừng chờ duyệt.
+PLAN → chờ duyệt → BUILD → VERIFY → security review → cập nhật `docs/PROGRESS.md` → commit local một lần cho phase hoàn tất → báo cáo. Sau Phase 0 chỉ nộp audit và dừng chờ duyệt.
 
 ## Phạm vi sản phẩm
 
@@ -54,3 +54,35 @@ Auth/RBAC; người dùng, vai trò và đơn giá; dự án và task/Kanban; ch
 ## Tài liệu chuẩn
 
 `docs/PROJECT_BRIEF.md`, `docs/PLAN_FINAL.md`, `docs/AUDIT.md`, `docs/DB_SCHEMA.md`, `docs/PROGRESS.md`.
+
+## GitHub & portfolio — yêu cầu người dùng
+
+- Repository chính: `https://github.com/tridung-ta/derasoft-pm`. Kiểm tra remote và danh tính trước mỗi commit/push.
+- Commit mới dùng Git config local: `Tạ Trí Dũng`, `213818008+tridung-ta@users.noreply.github.com`. Không dùng danh tính QUANLYTHUVIEN của dự án cũ; không sửa global config hoặc rewrite lịch sử đã push.
+- Mỗi commit là một thay đổi hoàn chỉnh, dễ review; message theo `feat`, `fix`, `test`, `docs` với scope PM cụ thể, mô tả chức năng thực tế. Không tạo commit rỗng để tăng contribution.
+- Sau mỗi phase hoàn tất BUILD, kiểm thử chức năng/regression, code/security review và cập nhật tài liệu, tự tạo một commit local trên nhánh phase, không cần hỏi lại quyền commit. Commit gồm code, tests và tài liệu liên quan đã kiểm chứng; chỉ stage file cụ thể, kiểm tra staged diff và loại toàn bộ secret/config/dump/cache/log/upload. Phase còn ở PLAN hoặc BUILD dở chưa tạo commit hoàn tất; không chờ UAT từng phase để commit local. Báo cáo hash, branch, lệnh và kết quả kiểm thử thật.
+- Trước push: kiểm tra staged diff, chỉ stage file liên quan, loại secret/config/dump/cache/log/upload, ghi lệnh kiểm thử và kết quả thật. Commit/push khi được người dùng hoặc workflow hiện tại cho phép.
+- GitHub phải rõ ràng với nhà tuyển dụng: README mô tả sản phẩm, phần đã làm, kiến trúc, stack, cách kiểm thử và roadmap; description/topics đúng phạm vi; cập nhật link nhánh triển khai khi phase đổi.
+- Main phải có tài liệu portfolio hiện hành; code phase chỉ merge sau nghiệm thu/phê duyệt. Không merge chỉ để làm đẹp contribution graph. Không ghi UAT/production-ready/performance khi chưa có bằng chứng.
+- Giữ mỗi repo cho một sản phẩm; phase dùng branch. Không tự đổi tên/xóa/archive repo khác. Screenshot portfolio dùng dữ liệu giả hoặc đã ẩn thông tin nhạy cảm, phân biệt với banner minh họa.
+- Nội dung CV tham khảo `docs/PORTFOLIO.md`; cập nhật khi có chức năng đã kiểm chứng, trình bày rõ phần mở rộng nền DeraSoft có sẵn.
+
+## Kiểm thử và tiếp tục local — yêu cầu ngày 03/10/2026
+
+- Sau mỗi phase, tự kiểm thử chức năng đã xây dựng, regression toàn bộ chức năng PM,
+  rà soát code và bảo mật; sửa lỗi và kiểm thử lại trước khi tiếp tục.
+- Người dùng chỉ UAT thủ công khi toàn bộ bản local hoàn tất; không dừng từng phase để chờ UAT.
+- Sau kiểm thử đạt, tiếp tục công việc local theo phạm vi được duyệt; lưu plan và kết quả thật.
+  Những quyết định ngoài quy tắc đã duyệt, như đổi engine legacy, vẫn cần hỏi riêng.
+- Automated PASS không đồng nghĩa UAT PASS hoặc bảo đảm không còn lỗi. Production chỉ sau
+  người dùng nghiệm thu và cho phép triển khai. Commit local một lần sau mỗi phase hoàn tất
+  theo quy định trên; không tự push/merge/deploy khi chưa có ủy quyền riêng.
+
+## Quyết định import chính thức
+
+- GIỮ ENGINE dc_users; không đổi sang InnoDB, kể cả local. Không đề xuất lại ngoại lệ engine.
+- Apply chỉ code sau xác nhận UNIQUE email ở DB; nếu thiếu phải đề xuất ADD UNIQUE INDEX
+  và chờ duyệt riêng, không tự chạy migration này.
+- Apply INSERT từng dòng, xử lý duplicate key 1062 thay cho SELECT-check-then-INSERT;
+  kết quả từng dòng applied/skipped_duplicate/failed, có khả năng tiếp tục sau gián đoạn.
+- import_logs có trạng thái in_progress và cơ chế chống hai Admin Apply cùng batch.

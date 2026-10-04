@@ -4,6 +4,7 @@ include_once(ROOT_PATH.'classes/dao/pmusers.class.php');
 include_once(ROOT_PATH.'classes/dao/pmdepartments.class.php');
 include_once(ROOT_PATH.'classes/dao/pmroles.class.php');
 include_once(ROOT_PATH.'classes/services/pmrateservice.class.php');
+include_once(ROOT_PATH.'classes/services/pmuiservice.class.php');
 $pmAccess=new PmAccess($db,(int)$storeId,(int)$userInfo->getId());
 requirePermission('pm.team.view');
 $templateFile='pm-users-v2.tpl.html';$pmUsers=new PmUsers($db);$departments=new PmDepartments($db);$rolesDao=new PmRoles($db);
@@ -64,7 +65,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 }
 $page=max(1,(int)$request->element('page',1));$q=trim((string)$request->element('q'));$departmentFilter=(int)$request->element('department_id');$roleFilter=(int)$request->element('role_id');
 $filters=['q'=>$q,'department_id'=>$departmentFilter,'role_id'=>$roleFilter];$rows=$pmUsers->list((int)$storeId,$filters,$page,20);
-$userRoles=[];$userRoleState=[];$userPrimaryRoles=[];foreach($rows as $row){$assigned=$pmUsers->roles((int)$storeId,(int)$row['id']);$userRoles[$row['id']]=$assigned;foreach($assigned as $assignedRole){$userRoleState[$row['id']][$assignedRole['role_id']]=true;if((int)$assignedRole['is_primary']===1)$userPrimaryRoles[$row['id']]=(int)$assignedRole['role_id'];}}
+$userRoles=$pmUsers->rolesForUsers((int)$storeId,array_map(fn($row)=>(int)$row['id'],$rows));
+$roleState=PmUiService::roleState($userRoles);$userRoleState=$roleState['state'];$userPrimaryRoles=$roleState['primary'];
+if($roleState['inconsistent'])$error=trim($error.' Có nhân sự được gán nhiều vai trò chính; vui lòng chọn lại một vai trò chính.');
 $total=$pmUsers->count((int)$storeId,$filters);
 $canViewRates=$pmAccess->hasPermission('pm.rates.view')||$canManageRates;
 $template->assign('canViewRates',$canViewRates);

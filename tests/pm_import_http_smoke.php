@@ -37,6 +37,6 @@ try{
     foreach($q->fetchAll('SELECT id FROM dc_users WHERE store_id=? AND status=1','i',[$store]) as $u){$access=new PmAccess($db,$store,(int)$u['id']);if($access->hasRole('ADMIN'))continue;$cookie=allocationSession((int)$u['id'],$store);if(allocationHttp($url,$cookie)[0]!==403||importUpload($url,$cookie,$bytes)[0]!==403)throw new RuntimeException('Non-Admin imported.');
         foreach(['apply','resume','detail','provision_password'] as $action)if(allocationHttp($url,$cookie,['op'=>'pmimports','action'=>$action,'import_id'=>'999999999','source_row'=>'2','password'=>'Synthetic password 2026','csrf_token'=>'allocation-test-token'])[0]!==403)throw new RuntimeException('Non-Admin used Apply endpoint.');
     }
-    if(allocationHttp($url,$wrong,['op'=>'pmimports','action'=>'apply','import_id'=>'999999999','csrf_token'=>'allocation-test-token'])[0]!==403)throw new RuntimeException('Wrong-tenant Apply not denied.');
+    if(allocationHttp($url,$wrong,['op'=>'pmimports','action'=>'apply','import_id'=>'999999999','csrf_token'=>'allocation-test-token'])[0]!==401)throw new RuntimeException('Wrong-tenant session was not expired.');
     echo "PASS: import HTTP Admin/non-Admin, real multipart preview, CSRF/extension, template download/no-store and no staging of invalid files.\n";
 }finally{proc_terminate($server);proc_close($server);}

@@ -8,6 +8,10 @@ Email: info@derasoft.com
 Last updated: 02/07/2008
 **************************************************************************/
 # Operation tracking
+if(defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY){
+	if(($_SERVER['REQUEST_METHOD']??'GET')!=='POST'){http_response_code(405);header('Allow: POST');exit('Đăng xuất cần POST.');}
+	$token=$request->element('csrf_token');if(!is_string($token)||empty($_SESSION['pm_csrf_token'])||!hash_equals($_SESSION['pm_csrf_token'],$token)){http_response_code(400);exit('Phiên làm việc đã hết hạn.');}
+}
 if (isset($trackings, $userInfo) && $userInfo) {
 	$trackings->addData(array(
 		'store_id' => $storeId,
@@ -19,7 +23,7 @@ if (isset($trackings, $userInfo) && $userInfo) {
 }
 
 # Preserve the legacy return-to-admin flow when impersonating another user.
-if (!empty($_SESSION['adminId'])) {
+if (!(defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY) && !empty($_SESSION['adminId'])) {
 	$adminId = (int) $_SESSION['adminId'];
 	$_SESSION = array('userId' => $adminId);
 	header('Location: '.ADMIN_SCRIPT.'?op=admin');

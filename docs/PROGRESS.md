@@ -632,7 +632,66 @@ tài khoản giữ inactive khi lỗi và có thể cấp mật khẩu lại. Us
 Các trường hợp này được ghi trong PHASE8_PLAN/DB_SCHEMA/portfolio; UAT toàn local vẫn chờ
 người dùng ở cuối dự án. Không tự commit/push/merge/deploy.
 
-### Local checkpoint delivery
+## Phase 9 — PLAN — 2026-10-04
 
-Phase 8 checkpoint includes the verified implementation and related tests.
-Created retrospectively while completing Phase 9; no push/merge/deploy.
+Người dùng yêu cầu tiếp tục sau Phase 8. Đã đọc AGENTS/PROGRESS/PLAN_FINAL và kiểm tra
+code hiện có để lập `docs/PHASE9_PLAN.md` (UI/UX, performance, security).
+Xác định qua đọc code: trang nhân sự gọi roles từng user (N+1), một số input thiếu label
+riêng; cần browser matrix và EXPLAIN để đánh giá tiếp, chưa tuyên bố benchmark/audit PASS.
+Plan nêu phạm vi màn hình, batch role lookup, bảo mật/session, 6 nhóm acceptance và giữ
+nghiệp vụ/engine/schema đã chốt. ADD INDEX mới nếu cần phải xin duyệt riêng.
+Chưa BUILD Phase 9 hoặc đổi branch; chờ duyệt plan theo quy trình AGENTS, không chờ UAT.
+Không chạy test lại cho thay đổi chỉ tài liệu này; không commit/push/merge/deploy.
+
+## Phase 9 — BUILD / automated VERIFY — 2026-10-04
+
+Người dùng duyệt UI/accessibility và xác nhận thiết kế batch role: một prepared query lấy
+toàn bộ role theo tenant/user IDs trên trang; PHP nhóm theo user, chỉ is_primary=1 quyết
+định role chính. Không suy ra từ JOIN hoặc thứ tự kết quả. Multiple-primary fail closed
+và hiển thị cảnh báo. Test khớp chính xác rows/primary của 20 user có 2–3 role: N=20 → 1
+query, một user → 1, empty → 0; không tạo fake personnel trong dc_users MyISAM.
+
+Đã bổ sung navigation theo quyền, current page/skip link, label/focus/live messages,
+vùng cuộn bảng và CSS local. Giữ nghiệp vụ/rate_snapshot/currency/DECIMAL/history/locks.
+PM login/logout có CSRF, logout POST-only, session kiểm tra actor active/tenant, PM không
+mở KCFINDER. Input array không hợp lệ bị chặn. Inline CSS/confirmation được chuyển local
+sau inventory rồi mới bật CSP; headers no-store/nosniff/referrer/frame áp dụng cả lỗi.
+Polling 60s dừng khi tab ẩn, giữ dữ liệu cũ khi lỗi; 401/403 dừng hẳn đến khi tải lại.
+
+### Lệnh và kết quả thật
+
+- `./tests/pm_regression.ps1`: PASS 41 scripts (Phase 2–9); runner không chạy migration.
+- `.tools/php83/php.exe tests/pm_explain_smoke.php --report`: PASS 62 query shapes / 6
+  families; không type=ALL trong run local, có temporary/filesort. Không đề xuất/chạy index,
+  không đổi schema/ENGINE. Chi tiết [PHASE9_EXPLAIN.md](PHASE9_EXPLAIN.md).
+- `tests/pm_ui_http_smoke.php`: PASS 18 authenticated Admin/Employee route cases, menu,
+  headers/CSP, malformed array, search SQLi/XSS, session/tenant, negative login/logout CSRF.
+  PM/HR authenticated HTTP chưa có actor active local; không ghi PASS cho phần này.
+- `tests/pm_session_guard_smoke.php`: PASS active/inactive/deleted/missing/cross-tenant/
+  revoked actor trên temporary mirror; core users không thay đổi.
+- `playwright-cli -s=pmphase9 run-code --filename=../tests/pm_ui_browser.js` từ `.local`:
+  PASS 13 synthetic fixtures × 360/390/768/1440px, labels, first-tab skip/main focus,
+  table regions, không page overflow/inline code/CSP violation. Screenshot đã chụp/xem.
+  200% text scaling PASS, không phải browser/OS zoom thật.
+- `pm_costs_browser.js`, `pm_allocations_browser.js`, `pm_reports_browser.js`,
+  `pm_import_browser.js`: PASS sau bật CSP, chart/table fallback, polling/visibility/
+  expiry, export/import forms. `pm_confirmation_browser.js`: PASS handler cancel/accept
+  bằng mocked confirm result, intercepted synthetic POST; không gửi mutation vào app.
+- PHP 8.3 `-l`: PASS 61 changed/new PHP files. `node --check`: PASS 10 JS files.
+  `git -c safe.directory=D:/derasoft-pm diff --check`: PASS, chỉ cảnh báo LF/CRLF.
+
+Code/security review đã trace entrypoints, tenant/permission/session, CSRF, escaping,
+prepared batch SQL, currency/DECIMAL, upload/export/provenance và error logs. Không còn
+defect được chứng minh trong phạm vi review; không thay penetration test độc lập.
+Coverage và các ca chưa kiểm tra ghi ở [PHASE9_VERIFY.md](PHASE9_VERIFY.md).
+Giới hạn Phase 8 native MyISAM crash window vẫn giữ nguyên. UAT toàn local chờ người dùng
+ở cuối; không production-ready, không push/merge/deploy hoặc truy cập production.
+
+Git delivery: thay đổi Phase 6–8 kế thừa trước quy tắc commit mới được tách thành checkpoint
+local theo phase; Phase 9 có commit riêng sau VERIFY. Không rewrite lịch sử đã push;
+config local dùng Tạ Trí Dũng / GitHub noreply, không stage secret/config/dump/cache/log/upload.
+
+Checkpoint local đã tạo (không push): Phase 6 `b6ba02b`, Phase 7 `b942231`, Phase 8 `4fcf76c`.
+`python .local/verify-checkpoints.py` đã chạy trên ba snapshot tách biệt: PASS lần lượt
+19/24/36 regression scripts; config local chỉ sao chép trong thư mục `.local` bị ignore.
+Không sửa source đang làm hoặc tạo fake core user. Plan Phase 10 tại PHASE10_PLAN.md chờ duyệt.

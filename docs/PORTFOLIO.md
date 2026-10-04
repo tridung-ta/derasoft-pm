@@ -33,6 +33,10 @@ Không ghi production-ready, UAT hoàn tất, kết quả hiệu năng hoặc s�
 
 Ngày 2026-10-02: chỉ chỉnh phần trình bày repository và danh tính Git. BUILD nghiệp vụ tiếp tục tạm dừng; chờ lệnh mới của người dùng. Workflow duyệt timesheet đã hoãn, UAT chưa xác nhận, chưa deploy production.
 
+## Resume
+
+Người dùng đã yêu cầu tiếp tục ngày 2026-10-02. Yêu cầu trình bày GitHub/commit chuyên nghiệp được lưu trong AGENTS.md; Phase 6 đang PLAN chờ duyệt. Chỉ thêm tính năng mới vào CV sau khi BUILD và VERIFY, không coi kế hoạch là chức năng đã hoàn thành.
+
 ## Phase 6 — local BUILD verified
 
 Phase 6 đã BUILD và automated VERIFY trên `feature/pm-phase6-cost-chart`, chưa được push/merge/deploy.
@@ -64,3 +68,15 @@ Tài khoản mới inactive, Admin cấp mật khẩu có CSRF/ownership rồi k
 Thành công/crash Apply kiểm thử trên temporary user mirror để rollback fixture; native 1062
 kiểm tra trên dc_users thật. Chưa kill process sau successful MyISAM INSERT trên DB cô lập,
 chưa UAT hoặc production; không trình bày như kinh nghiệm triển khai production.
+
+## Phase 9 — local BUILD / automated VERIFY
+
+UI/accessibility refinement trên Smarty/MVC hiện có: shared permission-aware navigation,
+labels/keyboard focus/skip link và responsive scroll regions; không rewrite framework.
+Prepared tenant-scoped batch roles giữ chính xác primary role, 20 query role → 1 trong
+fixture rollback. PM session/CSRF/logout và CSP hardening đã kiểm tra local; 41 regression
+scripts PASS. EXPLAIN 62 query shapes, không tự thêm index hoặc suy luận hiệu năng production.
+Evidence/coverage: PHASE9_VERIFY.md. Authenticated Admin/Employee khác với synthetic browser
+fixtures; PM/HR authenticated UI chưa có actor active local. Không ghi UAT/production-ready.
+Phase 6–9 có checkpoint commit local theo phase; chưa push/merge/deploy.
+CV chỉ mô tả phần mở rộng nền DeraSoft và kết quả kiểm chứng, không nhận toàn bộ legacy là tự viết.

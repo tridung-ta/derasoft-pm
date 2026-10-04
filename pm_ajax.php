@@ -1,6 +1,7 @@
 <?php
 /** Allowlisted PM read endpoint; legacy ajax.php remains unchanged. */
 define('ROOT_PATH',__DIR__.'/');
+include_once(ROOT_PATH.'includes/pm_response.inc.php');pmResponseHeaders();
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
