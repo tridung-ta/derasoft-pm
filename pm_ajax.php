@@ -11,7 +11,7 @@ session_write_close();
 header('Cache-Control: no-store');
 if(!$actorId){http_response_code(401);echo json_encode(['error'=>'Authentication required']);exit;}
 $pmEndpoint=$_GET['op']??'';
-if(!is_string($pmEndpoint)||!in_array($pmEndpoint,['pmcosts'],true)){http_response_code(404);echo json_encode(['error'=>'Unknown PM endpoint']);exit;}
+if(!is_string($pmEndpoint)||!in_array($pmEndpoint,['pmcosts','pmallocations'],true)){http_response_code(404);echo json_encode(['error'=>'Unknown PM endpoint']);exit;}
 try{
     include_once(ROOT_PATH.'includes/config.inc.php');
     include_once(ROOT_PATH.'includes/constant.inc.php');

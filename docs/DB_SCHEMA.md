@@ -101,3 +101,21 @@ Seed `002_seed_pm_phase5_audit_permissions.sql` cộng thêm grant audit cho Adm
 Phase 6 không thêm schema; seed `003_seed_pm_cost_permissions.sql` cộng thêm permission
 `pm.costs.view` và grant Admin/PM theo tenant. Cost service kiểm tra currency trước SUM(cost)
 trong consistent read transaction, mixed-currency trả null + cảnh báo, không quy đổi.
+
+## Phase 7 — Allocations & capacity
+
+Migration `005_create_pm_allocations.sql` chỉ CREATE TABLE IF NOT EXISTS, InnoDB:
+
+- `dc_pm_allocations`: tenant/project/task/user, work_date, hours DECIMAL(5,2),
+  start_time/end_time nullable, soft delete và actor/timestamps; index tenant/user/ngày và tenant/project/ngày.
+- `dc_pm_capacity_overrides`: tenant/user, daily/weekly DECIMAL, effective_from DATE,
+  effective_to DATE nullable (vô thời hạn), soft delete và actor/timestamps.
+  Ngày biên inclusive; service chặn overlap đối xứng, không đổi chủ sở hữu khi sửa.
+- `dc_pm_allocation_locks`: PK(store_id,user_id,work_date). Khóa sentinel 1000-01-01 theo user
+  trước khóa các ngày, sắp thứ tự user rồi ngày; bảo vệ cả tổng tuần và thay đổi capacity.
+
+Không FK tới user/store MyISAM. Capacity ngày theo ngày phân bổ; ngưỡng tuần theo thứ Hai.
+Fallback daily=8, weekly=dc_users.weekly_limit_hours; không dùng ngưỡng OT.
+Seed `004_seed_pm_allocation_permissions.sql`: Admin/PM view+manage, Employee view,
+HR không được grant riêng. Mutation/audit cùng transaction. Rollback ứng dụng ẩn route/menu,
+giữ nguyên bảng/grant/lịch sử; không DROP hoặc xóa dữ liệu.

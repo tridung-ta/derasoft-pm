@@ -40,3 +40,13 @@ Có thể bổ sung vào CV sau khi nghiệm thu: built a cost dashboard with st
 DECIMAL estimates, mixed-currency guards, scoped permissions, local Chart.js and visibility-aware 60-second polling.
 Evidence: service/HTTP/template/browser acceptance và regression ghi trong docs/PROGRESS.md.
 Không ghi UAT hoàn tất hoặc production-ready; link GitHub Phase 6 chỉ thêm sau khi người dùng cho phép push.
+
+## Phase 7 — local BUILD verified
+
+Phase 6–7 đã được tách checkpoint local theo phase; chưa push/merge.
+Đã xây dựng lịch phân bổ tuần, time-bound capacity, cảnh báo quá tải/trùng giờ nửa mở,
+gợi ý capacity chỉ đọc và permission tenant/project/owner. Mutation và audit transactional;
+mutex theo user/ngày đã kiểm tra bằng hai kết nối MySQL.
+Service/HTTP/Smarty/synthetic-browser checks PASS; chưa UAT tài khoản thực tế,
+chưa benchmark hoặc kiểm thử đầy đủ hai mutation nghiệp vụ đồng thời.
+Chỉ công bố link triển khai và đưa vào CV sau khi nghiệm thu/phê duyệt tương ứng.

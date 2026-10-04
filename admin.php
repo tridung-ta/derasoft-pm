@@ -26,6 +26,7 @@ $aops[] = 'pmprojects';
 $aops[] = 'pmtimesheets';
 $aops[] = 'pmaudit';
 $aops[] = 'pmcosts';
+$aops[] = 'pmallocations';
 include_once(ROOT_PATH.'includes/constant.inc.php');
 include_once(ROOT_PATH.'classes/data/translator.class.php');
 include_once(ROOT_PATH.'includes/admin/functions.inc.php');
@@ -102,7 +103,7 @@ $addons = new Addons(1);
 include_once(ROOT_PATH.'includes/admin/sessions.inc.php');
 
 # In PM mode, authenticated users can only access the new dashboard or logout.
-if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'pmusers', 'pmprojects', 'pmtimesheets', 'pmaudit', 'pmcosts', 'logout'), true)) {
+if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'pmusers', 'pmprojects', 'pmtimesheets', 'pmaudit', 'pmcosts', 'pmallocations', 'logout'), true)) {
 	$op = 'pm';
 	$act = '';
 	$mod = '';

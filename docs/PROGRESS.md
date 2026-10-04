@@ -372,7 +372,78 @@ Status PLAN, chờ duyệt phạm vi quyền, ngưỡng ngày, overlap và lịc
 theo quy trình AGENTS.md. Chưa tạo nhánh Phase 7, chưa migration/seed hoặc thay đổi ứng dụng.
 Các thay đổi Phase 6 và bản sửa Forbidden vẫn được giữ nguyên; UAT Phase 5–6 chưa xác nhận.
 
+## Phase 7 — Resource Allocation & Overbooking
+
+### Status — 2026-10-03
+
+Tiếp tục sau yêu cầu tạm dừng ngày 02/10. BUILD và automated VERIFY trên
+`feature/pm-phase7-resource-allocation`; giữ thay đổi Phase 6 và bản sửa Forbidden.
+Plan đã được duyệt, có hai điểm làm rõ capacity time-bound và overlap giờ trước BUILD.
+Chưa commit/push/merge/deploy; chưa xác nhận UAT Phase 5–7.
+
+### Completed
+
+- DAO/service prepared, controller/Smarty/menu `pmallocations`, polling qua allowlist PM.
+- Allocation theo tuần, task/assignee/membership active cùng tenant; CRUD và soft delete/audit transactional.
+- Capacity hữu hạn/vô hạn, overlap đối xứng trong hasOverlappingCapacity(), Admin quản lý;
+  daily theo ngày, weekly theo thứ Hai; không dùng threshold OT.
+- Overlap nửa mở, hai đầu bắt buộc có cùng nhau, duration khớp giờ, không ca qua đêm;
+  thiếu lịch chi tiết không khẳng định không trùng. Quá tải/trùng là cảnh báo, vẫn được lưu.
+- Khóa sentinel user rồi các ngày theo thứ tự cố định; project khóa theo ID cố định;
+  membership/task mutation đọc current dưới khóa. Tổng tải giữ cả historical task/project.
+- Admin toàn tenant, PM dự án phụ trách, Employee chỉ đọc own, HR chưa có grant riêng.
+  PM nhận tổng tải/busy ngoài scope nhưng không chi tiết; gợi ý không tự sửa assignment.
+- Responsive, escaping, POST op/CSRF theo router legacy, polling 60s dừng khi tab ẩn,
+  lỗi giữ dữ liệu cũ. Audit Viewer Admin thêm filter allocation/capacity; PM/HR vẫn giữ scope cũ.
+- Migration 005/seed 004 đã chạy idempotent hai lần trên local sau backup ngày 02/10;
+  không schema legacy/production. Rollback ẩn feature, giữ dữ liệu/bảng/grant.
+
+### Acceptance và lệnh kiểm thử
+
+PHP: `.tools/php83/php.exe`, fixture transaction rollback.
+
+| Nhóm | Lệnh / bằng chứng | Kết quả |
+| --- | --- | --- |
+| 1. CRUD/validation/audit | tests/pm_allocations_smoke.php | PASS |
+| 2. Capacity/tuần/overlap hiệu lực | Cùng smoke: hữu hạn/vô hạn, inclusive biên, excludeId, soft delete, midweek, đúng bằng/vượt ngưỡng, tuần qua năm | PASS |
+| 3. Trùng giờ/ngoài scope | Cùng smoke: partial hai phía, containment hai chiều, exact, liền kề hai đầu, separate, NULL, chuyển ngày/user, tổng tải ngoài project | PASS |
+| 4. Scope/CSRF/history/escaping | Cùng smoke + tests/pm_allocations_http_smoke.php: page/poll/detail/suggestions/session tenant, rejected POST và no-store | PASS |
+| 5. UI/gợi ý/polling | tests/smoke_pm_allocations.php; playwright-cli -s=pmphase7 run-code --filename=../tests/pm_allocations_browser.js từ .local | PASS ngày 02/10 |
+| 6. Lock/regression | tests/pm_allocations_concurrency.php: hai connection, input khóa đảo thứ tự, chờ rồi tiếp tục sau nhả khóa; regression Phase 2–6 | PASS |
+
+Browser dùng synthetic preview local: desktop 1440×1000/mobile 390×844, không page overflow,
+suggestions và refresh XSS-safe, route/CSRF sau refresh, filter/timer/visibility/error/empty.
+Đã xem screenshot .local/phase7-desktop.png và phase7-mobile.png (dữ liệu giả).
+Console 403 chủ ý khi test lỗi, favicon 404; không pageerror trong test.
+
+Regression đã chạy ngày 02/10: pm_auth_rbac_smoke, pm_rates_smoke, pm_departments_smoke,
+pm_projects_smoke, pm_phase5_migration, pm_phase5_audit_permissions, pm_timesheets_smoke,
+pm_timesheet_window_smoke, pm_audit_smoke, smoke_pm_timesheets, smoke_pm_audit, smoke_pm_admin,
+smoke_pm_users, smoke_pm_projects, smoke_pm_dependencies, pm_phase6_permissions,
+pm_costs_smoke, pm_costs_http_smoke, smoke_pm_costs: PASS.
+
+### Security review / giới hạn
+
+Rà soát prepared input, role/tenant/project/owner, current reads sau mutex, transaction/audit,
+CSRF và POST op, HTML escape/DOM textContent, fixed AJAX allowlist/GET-only/no-store.
+Không phát hiện vấn đề bảo mật còn mở trong các đường dẫn đã rà soát.
+Concurrency test xác minh mutex thực bằng hai connection; chưa kiểm thử hai mutation nghiệp vụ
+đầy đủ đồng thời, benchmark tải lớn hoặc UAT session người dùng. Không tuyên bố production-ready.
+List giới hạn 1000 allocation (cảnh báo), 1000 task chọn và 200 capacity mới nhất;
+hướng dẫn nghiệm thu tại docs/UAT_PHASE7.md. Không tự chuyển Phase 8.
+
+### Resume verification — 2026-10-03
+
+Chạy lại `.tools/php83/php.exe` cho pm_phase7_migration, pm_allocations_smoke,
+pm_allocations_concurrency, pm_allocations_http_smoke, smoke_pm_allocations,
+pm_audit_smoke, smoke_pm_audit, pm_costs_smoke và pm_costs_http_smoke trong tests/: PASS.
+PHP `-l` 14 file DAO/service/controller/router/test liên quan Phase 7: PASS.
+`node --check js/pmallocations.js` và `node --check tests/pm_allocations_browser.js`: PASS.
+`git -c safe.directory=D:/derasoft-pm diff --check`: PASS (cảnh báo chuyển LF/CRLF).
+Browser không chạy lại ngày 03/10 vì không thay đổi UI/JS từ lần browser PASS ngày 02/10.
+Hoàn tất DB_SCHEMA, PORTFOLIO, PROGRESS và UAT_PHASE7; giữ nguyên giới hạn nêu trên.
+
 ### Local checkpoint delivery
 
-Phase 6 checkpoint includes the verified implementation and related tests.
+Phase 7 checkpoint includes the verified implementation and related tests.
 Created retrospectively while completing Phase 9; no push/merge/deploy.
