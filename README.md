@@ -17,7 +17,7 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 
 **Author:** [Tạ Trí Dũng](https://github.com/tridung-ta) · **Focus:** backend development, business rules and legacy integration.
 
-> **Development status — 04 Oct 2026:** Phase 7 locally built and automated-verified. Local checkpoint only; latest published code remains Phase 5. User UAT/production acceptance pending.
+> **Development status — 04 Oct 2026:** Phase 8 locally built and automated-verified. Local checkpoint only; latest published code remains Phase 5. User UAT/production acceptance pending.
 
 ## What the application does
 
@@ -101,6 +101,6 @@ Mã BUILD mới nhất nằm trên nhánh Phase 5 được dẫn ở trên. Côn
 
 ## Local checkpoint
 
-Costs plus weekly allocations, time-bound capacity, half-open overlap warnings and sorted transaction locks.
+Costs, allocations, bounded explicit-string XLSX reports and Admin personnel import with per-row resume/provenance. Legacy dc_users remains MyISAM; approved tenant email UNIQUE blocks duplicates. Native MyISAM crash window remains untested; no atomic whole-file claim.
 
 Commands/results and limitations are recorded in docs/PROGRESS.md. No UAT/production-ready claim.

@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }
         if($notice!=='')$trackings->addData(['store_id'=>$storeId,'username'=>$userInfo->getUsername(),'action'=>'PM users: '.$action.' user #'.$targetId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>$_SERVER['REMOTE_ADDR']??'']);
     }catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
-    catch(Throwable $e){error_log('PM user management operation failed: '.$e->getMessage());$error='Không thể hoàn tất thao tác. Vui lòng kiểm tra dữ liệu và thử lại.';}
+    catch(Throwable $e){error_log('PM user management operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng kiểm tra dữ liệu và thử lại.';}
 }
 $page=max(1,(int)$request->element('page',1));$q=trim((string)$request->element('q'));$departmentFilter=(int)$request->element('department_id');$roleFilter=(int)$request->element('role_id');
 $filters=['q'=>$q,'department_id'=>$departmentFilter,'role_id'=>$roleFilter];$rows=$pmUsers->list((int)$storeId,$filters,$page,20);

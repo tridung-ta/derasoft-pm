@@ -50,3 +50,17 @@ mutex theo user/ngày đã kiểm tra bằng hai kết nối MySQL.
 Service/HTTP/Smarty/synthetic-browser checks PASS; chưa UAT tài khoản thực tế,
 chưa benchmark hoặc kiểm thử đầy đủ hai mutation nghiệp vụ đồng thời.
 Chỉ công bố link triển khai và đưa vào CV sau khi nghiệm thu/phê duyệt tương ứng.
+
+## Phase 8 — báo cáo/XLSX increment local
+
+Nhánh local `feature/pm-phase8-reports-excel` có báo cáo giờ cá nhân/nhóm và chi phí scoped,
+export XLSX explicit string chống formula injection, DECIMAL tiền và mixed-currency guard.
+Service/HTTP/Smarty/browser increment đã kiểm thử. Import có XLSX preview/validation/staging,
+giới hạn ZIP, chặn macro/DTD/external/formula và rollback batch khi lỗi.
+Apply đã BUILD local sau phê duyệt UNIQUE(store_id,email), giữ MyISAM: INSERT/1062 từng dòng,
+outcome journal, provenance recovery và mutex chống hai Admin Apply cùng batch.
+Tài khoản mới inactive, Admin cấp mật khẩu có CSRF/ownership rồi kích hoạt riêng.
+36 regression scripts PASS, browser import desktop/mobile/form POST PASS.
+Thành công/crash Apply kiểm thử trên temporary user mirror để rollback fixture; native 1062
+kiểm tra trên dc_users thật. Chưa kill process sau successful MyISAM INSERT trên DB cô lập,
+chưa UAT hoặc production; không trình bày như kinh nghiệm triển khai production.

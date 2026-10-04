@@ -119,3 +119,26 @@ Fallback daily=8, weekly=dc_users.weekly_limit_hours; không dùng ngưỡng OT.
 Seed `004_seed_pm_allocation_permissions.sql`: Admin/PM view+manage, Employee view,
 HR không được grant riêng. Mutation/audit cùng transaction. Rollback ứng dụng ẩn route/menu,
 giữ nguyên bảng/grant/lịch sử; không DROP hoặc xóa dữ liệu.
+
+## Phase 8 — personnel import staging
+
+Migration `006_create_pm_import_staging.sql`: InnoDB, chỉ CREATE TABLE IF NOT EXISTS.
+`dc_pm_import_logs`: tenant/actor/status=staged/row_count/timestamp, không raw workbook/PII.
+`dc_pm_import_staging`: tenant/import_id/source_row/payload JSON;
+UNIQUE(store_id,import_id,source_row). Payload có dữ liệu preview nhân sự, chỉ Admin xử lý;
+không coi là log công khai. Batch và audit stage cùng transaction, failure rollback toàn bộ.
+Seed 006 cấp pm.imports.manage cho Admin. Apply giữ dc_users MyISAM, không đổi engine.
+Rollback ứng dụng ẩn route/menu, giữ bảng/staging/audit; không DROP hoặc xóa dữ liệu.
+
+Migration 007 đã được duyệt riêng, áp dụng local sau backup: thêm full UNIQUE
+uq_pm_users_store_email(store_id,email); giữ email nullable/collation/index email cũ.
+Preflight không có duplicate nhóm tenant; không sửa dữ liệu để tạo index.
+Migration 008 CREATE TABLE IF NOT EXISTS dc_pm_import_results InnoDB:
+tenant/import/source_row UNIQUE; pending/applied/skipped_duplicate/failed, reason_code,
+user_id nullable, token provenance, SHA256 payload, attempt_count và timestamps.
+import_logs dùng staged/in_progress/partial/completed. GET_LOCK connection-owned giữ toàn
+lượt Apply, không nhả giữa các transaction PM. Intent ghi trước MyISAM INSERT;
+chỉ role/journal/audit là transactional, không atomic xuyên hai engine.
+User import mới inactive, random password_hash; properties giữ dấu nguồn để khôi phục đúng
+user của dòng khi replay bị 1062. Chỉ Admin cấp mật khẩu cho applied/inactive/owned row;
+không cập nhật account khác khi trùng. Không tự DROP INDEX/bảng hoặc xóa nhân sự rollback.

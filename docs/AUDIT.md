@@ -171,3 +171,18 @@ Ba mặc định nghiệp vụ trên không được đóng cứng trong migrati
 DeraSoft đủ nền để tiếp tục mà không làm lại Admin: router, session/user, Smarty, DAO convention, phân trang, tracking và Excel đều có thể tái sử dụng. Tuy nhiên chỉ nên tái sử dụng cấu trúc; auth MD5 và query ghép chuỗi phải được nâng cấp trước khi mở rộng nghiệp vụ.
 
 Phase 0 dừng tại đây chờ duyệt. Chưa có thay đổi code ứng dụng hoặc database.
+
+## Quyết định import Phase 8 — 04/10/2026
+
+Giữ dc_users MyISAM, không đổi ENGINE kể cả local. Audit local trước migration: email index
+thường, không UNIQUE, 9 users và không duplicate groups. Người dùng đã duyệt riêng migration
+007 thêm UNIQUE(store_id,email); local áp dụng sau backup và xác nhận ENGINE/count giữ nguyên.
+Không áp dụng production. Index email thường/collation/nullability được giữ.
+Apply INSERT từng dòng bắt 1062, journal intent/outcome và in_progress + connection-owned
+mutex; không SELECT-check-then-INSERT, không atomic toàn file MyISAM.
+Chỉ phục hồi role cho user có provenance khớp batch/source_row; duplicate khác bị bỏ qua.
+Account mới inactive; Admin cấp mật khẩu có CSRF/ownership rồi kích hoạt riêng.
+Apply/crash thành công kiểm thử trên temporary mirror; native 1062 và hai-connection lock
+kiểm thử thật. Chưa kiểm thử kill process sau successful MyISAM INSERT trên DB cô lập;
+không ghi UAT/production-ready. Username DB chưa UNIQUE; xung đột giữ inactive và báo lỗi,
+không tự thêm constraint thứ hai hoặc sửa dữ liệu để xử lý.

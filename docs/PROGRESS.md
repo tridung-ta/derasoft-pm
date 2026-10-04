@@ -443,7 +443,196 @@ PHP `-l` 14 file DAO/service/controller/router/test liên quan Phase 7: PASS.
 Browser không chạy lại ngày 03/10 vì không thay đổi UI/JS từ lần browser PASS ngày 02/10.
 Hoàn tất DB_SCHEMA, PORTFOLIO, PROGRESS và UAT_PHASE7; giữ nguyên giới hạn nêu trên.
 
+## Quy trình kiểm thử mới / Phase 8 increment — 2026-10-03
+
+Người dùng yêu cầu tự kiểm thử chức năng/regression/code/security sau mỗi phase;
+chỉ UAT thủ công khi toàn bộ local hoàn tất. Không chờ UAT từng phase để tiếp tục local,
+không tự production hoặc ghi UAT PASS. Đã lưu trong AGENTS.md.
+Chạy lại đầy đủ 24 PHP test Phase 2–7 hiện có: PASS. Dùng code-review rà soát
+route/controller/DAO/service và quyền, mutex, CSRF, escaping; không phát hiện vấn đề còn mở
+trong phạm vi đã xem, không coi đây là cam kết không còn lỗi.
+
+### Phase 8: báo cáo / XLSX
+
+BUILD trên `feature/pm-phase8-reports-excel`, giữ toàn bộ thay đổi Phase 6–7.
+Plan tại docs/PHASE8_PLAN.md. Đã xây dựng prepared DAO/service, route `pmreports`,
+menu/Smarty và export POST có CSRF, role/tenant/project/owner kiểm tra phía backend.
+
+- Báo cáo giờ cá nhân/nhóm theo ngày inclusive, pagination 50 dòng, history task/project,
+  soft-deleted timesheet bị loại; không trả cost/rate cho báo cáo giờ.
+- Employee/HR chỉ giờ cá nhân; PM dự án quản lý; Admin tenant. Cost report reuse
+  PmCostService, pm.costs.view và role Admin/PM; currency null/warnings, actual/lifetime/estimate tách rõ.
+- XLSX local bằng PhpSpreadsheet hiện có, TYPE_STRING cho mọi ô (formula-like input không thực thi),
+  tiền giữ DECIMAL text; limit 5000 dòng/dự án, vượt thì từ chối thay vì cắt.
+  Filename cố định, MIME chuẩn/no-store, file tạm xóa trong finally; không export mật khẩu/hash.
+- Backup local trước seed 005; grant report view/export cho 4 role tenant-scoped,
+  seed chạy idempotent hai lần, không mở HR cost bằng report permission.
+
+Các lệnh `.tools/php83/php.exe tests/pm_phase8_permissions.php`,
+`tests/pm_reports_smoke.php`, `tests/pm_reports_http_smoke.php`, `tests/smoke_pm_reports.php`: PASS.
+Smoke có round-trip XLSX, formula-like strings, DECIMAL lớn, mixed currency, own/PM/HR/tenant,
+invalid filters, 8192 fixture dòng để test pagination/limit, history và rollback.
+HTTP test page/filter/IDOR/cost denial, CSRF và download XLSX MIME/no-store: PASS.
+`tests/pm_reports_smoke.php --preview` tạo preview dùng fixture trong .local được ignore.
+`playwright-cli -s=pmphase8 run-code --filename=../tests/pm_reports_browser.js` từ .local:
+PASS desktop/mobile/escaping/filter/download route+CSRF. Browser dùng synthetic preview/mock download;
+HTTP test có download thật với session local. Không thay UAT người dùng.
+
+### Import: chưa BUILD / quyết định đang chờ
+
+Kiểm tra information_schema local xác nhận dc_users ENGINE=MyISAM.
+Không thể ghi nhân sự atomic bằng transaction hiện tại; đổi engine không thuộc quy tắc ADD COLUMN/CREATE TABLE.
+Đã hỏi người dùng chọn preview/staging theo quy tắc hiện tại hoặc duyệt ngoại lệ InnoDB local sau backup.
+Chưa đổi engine, chưa upload/import/staging/migration nhân sự, chưa tuyên bố Phase 8 hoàn tất.
+Phần báo cáo không phụ thuộc quyết định này. Chưa commit/push/merge/deploy; production chỉ sau
+người dùng nghiệm thu toàn bộ local và cho phép triển khai.
+
+Sau increment báo cáo đã chạy đầy đủ 28 PHP test hiện có (24 Phase 2–7 và 4 report): PASS.
+PHP `-l` 9 file route/controller/DAO/service/test report: PASS;
+`node --check tests/pm_reports_browser.js` và `git diff --check`: PASS (cảnh báo LF/CRLF).
+Rà soát code/security report: prepared filters, role/tenant/owner, financial redaction,
+POST op/CSRF, escaping, explicit XLSX text, download headers và cleanup tạm;
+không phát hiện vấn đề còn mở trong đường dẫn report đã kiểm tra.
+
+### Phase 8 — import preview/staging increment (2026-10-03)
+
+Tiếp tục BUILD phần độc lập, giữ MyISAM và chưa apply nhân sự. Route `pmimports` Admin-only:
+mẫu XLSX, upload/preview, lỗi theo dòng và staging toàn batch hợp lệ; UI luôn ghi chưa áp dụng.
+Chỉ đề xuất tạo mới username/email chưa có trong tenant, role EMPLOYEE; không update tài khoản,
+không password/hash hoặc quyền Admin/PM/HR. Cần revalidate tất cả khi BUILD apply sau này.
+
+Migration 006/seed 006 sau backup local: thêm import_logs/staging InnoDB, không schema legacy.
+Lần đầu gặp reserved word row_number; sửa file trước khi staging table được tạo thành source_row,
+sau đó chạy idempotent hai lần PASS. Không dữ liệu cũ bị sửa hoặc xóa.
+Batch staging/audit transactional; log/audit metadata không chứa PII, staging payload Admin-only.
+Uploads ngoài webroot qua PHP temp, controller xóa trong finally; không giữ workbook.
+
+Security review: role+active actor/tenant, CSRF/POST op, is_uploaded_file, extension/MIME/2MB,
+ZIP entry/count/expanded-size/ratio budgets, XML DTD/ENTITY/null/external, macro/embedded content,
+1 sheet/6 header/500 row, cell formula, row identity/department/role và HTML escaping.
+Không phát hiện vấn đề còn mở trong các đường dẫn đã rà soát; không thay penetration test độc lập.
+
+- `.tools/php83/php.exe tests/pm_import_migration.php --apply` hai lần: PASS.
+- `tests/pm_import_smoke.php`: PASS Admin/tenant, valid preview/stage, duplicate/existing identity,
+  bad headers/rows, macro/external/DTD/formula/ZIP/size/row limits; lỗi chèn ở staging dòng thứ hai
+  rollback log và tất cả rows. dc_users không đổi; fixture rollback.
+- `tests/pm_import_http_smoke.php`: PASS multipart upload thực, template download, Admin/non-Admin,
+  CSRF/extension/no-store và không staging workbook lỗi. Không ghi dữ liệu nghiệp vụ thử tồn tại.
+- `tests/smoke_pm_imports.php`: PASS escaping, upload/CSRF, trạng thái chưa áp dụng.
+- Browser `playwright-cli -s=pmimports run-code --filename=../tests/pm_import_browser.js`
+  từ .local: PASS desktop/mobile, no page overflow/XSS, fields và chưa áp dụng.
+  Preview synthetic, HTTP test kiểm tra upload thật; screenshots .local đã xem. Favicon 404 không pageerror.
+- Chạy đầy đủ 32 PHP test Phase 2–8 hiện có: PASS; PHP -l 9 file liên quan imports: PASS;
+  node --check tests/pm_import_browser.js và git diff --check: PASS (LF/CRLF warnings).
+
+Admin Audit Viewer có entity import/action stage; PM/HR tiếp tục chỉ timesheet scope cũ.
+Chưa đổi engine/apply nhân sự, chưa coi Phase 8 hoàn tất; quyết định database đã hỏi vẫn chưa chốt.
+Không dừng chờ UAT từng phase, không commit/push/merge/deploy hoặc truy cập production.
+
+### Quyết định Apply / kiểm tra UNIQUE email — 2026-10-03
+
+Người dùng quyết định chính thức không đổi ENGINE dc_users kể cả local.
+Apply thiết kế lại: INSERT từng dòng, duplicate-key 1062, per-row outcome resumable,
+import_logs.status=in_progress và khóa chống hai Admin cùng batch. Chưa code Apply.
+
+Read-only `.tools/php83/php.exe tests/pm_import_email_index_audit.php` trên
+derasoft_pm_local: dc_users MyISAM, email VARCHAR(50) nullable, utf8mb4_unicode_ci;
+index email NON_UNIQUE=1, không UNIQUE(email)/UNIQUE(store_id,email).
+9 rows, 0 NULL/empty, 0 duplicate groups global hoặc trong tenant. Không xuất giá trị email.
+Không truy cập production; trạng thái production chưa xác minh.
+
+Đã chuẩn bị migration DRAFT `007_add_pm_users_email_unique.sql` cho
+UNIQUE(store_id,email) theo multi-tenant, giữ nguyên index email thường, ENGINE và dữ liệu.
+Idempotent với definition chính xác; tên index xung đột hoặc duplicate thì native ALTER thất bại,
+không tự sửa dữ liệu. MyISAM ALTER có thể rebuild/lock bảng lõi; cần backup/cửa sổ bảo trì.
+Chờ duyệt riêng theo yêu cầu người dùng, chưa chạy migration, chưa tuyên bố SQL runtime PASS.
+
+PHASE8_PLAN nêu rõ DB-key scope, NULL policy và thiết kế per-row journal cùng advisory lock
+connection-owned để xử lý crash/stale in_progress mà không nhả khóa worker còn chạy.
+Không SELECT-check-then-INSERT khi Apply; preview duplicate chỉ là phản hồi trước ghi.
+Vấn đề gián đoạn giữa INSERT và log được replay bằng UNIQUE, không giả định transaction MyISAM.
+Không cấp role cho account trùng ngoài batch; provenance phải được xác minh nếu hoàn tất side effects.
+
+Đã sửa preview email max 50 cho khớp schema thực, thêm regression email dài quá cột.
+Import service/HTTP smoke và lint audit script: PASS; diff check PASS (LF/CRLF warnings).
+Giữ nguyên report/export 5000 rows, explicit strings, CSRF/no-store và HR/Employee không tài chính.
+
+### Phase 8 — Apply BUILD / automated VERIFY — 2026-10-04
+
+Người dùng đã duyệt riêng migration UNIQUE email và yêu cầu tiếp tục BUILD.
+Nhánh `feature/pm-phase8-reports-excel`; giữ nguyên mọi thay đổi Phase 6–8 hiện có.
+Phase 8 đã BUILD / automated VERIFY trong phạm vi và giới hạn kiểm thử dưới đây;
+không ghi UAT PASS hoặc production-ready.
+
+Database local đã backup bằng `.tools/php83/php.exe .local/backup-phase5.php` trước DDL.
+`.tools/php83/php.exe tests/pm_email_unique_migration.php --apply` chạy hai lần PASS:
+full UNIQUE(store_id,email) đã tồn tại; dc_users vẫn MyISAM, 9 users, không sửa dữ liệu.
+`.tools/php83/php.exe tests/pm_import_results_migration.php --apply` hai lần PASS:
+migration 008 chỉ CREATE TABLE import_results InnoDB với UNIQUE tenant/batch/source_row.
+Không kết nối production; không đổi ENGINE, DROP, xóa dữ liệu hoặc sửa index cũ.
+
+Apply Admin-only POST/CSRF, runtime UNIQUE guard, INSERT trực tiếp và catch 1062;
+lookup duplicate chỉ sau lỗi INSERT để xác minh dấu nguồn, không SELECT-check-then-INSERT.
+import_logs.status=in_progress và GET_LOCK connection-owned theo DB/tenant/batch giữ toàn lượt;
+worker khác nhận conflict, resume flag stale chỉ khi lấy được lock; finally release.
+Journal intent/token/hash payload trước INSERT, outcome applied/skipped_duplicate/failed,
+reason/user_id/attempt/timestamp từng dòng; pending replay, failed retry, completed không ghi lại.
+Crash sau INSERT hoặc lỗi transaction role/audit: chỉ hoàn tất tài khoản có provenance khớp,
+không tạo tài khoản thứ hai hoặc cấp role cho tài khoản trùng ngoài batch.
+Các dòng lỗi không dừng dòng tiếp theo; kết quả partial/completed và số lượng được hiển thị.
+
+Tài khoản mới inactive, legacy password NULL, hash ngẫu nhiên không tiết lộ; role chỉ EMPLOYEE.
+Username chưa UNIQUE DB: hậu kiểm xung đột sau INSERT, giữ inactive và báo failed để quản trị
+viên xử lý, không tự sửa account cũ. Admin có form cấp mật khẩu 12–72 byte cho applied/owned/
+inactive row, CSRF + batch lock + password_hash; sau đó kích hoạt riêng trong Quản lý nhân sự.
+Không log/echo password/hash; Audit Viewer Admin có filter apply/provision_password.
+PM/HR không được mở scope import. Log lỗi PM users được đổi sang thông báo generic để tránh
+exception duplicate-key mới đưa email vào log. Không thêm workflow duyệt timesheet.
+
+| Nhóm acceptance Phase 8 | Kết quả và bằng chứng |
+| --- | --- |
+| 1. Báo cáo giờ/filter/history/pagination | PASS `pm_reports_smoke.php`; fixture rollback |
+| 2. Role/tenant/IDOR/CSRF/no-store | PASS reports/import service + HTTP; Admin/PM/HR/Employee gates |
+| 3. XLSX/Unicode/formula/DECIMAL/currency | PASS report round-trip và currency guards; 5000-row rejection |
+| 4. Import/row errors/resume/concurrency | PASS preview/upload/ZIP/headers/formulas; Apply mirror crash/retry/1062/immutable payload/independent rows; native 1062 và hai real connections |
+| 5. Smarty/browser desktop/mobile | PASS import escaping, không overflow, Apply/resume/detail/credential POST và CSRF; report download/browser đã PASS ở increment trước |
+| 6. Regression/lint/code/security | PASS 36 scripts, lint các file Apply liên quan, node check và diff check |
+
+Lệnh/kết quả:
+
+- `./tests/pm_regression.ps1`: PASS 36 script Phase 2–8; không chạy migration trong runner.
+- `.tools/php83/php.exe tests/pm_import_apply_smoke.php`: PASS INSERT/1062, inactive/hash/
+  DECIMAL, interruption sau INSERT và transaction role/journal, retry, duplicate không grant,
+  immutable payload, lỗi dòng độc lập, Admin/tenant/IDOR/UNIQUE gates và credential ownership.
+  Hai kết nối MySQL thật kiểm tra lock busy và connection close tự release. Fixture rollback.
+- `.tools/php83/php.exe tests/pm_import_native_duplicate.php`: native dc_users INSERT trả
+  1062, engine/count không đổi; có thể tạo khoảng trống auto-increment, không thêm nhân sự.
+- `.tools/php83/php.exe tests/pm_import_http_smoke.php`: PASS multipart thật, template,
+  Admin/non-Admin/wrong tenant, Apply/resume/detail/credential CSRF và IDOR, no-store.
+- `.tools/php83/php.exe tests/smoke_pm_imports.php --preview`: PASS Smarty/escaping/forms.
+- `playwright-cli -s=pmimports run-code --filename=../tests/pm_import_browser.js` từ `.local`:
+  PASS desktop 1440/mobile 390, không page overflow/XSS/script error, các form POST đúng fields.
+  Đây là synthetic fixture; screenshot đã xem. Favicon 404, không ảnh hưởng chức năng.
+- `.tools/php83/php.exe -l <file>` các DAO/service/controller/tests Apply/import và PM users:
+  PASS. `node --check tests/pm_import_browser.js`: PASS.
+- `git -c safe.directory=D:/derasoft-pm diff --check`: PASS; chỉ warnings LF/CRLF.
+- `.tools/php83/php.exe tests/pm_import_email_index_audit.php`: tenant_email_unique=true,
+  MyISAM, 9 users, không duplicate/NULL/empty. Không in giá trị email.
+
+Security/code review đã trace upload/temporary cleanup, prepared SQL, actor active/Admin,
+tenant/detail/mutations, CSRF/no-store, token provenance, duplicate không cập nhật tài khoản
+ngoài batch, mutex/resume, role/audit rollback và password provisioning/escaping.
+Không còn defect xác định trong phạm vi rà soát; không thay penetration test độc lập.
+
+Giới hạn: successful Apply/crash dùng TEMPORARY InnoDB user mirror để không để lại fake user
+trong MyISAM. Native duplicate rejection và advisory lock đã kiểm tra thật, nhưng chưa chạy
+successful MyISAM INSERT rồi kill process trên bản DB cô lập. Không coi mirror rollback là
+transaction/physical durability của MyISAM. Credential write và audit cũng không atomic;
+tài khoản giữ inactive khi lỗi và có thể cấp mật khẩu lại. Username conflict cần quản trị xử lý.
+Các trường hợp này được ghi trong PHASE8_PLAN/DB_SCHEMA/portfolio; UAT toàn local vẫn chờ
+người dùng ở cuối dự án. Không tự commit/push/merge/deploy.
+
 ### Local checkpoint delivery
 
-Phase 7 checkpoint includes the verified implementation and related tests.
+Phase 8 checkpoint includes the verified implementation and related tests.
 Created retrospectively while completing Phase 9; no push/merge/deploy.

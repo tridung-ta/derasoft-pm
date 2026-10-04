@@ -65,7 +65,9 @@ Bảng phân bổ tuần, giới hạn giờ theo người, cảnh báo quá t�
 
 ### Phase 8 — Reports & Excel
 
-Báo cáo cá nhân/nhóm/chi phí có bộ lọc; export XLSX; import nhân sự có validate, transaction, log và lỗi theo dòng.
+Báo cáo cá nhân/nhóm/chi phí có bộ lọc; export XLSX; import nhân sự validate/staging
+transactional, Apply từng dòng/resumable qua UNIQUE email và nhật ký; giữ dc_users MyISAM
+theo quyết định chính thức 04/10/2026, không atomic toàn file.
 
 ### Phase 9 — UI/UX, Performance & Security
 
@@ -83,7 +85,8 @@ Test theo vai trò và nghiệp vụ, UAT trên staging/local copy, lập releas
 - OT: giờ thường tối đa theo `standard_hours_per_day` (mặc định 8); phần vượt là OT; thay đổi một dòng phải tính lại toàn bộ ngày của user.
 - Overbooking: tổng allocation vượt giới hạn tuần hoặc giới hạn ngày sẽ cảnh báo; ngưỡng phải cấu hình được.
 - Xóa nghiệp vụ dùng soft delete và audit.
-- Import phải validate toàn bộ, báo lỗi theo dòng và dùng transaction cho phần ghi dữ liệu.
+- Import validate toàn bộ trước staging, báo lỗi theo dòng. Transaction chỉ cho bảng PM
+  InnoDB; Apply dc_users MyISAM dùng INSERT/1062, durable intent và mutex, không đổi ENGINE.
 - Budget ban đầu dùng VND; giới hạn tuần mặc định 40 giờ nhưng cho phép cấu hình theo user.
 - Admin legacy chỉ mở khẩn cấp qua feature flag cục bộ, mặc định tắt.
 - Phạm vi HR, quy tắc OT đặc biệt và vòng đời duyệt timesheet còn chờ mentor xác nhận; dùng mặc định an toàn ghi trong `docs/AUDIT.md` nếu cần tiếp tục.
