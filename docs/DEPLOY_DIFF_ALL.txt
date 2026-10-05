@@ -126,6 +126,7 @@ tests/pm_confirmation_browser.js
 tests/pm_costs_browser.js
 tests/pm_costs_http_smoke.php
 tests/pm_costs_smoke.php
+tests/pm_db_isolation_smoke.php
 tests/pm_departments_smoke.php
 tests/pm_deploy_manifest.py
 tests/pm_email_unique_migration.php

@@ -49,7 +49,7 @@
       "status": "A",
       "path": "classes/dao/pmdepartments.class.php",
       "action": "upload_runtime",
-      "sha256": "be49921064334315319b4dcad6c562dba908f4b8ca055293421a7e3afdc97a86"
+      "sha256": "c8f06e18f9afc6a43931b2b56b9e232aaa62ddbc2fffeffa16c628a36c968ded"
     },
     {
       "status": "A",
@@ -115,7 +115,7 @@
       "status": "A",
       "path": "classes/database/pmdb.class.php",
       "action": "upload_runtime",
-      "sha256": "a50613a4dac2d211a45a14297e39f341a1d24b6ab65693591877d80a9e35cd07"
+      "sha256": "1b5362ea566da486d87d541c6c7b4e9f9a8f6878dd74cdf64a580c3ccadb4dd6"
     },
     {
       "status": "A",
@@ -145,7 +145,7 @@
       "status": "A",
       "path": "classes/services/pmcostservice.class.php",
       "action": "upload_runtime",
-      "sha256": "81e7e4b342e24141355a44ca5430a3f6ba4439b642a21204612f14090e004d02"
+      "sha256": "cfd4712ecc2093665f6b89f0f8658e2db94363854010dca7f93320747f4f419e"
     },
     {
       "status": "A",
@@ -235,7 +235,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "839d8f34a6df79f1db75d873577a56518a52705b4ed4a3d8cebf8cd7a6c779b1"
+      "sha256": "d354f316862acae3e2a3bb417c58efaafdaa3a1d371101e6eecb20c249641bb2"
     },
     {
       "status": "A",
@@ -561,7 +561,7 @@
       "status": "A",
       "path": "modules/admin/pmusers.module.php",
       "action": "upload_runtime",
-      "sha256": "6c605f4692baa59803eb8dd3b8582156d6ff9b7a0cb939731ebbd61a32dab6fb"
+      "sha256": "6b136b0fc3d4ee79ec991551013c1a04b91534ee66cc173e755893d5d2faf97c"
     },
     {
       "status": "A",
@@ -657,7 +657,7 @@
       "status": "A",
       "path": "templates/admin/pm-users-v2.tpl.html",
       "action": "upload_runtime",
-      "sha256": "2bd0c7a4be1af170f5d558615f974b9af926ee62a289f221697d6088305efdfe"
+      "sha256": "2028638316e34eab6d3357a4a4bfc48790c1afe7566695ebb43348a230e4e63d"
     },
     {
       "status": "A",
@@ -719,6 +719,11 @@
     {
       "status": "A",
       "path": "tests/pm_costs_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_db_isolation_smoke.php",
       "action": "exclude_nonruntime"
     },
     {

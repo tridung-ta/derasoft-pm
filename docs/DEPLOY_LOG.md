@@ -9,7 +9,7 @@
 | Baseline before Phase 1 | `3df33493da81f53e2fdc67d826998850812dbd2f` — Phase 0 audit; first-parent predecessor of Phase 1 merge `c732a324` |
 | Application base commit | `df76268` — Phase 9; Phase 10 runtime fixes are included in the manifest by tracked working-tree diff |
 | Release commit/ref | `feature/pm-phase10-test-release`; resolve `git rev-parse HEAD` on this branch after the completed Phase 10 commit and record that full hash below before upload |
-| Production status | NOT DEPLOYED; no upload, DB migration or production access performed by the agent |
+| Production status | Operator uploaded to pm.dung.derasoft.com / dung_pm on 05/10/2026; maintenance enabled, smoke testing incomplete. Agent did not access production. |
 | User UAT | Pending user confirmation; automated verification is not UAT |
 
 The preparation document belongs to the release commit itself, so its own hash is resolved
@@ -17,6 +17,33 @@ from Git rather than recursively embedded. The final response reports the create
 Before manual deployment fill: **actual commit: ______; deploy date/time: ______; operator: ______**.
 
 ## Complete file lists
+
+### Operator rollout evidence — 05/10/2026
+
+User confirmed DB/source backups and maintenance blocking outside the allowed network.
+001 and initial seed verified: four active roles/store 1, ADMIN 7 / EMPLOYEE 1.
+002 approved separately: **backfill dựa trên xác nhận production chỉ có 1 store_id tại thời điểm 05/10/2026, không phải logic tổng quát**.
+002 columns/tenant indexes, 18 permissions/49 grants and core MyISAM verified by supplied results.
+003/004 and subsequent permission seeds verified. 005 was subsequently found absent;
+operator imported it again after confirming all three tables missing, then supplied
+three InnoDB tables and successful allocation/overlap/adjacent smoke results.
+006/import grants and 007/008 verified through supplied results/operator confirmations.
+
+**007 exception:** user explicitly waived benchmark before production execution.
+Test-copy UNIQUE creation passed; ALTER duration and lock interval were not recorded.
+Production UNIQUE, unchanged eight users/MyISAM were confirmed by operator; no lock-time
+estimate is claimed. The benchmark procedure below remains guidance, with this recorded
+exception for the current rollout. Existing test DB disposal is operator work.
+
+Source was uploaded manually; working-tree fixes mean a commit alone does not identify
+all deployed bytes. Preserve per-file SHA256 manifest and record actual transfer results.
+Confirmed smoke: Admin routes open, project/task created, timesheet 9h (8+1 OT) changed to
+3h (3+0 OT), audit before/after, allocations save and overlap/adjacent intervals.
+Pending: costs after MariaDB fix, financial calculation with rate, XLSX export, four-role
+authenticated checks, import behavior, HTTPS and final cleanup/reopening.
+Isolation compatibility fix now requires **both classes/database/pmdb.class.php and
+classes/services/pmcostservice.class.php** from the same current candidate.
+No final production PASS or reopening approval is recorded.
 
 Command run from repository root:
 
@@ -59,8 +86,8 @@ agent has not inspected production schema or approved execution there.
 | ---: | --- | --- |
 | 1 | `database/migrations/001_create_pm_auth_rbac.sql` | Existing core dc_users; adds password_hash and RBAC tables. Preflight password_hash absent before the ALTER; don't rerun blindly. |
 | 2 | `database/seeds/001_seed_pm_auth_rbac.sql` | 001, initial Phase 2 schema; seed roles/permissions/grants from existing tenant users before 002's permission backfill. Review ADMIN compatibility mappings. |
-| 3 | `database/migrations/002_create_pm_users_rates.sql` | 001 + initial seed 001. Tenant-scope permission tables, departments/rates, user attributes. Existing ADD columns/indexes and PM compatibility operations are not wholly idempotent. See warning below. |
-| 4 | `database/migrations/003_create_pm_projects_tasks.sql` | 001–002; projects, membership, tasks. |
+| GATE 002 — separate mandatory review, outside the sequential CREATE/ADD run | `database/migrations/002_create_pm_users_rates.sql` | STOP after 001 + initial seed 001. Complete the separate review below and record explicit approval before executing 002. Never include 002 in a batch of migration scripts. |
+| 4 — only after GATE 002 passes and approved 002 is verified | `database/migrations/003_create_pm_projects_tasks.sql` | 001–002; projects, membership, tasks. |
 | 5 | `database/migrations/004_create_pm_timesheets_audit.sql` | 001–003; settings/day locks/timesheets/audit. |
 | 6 | `database/seeds/002_seed_pm_phase5_audit_permissions.sql` | 001–004 and tenant permissions; additive Admin/PM/HR audit grants. No approval workflow. |
 | 7 | `database/seeds/003_seed_pm_cost_permissions.sql` | 001–004; Phase 6 has no schema migration, additive Admin/PM costs grant. |
@@ -76,12 +103,38 @@ For an already-upgraded host, check each actual table/column/index/seed grant an
 already satisfied; record the evidence. Do not replay initial seed 001 against final tenant
 schema: it was written for the initial pre-002 schema. Existing grants must be preserved.
 
+### GATE 002 — mandatory separate review and approval
+
 Migration 002 contains historical PM compatibility `MODIFY`, permission backfill and
-replacement of old PM unique indexes. It is not simply CREATE/ADD and must not be run as an
-unreviewed universal script. Review the exact existing schema and historical approval;
-its `MIN(store_id)` backfill is not a generic multi-tenant upgrade. If multiple production
-tenants or partial schema exist, stop and prepare a separately reviewed migration; do not
-invent SQL, change user data, or change ENGINE to make it pass.
+replacement of old PM unique indexes. It is outside the sequential CREATE/ADD run.
+The operator must review the exact production schema and obtain separate approval for
+this step; local approval or approval of this guide does not approve production backfill.
+
+Before running 002, with maintenance already enabled, the operator runs this read-only
+query in the production DB tool and records the result privately:
+
+```sql
+SELECT COUNT(DISTINCT store_id) AS tenant_count FROM dc_users;
+```
+
+- If `tenant_count > 1`: **STOP. Do not run migration 002 as currently written.** Report
+  the tenant/schema findings so the backfill can be redesigned and separately approved.
+- If `tenant_count = 0`, NULL store IDs, partial upgrades or inconsistent tenant mappings
+  exist: STOP as well; there is no confirmed single-tenant basis for this script.
+- If `tenant_count = 1`: still review the authoritative tenant registry (if present),
+  `dc_pm_roles` store IDs and existing permission/grant mappings. Confirm the sole user
+  store matches the role store used by `MIN(store_id)`; one user tenant alone does not
+  prove that stale/other role tenants are absent. Record evidence and separate approval.
+  Do not invent SQL, change data or change ENGINE to make this check pass.
+
+Required operator record before approved execution:
+**tenant_count: ______; sole store_id / role mapping: ______; checked date/time: ______;
+reviewer/approval: ______; schema/backup evidence: ______**.
+Include the exact statement, filling in the confirmed date:
+**"backfill dựa trên xác nhận production chỉ có 1 store_id tại thời điểm <ngày>, không phải logic tổng quát"**.
+This statement is not a current production assertion; the agent has not checked production.
+Only after separately approved 002 finishes and schema/tenant grants are verified may
+the operator resume the remaining migration sequence at 003.
 
 Before 007: inspect `SHOW INDEX FROM dc_users`, NULL/empty email policy and duplicate groups
 under the actual collation, e.g. `SELECT store_id,email,COUNT(*) FROM dc_users WHERE email
@@ -89,6 +142,43 @@ IS NOT NULL GROUP BY store_id,email HAVING COUNT(*)>1` in a private DB tool. Do 
 into public logs. Duplicates block rollout; no automatic cleanup. MyISAM ADD UNIQUE may
 rebuild/lock the core table and block all personnel writes, so schedule maintenance.
 After every step verify SHOW CREATE/COLUMNS/INDEX and grant scope; record below.
+
+### GATE 007 — production-sized lock benchmark before scheduling execution
+
+The operator records the actual production row count and table characteristics privately:
+
+```sql
+SELECT COUNT(*) AS actual_user_rows FROM dc_users;
+SHOW TABLE STATUS LIKE 'dc_users';
+SHOW INDEX FROM dc_users;
+```
+
+Do not estimate lock time from the nine local users. Before scheduling 007, benchmark the
+exact reviewed migration on a protected, isolated copy of production with equivalent row
+count, email lengths/collation, existing indexes and MyISAM engine. Use comparable MySQL
+version, disk/storage and available resources; document any differences. Keep real copied
+data outside Git/web roots and restrict access. The agent does not create this copy or
+run this benchmark on hosting.
+
+For each rehearsal use a fresh restored copy of the pre-007 schema; do not drop the index
+from production or replay ALTER against an already-upgraded table. Measure elapsed time
+from ALTER submission through completion and the interval during which an independent
+test connection cannot access the table because of its lock. Record metadata-lock wait
+separately where observable; include time for duplicate preflight and post-index checks.
+Repeat on comparable fresh copies to capture variation. If equivalence or measurement
+cannot be established, lock duration is unknown: STOP scheduling 007 until reviewed.
+
+Choose and record a maintenance window covering backup, all migrations, uploads, checks,
+smoke and application rollback contingency. For the 007 portion reserve at least twice
+the longest measured ALTER/lock interval plus measured preflight/verification time; this
+is a planning margin, not a guarantee of production duration. Increase it for slower
+production storage or contention. If measured duration exceeds the available window,
+reschedule before beginning; never silently proceed with a local-size estimate.
+
+Required record: **production row count/date: ______; copy row count/schema/engine: ______;
+environment differences: ______; rehearsal ALTER/lock durations: ______;
+chosen window / margin / rollback allowance: ______; operator approval: ______**.
+No numeric production estimate has been made by the agent.
 
 Prepared migration status: **files reviewed; NOT EXECUTED ON PRODUCTION**.
 Operator record: **steps run/skipped: ______; backup ID: ______; verification: ______**.
@@ -101,8 +191,16 @@ Operator record: **steps run/skipped: ______; backup ID: ______; verification: _
    protected transfer method. Enable maintenance through the hosting/admin arrangement.
    Previously recorded destination: `pm.dung.derasoft.com`,
    `/domains/pm.dung.derasoft.com/public_html`; operator must confirm it is still correct.
-3. Run only reviewed missing migrations/seeds manually in their dependency order. Keep
-   new routes unavailable until all required schema/permission checks pass.
+   **Keep maintenance enabled continuously from before the first migration until every
+   migration, upload, verification and required post-deploy smoke check passes.** Block
+   public access and ordinary personnel writes, including alternate entrypoints/jobs;
+   permit only the operator's controlled access for checks. Confirm this arrangement
+   before starting; if hosting cannot provide controlled smoke access, stop and arrange
+   it rather than turn maintenance off to test. There is no intermediate public reopening.
+3. Run only reviewed missing migrations/seeds manually in their dependency order,
+   stopping at the mandatory separate GATE 002. Complete the production-sized GATE 007
+   benchmark/window approval before executing 007. Keep new routes unavailable and
+   maintenance enabled throughout both gates and the remaining schema/permission checks.
 4. Upload allowlisted assets/includes/classes first, then templates/modules and entrypoints
    last. Upload complete dependency folders when baseline inventory requires them. Inspect
    the transfer queue: failed transfers must be retried before restoring service.
@@ -111,6 +209,9 @@ Operator record: **steps run/skipped: ______; backup ID: ______; verification: _
    using the host's approved cache operation; don't overwrite or replace templates_c itself.
 6. Run the post-deploy smoke checklist below. Restore service only when required cases pass.
    Record actual results, transfers/migrations and application commit in this log.
+   If any step fails, keep maintenance enabled during investigation/rollback. Disable it
+   only after the candidate passes smoke, or the restored previous application is verified
+   safe to reopen. Record maintenance start/end time and the selected outcome.
 
 ## Post-deploy smoke — operator executes after upload
 

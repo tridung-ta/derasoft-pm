@@ -1,5 +1,38 @@
 # DeraSoft PM — Progress
 
+## UAT follow-up — 2026-10-05
+
+UI follow-up: thống nhất navigation desktop thành rail trái 260px cho các module PM,
+mobile dùng menu wrap, không đổi permissions/controller. Smarty render PASS; browser
+synthetic Nhân sự 1440/390px không overflow, screenshots đã xem; detector CSS không có
+finding. Regression 42 scripts PASS. Chưa xác nhận giao diện sau upload hosting.
+
+Release follow-up: operator đã deploy thủ công dưới maintenance, smoke timesheet/audit
+và allocation overlap/adjacent đạt theo ảnh/xác nhận. Chưa production PASS; costs/export,
+four-role hosting, HTTPS và cleanup chưa hoàn tất. User duyệt bỏ benchmark lock 007;
+DEPLOY_LOG ghi ngoại lệ, không suy diễn thời gian lock từ query đọc.
+Isolation lookup chuyển vào PmDb, test fixture kiểm tra fallback chỉ cho 1193 và lỗi
+khác được truyền lên. `./tests/pm_regression.ps1`: PASS 42 scripts; PHP lint/diff check PASS.
+Nhánh MariaDB là driver-response fixture, chưa native MariaDB verification. Upload bản
+sửa cần cả pmdb.class.php và pmcostservice.class.php; manifest đã cập nhật.
+
+Production smoke do người dùng thực hiện: costs báo lỗi tải. Code đọc
+`@@transaction_isolation` không tương thích MariaDB 10.6; bổ sung fallback
+`@@tx_isolation` chỉ cho lỗi unknown-variable 1193, giữ isolation/currency guard.
+PHP lint và regression local 41 scripts PASS; nhánh fallback chưa kiểm thử trực tiếp
+trên MariaDB hosting, cần người dùng upload và xác minh lại. Không thay schema.
+
+Người dùng xác nhận đăng nhập Admin/mở trang nghiệp vụ/logout và phòng ban đạt;
+chưa xác nhận toàn bộ UAT. Phát hiện mã phòng ban đã ẩn vẫn được giữ bởi UNIQUE.
+Đã bổ sung thông báo mã thuộc phòng ban đã ẩn và mục khôi phục dành cho người có
+`pm.users.manage`; khôi phục cùng ID/mã, giữ lịch sử, không tạo bản ghi mới.
+POST có CSRF và tenant scope; không đổi schema hoặc xóa dữ liệu.
+`php tests/pm_departments_smoke.php`: PASS hide/restore, cross-tenant và rollback.
+`php tests/smoke_pm_users.php --preview`: PASS render, escaping và read-only không thấy
+khôi phục. `./tests/pm_regression.ps1`: PASS 41 scripts; PHP lint/diff check PASS.
+Bổ sung DEPLOY_LOG review bắt buộc 002, maintenance liên tục và benchmark lock 007;
+không chạy trên production. Follow-up đã commit local trên nhánh Phase 10: debb73c (phòng ban), 5ca1b14 (MariaDB isolation), c860e02 (navigation). Không push; chưa xác nhận các bản sửa đã deploy.
+
 ## Phase 0 — Discovery & Audit
 
 ### Status
