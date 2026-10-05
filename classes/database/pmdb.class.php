@@ -36,6 +36,17 @@ class PmDb {
         }
     }
 
+    public function transactionIsolation(): string {
+        try {
+            $row=$this->fetchOne('SELECT @@transaction_isolation isolation_level');
+        } catch (mysqli_sql_exception $e) {
+            if ((int)$e->getCode()!==1193) throw $e;
+            // MariaDB before 11.1 uses the older session variable name.
+            $row=$this->fetchOne('SELECT @@tx_isolation isolation_level');
+        }
+        return (string)($row['isolation_level']??'');
+    }
+
     public function commit(): void {
         if (!$this->connection->commit()) {
             throw new RuntimeException('Unable to commit PM database transaction.');

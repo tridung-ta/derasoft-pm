@@ -36,7 +36,8 @@ class PmCostService {
         if($f['from']&&$f['to']&&$f['from']>$f['to'])throw new InvalidArgumentException('Ngày bắt đầu phải trước ngày kết thúc.');
         $db=$this->costs->db();
         // Guard and SUM must see the same rows, including during concurrent polling/writes.
-        if(!in_array($db->fetchOne('SELECT @@transaction_isolation isolation_level')['isolation_level'],['REPEATABLE-READ','SERIALIZABLE'],true))throw new RuntimeException('Cost snapshot requires repeatable-read isolation.');
+        $isolation=$db->transactionIsolation();
+        if(!in_array($isolation,['REPEATABLE-READ','SERIALIZABLE'],true))throw new RuntimeException('Cost snapshot requires repeatable-read isolation.');
         $db->beginTransaction();
         try{
             if($f['project_id']&&!$this->costs->projectExists($f))throw new DomainException('Dự án không tồn tại hoặc ngoài phạm vi của bạn.');
