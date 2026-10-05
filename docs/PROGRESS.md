@@ -1,5 +1,43 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 5 - Cost KPI/tabs/empty charts - 2026-10-05
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Three KPIs form one
+neutral strip; project and task details and existing group summaries share an accessible
+tab block. Arrow Left/Right, Home/End, focus and selected/panel state supported. No-JS
+shows both panels without inert tabs. Current selection survives polling refresh.
+Empty/incompatible charts show an explanation with canvas hidden and Chart.js instance
+destroyed; chart returns when compatible data returns. Legitimate zero samples retained.
+No new backend, API, permission, schema, filters, pagination or monetary calculation.
+Existing authoritative decimal strings untouched; numeric conversion only in charts.
+
+Files: templates/admin/pm-costs.tpl.html, js/pmcosts.js, css/pmui.css,
+tests/smoke_pm_costs.php, tests/pm_phase9b_costs_browser.js,
+docs/PHASE9B_STEP5_PLAN.md and docs/PROGRESS.md.
+Executed verification:
+- ./tests/pm_regression.ps1: final complete run 42 scripts PASS. Initial run failed
+  existing pm_import_apply_smoke connection-close-lock check; targeted rerun PASS,
+  then full rerun PASS. No import implementation or test changed for this UI work.
+- PHP lint tests/smoke_pm_costs.php and smoke_pm_costs.php --preview PASS:
+  mixed/empty/error/escaping, task history, original filter/page links retained.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_costs_browser.js
+  PASS with real local Chart.js: empty/mixed/zero/recovery, instance lifecycle,
+  decimal display, tab keyboard/focus/selection, retained data on 500, stop on 403,
+  no-JS and missing-library fallback, labels/skip/CSP, four widths, 200% text scaling.
+  HTTP polling responses mocked; not authenticated cost UAT or actual browser zoom.
+- pm_ui_browser.js: 13 Phase 9 fixtures keyboard/labels/skip/CSP/responsive PASS;
+  pm_phase9b_theme_browser.js: seven fixtures/font/navigation/numeric checks PASS.
+- Desktop/mobile data/empty screenshots inspected. Chart colors dark/neutral with
+  white-background contrast 17.72, 4.83, 3.46 (computed WCAG formula).
+  Empty text #52525b on #f4f4f5: 7.03:1. Inter applied to axes, legend and tooltip.
+- Every original template form compared against HEAD: exact markup unchanged.
+  Code/security review: no unsafe HTML assembly or permission/data-scope changes;
+  git diff --check PASS. No new library or second theme CSS.
+
+Preview http://127.0.0.1:18767/.local/phase6-preview.html (synthetic data).
+Manual visual UAT/real browser 200% zoom pending. No push/merge/deploy/production access.
+
+
 ## Phase 9b Step 4 - Allocation week view - 2026-10-05
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Seven day columns,

@@ -93,3 +93,12 @@ body.pm-app{font-family:Inter,Arial,sans-serif;background:var(--background);colo
 .pm-app .pm-person-dialog{font-family:Inter,Arial,sans-serif}
 @media(min-width:901px){.pm-app .shell{grid-template-columns:260px minmax(0,1fr)}.pm-app .sidebar{top:0}.pm-app>.pm-module-nav{top:0}.pm-app .content{padding:32px}.pm-app .pm-module-nav a{width:100%}}
 @media(max-width:900px){.pm-app .sidebar{border-right:0;border-bottom:1px solid var(--border)}.pm-app .pm-module-nav{border-right:0}.pm-app .content{padding:24px 16px}.pm-app .pm-module-nav a{width:auto}.pm-app .pm-nav-icon{width:18px;height:18px;flex-basis:18px}}
+.pm-app .pm-cost-kpis{gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--card)}
+.pm-app .pm-cost-kpis article{border:0;border-right:1px solid var(--border);border-radius:0;padding:24px;background:transparent}
+.pm-app .pm-cost-kpis article:last-child{border-right:0}.pm-app .pm-cost-kpis h2{font-size:.875rem;font-weight:500;color:var(--muted-foreground)}
+.pm-cost-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:8px 0 20px}.pm-app .pm-cost-tab{background:var(--background);color:var(--foreground);border:1px solid var(--border);min-height:44px;padding:10px 16px}
+.pm-app .pm-cost-tab[aria-selected=true]{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
+.pm-app .pm-cost-tab:hover{border-color:var(--foreground)}.pm-cost-table-part+ .pm-cost-table-part{border-top:1px solid var(--border);padding-top:24px;margin-top:24px}
+.pm-app .pm-chart-empty{min-height:180px;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:var(--muted-foreground);background:var(--muted);border-radius:6px}
+.pm-app .pm-chart-empty{color:#52525b}.pm-cost-tabs[hidden],.pm-chart-empty[hidden],.pm-costs-page .chart[hidden],.pm-costs-page [role=tabpanel][hidden]{display:none}
+@media(max-width:760px){.pm-app .pm-cost-kpis article{border-right:0;border-bottom:1px solid var(--border);padding:20px}.pm-app .pm-cost-kpis article:last-child{border-bottom:0}.pm-chart-empty{min-height:140px}}
