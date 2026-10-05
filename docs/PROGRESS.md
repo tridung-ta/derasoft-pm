@@ -1,5 +1,38 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — Step 1 replacement tokens — 2026-10-05
+
+User replaced the previous visual direction with a single neutral design system for all
+PM screens. This supersedes the old palette in d9c026f; that commit is retained as history.
+BUILD and automated VERIFY complete; visual acceptance and real browser zoom pending.
+No Step 2, push, merge or deployment.
+
+Exactly five files changed: `css/pmui.css`, `tests/pm_phase9b_buttons_browser.js`,
+`docs/PLAN_FINAL.md`, `docs/PHASE9B_STEP1_PLAN.md`, `docs/PROGRESS.md`.
+PLAN_FINAL received the user's full replacement Part 13; audited business decisions kept.
+Primary #18181b/#fafafa; destructive #dc2626/#ffffff (approved accessibility exception:
+#fef2f2 only gives 4.41:1); neutral logout, 6px button radius, updated state/focus colors.
+Shared theme tokens declared; sidebar/background/cards/Inter application is deferred to
+the separate theme step. No Lora or IBM Plex introduced; no second stylesheet.
+Warning #d97706 is a token only in this step, not applied as low-contrast small text.
+No template/controller/DAO/permission/route/business changes in this replacement.
+
+Executed checks:
+- `./tests/pm_regression.ps1`: 42 scripts PASS; authenticated HTTP actors Admin/Employee,
+  not a claim of four-role hosted verification or UAT.
+- `playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_buttons_browser.js`
+  from `.local`: computed tokens and default/hover/active/focus/disabled PASS,
+  primary 16.97:1, destructive 4.83:1, all tested states >=4.5:1, targets >=44px;
+  lock/unlock/restore and extra allocation/cost/import responsive fixtures PASS.
+- `playwright-cli -s=pmnav run-code --filename=../tests/pm_ui_browser.js`: 13 synthetic
+  screen/state fixtures PASS at 360/390/768/1440; keyboard/labels/skip/overflow/CSP,
+  200% text scaling (not browser zoom). Desktop/mobile screenshots inspected.
+- `git diff --check`: PASS. Browser matrix reports no JS page exceptions; known synthetic
+  favicon 404 is not an application behavior test. No production verification claimed.
+
+View synthetic preview: http://127.0.0.1:18767/.local/phase9-users-1.html (do not submit).
+Wait for user visual check and request to start Step 2.
+
 ## Phase 9b — Step 1 BUILD/VERIFY — 2026-10-05
 
 Branch: `feature/pm-phase9b-ui-theme`, based on develop after fast-forward to Phase 10.

@@ -31,14 +31,14 @@ button,.button{min-height:44px;white-space:normal}button:disabled{cursor:wait;op
 .sidebar button.logout{background:#334155;color:#fff;border:0;font:inherit;padding:10px 14px}.pm-module-nav form{display:flex;align-items:center;margin:0}
 
 /* Phase 9b: semantic action colors shared by every PM screen. */
-:root{--pm-action:#B98A2E;--pm-action-text:#161A20;--pm-danger:#A6432D;--pm-danger-text:#E7E9EC;--pm-warning:#C98A2E}
-body button,body .button,body button.secondary{background:var(--pm-action);color:var(--pm-action-text);border:1px solid var(--pm-action-text);min-height:44px}
+:root{--background:#ffffff;--foreground:#09090b;--card:#ffffff;--card-border:#e4e4e7;--muted:#f4f4f5;--muted-foreground:#71717a;--primary:#18181b;--primary-foreground:#fafafa;--destructive:#dc2626;--destructive-foreground:#ffffff;--warning:#d97706;--border:#e4e4e7;--radius:8px;--pm-action:var(--primary);--pm-action-text:var(--primary-foreground);--pm-danger:var(--destructive);--pm-danger-text:var(--destructive-foreground);--pm-warning:var(--warning)}
+body button,body .button,body button.secondary{background:var(--pm-action);color:var(--pm-action-text);border:1px solid var(--pm-action);border-radius:6px;min-height:44px}
 body button.danger{background:var(--pm-danger);color:var(--pm-danger-text)}
-body button:hover,body .button:hover{background:#D0A34A;color:var(--pm-action-text)}
-body button.danger:hover{background:#913923;color:#fff}
-body button:active,body .button:active{background:#A97D28;color:var(--pm-action-text)}
-body button.danger:active{background:#7E301F;color:#fff}
-body .pm-module-nav button,body .sidebar button.logout{background:#334155;color:#fff;border:1px solid #E7E9EC}
-body .pm-module-nav button:hover,body .sidebar button.logout:hover{background:#1E232B;color:#fff}
-body button:focus-visible,body .button:focus-visible{outline:3px solid #161A20;outline-offset:3px;box-shadow:0 0 0 6px #E7E9EC}
-body button:disabled{background:#E7E9EC;color:#526176;border-color:#526176;opacity:1;cursor:not-allowed}
+body button:hover,body .button:hover{background:#27272a;color:var(--pm-action-text)}
+body button.danger:hover{background:#b91c1c;color:#fff}
+body button:active,body .button:active{background:#3f3f46;color:var(--pm-action-text)}
+body button.danger:active{background:#991b1b;color:#fff}
+body .pm-module-nav button,body .sidebar button.logout{background:var(--muted);color:var(--foreground);border:1px solid var(--border)}
+body .pm-module-nav button:hover,body .sidebar button.logout:hover{background:var(--border);color:var(--foreground)}
+body button:focus-visible,body .button:focus-visible{outline:3px solid var(--foreground);outline-offset:3px;box-shadow:0 0 0 6px var(--background)}
+body button:disabled{background:var(--muted);color:#52525b;border-color:#71717a;opacity:1;cursor:not-allowed}

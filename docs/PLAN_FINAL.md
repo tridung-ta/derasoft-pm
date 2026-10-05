@@ -98,3 +98,85 @@ Test theo vai trò và nghiệp vụ, UAT trên staging/local copy, lập releas
 - Permission/ownership, CSRF, XSS và SQL injection được kiểm tra.
 - Migration cộng thêm, idempotent theo khả năng của MySQL đang dùng, đã thử trên DB copy và có rollback note.
 - `docs/PROGRESS.md` được cập nhật trước khi đề nghị merge.
+
+## PHẦN 13. ĐỊNH HƯỚNG GIAO DIỆN (không bắt buộc)
+
+> **Lịch sử thay đổi:** bản đầu (2 ngôn ngữ "Sổ ghi công"/"Buồng điều khiển", token hổ phách/than xám) đã bị **thay thế hoàn toàn** ngày 05/10/2026 theo quyết định dùng 1 hệ thống trung tính kiểu shadcn/ui cho toàn bộ app, thay vì tách FE/Admin. Nếu Phase 9b đã build theo token cũ (`#B98A2E`, `#A6432D`, `#161A20`, `#EEF0EA`, font Lora/IBM Plex), phải dừng và làm lại theo token mới dưới đây trước khi tiếp tục bước nào khác.
+>
+> Phần này vẫn là **gợi ý định hướng**, không bắt buộc đúng từng pixel — có thể điều chỉnh khi code thực tế nếu giới hạn Bootstrap 5/Smarty hoặc mentor yêu cầu khác.
+
+### 13.1 Nguyên tắc: 1 hệ thống thống nhất, không tách FE/Admin
+
+Khác bản trước, lần này **không tách 2 phong cách riêng cho FE và Admin** — dùng chung 1 bảng màu/font/bo góc cho toàn app (đúng tinh thần shadcn/ui: 1 design system nhất quán). Chỉ khác nhau ở **bố cục** theo mục đích trang: Admin có sidebar + bảng dữ liệu dày, FE (chấm công) đơn giản, ít điều hướng.
+
+### 13.2 Token hệ thống (dùng chung toàn app)
+
+| Token | Giá trị | Vai trò |
+|---|---|---|
+| `--background` | `#ffffff` | Nền trang |
+| `--foreground` | `#09090b` | Chữ chính |
+| `--card` / `--card-border` | `#ffffff` / `#e4e4e7` | Nền card, viền mảnh |
+| `--muted` | `#f4f4f5` | Nền sidebar, nền header bảng, panel phụ |
+| `--muted-foreground` | `#71717a` | Chữ phụ, nhãn, chú thích |
+| `--primary` / `--primary-foreground` | `#18181b` / `#fafafa` | Nút hành động chính (nền gần đen, chữ trắng) |
+| `--destructive` / `--destructive-foreground` | `#dc2626` / `#fef2f2` | Nút Khóa/Xóa/hành động phá hủy |
+| `--warning` | `#d97706` | **Duy nhất 1 màu cảnh báo nghiệp vụ** — overbooking, vượt estimated_hours/ngân sách, mixed currency, thiếu rate. Không dùng cho mục đích khác |
+| `--border` | `#e4e4e7` | Viền input, divider |
+| `--radius` | `8px` (card/panel), `6px` (nút/input/badge) | Bo góc nhất quán |
+| Font | **Inter** — 1 font duy nhất, toàn hệ thống, mọi vùng (tiêu đề, body, số liệu) | Không còn phối 2 font như bản cũ |
+| Số liệu giờ/tiền | Inter + `font-variant-numeric: tabular-nums`, `text-align: right` | Giữ số thẳng hàng mà không cần font mono riêng |
+
+### 13.3 Bố cục Admin/PM
+
+Sidebar cố định bên trái, nền `--muted` (`#f4f4f5`), **icon + chữ** (không chỉ icon như bản cũ), mục đang chọn có nền `#e4e4e7`. Bộ lọc (tuần/dự án/phòng ban) luôn ở đầu vùng nội dung.
+
+```
+┌──────────┬──────────────────────────────────────┐
+│ D DeraSoft│  Lọc: [Tuần này ▾] [Dự án ▾]          │
+│──────────│──────────────────────────────────────│
+│ Tổng quan │  Dự án           Giờ thực   Chi phí   │
+│ Nhân sự   │  Website bán..   142.5h    84,200,000 │
+│ Dự án     │  App nội bộ       58.0h    31,900,000 │
+│ Chấm công │  CMS khách B      96.0h    52,000,000 │ ← vượt ngưỡng tô #d97706
+│ Chi phí   │                                       │
+│ Phân bổ   │  ⚠ 3 cảnh báo vượt giờ tuần này        │
+│ Báo cáo   │                                       │
+└──────────┴──────────────────────────────────────┘
+```
+
+Card nền trắng viền `#e4e4e7`, không đổ bóng đậm, bo góc `8px`. Chỉ dòng/ô thực sự vượt ngưỡng mới tô `--warning` — các dòng bình thường giữ tông trung tính.
+
+### 13.4 Bố cục FE (trang chấm công hàng ngày)
+
+Cùng token với Admin, chỉ đơn giản hóa bố cục: 1 card trắng viền mảnh, không sidebar. Giữ 3 điểm nhấn chức năng đã chốt từ bản trước (vẫn hữu ích, chỉ đổi màu):
+
+```
+        Thứ Ba, 30 tháng 9        Chuỗi 12 ngày liên tục
+        Hôm nay bạn đã làm 6.5h
+
+   [dải 7 cột giờ trong tuần T2→CN, cột hôm nay tô #18181b,
+    cột có OT viền #d97706]
+
+  ── ● Website bán hàng · Viết API giỏ hàng ──
+     08:00 → 12:00                          4.0h
+
+     + Thêm dòng chấm công          Đã lưu 16:04  (●✓)
+  ────────────────────────────
+     Tổng hôm nay:  6.5h  (0 OT)
+```
+
+1. **Dải 7 cột giờ trong tuần** — cột hôm nay `#18181b`, cột có OT viền `#d97706`.
+2. **Chấm màu trước tên dự án** — bảng ánh xạ `project_id → màu` cố định trong DB/config, dùng chung cả Admin.
+3. **Con dấu "Đã lưu"** — chỉ hiện sau khi AJAX lưu thành công.
+
+### 13.5 Khi hiện thực bằng Bootstrap 5 + Smarty (Derasoft)
+- Override biến SCSS (`$body-bg: #ffffff`, `$font-family-base: 'Inter'`, `$primary: #18181b`, `$danger: #dc2626`, `$border-radius: .5rem`) hoặc viết CSS riêng đè lên — không dùng nguyên theme Bootstrap mặc định.
+- Tạo 1 class dùng chung `.num-cell` (`font-variant-numeric: tabular-nums`, `text-align:right`) áp cho mọi ô giờ/tiền.
+- Tách riêng 1 file CSS cho theme (`theme-pm.css` hoặc file CSS thật đang dùng — xác nhận lại với Agent, dự án đã có `css/pmui.css` từ Phase 9), nạp sau Bootstrap, scope theo class gốc layout PM.
+- Nút hành động chính dùng `--primary` (nền gần đen, chữ trắng); nút phá hủy (Khóa/Xóa) dùng `--destructive` (đỏ) — 2 màu phải khác biệt rõ, không dùng chung 1 màu.
+- Font `Inter` tải qua Google Fonts — kiểm tra CSP có chặn không; nếu chặn, self-host.
+
+### 13.6 Được phép thay đổi gì trong lúc code
+- Đổi mã hex cụ thể nếu không hợp bộ nhận diện công ty — giữ nguyên **nguyên tắc** (1 hệ thống thống nhất, 1 màu cảnh báo dùng đúng chỗ, primary/destructive khác biệt rõ, số liệu tabular căn phải) quan trọng hơn giữ đúng mã hex.
+- Bỏ bớt điểm nhấn (dải tuần, con dấu, chuỗi ngày) nếu không đủ thời gian.
+- Đổi bố cục nếu Derasoft đã có sẵn layout admin dùng tốt — ưu tiên tái sử dụng hơn làm mới hoàn toàn.

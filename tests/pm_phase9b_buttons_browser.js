@@ -7,15 +7,21 @@ async page => {
     }
     for(const label of ['Thêm nhân sự','Khóa','Khôi phục OLD','Ngừng áp dụng']){
         const button=page.getByRole('button',{name:label,exact:true}).first();
-        for(const state of ['default','hover','focus','disabled']){
+        for(const state of ['default','hover','active','focus','disabled']){
             await page.mouse.move(0,0);
             if(state==='hover')await button.hover();
+            if(state==='active'){await button.hover();await page.mouse.down();}
             if(state==='focus')await button.focus();
             if(state==='disabled')await button.evaluate(e=>e.disabled=true);
             const colors=await button.evaluate(e=>{const s=getComputedStyle(e);return {color:s.color,background:s.backgroundColor,height:e.getBoundingClientRect().height,opacity:s.opacity}});
             const ratio=contrast(colors.color,colors.background);
             if(ratio<4.5||colors.height<44||colors.opacity!=='1')throw new Error(label+' '+state+': '+JSON.stringify({ratio,...colors}));
+            if(state==='default'){
+                const destructive=['Khóa','Ngừng áp dụng'].includes(label);
+                if(colors.background!==(destructive?'rgb(220, 38, 38)':'rgb(24, 24, 27)')||colors.color!==(destructive?'rgb(255, 255, 255)':'rgb(250, 250, 250)'))throw new Error('Wrong replacement token '+label);
+            }
             results.push({label,state,contrast:ratio.toFixed(2),...colors});
+            if(state==='active')await page.mouse.move(0,0).then(()=>page.mouse.up());
             await button.evaluate(e=>{e.disabled=false;e.blur()});
         }
     }
