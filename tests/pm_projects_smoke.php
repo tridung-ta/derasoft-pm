@@ -6,6 +6,11 @@ if(($config['db_name']??'')!=='derasoft_pm_local')throw new RuntimeException('Re
 // Preserve one outer transaction; service transactions become savepoints.
 // This exercises real prepared queries and real role checks without committed fixtures.
 class ProjectSmokeConnection extends mysqli {
+    public array $progressQueries=[];
+    public function prepare(string $query): mysqli_stmt|false {
+        if(str_contains($query,"SUM(status='done')"))$this->progressQueries[]=$query;
+        return parent::prepare($query);
+    }
     public function beginFixture(): bool{return parent::begin_transaction();}
     public function endFixture(): bool{return parent::rollback();}
     public function begin_transaction(int $flags=0,?string $name=null): bool{return $this->query('SAVEPOINT pm_project_smoke_step');}
@@ -21,6 +26,11 @@ $connection->beginFixture();
 try{
     $data=['code'=>'QA_'.bin2hex(random_bytes(4)),'name'=>'Project smoke','manager_id'=>$actor,'status'=>'active','budget'=>'1000','start_date'=>'2026-01-01','end_date'=>'2026-12-31'];
     $id=$service->saveProject($data);
+    $emptyData=$data;$emptyData['code'].='_EMPTY';$emptyData['name']='Empty project';
+    $emptyId=$service->saveProject($emptyData);
+    $connection->progressQueries=[];$list=$service->listProjects($data['code']);
+    if(count($connection->progressQueries)!==1||count($list['rows'])!==2)throw new RuntimeException('Progress must use one page aggregate.');
+    foreach($list['rows'] as $r)if($r['task_total']!==0||$r['task_done']!==0||$r['progress_percent']!==null)throw new RuntimeException('Empty project progress invented.');
     $adminAccess=new PmAccess($db,$store,$actor);
     if(!$adminAccess->hasProjectAccess($id))throw new RuntimeException('Existing project access failed.');
     if($service->getProject($id)['name']!=='Project smoke')throw new RuntimeException('Project creation failed.');
@@ -30,6 +40,22 @@ try{
     $task=['name'=>'Smoke task','assignee_id'=>$actor,'status'=>'todo','priority'=>'normal','estimated_hours'=>'4','due_date'=>'2026-02-01'];
     $taskId=$service->saveTask($id,$task);$task['status']='done';$service->saveTask($id,$task,$taskId);
     if($service->tasks($id)[0]['status']!=='done')throw new RuntimeException('Kanban update failed.');
+    $pending=$task;$pending['status']='todo';$pendingId=$service->saveTask($id,$pending);
+    $query=new PmDb($db);
+    $query->execute("INSERT INTO dc_pm_tasks(store_id,project_id,name,status,created_by) VALUES(?,?,'Other tenant fixture','done',?)",'iii',[$store+999999,$id,$actor]);
+    $connection->progressQueries=[];$rows=array_column($service->listProjects($data['code'])['rows'],null,'id');
+    if(count($connection->progressQueries)!==1||$rows[$id]['task_total']!==2||$rows[$id]['task_done']!==1||$rows[$id]['progress_percent']!==50.0)throw new RuntimeException('Progress ratio or tenant scope failed.');
+    $plan=$query->fetchAll('EXPLAIN '.$connection->progressQueries[0],'iii',[$store,$emptyId,$id]);
+    if(!$plan)throw new RuntimeException('Progress query EXPLAIN failed.');
+    $thirdId=$service->saveTask($id,$pending);
+    $rows=array_column($service->listProjects($data['code'])['rows'],null,'id');
+    if($rows[$id]['progress_percent']!==33.3)throw new RuntimeException('Progress rounding failed.');
+    $service->deleteTask($id,$thirdId);
+    $service->deleteTask($id,$pendingId);
+    $rows=array_column($service->listProjects($data['code'])['rows'],null,'id');
+    if($rows[$id]['task_total']!==1||$rows[$id]['progress_percent']!==100.0)throw new RuntimeException('Deleted task counted in progress.');
+    $connection->progressQueries=[];$none=$service->listProjects('NONEXISTENT_'.bin2hex(random_bytes(6)));
+    if($none['rows']||$connection->progressQueries)throw new RuntimeException('Empty page queried task aggregation.');
     $task['assignee_id']=2147483647;
     try{$service->saveTask($id,$task);throw new RuntimeException('Non-member assignee accepted.');}catch(InvalidArgumentException $expected){}
     $s=$connection->prepare("SELECT u.id FROM dc_users u WHERE u.store_id=? AND u.status=1 AND NOT EXISTS(SELECT 1 FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=u.store_id AND ur.user_id=u.id AND r.code='ADMIN' AND r.status=1) ORDER BY u.id LIMIT 1");$s->bind_param('i',$store);$s->execute();$outsider=$s->get_result()->fetch_assoc();$s->close();
@@ -39,9 +65,21 @@ try{
     $pm=new PmProjectService($db,$store,$other);
     try{$pm->getProject($id);throw new RuntimeException('Non-member read accepted.');}catch(DomainException $expected){}
     $service->setMember($id,$other,true);
+    $visible=$pm->listProjects($data['code']);
+    if(count($visible['rows'])!==1||(int)$visible['rows'][0]['id']!==$id)throw new RuntimeException('Progress project-membership scope failed.');
+    // Simulate removal of task-view permission in this service's access snapshot.
+    // No role grants or persistent permission records are changed.
+    $restricted=new PmProjectService($db,$store,$other);
+    $access=(new ReflectionProperty(PmProjectService::class,'access'))->getValue($restricted);
+    $permissions=new ReflectionProperty(PmAccess::class,'permissionCodes');
+    $permissions->setValue($access,array_values(array_filter($access->getPermissionCodes(),static fn(string $code): bool=>$code!=='pm.tasks.view')));
+    $connection->progressQueries=[];$restrictedRows=$restricted->listProjects($data['code'])['rows'];
+    if(count($restrictedRows)!==1||$connection->progressQueries||$restrictedRows[0]['task_total']!==null||$restrictedRows[0]['task_done']!==null||$restrictedRows[0]['progress_percent']!==null)throw new RuntimeException('Task counts leaked without task-view permission.');
     try{$service->setMember($id,2147483647,false);throw new RuntimeException('Unknown membership removal accepted.');}catch(OutOfBoundsException $expected){}
     try{$pm->saveTask($id,['name'=>'Forbidden task']);throw new RuntimeException('PM managed another manager project.');}catch(DomainException $expected){}
     $task['assignee_id']=$other;$task['status']='todo';$service->saveTask($id,$task,$taskId);
+    $rows=array_column($service->listProjects($data['code'])['rows'],null,'id');
+    if($rows[$id]['progress_percent']!==0.0)throw new RuntimeException('Zero progress lost.');
     try{$service->setMember($id,$other,false);throw new RuntimeException('Assigned member removal accepted.');}catch(DomainException $expected){}
     $service->deleteTask($id,$taskId);$service->setMember($id,$other,false);
     if($service->tasks($id)!==[])throw new RuntimeException('Soft deleted task still visible.');
@@ -51,4 +89,4 @@ try{
 }finally{$connection->endFixture();}
 $s=$connection->prepare('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=?');$s->bind_param('is',$store,$data['code']);$s->execute();
 if($s->get_result()->num_rows!==0)throw new RuntimeException('Fixture rollback did not remove project data.');$s->close();
-echo "PASS: project CRUD, membership, task assignment, Kanban, tenant and PM boundaries (rollback).\n";
+echo "PASS: project CRUD, membership, tasks/Kanban and tenant/PM boundaries; batched progress, empty/zero/50/100, soft delete, task-view denial and aggregate EXPLAIN (rollback).\n";

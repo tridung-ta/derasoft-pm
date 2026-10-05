@@ -31,6 +31,22 @@ class PmProjectService {
         if($q!==''){$where.=' AND (p.name LIKE ? OR p.code LIKE ?)';$types.='ss';array_push($params,'%'.$q.'%','%'.$q.'%');}
         $total=(int)$this->db->fetchOne('SELECT COUNT(*) total FROM dc_pm_projects p WHERE '.$where,$types,$params)['total'];
         $rows=$this->db->fetchAll('SELECT p.*,u.fullname manager_name FROM dc_pm_projects p LEFT JOIN dc_users u ON u.store_id=p.store_id AND u.id=p.manager_id WHERE '.$where.' ORDER BY p.id DESC LIMIT 20 OFFSET ?',$types.'i',[...$params,(max(1,$page)-1)*20]);
+        $canViewTasks=$this->access->hasPermission('pm.tasks.view');
+        $counts=[];
+        if($rows && $canViewTasks){
+            // One prepared aggregate for the visible page, never one query per card.
+            $ids=array_map(static fn(array $row): int=>(int)$row['id'],$rows);
+            $placeholders=implode(',',array_fill(0,count($ids),'?'));
+            foreach($this->db->fetchAll("SELECT project_id,COUNT(*) task_total,SUM(status='done') task_done FROM dc_pm_tasks WHERE store_id=? AND deleted_at IS NULL AND project_id IN ($placeholders) GROUP BY project_id",'i'.str_repeat('i',count($ids)),[$this->storeId,...$ids]) as $count){
+                $counts[(int)$count['project_id']]=$count;
+            }
+        }
+        foreach($rows as &$row){
+            $count=$counts[(int)$row['id']]??[];
+            $row['task_total']=$canViewTasks?(int)($count['task_total']??0):null;
+            $row['task_done']=$canViewTasks?(int)($count['task_done']??0):null;
+            $row['progress_percent']=$row['task_total']>0?round(100*$row['task_done']/$row['task_total'],1):null;
+        }unset($row);
         return ['rows'=>$rows,'total'=>$total];
     }
     public function availableUsers(bool $managersOnly=false): array {

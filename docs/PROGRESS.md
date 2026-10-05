@@ -1,5 +1,49 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 6 - Project cards and real task progress - 2026-10-05
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Project list is a
+1/2/3-column card grid with status, manager, dates, budget and native progress bar.
+Create-project form is collapsed by default, expanded on server errors; works without JS.
+Original filter/pagination, detail/task/member forms, confirmation and permissions retained.
+
+User explicitly approved the necessary backend addition: completed task count / total
+task count. PmProjectService::listProjects now executes one additional prepared aggregate
+for the visible page (maximum 20 project IDs), scoped by tenant and existing task-view
+permission. Soft-deleted tasks excluded consistently with tasks(). Percent rounded to
+one decimal. No tasks => null progress and explicit no-data text; no task-view permission
+=> no aggregate query or exposed counts. No schema/controller/route/grant changes.
+
+Exact files: templates/admin/pm-projects.tpl.html, css/pmui.css,
+classes/services/pmprojectservice.class.php, tests/pm_projects_smoke.php,
+tests/smoke_pm_projects.php, tests/pm_phase9b_projects_browser.js,
+docs/PHASE9B_STEP6_PLAN.md, docs/PROGRESS.md.
+
+Executed verification:
+- ./tests/pm_regression.ps1: 42 scripts PASS, local fixture database only.
+- PHP lint service and both changed PHP tests PASS.
+- pm_projects_smoke.php: real prepared aggregate, multiple projects/one query,
+  no-task/zero/33.3/50/100, soft-deleted tasks, foreign tenant, member scope and empty
+  page PASS, with rollback fixtures. Task-view denial uses a restricted in-memory
+  permission snapshot and verifies null fields/zero aggregate queries. Aggregate EXPLAIN
+  executed successfully; small local dataset, not a production performance benchmark.
+- smoke_pm_projects.php --preview: escaped names/search, cards, native progress,
+  no-data/restricted states, read-only/create/error/empty and existing task UI PASS.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_projects_browser.js:
+  PASS at 360/390/768/1440, columns 1/1/2/3, 200% text scaling, labelled progress,
+  keyboard native collapse, CSRF field, query-preserving pagination, escaped names,
+  restricted/read-only states, no-JS and numeric Inter/tabular/right-alignment.
+  Project navigation intercepted to synthetic detail fixture; no business POST or UAT claim.
+  Status text contrast measured 15.68:1 to 19.90:1 across treatments.
+- pm_ui_browser.js: 13 Phase 9 screen/state fixtures PASS for keyboard skip/focus,
+  labels, CSP, responsive and text scaling. Desktop/mobile screenshots inspected.
+- Exact original form markup compared against HEAD; diff/security review and
+  git diff --check PASS. SQL parameters remain bound; no cross-tenant task count leak.
+
+Preview http://127.0.0.1:18767/.local/phase9b-project-list.html (synthetic; do not submit).
+Manual visual UAT/real browser zoom pending. No push, merge, deployment or production access.
+
+
 ## Phase 9b Step 5 - Cost KPI/tabs/empty charts - 2026-10-05
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Three KPIs form one
