@@ -24,6 +24,13 @@ try {
     try{$departments->save($storeId+999999,$id,$code,'Cross tenant');$fail[]='cross-tenant update was accepted';}catch(OutOfBoundsException $e){}
     if(!$departments->setStatus($storeId,$id,0))$fail[]='department lock failed';
     if(!$departments->softDelete($storeId,$id))$fail[]='department soft delete failed';
+    if(!$departments->hiddenCodeExists($storeId,$code))$fail[]='hidden code not identified';
+    if($departments->restore($storeId+999999,$id))$fail[]='cross-tenant restore accepted';
+    $hidden=$departments->listHidden($storeId);
+    if(!in_array($id,array_map(fn($r)=>(int)$r['id'],$hidden),true))$fail[]='hidden department unavailable for restore';
+    if(!$departments->restore($storeId,$id)||!$departments->exists($storeId,$id))$fail[]='restore failed';
+    if($departments->hiddenCodeExists($storeId,$code))$fail[]='restored code still hidden';
+    if($departments->restore($storeId,$id))$fail[]='active department restore accepted';
 } finally {
     $connection->rollback();
 }

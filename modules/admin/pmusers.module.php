@@ -16,14 +16,18 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     else try{
         if(in_array($action,['rate','rate_save','rate_deactivate'],true))requirePermission('pm.rates.manage');
         elseif($action==='roles')requirePermission('pm.rbac.manage');
-        elseif(in_array($action,['department_save','department_status','department_delete','status','save'],true))requirePermission('pm.users.manage');
+        elseif(in_array($action,['department_save','department_status','department_delete','department_restore','status','save'],true))requirePermission('pm.users.manage');
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
         $targetId=(int)$request->element('id');
         if($action==='department_save'){
             $code=strtoupper(trim((string)$request->element('code')));$name=trim((string)$request->element('name'));
             if(!preg_match('/^[A-Z0-9_-]{2,50}$/',$code)||$name===''||mb_strlen($name)>150)throw new InvalidArgumentException('Mã hoặc tên phòng ban không hợp lệ.');
+            if($departments->hiddenCodeExists((int)$storeId,$code,$targetId?:null))throw new DomainException('Mã thuộc phòng ban đã ẩn. Hãy khôi phục trong mục Phòng ban đã ẩn.');
             if($departments->codeExists((int)$storeId,$code,$targetId?:null))throw new DomainException('Mã phòng ban đã tồn tại.');
             $targetId=$departments->save((int)$storeId,$targetId?:null,$code,$name);$notice='Đã lưu phòng ban.';
+        }elseif($action==='department_restore'){
+            if(!$departments->restore((int)$storeId,$targetId))throw new OutOfBoundsException('Không tìm thấy phòng ban đã ẩn trong tenant hiện tại.');
+            $notice='Đã khôi phục phòng ban.';
         }elseif($action==='department_status'){
             $status=(int)$request->element('status');if(!in_array($status,[0,1],true))throw new InvalidArgumentException('Trạng thái phòng ban không hợp lệ.');
             if(!$departments->setStatus((int)$storeId,$targetId,$status))throw new RuntimeException('Không thể cập nhật phòng ban.');
@@ -73,3 +77,5 @@ $canViewRates=$pmAccess->hasPermission('pm.rates.view')||$canManageRates;
 $template->assign('canViewRates',$canViewRates);
 $template->assign('hourlyRates',$canViewRates?(new PmRateService($db))->listRates((int)$storeId):[]);
 $template->assign('pageTitle','Nhân sự — DeraSoft PM');$template->assign('users',$rows);$template->assign('userRoles',$userRoles);$template->assign('userRoleState',$userRoleState);$template->assign('userPrimaryRoles',$userPrimaryRoles);$template->assign('departments',$departments->getActive((int)$storeId));$template->assign('departmentRows',$departments->list((int)$storeId));$template->assign('roles',$rolesDao->getActive((int)$storeId));$template->assign('canManageUsers',$canManageUsers);$template->assign('canManageRoles',$canManageRoles);$template->assign('canManageRates',$canManageRates);$template->assign('csrfToken',$_SESSION['pm_csrf_token']);$template->assign('notice',$notice);$template->assign('error',$error);$template->assign('q',$q);$template->assign('departmentFilter',$departmentFilter);$template->assign('roleFilter',$roleFilter);$template->assign('page',$page);$template->assign('totalPages',max(1,(int)ceil($total/20)));
+
+$template->assign('hiddenDepartments',$canManageUsers?$departments->listHidden((int)$storeId):[]);

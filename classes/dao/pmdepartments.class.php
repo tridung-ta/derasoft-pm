@@ -17,6 +17,17 @@ class PmDepartments {
         if($excludeId){$sql.=' AND id<>?';$types.='i';$params[]=$excludeId;}
         return $this->db->fetchOne($sql.' LIMIT 1',$types,$params)!==null;
     }
+    public function listHidden(int $storeId): array {
+        return $this->db->fetchAll('SELECT id,code,name FROM dc_pm_departments WHERE store_id=? AND deleted_at IS NOT NULL ORDER BY name,id','i',[$storeId]);
+    }
+    public function hiddenCodeExists(int $storeId,string $code,?int $excludeId=null): bool {
+        $sql='SELECT 1 FROM dc_pm_departments WHERE store_id=? AND code=? AND deleted_at IS NOT NULL';$types='is';$params=[$storeId,$code];
+        if($excludeId){$sql.=' AND id<>?';$types.='i';$params[]=$excludeId;}
+        return $this->db->fetchOne($sql.' LIMIT 1',$types,$params)!==null;
+    }
+    public function restore(int $storeId,int $id): bool {
+        return $this->db->execute('UPDATE dc_pm_departments SET status=1,deleted_at=NULL,updated_at=NOW() WHERE store_id=? AND id=? AND deleted_at IS NOT NULL','ii',[$storeId,$id])===1;
+    }
     public function save(int $storeId,?int $id,string $code,string $name): int {
         if($id){
             $current=$this->db->fetchOne('SELECT id FROM dc_pm_departments WHERE store_id=? AND id=? AND deleted_at IS NULL','ii',[$storeId,$id]);
