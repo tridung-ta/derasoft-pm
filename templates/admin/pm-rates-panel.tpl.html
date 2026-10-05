@@ -14,7 +14,7 @@
 <p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>Nhân viên / Vai trò</th><th>Đơn giá</th><th>Hiệu lực</th><th>Trạng thái</th></tr></thead><tbody>
 {foreach from=$hourlyRates item=hr}
 <tr><td>{if $hr.user_id}Nhân viên: {$hr.user_name|default:'Không còn hoạt động'|escape}{else}Vai trò: {$hr.role_name|default:'Không còn hoạt động'|escape}{/if}</td>
-<td colspan="2">
+<td colspan="2" class="num-cell">
 {if $canManageRates && $hr.status eq 1}
 <form method="post"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_save"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><input type="hidden" name="rate_id" value="{$hr.id}"><input type="hidden" name="rate_user_id" value="{$hr.user_id|escape}"><input type="hidden" name="rate_role_id" value="{$hr.role_id|escape}">
 <label>VND/giờ<input name="rate" type="number" min="0" max="9999999999999.99" step="0.01" value="{$hr.rate|escape}" required></label>

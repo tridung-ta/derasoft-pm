@@ -1,5 +1,5 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{$pageTitle|escape}</title>
-<link rel="stylesheet" href="css/pm-projects-base.css"><link rel="stylesheet" href="css/pmui.css"><script src="js/pmui.js" defer></script></head><body>{include file='./pm-navigation.tpl.html'}<main id="pm-main" tabindex="-1" class="wrap">
+<link rel="stylesheet" href="css/pm-projects-base.css"><link rel="stylesheet" href="css/pmui.css"><script src="js/pmui.js" defer></script></head><body class="pm-app pm-projects-page">{include file='./pm-navigation.tpl.html'}<main id="pm-main" tabindex="-1" class="wrap">
 <nav><a href="/admin.php?op=pm">Tổng quan</a><a href="/admin.php?op=pmprojects">Dự án</a></nav><h1>Dự án & Công việc</h1>
 {if $notice}<p class="message">{$notice|escape}</p>{/if}{if $error}<p class="message error">{$error|escape}</p>{/if}
 {if $project}

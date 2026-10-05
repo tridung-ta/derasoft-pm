@@ -56,3 +56,39 @@ body button:disabled{background:var(--muted);color:#52525b;border-color:#71717a;
 .pm-person-dialog button{padding:10px 14px}.pm-person-dialog [hidden]{display:none}
 .pm-person-dialog input:focus-visible,.pm-person-dialog select:focus-visible{outline:3px solid var(--foreground);outline-offset:3px}
 @media(max-width:760px){.pm-person-dialog{padding:16px}.pm-person-dialog .top button{margin-left:auto}}
+
+/* Neutral PM theme. Legacy pages never receive the pm-app root class. */
+@font-face{font-family:Inter;src:url('../assets/fonts/inter/InterVariable.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
+body.pm-app{font-family:Inter,Arial,sans-serif;background:var(--background);color:var(--foreground);line-height:1.5;color-scheme:light;min-height:100vh;margin:0}
+.pm-app input,.pm-app select,.pm-app textarea,.pm-app button,.pm-app pre,.pm-app code{font-family:inherit}
+.pm-app a{color:var(--foreground);text-underline-offset:4px}
+.pm-app h1{font-size:clamp(1.75rem,3vw,2.5rem);line-height:1.2;letter-spacing:-.025em}
+.pm-app h2{font-size:1.25rem;line-height:1.4}.pm-app h3{font-size:1.05rem}
+.pm-app .card,.pm-app main>section:not(.metrics):not(.charts),.pm-app .metrics article,.pm-app .charts article,.pm-app .filters,.pm-app .panel{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:none}
+.pm-app .sidebar,.pm-app>.pm-module-nav{background:var(--muted);color:var(--foreground);border-right:1px solid var(--border)}
+.pm-app>.pm-module-nav::before{color:var(--foreground)}
+.pm-app .pm-module-nav{background:var(--muted)}
+.pm-app .pm-module-nav a{color:var(--foreground);gap:10px;border-radius:6px;text-decoration:none;font-weight:500}
+.pm-app .pm-module-nav a:hover,.pm-app .pm-module-nav a[aria-current="page"]{color:var(--foreground);background:var(--border)}
+.pm-app .pm-module-nav a[aria-current="page"]{font-weight:650}
+.pm-nav-icon{width:20px;height:20px;flex:0 0 20px}
+.pm-app .brand-mark{border-radius:6px;background:var(--primary);color:var(--primary-foreground)}
+.pm-app .sidebar-footer{border-color:var(--border)}.pm-app .identity,.pm-app .identity strong{color:var(--foreground)}
+.pm-app input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.pm-app select,.pm-app textarea{background:var(--background);color:var(--foreground);border:1px solid #71717a;border-radius:6px;caret-color:var(--foreground)}
+.pm-app input::placeholder,.pm-app textarea::placeholder{color:var(--muted-foreground)}
+.pm-app :is(a,button,input,select,textarea,summary,[tabindex="0"]):focus-visible{outline:3px solid var(--foreground);outline-offset:3px}
+.pm-app .badge{background:var(--muted);color:var(--foreground);border-radius:6px}
+.pm-app .hint,.pm-app .pm-table-hint,.pm-app .eyebrow,.pm-app .user-meta,.pm-app small{color:var(--muted-foreground)}
+.pm-app .page-header p,.pm-app .metric-label,.pm-app .module p,.pm-app .card-copy{color:var(--muted-foreground)}
+.pm-app .metric,.pm-app .module,.pm-app .table-wrap{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:none}
+.pm-app .sidebar small,.pm-app .sidebar .hint{color:#52525b}
+.pm-app .pm-table-region{scrollbar-color:#71717a var(--muted)}
+.pm-app th{background:var(--muted);color:var(--foreground)}.pm-app th,.pm-app td{border-color:var(--border)}
+.pm-app .warning,.pm-app .warnings{background:var(--muted);color:var(--foreground);border-left:3px solid var(--warning);padding:8px 12px}
+.pm-app.pm-imports-page main>.warning{border-color:var(--border)}
+.pm-app .error,.pm-app .err,.pm-app .alert-error{color:#991b1b;background:#fef2f2}
+.pm-app .num-cell,.pm-app .metrics p,.pm-app input[type=number],.pm-app .pm-money-table :is(td,th):not(:first-child),.pm-app .pm-timesheet-table :is(td,th):nth-child(3),.pm-app .pm-timesheet-table :is(td,th):nth-child(4),.pm-app .pm-allocation-table :is(td,th):nth-child(3),.pm-app .pm-allocation-table :is(td,th):nth-child(4),.pm-app .pm-report-hours :is(td,th):nth-child(4),.pm-app .pm-report-users :is(td,th):not(:first-child){font-variant-numeric:tabular-nums;text-align:right}
+.pm-app .num-cell label,.pm-app td .warning{font-variant-numeric:normal;text-align:left}
+.pm-app .pm-person-dialog{font-family:Inter,Arial,sans-serif}
+@media(min-width:901px){.pm-app .shell{grid-template-columns:260px minmax(0,1fr)}.pm-app .sidebar{top:0}.pm-app>.pm-module-nav{top:0}.pm-app .content{padding:32px}.pm-app .pm-module-nav a{width:100%}}
+@media(max-width:900px){.pm-app .sidebar{border-right:0;border-bottom:1px solid var(--border)}.pm-app .pm-module-nav{border-right:0}.pm-app .content{padding:24px 16px}.pm-app .pm-module-nav a{width:auto}.pm-app .pm-nav-icon{width:18px;height:18px;flex-basis:18px}}

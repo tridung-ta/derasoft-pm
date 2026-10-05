@@ -1,5 +1,32 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 3 ? Unified theme ? 2026-10-05
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. User authorized
+self-directed planning/build within the agreed UI scope, without routine approval.
+White neutral theme, consistent light navigation with icon + text, self-hosted Inter,
+rounded cards/controls and tabular right-aligned numeric tables. Shared css/pmui.css;
+no controller/DAO/routes/permissions/database/business changes or external font calls.
+Exact 19 files listed in docs/PHASE9B_STEP3_PLAN.md, including this progress entry.
+
+Executed: ./tests/pm_regression.ps1 ? 42 scripts PASS; PHP lint smoke_pm_ui.php PASS.
+playwright-cli -s=pmnav run-code --filename=../tests/pm_ui_browser.js and
+pm_phase9b_buttons_browser.js, pm_phase9b_users_browser.js,
+pm_phase9b_theme_browser.js ? PASS. Browser fixtures verify keyboard/focus/labels,
+CSP, modal/no-JS fallback, button contrast/states, seven theme fixtures, full nav,
+360/390/768/1440 widths and 200% text scaling (not actual browser zoom).
+Chromium platform-font inspection verifies Inter renders all 90 U+1EA0?U+1EF9 glyphs.
+Desktop/mobile screenshots inspected; corrected dashboard muted-label contrast.
+Code/security review and git diff --check PASS. Synthetic tests are not production UAT.
+
+Font: official rsms/inter docs/font-files/InterVariable.woff2, 352240 bytes;
+SHA256 693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3.
+OFL license included. Before final release, update historical deployment manifest
+classification to include both new assets/fonts/inter files and regenerate package.
+Preview http://127.0.0.1:18767/.local/phase9-theme-nav.html (synthetic; do not submit).
+Manual visual acceptance and actual browser zoom pending. No push/merge/deploy.
+
+
 ## Phase 9b — Step 2 personnel BUILD/VERIFY — 2026-10-05
 
 Branch feature/pm-phase9b-ui-theme. Compact six-column personnel list now precedes
