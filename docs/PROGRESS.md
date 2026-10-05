@@ -1,5 +1,42 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — Step 2 personnel BUILD/VERIFY — 2026-10-05
+
+Branch feature/pm-phase9b-ui-theme. Compact six-column personnel list now precedes
+auxiliary sections. Add-person/add-department forms are closed details by default.
+One-person editor enhanced to native modal with separate profile/role/rate POST forms,
+permission gates, Tab/Shift+Tab containment, Escape/close and focus-return. Without JS
+or showModal the details editor is usable inline. Errors remain full-page as before;
+unsaved edits are not retained across server reload. No controller/DAO/routes/permissions,
+schema or business logic changes. No additional CSS or library.
+
+Exact files: templates/admin/pm-users-v2.tpl.html, css/pmui.css, js/pmui.js,
+tests/smoke_pm_users.php, tests/pm_phase9b_users_browser.js,
+tests/pm_phase9b_buttons_browser.js, docs/PHASE9B_STEP2_PLAN.md, docs/PROGRESS.md.
+
+Executed verification:
+- ./tests/pm_regression.ps1: 42 scripts PASS. Independent user/role/rate render gates,
+  escaping and lock/unlock assertions PASS. HTTP active actor coverage Admin/Employee;
+  does not claim full-role UAT or native user edit through the new modal.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_users_browser.js
+  from .local: two distinct users/form IDs, CSRF, no nested forms, Tab/Shift+Tab,
+  Escape/close/focus-return, cancelled destructive submit, no-JS fallback PASS;
+  360/390/768/1440 and 200% text scaling PASS. Confirmation test stubs confirm=false
+  and verifies original message plus zero POST; not a native dialog acceptance test.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_ui_browser.js:
+  13 synthetic Phase 9 screen/state fixtures at four widths PASS, keyboard skip/focus,
+  labels, no overflow, CSP and text scaling; no new page JS exceptions.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_buttons_browser.js:
+  Step 1 computed token/contrast, states, semantic and extra responsive fixtures PASS.
+- Compared every POST form against f490621: exact markup set unchanged, including
+  CSRF/actions/fields/confirmation. PHP lint test file and git diff --check PASS.
+- Synthetic desktop/mobile list/modal screenshots inspected; no production access.
+
+Preview http://127.0.0.1:18767/.local/phase9-users-two.html — synthetic, do not submit.
+BUILD/automated VERIFY complete; user visual acceptance/real browser 200% zoom pending.
+Await user check and request for Step 3 PLAN. No push/merge/deploy. Sidebar/font/global
+theme application remains a separate step, not delivered by this layout change.
+
 ## Phase 9b — Step 1 replacement tokens — 2026-10-05
 
 User replaced the previous visual direction with a single neutral design system for all

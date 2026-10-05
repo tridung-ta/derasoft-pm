@@ -42,3 +42,17 @@ body .pm-module-nav button,body .sidebar button.logout{background:var(--muted);c
 body .pm-module-nav button:hover,body .sidebar button.logout:hover{background:var(--border);color:var(--foreground)}
 body button:focus-visible,body .button:focus-visible{outline:3px solid var(--foreground);outline-offset:3px;box-shadow:0 0 0 6px var(--background)}
 body button:disabled{background:var(--muted);color:#52525b;border-color:#71717a;opacity:1;cursor:not-allowed}
+
+/* Personnel editors: details remain usable without the dialog enhancement. */
+.pm-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.pm-users-page summary{min-height:44px;padding:12px 0;cursor:pointer;font-weight:600}
+.pm-person-actions form{display:inline-block;margin:4px 6px 4px 0}
+.pm-person-editor{margin-bottom:4px}.pm-person-editor summary{position:relative;display:list-item;width:fit-content}
+.pm-person-dialog{width:min(640px,calc(100% - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:24px;background:var(--card);color:var(--foreground);border:1px solid var(--card-border);border-radius:var(--radius);overflow:auto}
+.pm-person-dialog::backdrop{background:rgb(9 9 11 / .55)}
+.pm-person-dialog .top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pm-person-dialog h2{font-size:1.25rem;margin:0}.pm-person-dialog section{margin-top:24px;border-top:1px solid var(--border);padding-top:12px}
+.pm-person-dialog label{display:block;margin:12px 0}.pm-person-dialog input,.pm-person-dialog select{padding:10px;border:1px solid var(--border);border-radius:6px}
+.pm-person-dialog button{padding:10px 14px}.pm-person-dialog [hidden]{display:none}
+.pm-person-dialog input:focus-visible,.pm-person-dialog select:focus-visible{outline:3px solid var(--foreground);outline-offset:3px}
+@media(max-width:760px){.pm-person-dialog{padding:16px}.pm-person-dialog .top button{margin-left:auto}}

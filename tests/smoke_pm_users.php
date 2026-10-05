@@ -17,6 +17,22 @@ $s->assign([
 $html=$s->fetch('admin/pm-users-v2.tpl.html');if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-users-1.html',str_replace('<head>','<head><base href="/">',$html));foreach(['Quản lý nhân sự','action" value="department_save','action" value="department_delete','action" value="roles','action" value="rate','action" value="rate_save','status" value="2','checked','selected'] as $needle){if(strpos($html,$needle)===false){fwrite(STDERR,'FAIL: '.$needle.PHP_EOL);exit(1);}}
 if(strpos($html,'value="department_restore"')===false||strpos($html,'&lt;script&gt;hidden&lt;/script&gt;')===false)throw new RuntimeException('Restore form/escaping missing');
 if(substr_count($html,'<button class="danger">Khóa</button>')!==2)throw new RuntimeException('User/department lock colors missing');
+if(strpos($html,'class="card pm-people-list"')===false||strpos($html,'data-pm-editor-content')===false||strpos($html,'class="pm-add-person"')===false)throw new RuntimeException('Compact editor structure missing');
+$baseUsers=$s->getTemplateVars('users');
+$second=$baseUsers[0];$second['id']=2;$second['fullname']='<script>Second User</script>';$second['email']='second@example.test';$second['username']='second';
+$s->assign('users',[$baseUsers[0],$second]);
+$twoHtml=$s->fetch('admin/pm-users-v2.tpl.html');
+if(strpos($twoHtml,'id="pm-person-2"')===false||strpos($twoHtml,'&lt;script&gt;Second User&lt;/script&gt;')===false)throw new RuntimeException('Distinct editor/escaping missing');
+if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-users-two.html',str_replace('<head>','<head><base href="/">',$twoHtml));
+$s->assign('users',$baseUsers);
+foreach([[false,true,false],[false,false,true],[true,false,false]] as [$manage,$rbac,$rates]){
+    $s->assign(['canManageUsers'=>$manage,'canManageRoles'=>$rbac,'canManageRates'=>$rates]);
+    $partial=$s->fetch('admin/pm-users-v2.tpl.html');
+    foreach(['save'=>$manage,'roles'=>$rbac,'rate'=>$rates] as $action=>$allowed){
+        if((strpos($partial,'name="action" value="'.$action.'"')!==false)!==$allowed)throw new RuntimeException('Independent permission changed: '.$action);
+    }
+}
+$s->assign(['canManageUsers'=>true,'canManageRoles'=>true,'canManageRates'=>true]);
 $lockedUsers=$s->getTemplateVars('users');$lockedUsers[0]['status']=0;
 $lockedDepartments=$s->getTemplateVars('departmentRows');$lockedDepartments[0]['status']=0;
 $s->assign(['users'=>$lockedUsers,'departmentRows'=>$lockedDepartments]);
