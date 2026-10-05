@@ -80,3 +80,14 @@ Evidence/coverage: PHASE9_VERIFY.md. Authenticated Admin/Employee khác với sy
 fixtures; PM/HR authenticated UI chưa có actor active local. Không ghi UAT/production-ready.
 Phase 6–9 có checkpoint commit local theo phase; chưa push/merge/deploy.
 CV chỉ mô tả phần mở rộng nền DeraSoft và kết quả kiểm chứng, không nhận toàn bộ legacy là tự viết.
+
+## Phase 10 ? local BUILD / automated VERIFY
+
+Ki?m th? browser ??ng nh?p th?c t? ?? Admin/PM/HR/Employee: 36 ca role/route v? lu?ng
+project ? task ? ch?m c?ng 9h ? export XLSX tr?n DB local c? l?p. Regression 41 scripts PASS.
+Native MyISAM import ?? ki?m tra d?ng worker PHP sau INSERT r?i resume, kh?ng ??i ENGINE;
+kh?ng suy r?ng th?nh ki?m th? m?t ?i?n ho?c crash m?y ch? MySQL.
+?? chu?n b? manifest FileZilla, th? t? migration/seed, rollback v? smoke sau deploy.
+Fixture ???c v? hi?u h?a/soft delete; kh?ng t?o nh?n s? gi? trong DB hi?n h?nh.
+UAT ng??i d?ng, Firefox, zoom tr?nh duy?t th?t v? screen reader c?n ch?; ch?a production.
+B?ng ch?ng v? gi?i h?n: [PHASE10_VERIFY.md](PHASE10_VERIFY.md).

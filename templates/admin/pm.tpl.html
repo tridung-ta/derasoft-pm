@@ -24,9 +24,9 @@
 				{if $error}<div class="alert alert-error" role="alert">{$error|escape}</div>{/if}
 
 				{if $section eq 'dashboard'}
-					<header class="page-header"><div><p class="eyebrow">Tổng quan</p><h1>Xin chào, {$profileUser->getUsername()|escape}.</h1><p>Admin cũ được tái sử dụng có chọn lọc trên giao diện DeraSoft PM.</p></div><span class="badge">Nền tảng sẵn sàng</span></header>
-					<div class="grid"><section class="metric"><div class="metric-label">Nhân sự trong hệ thống</div><div class="metric-value">{$teamCount}</div></section><section class="metric"><div class="metric-label">Module PM đang hoạt động</div><div class="metric-value">4</div></section><section class="metric"><div class="metric-label">Chế độ giao diện cũ</div><div class="metric-value">Ẩn</div></section></div>
-					<div class="module-grid"><section class="module"><small>Đang dùng</small><h2>Tài khoản và phân quyền nền</h2><p>Tiếp tục sử dụng dữ liệu người dùng, session và DAO của hệ thống cũ.</p></section><section class="module"><small>Sắp phát triển</small><h2>Dự án và công việc</h2><p>Các phân hệ mới sẽ được bổ sung tuần tự vào chính khung quản trị này.</p></section></div>
+					<header class="page-header"><div><p class="eyebrow">Tổng quan</p><h1>Xin chào, {$profileUser->getUsername()|escape}.</h1><p>Chọn chức năng trong menu để bắt đầu công việc.</p></div><span class="badge">Không gian làm việc</span></header>
+					<div class="grid"><section class="metric"><div class="metric-label">Nhân sự được xem</div><div class="metric-value">{if $canViewTeam}{$teamCount}{else}Giới hạn{/if}</div></section><section class="metric"><div class="metric-label">Quyền truy cập</div><div class="metric-value">Theo tài khoản</div></section><section class="metric"><div class="metric-label">Phiên làm việc</div><div class="metric-value">Đã đăng nhập</div></section></div>
+					<div class="module-grid"><section class="module"><small>Tài khoản</small><h2>Hồ sơ và bảo mật</h2><p>Cập nhật hồ sơ cá nhân và đổi mật khẩu từ menu tài khoản.</p></section><section class="module"><small>Công việc</small><h2>Dự án và công việc</h2><p>Theo dõi dự án, công việc và tiến độ trong phạm vi được phân quyền.</p></section></div>
 
 				{elseif $section eq 'profile'}
 					<header class="page-header"><div><p class="eyebrow">Tài khoản</p><h1>Hồ sơ cá nhân</h1><p>Cập nhật thông tin liên hệ của tài khoản quản trị.</p></div></header>

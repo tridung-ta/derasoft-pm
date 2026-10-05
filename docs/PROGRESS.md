@@ -695,3 +695,58 @@ Checkpoint local đã tạo (không push): Phase 6 `b6ba02b`, Phase 7 `b942231`,
 `python .local/verify-checkpoints.py` đã chạy trên ba snapshot tách biệt: PASS lần lượt
 19/24/36 regression scripts; config local chỉ sao chép trong thư mục `.local` bị ignore.
 Không sửa source đang làm hoặc tạo fake core user. Plan Phase 10 tại PHASE10_PLAN.md chờ duyệt.
+
+## Phase 10 — BUILD đang thực hiện — 2026-10-04
+
+Người dùng duyệt test/UAT và bổ sung chuẩn bị deployment FileZilla; đã cập nhật plan,
+tạo nhánh `feature/pm-phase10-test-release`. Không upload, chạy migration trên production,
+push/merge/deploy hoặc truy cập production.
+
+- Git baseline trước Phase 1: `3df33493da81f53e2fdc67d826998850812dbd2f`, predecessor
+  first-parent của Phase 1 merge. `git diff --name-only --no-renames BASELINE` đã chạy:
+  165 tracked paths, 75 runtime uploads. DEPLOY_DIFF_ALL/FILES/MANIFEST lưu đầy đủ và SHA256;
+  `python tests/pm_deploy_manifest.py --check`: PASS. Regenerate khi runtime/staged files đổi.
+- DEPLOY_LOG có version/ngày/commit-ref, migration 001–008 + seeds 001–006 theo phụ thuộc,
+  preflight/schema đã tồn tại, cảnh báo compatibility migration 002 và MyISAM UNIQUE 007;
+  config/license/env/cache/dump/uploads không upload, post-deploy smoke riêng và rollback
+  ứng dụng không DROP/xóa data. Chỉ chuẩn bị tài liệu, production smoke NOT RUN.
+- UAT_FINAL_LOCAL.md có checklist toàn PM cho người dùng, chưa tick UAT PASS.
+- Sửa lỗi được chứng minh: GET logout link cũ trên projects không tương thích POST-only;
+  raw project exception có thể lộ input trong log; muted dashboard contrast 4.39 thấp hơn
+  ngưỡng 4.5, chuyển màu local rồi kiểm tra lại.
+- `./tests/pm_regression.ps1`: PASS 41 scripts sau sửa logout/log. Smarty projects/admin,
+  PHP lint files sửa/mới và JS syntax PASS. UI matrix 13 synthetic fixtures ở 4 viewport
+  PASS; contrast sample bốn screen PASS, screenshot dashboard đã chụp/xem sau sửa.
+- Firefox engine attempt: executable chưa cài, NOT COVERED. Real browser zoom/screen reader
+  chưa chạy; text scaling không gọi là browser zoom.
+- Backup local hiện hành đã tạo trong `.local` bị ignore. Setup `pm_phase10_fixture.php`
+  bị MySQL từ chối CREATE DATABASE với user local hiện tại trước khi ghi fixture.
+  Đã yêu cầu tạo DB rỗng `derasoft_pm_phase10_20261004` và grant riêng; không gửi mật khẩu.
+  Test authenticated bốn role/CRUD và native MyISAM worker kill/resume đã chuẩn bị/lint,
+  chưa chạy, không ghi PASS. Chi tiết PHASE10_VERIFY.md.
+
+Phase 10 chưa hoàn tất, chưa commit theo quy tắc không commit phase BUILD dở. Tiếp tục các
+test cô lập và cleanup sau khi DB test sẵn sàng, rồi regression/security review cuối và
+commit local một lần. Current dc_users không tạo fake users, không đổi ENGINE/constraint.
+
+## Phase 10 ? BUILD / automated VERIFY ho?n t?t ? 2026-10-05
+
+DB local c? l?p ?? c? quy?n sau thao t?c kh?i ph?c root do ng??i d?ng th?c hi?n;
+kh?ng d?ng DB hosting, kh?ng ??i config production ho?c ENGINE.
+
+- `php tests/pm_phase10_fixture.php`: PASS schema/permission fixture c? l?p, gi? MyISAM/UNIQUE.
+- `php tests/pm_phase10_native_crash.php`: PASS kill worker PHP sau native INSERT r?i resume;
+  m?t t?i kho?n inactive, replay idempotent. Kh?ng ki?m tra crash mysqld/OS/m?t ?i?n.
+- `playwright-cli -s=pm10-auth run-code --filename=../tests/pm_phase10_browser.js`: PASS
+  36 ca authenticated 4 role, SID regeneration/logout v? project/task/9h timesheet/XLSX.
+- `php tests/pm_phase10_verify_cleanup.php`: PASS 8h regular + 1h OT, workbook,
+  phi?n c? b? revoke role 403/inactive 401; fixture soft delete v? t?i kho?n disabled;
+  s? nh?n s? ngu?n v?n 9. DB c? l?p gi? schema/audit, kh?ng t? reset ?? ch?y l?i.
+- `./tests/pm_regression.ps1`: PASS 41 scripts cu?i; UI synthetic 13 fixtures ? 4 viewport
+  PASS sau s?a dashboard copy, screenshot ?? xem. Review code/security v? lint cu?i ??t.
+- Manifest ??y ?? v? hash runtime ???c t?i t?o/ki?m tra tr??c commit; DEPLOY_LOG c?
+  migration dependencies, protected exclusions, rollback v? post-deploy smoke ri?ng.
+
+README/PORTFOLIO/PHASE10_VERIFY c?p nh?t theo b?ng ch?ng th?c t?. Firefox ch?a c?i,
+zoom browser th?t/screen reader v? UAT ng??i d?ng ch?a ch?y. Chu?n b? commit local m?t l?n
+tr?n `feature/pm-phase10-test-release`; kh?ng push/merge/deploy ho?c truy c?p production.

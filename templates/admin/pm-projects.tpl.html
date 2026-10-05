@@ -1,6 +1,6 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{$pageTitle|escape}</title>
 <link rel="stylesheet" href="css/pm-projects-base.css"><link rel="stylesheet" href="css/pmui.css"><script src="js/pmui.js" defer></script></head><body>{include file='./pm-navigation.tpl.html'}<main id="pm-main" tabindex="-1" class="wrap">
-<nav><a href="/admin.php?op=pm">Tổng quan</a><a href="/admin.php?op=pmprojects">Dự án</a><a href="/admin.php?op=logout">Đăng xuất</a></nav><h1>Dự án & Công việc</h1>
+<nav><a href="/admin.php?op=pm">Tổng quan</a><a href="/admin.php?op=pmprojects">Dự án</a></nav><h1>Dự án & Công việc</h1>
 {if $notice}<p class="message">{$notice|escape}</p>{/if}{if $error}<p class="message error">{$error|escape}</p>{/if}
 {if $project}
 <section class="card"><h2>{$project.name|escape}</h2><p>{$project.description|escape|nl2br}</p><p class="muted">{$project.code|escape} · {$projectStatuses[$project.status]|escape} · Ngân sách {$project.budget|escape} VND</p>

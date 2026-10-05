@@ -120,3 +120,10 @@ local-only CSP-compatible assets. The 41-script regression suite and synthetic b
 matrix passed. Authenticated HTTP UI coverage is Admin/Employee; PM/HR service fixtures
 are distinct from authenticated UI sessions. See [verification and remaining coverage](docs/PHASE9_VERIFY.md).
 EXPLAIN of 62 local query shapes is evidence of query/index selection, not a production benchmark.
+
+Phase 10 local BUILD / automated VERIFY is complete: 41 regression scripts, authenticated
+four-role browser checks and native MyISAM PHP-worker crash/resume passed on an isolated DB.
+Synthetic accounts were disabled and business fixtures soft deleted; source personnel stayed unchanged.
+See [verification and remaining coverage](docs/PHASE10_VERIFY.md),
+[manual FileZilla deployment preparation](docs/DEPLOY_LOG.md) and
+[final local UAT checklist](docs/UAT_FINAL_LOCAL.md). User UAT is pending; no deployment occurred.

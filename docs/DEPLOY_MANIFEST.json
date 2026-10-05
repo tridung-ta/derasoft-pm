@@ -1,0 +1,970 @@
+{
+  "version": "0.10.0-local-rc1",
+  "date": "2026-10-05",
+  "baseline": "3df33493da81f53e2fdc67d826998850812dbd2f",
+  "application_base_commit": "df76268",
+  "release_ref": "feature/pm-phase10-test-release",
+  "source": "git diff --name-only --no-renames BASELINE (tracked working tree, including Phase 10 fixes)",
+  "files": [
+    {
+      "status": "M",
+      "path": ".gitignore",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "M",
+      "path": "AGENTS.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "M",
+      "path": "README.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "M",
+      "path": "admin.php",
+      "action": "upload_runtime",
+      "sha256": "8da6f14ec839537f7d114169abdb1a0904d3a059ba2753d06cec64ffb53766a3"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmallocations.class.php",
+      "action": "upload_runtime",
+      "sha256": "08f9eaa3e7319d7fdd1a7a06d75dcca7fc64ae9486d3940bcb95c99717615a29"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmauditlogs.class.php",
+      "action": "upload_runtime",
+      "sha256": "d95a35ee6061e968490eaffc5d645c90444f4f7addc0e553289d32339f11f83e"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmcosts.class.php",
+      "action": "upload_runtime",
+      "sha256": "156d6677392003d922e5954162f6ddfdd88bf3e6e98f0c5eaf5ff4bed2b789b3"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmdepartments.class.php",
+      "action": "upload_runtime",
+      "sha256": "be49921064334315319b4dcad6c562dba908f4b8ca055293421a7e3afdc97a86"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmimports.class.php",
+      "action": "upload_runtime",
+      "sha256": "4cd675f1847c19137d20d8ada6f884191e589940933a17f9a28030e2fb87541b"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmpermissioninfo.class.php",
+      "action": "upload_runtime",
+      "sha256": "fbf0cf4d7dff564cc6d0b4f4825b33e9807478e7ca8ad6c94fe4561e15e7d0d5"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmpermissions.class.php",
+      "action": "upload_runtime",
+      "sha256": "fa1601cc45ab46f75423bc3d0743f72a4a5dd587cb5c0980d2c9575c96c64d2a"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmreports.class.php",
+      "action": "upload_runtime",
+      "sha256": "f750846b0dec76d2978e63f536473e33416023842aad6635c1ba39a0af1b9663"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmroleinfo.class.php",
+      "action": "upload_runtime",
+      "sha256": "43c6109164fc3373ae3fbde3117fc404bc623343bed99747e5d59c23097c4ba1"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmrolepermissions.class.php",
+      "action": "upload_runtime",
+      "sha256": "d4130c55fd1e9d8db24a1b421da917c66726d6cd0cb26353c73d9fad8ecaf7e9"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmroles.class.php",
+      "action": "upload_runtime",
+      "sha256": "5c32fd2c09a4e2aa8295f88049f4c182f5486f8c168b33e385fba3cec8b01708"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmuserroles.class.php",
+      "action": "upload_runtime",
+      "sha256": "6f4c99fe3038dea2d2ea3b98dfc12d0a2d13e47c8f217ef8d242daca3a355245"
+    },
+    {
+      "status": "A",
+      "path": "classes/dao/pmusers.class.php",
+      "action": "upload_runtime",
+      "sha256": "63c18cb8c8f1bc779964458d142c71ba05f4456c46e03f2bd7bda73013380dba"
+    },
+    {
+      "status": "M",
+      "path": "classes/dao/users.class.php",
+      "action": "upload_runtime",
+      "sha256": "59275064a0215fe838facd77076a48a5fae435190b61dfbab241bc5be22bf55b"
+    },
+    {
+      "status": "A",
+      "path": "classes/database/pmdb.class.php",
+      "action": "upload_runtime",
+      "sha256": "a50613a4dac2d211a45a14297e39f341a1d24b6ab65693591877d80a9e35cd07"
+    },
+    {
+      "status": "A",
+      "path": "classes/security/pmaccess.class.php",
+      "action": "upload_runtime",
+      "sha256": "cc5ff1b8b4dc20e2765617f058b0a11dc91d0368babef8927413e6e1226d4eff"
+    },
+    {
+      "status": "A",
+      "path": "classes/security/pmauth.class.php",
+      "action": "upload_runtime",
+      "sha256": "e9a401a312edf3254c20cf1866db5b6090ca8339548a9d3d3bad1f3913bc24ec"
+    },
+    {
+      "status": "A",
+      "path": "classes/security/pmsessionguard.class.php",
+      "action": "upload_runtime",
+      "sha256": "a2cbfdba788a4d5b2d61b7654622a13e1dbbcd0dbf8be554e799a317b7a48fe7"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmallocationservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "b8f067b8201edfcdc030c70aa408797f2691467a10829c0892f0e9e5cc2eccb2"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmcostservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "81e7e4b342e24141355a44ca5430a3f6ba4439b642a21204612f14090e004d02"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmimportservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "ba5550f4562cc7330bda3f3c3297e57536a638fe4804279fa99f1c76d34cb28b"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmprojectservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "7c0cecb40ec106b515bfecc82da01c7618720428d96974b836cf1104f78f4aa6"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmrateservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "508a93fc8181af8ac0af196d90c29b2b189efbe6828d0ed73515edd3e2c5397f"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmreportservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "a97fec2ada906a71eb3d0c5ea2768c792b5a588398ddf7ee08716c430350cce1"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmtimesheetservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "df30faa858beea2415a93bb9173037415e7dff0e149fd1514b2757742ac14e88"
+    },
+    {
+      "status": "A",
+      "path": "classes/services/pmuiservice.class.php",
+      "action": "upload_runtime",
+      "sha256": "1bdf120929422fafd856b6942441697f02adb0d2ee77d46b41fe5bc894fc79b3"
+    },
+    {
+      "status": "A",
+      "path": "css/pm-audit-base.css",
+      "action": "upload_runtime",
+      "sha256": "a3d9a7993ae5be05d7109fca14819bf9bd6fedbe2a2d063faa34105d683caa19"
+    },
+    {
+      "status": "A",
+      "path": "css/pm-dashboard-base.css",
+      "action": "upload_runtime",
+      "sha256": "0ff8157b31a05f7a42a75a1b1d1629f72650756e151548671f7d82d421dd92d9"
+    },
+    {
+      "status": "A",
+      "path": "css/pm-login-base.css",
+      "action": "upload_runtime",
+      "sha256": "5469059ab717ce6806909c1800fe7a0f4f469e32e008fa33cc33592aa6f47a80"
+    },
+    {
+      "status": "A",
+      "path": "css/pm-projects-base.css",
+      "action": "upload_runtime",
+      "sha256": "e22d2a3ef69cea4a221c09c578fddffd02cfa3e35edc564e6f49c2360b64b047"
+    },
+    {
+      "status": "A",
+      "path": "css/pm-timesheets-base.css",
+      "action": "upload_runtime",
+      "sha256": "607936b89ae57b768fd6f5318e1dbaaae3f8fad20a9e35aa5608614d86e915f7"
+    },
+    {
+      "status": "A",
+      "path": "css/pm-users-v2-base.css",
+      "action": "upload_runtime",
+      "sha256": "87b24f99f36831bce599212e4de9504ceb8a4b93eb54f09ab628ed7ba51c1b6d"
+    },
+    {
+      "status": "A",
+      "path": "css/pmallocations.css",
+      "action": "upload_runtime",
+      "sha256": "e19adb884ce0edd4ce0750c5753c9ac2d2eafe732c3baced4c72bc5847f84844"
+    },
+    {
+      "status": "A",
+      "path": "css/pmcosts.css",
+      "action": "upload_runtime",
+      "sha256": "1b4ddbf79baecbecfecc76db5d40303be8ac1d807529e7d33164f5798574b26e"
+    },
+    {
+      "status": "A",
+      "path": "css/pmui.css",
+      "action": "upload_runtime",
+      "sha256": "839d8f34a6df79f1db75d873577a56518a52705b4ed4a3d8cebf8cd7a6c779b1"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/001_create_pm_auth_rbac.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/002_create_pm_users_rates.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/003_create_pm_projects_tasks.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/004_create_pm_timesheets_audit.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/005_create_pm_allocations.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/006_create_pm_import_staging.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/007_add_pm_users_email_unique.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/008_create_pm_import_results.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/migrations/README.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "database/seeds/001_seed_pm_auth_rbac.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/seeds/002_seed_pm_phase5_audit_permissions.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/seeds/003_seed_pm_cost_permissions.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/seeds/004_seed_pm_allocation_permissions.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/seeds/005_seed_pm_report_permissions.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "A",
+      "path": "database/seeds/006_seed_pm_import_permissions.sql",
+      "action": "exclude_protected_or_sql"
+    },
+    {
+      "status": "M",
+      "path": "docs/AUDIT.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/BASELINE.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/DB_SCHEMA.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/DEPLOY_DIFF_ALL.txt",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/DEPLOY_FILES.txt",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/DEPLOY_LOG.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/DEPLOY_MANIFEST.json",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE10_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE10_VERIFY.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE4_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE5_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE6_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE7_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE8_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE9_CSP_INVENTORY.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE9_EXPLAIN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE9_PLAN.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PHASE9_VERIFY.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "M",
+      "path": "docs/PLAN_FINAL.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PORTFOLIO.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/PROGRESS.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/UAT_FINAL_LOCAL.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/UAT_PHASE5_6.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/UAT_PHASE7.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/assets/repository-cover.svg",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "M",
+      "path": "includes/admin/sessions.inc.php",
+      "action": "upload_runtime",
+      "sha256": "4d3a09ff3d0cf3e956617b9b9ccb604126b8906e885769f84b51607346c0395f"
+    },
+    {
+      "status": "A",
+      "path": "includes/pm_response.inc.php",
+      "action": "upload_runtime",
+      "sha256": "5d94b570b71215b4a2c62b9ab4aee1021eef048da7530fbfe6faf9cbcd545acf"
+    },
+    {
+      "status": "A",
+      "path": "includes/smarty_runtime.inc.php",
+      "action": "upload_runtime",
+      "sha256": "98e534fa772184f52db2951f3c9c32577ba1d786442bbf027b2f3e134dfcf76d"
+    },
+    {
+      "status": "M",
+      "path": "index.php",
+      "action": "upload_runtime",
+      "sha256": "96aedca4c7ccb86b9d4013c98cdb2135220b639916a9ee9cccf9306133bae5d1"
+    },
+    {
+      "status": "A",
+      "path": "js/pmallocations.js",
+      "action": "upload_runtime",
+      "sha256": "4c55a21abc5deaf4a48e3a6417153f00e469eae74995c274243871ba891b7bdf"
+    },
+    {
+      "status": "A",
+      "path": "js/pmcosts.js",
+      "action": "upload_runtime",
+      "sha256": "b12aa307fab5530b3bf4635322daabf819ef9326825f6428b334023520cb699a"
+    },
+    {
+      "status": "A",
+      "path": "js/pmui.js",
+      "action": "upload_runtime",
+      "sha256": "e923f16349f31478ca7a559b61d76caf625da4de36c49a578682de10035ed743"
+    },
+    {
+      "status": "A",
+      "path": "js/vendor/chartjs-4.5.1/LICENSE.md",
+      "action": "upload_runtime",
+      "sha256": "41a84aa2caba645f966a18d9c2056b73e6d3a81d80bc0046bc0011a2634d4cce"
+    },
+    {
+      "status": "A",
+      "path": "js/vendor/chartjs-4.5.1/README.md",
+      "action": "upload_runtime",
+      "sha256": "866e4d5250efde0b60e7ee9fefedb46109736e02f54b4b9c1a4adf94ea82d55c"
+    },
+    {
+      "status": "A",
+      "path": "js/vendor/chartjs-4.5.1/chart.umd.js",
+      "action": "upload_runtime",
+      "sha256": "84d0e233daba702b8f77d669d8c137cad36d441a10f200b6f2d3ab553bdfcf6b"
+    },
+    {
+      "status": "M",
+      "path": "modules/admin/login.module.php",
+      "action": "upload_runtime",
+      "sha256": "20a4d361a58eddbfd03ef2bc334f12dc7d5f9f4efd8f7e06c80b156f0c5725ef"
+    },
+    {
+      "status": "M",
+      "path": "modules/admin/logout.module.php",
+      "action": "upload_runtime",
+      "sha256": "f661ff96788c2719e8ca85bca8a51fe6807f44cd7a8e76968ba1fdeb0eceef8c"
+    },
+    {
+      "status": "M",
+      "path": "modules/admin/pm.module.php",
+      "action": "upload_runtime",
+      "sha256": "eabb5b4ddaff5d92a24342d436fda45b9e40ecdd148d334096ee45f73b5d6140"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmallocations.module.php",
+      "action": "upload_runtime",
+      "sha256": "2e0b56f68b3d254cd87319e0bad7d4760dd3b6469c3303b34dd8c84a84929f44"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmaudit.module.php",
+      "action": "upload_runtime",
+      "sha256": "6ffd48f6c562e03be046f329cd6950afc920513afc464da65075e9758736a25c"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmcosts.module.php",
+      "action": "upload_runtime",
+      "sha256": "ca09aa8cd6470591879dd2543a83afe86690f9cc8aadc5fb6661f7578366d9cb"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmimports.module.php",
+      "action": "upload_runtime",
+      "sha256": "8c0baec9df7203b1abb13622ff0e6a5f6d4b44413c2d65a26458dae5e4af6189"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmprojects.module.php",
+      "action": "upload_runtime",
+      "sha256": "bf358f0ffb252f7a8061b6d57112aa3944fa70ac88c5c159ed287a8735e02175"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmreports.module.php",
+      "action": "upload_runtime",
+      "sha256": "e77e5a693894ab6c677d683fc977f0a6aee52b99d2e63ffb52b684e249a8efad"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmtimesheets.module.php",
+      "action": "upload_runtime",
+      "sha256": "1be3ede588e1319b53ee99d7a20fdebe77695db40f1ce5473723dadb25152b5a"
+    },
+    {
+      "status": "A",
+      "path": "modules/admin/pmusers.module.php",
+      "action": "upload_runtime",
+      "sha256": "6c605f4692baa59803eb8dd3b8582156d6ff9b7a0cb939731ebbd61a32dab6fb"
+    },
+    {
+      "status": "A",
+      "path": "modules/ajax/pmallocations.module.php",
+      "action": "upload_runtime",
+      "sha256": "f3773e3a53ed41c21957e4491b83134a25be0c7d2843366740134e3ba705c148"
+    },
+    {
+      "status": "A",
+      "path": "modules/ajax/pmcosts.module.php",
+      "action": "upload_runtime",
+      "sha256": "6d3dbf2f611ce99400d447c88416e44ad3a0232d2e74da1a5d3bf72fcf44bbf5"
+    },
+    {
+      "status": "A",
+      "path": "pm_ajax.php",
+      "action": "upload_runtime",
+      "sha256": "2e3d0e7abc3d5ecefb73ef7f61632a3f4209ff7273d897aed1776b95d8c948d2"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-allocations.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "e4d411821931c31813f553f251996f26385aebba10cf12ce1531bd7799292a06"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-audit.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "0d88fbd6bcdcefbe67391297177b7d7c1c3103f8c11b2a3056b928fa61937222"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-costs.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "1ed20bdc67aa82f74e2612bc00dc9a777b65531834819bca164cc9fd44f34bcd"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-imports.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "08c47b1faa5be3e2d316b24e048619f4b495e6f2a2792c8591b6290e13a399c8"
+    },
+    {
+      "status": "M",
+      "path": "templates/admin/pm-login.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "7e583df08204ccb5020e586083fe0948afdd772a6b0fb0c66c549896f6ddb99c"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-navigation.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "eab37843466cb67b40fc58f3f64409d76c34853160b776f0ccd55ddb3d65b64d"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-project-form.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "0ad8496eb1abcb3b16f8cda9390b619d8f7ea8bdcccaab85b522ba14c9574358"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-projects.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "44d4fd472a6f17eb7d6bf6857201561cbaca9f34ecca756315e47a1dd4ae18ae"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-rates-panel.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "986223c5f5cd06d25a1c61a137020886cd48c279bfb72cfc8e041aaaff26bd5c"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-reports.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "393ac53acfba33772b975885cd5bc10a3e3286f714ca5ada6266098b7c2bdeb2"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-task-form.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "77b1dfc2070cabc17c501b5db60fd2fd4294c5d9cf0f3be4940f41ee41678f7c"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-timesheets.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "8a3e6bb93c4b70e0a543887b969d3fc7cc21758fd692e7641583c25495556318"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-users-v2.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "2bd0c7a4be1af170f5d558615f974b9af926ee62a289f221697d6088305efdfe"
+    },
+    {
+      "status": "A",
+      "path": "templates/admin/pm-users.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "5cb2eaf639a9cca32d9acce717126731f9deb3ebcd3e95b1210beb1c091b2496"
+    },
+    {
+      "status": "M",
+      "path": "templates/admin/pm.tpl.html",
+      "action": "upload_runtime",
+      "sha256": "c12ba4d8158e7fc1b13132b093a9f3da272fc7ea9856368c39a29e6550604233"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_allocations_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_allocations_concurrency.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_allocations_http_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_allocations_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_audit_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_auth_rbac_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_confirmation_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_costs_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_costs_http_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_costs_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_departments_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_deploy_manifest.py",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_email_unique_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_explain_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_apply_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_email_index_audit.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_http_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_native_duplicate.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_results_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_import_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase10_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase10_contrast_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase10_fixture.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase10_native_crash.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase10_verify_cleanup.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase2_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase3_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase4_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase5_audit_permissions.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase5_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase6_permissions.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase7_migration.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_phase8_permissions.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_projects_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_rates_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_regression.ps1",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_reports_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_reports_http_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_reports_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_roles_batch_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_session_guard_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_timesheet_window_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_timesheets_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_ui_browser.js",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_ui_fixture_router.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_ui_http_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "M",
+      "path": "tests/smoke_pm_admin.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_allocations.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_audit.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_costs.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_dependencies.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_imports.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_projects.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_reports.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_timesheets.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_ui.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/smoke_pm_users.php",
+      "action": "exclude_nonruntime"
+    }
+  ]
+}
