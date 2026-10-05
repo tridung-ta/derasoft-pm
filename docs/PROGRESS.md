@@ -1,5 +1,41 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 4 - Allocation week view - 2026-10-05
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Seven day columns,
+rows grouped by visible employee, server-provided total load and capacity thresholds.
+Day/week overbooking includes text and amber accent. No visible allocation detail is
+labelled unknown rather than 0; filtered row hours are never summed as tenant totals.
+Existing detail table and all forms/actions retained, collapsed only after JS enhancement;
+no-JS keeps table open. Three management sections grouped in one native-details panel.
+Existing polling supplies row metadata and MutationObserver refreshes the week view;
+no new request, route, permission, DAO, schema, capacity or business calculation.
+Fixed polling-created hide buttons to retain destructive color after refresh.
+
+Files: templates/admin/pm-allocations.tpl.html, css/pmui.css, js/pmallocations.js,
+js/pmallocationweek.js, tests/smoke_pm_allocations.php,
+tests/pm_phase9b_allocation_browser.js, docs/PHASE9B_STEP4_PLAN.md, docs/PROGRESS.md.
+Executed checks:
+- ./tests/pm_regression.ps1: 42 scripts PASS on local fixture database.
+- PHP lint and tests/smoke_pm_allocations.php --preview PASS: Smarty escaping,
+  attribute metadata, read-only Employee and error state.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_allocation_browser.js
+  PASS: year rollover, repeated rows/server totals, multiple employees, warning text,
+  polling render and empty refresh, unsafe-string text escaping, original CSRF forms,
+  keyboard panel/detail focus, 360/390/768/1440, 200% text scaling, no-JS fallback.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_ui_browser.js:
+  13 Phase 9 screen/state fixtures PASS, keyboard skip/focus, labels, CSP, responsive.
+- All original template forms compared against HEAD: exact form markup unchanged.
+  Code/security review and git diff --check PASS; no backend files changed.
+- Desktop/mobile synthetic screenshots inspected in ignored .local. Initial browser
+  checks found fixture anchor navigation and panel closing tag issues; fixed and rerun.
+
+Preview http://127.0.0.1:18767/.local/phase7-preview.html (synthetic; do not submit).
+Actual browser zoom/manual visual UAT and authenticated use of new week controls not
+claimed. Existing service/HTTP regression covers backend allocation actions. No push,
+merge, deployment or production access. Final release manifest must include new JS.
+
+
 ## Phase 9b Step 3 ? Unified theme ? 2026-10-05
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. User authorized

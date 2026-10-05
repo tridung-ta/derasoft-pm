@@ -20,6 +20,8 @@
         const fragment = document.createDocumentFragment();
         data.rows.forEach(row => {
             const tr = document.createElement('tr');
+            tr.id='allocation-row-'+row.id;
+            Object.assign(tr.dataset,{allocationId:String(row.id),userId:String(row.user_id),userName:row.user_name,date:row.work_date,dayTotal:row.day_total,dayLimit:row.daily_limit,weekTotal:row.week_total,weekLimit:row.weekly_limit});
             tr.append(text('td', row.work_date + ' / ' + row.user_name), text('td', row.project_name + ' / ' + row.task_name + (row.historical ? ' (lịch sử)' : '')),
                 text('td', row.hours + ' / ' + (row.start_time && row.end_time ? row.start_time + ' – ' + row.end_time : 'Chưa có khoảng giờ')),
                 text('td', row.day_total + ' / ' + row.daily_limit + ' ngày; ' + row.week_total + ' / ' + row.weekly_limit + ' tuần'));
@@ -31,7 +33,7 @@
                 const form = document.createElement('form'); form.method = 'post';
                 const token = document.querySelector('#allocation-editor input[name="csrf_token"]')?.value || '';
                 Object.entries({op:'pmallocations', action:'delete', id:row.id, csrf_token:token}).forEach(([name,value]) => { const input=document.createElement('input');input.type='hidden';input.name=name;input.value=value;form.append(input); });
-                const button = text('button', 'Ẩn phân bổ'); button.className='secondary';form.append(button);cell.append(form);
+                const button = text('button', 'Ẩn phân bổ'); button.className='danger';form.append(button);cell.append(form);
             }
             tr.append(cell);fragment.append(tr);
         });
