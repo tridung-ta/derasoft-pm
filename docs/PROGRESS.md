@@ -1,5 +1,37 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — Step 1 BUILD/VERIFY — 2026-10-05
+
+Branch: `feature/pm-phase9b-ui-theme`, based on develop after fast-forward to Phase 10.
+BUILD/automated VERIFY complete; user visual acceptance pending. No Step 2 BUILD,
+push, merge or deployment. User subsequently authorized commits of verified changes;
+this commit records implementation, not UAT acceptance.
+
+Runtime files: `css/pmui.css`, `templates/admin/pm-users-v2.tpl.html`,
+`templates/admin/pm-allocations.tpl.html`, `templates/admin/pm-rates-panel.tpl.html`,
+`templates/admin/pm-timesheets.tpl.html`. One shared CSS file; no controller/DAO/routes,
+permission, form fields, confirmation messages or business logic changed.
+Ordinary action #B98A2E/#161A20, destructive #A6432D/#E7E9EC; lock/unlock dynamic,
+hide/deactivate destructive, restore ordinary; logout remains neutral.
+
+Verification commands/results:
+- `./tests/pm_regression.ps1`: 42 scripts PASS, including Smarty lock/unlock assertions.
+- `playwright-cli -s=pmnav run-code --filename=../tests/pm_ui_browser.js` from `.local`:
+  13 synthetic screen/state fixtures PASS at 360/390/768/1440, labels, keyboard skip/focus,
+  no page overflow/inline code, 200% text scaling (not real browser zoom).
+- `playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_buttons_browser.js`:
+  computed contrast ordinary 5.60:1, destructive 4.99:1; hover/focus/disabled >=4.5,
+  tested targets >=44px, unlock/restore semantics, reduced motion;
+  extra costs/allocation/import fixtures no page overflow at all four widths.
+- Desktop/mobile user screenshots inspected; synthetic preview has fallback navigation,
+  not a complete authenticated menu. Missing favicon produces a local 404; no new JS
+  page exceptions in Phase 9 matrix. Live financial/polling behavior is covered separately
+  by regression HTTP tests, not the synthetic preview.
+
+Preview: `http://127.0.0.1:18767/.local/phase9-users-1.html` (synthetic, do not submit).
+Real browser zoom 200% and user visual acceptance remain pending. No physical copies of
+the user's original nine before screenshots have been stored; no before evidence invented.
+
 ## UAT follow-up — 2026-10-05
 
 UI follow-up: thống nhất navigation desktop thành rail trái 260px cho các module PM,

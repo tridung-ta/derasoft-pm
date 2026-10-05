@@ -29,3 +29,16 @@ button,.button{min-height:44px;white-space:normal}button:disabled{cursor:wait;op
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
 .sidebar button.logout{background:#334155;color:#fff;border:0;font:inherit;padding:10px 14px}.pm-module-nav form{display:flex;align-items:center;margin:0}
+
+/* Phase 9b: semantic action colors shared by every PM screen. */
+:root{--pm-action:#B98A2E;--pm-action-text:#161A20;--pm-danger:#A6432D;--pm-danger-text:#E7E9EC;--pm-warning:#C98A2E}
+body button,body .button,body button.secondary{background:var(--pm-action);color:var(--pm-action-text);border:1px solid var(--pm-action-text);min-height:44px}
+body button.danger{background:var(--pm-danger);color:var(--pm-danger-text)}
+body button:hover,body .button:hover{background:#D0A34A;color:var(--pm-action-text)}
+body button.danger:hover{background:#913923;color:#fff}
+body button:active,body .button:active{background:#A97D28;color:var(--pm-action-text)}
+body button.danger:active{background:#7E301F;color:#fff}
+body .pm-module-nav button,body .sidebar button.logout{background:#334155;color:#fff;border:1px solid #E7E9EC}
+body .pm-module-nav button:hover,body .sidebar button.logout:hover{background:#1E232B;color:#fff}
+body button:focus-visible,body .button:focus-visible{outline:3px solid #161A20;outline-offset:3px;box-shadow:0 0 0 6px #E7E9EC}
+body button:disabled{background:#E7E9EC;color:#526176;border-color:#526176;opacity:1;cursor:not-allowed}

@@ -21,7 +21,7 @@
 <label>Từ ngày<input name="effective_from" type="date" value="{$hr.effective_from|escape}" required></label>
 <label>Đến ngày<input name="effective_to" type="date" value="{$hr.effective_to|escape}"></label><button>Lưu thay đổi</button></form>
 {else}{$hr.rate|escape} {$hr.currency|escape}/giờ — {$hr.effective_from|escape} → {$hr.effective_to|default:'Không giới hạn'|escape}{/if}
-</td><td>{if $hr.status eq 1}Đang áp dụng{if $canManageRates}<form method="post" data-pm-confirm="Ngừng áp dụng đơn giá này?"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_deactivate"><input type="hidden" name="id" value="{$hr.id}"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="secondary">Ngừng áp dụng</button></form>{/if}{else}Đã ngừng áp dụng{/if}</td></tr>
+</td><td>{if $hr.status eq 1}Đang áp dụng{if $canManageRates}<form method="post" data-pm-confirm="Ngừng áp dụng đơn giá này?"><input type="hidden" name="op" value="pmusers"><input type="hidden" name="action" value="rate_deactivate"><input type="hidden" name="id" value="{$hr.id}"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="danger">Ngừng áp dụng</button></form>{/if}{else}Đã ngừng áp dụng{/if}</td></tr>
 {foreachelse}<tr><td colspan="4">Chưa có đơn giá.</td></tr>{/foreach}
 </tbody></table></div></section>
 {/if}
