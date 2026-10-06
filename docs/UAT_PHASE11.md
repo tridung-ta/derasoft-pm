@@ -33,11 +33,29 @@ Bootstrap form controls), schema 009 chỉ chạy local.
 | Hạng mục | Kết quả người dùng | Ghi chú/lỗi |
 | --- | --- | --- |
 | Giao diện/Bootstrap/sidebar/logout | Chưa nghiệm thu | |
+| Nhân sự: tìm kiếm/sửa/khóa/mở khóa | Chờ người dùng thực hiện | Dùng nhân sự thử trên local; không thao tác tài khoản đang đăng nhập |
 | Email/username/đổi mật khẩu | Đạt — người dùng xác nhận 06/10/2026 | Cả hai dùng mật khẩu mới; mật khẩu cũ bị từ chối |
 | Dự án/task/metadata/audit | Chưa nghiệm thu | |
 | Chấm công/OT/chi phí | Chưa nghiệm thu | |
 | Báo cáo/XLSX | Chưa nghiệm thu | |
 | PM/HR/Employee và import | Chưa nghiệm thu | |
+
+## Lượt nghiệm thu tiếp theo: Nhân sự và Bootstrap
+
+Thực hiện trên local bằng Admin, dùng một nhân sự thử riêng:
+
+1. Mở Nhân sự (`admin.php?op=pmusers`), tìm nhân sự thử theo tên/email.
+2. Bấm Sửa: kiểm tra đúng người, sửa số điện thoại, Lưu; tải lại và xác nhận
+   dữ liệu đã giữ. Đóng form và kiểm tra focus trở về nút Sửa.
+3. Khóa nhân sự thử: nút Khóa đỏ, trạng thái chuyển thành đã khóa; Mở khóa
+   là hành động thường, không đỏ. Mở khóa lại sau khi kiểm tra.
+4. Thu màn hình về mobile, thử zoom trình duyệt 200% và dùng Tab:
+   form/nút không bị cắt, focus rõ, bảng có thể cuộn trong vùng bảng.
+5. Kiểm tra sidebar có biểu tượng D, nút Đăng xuất dễ thấy; Console không
+   có lỗi JS mới. Đăng xuất sau khi đã lưu và mở khóa lại nhân sự thử.
+
+Phản hồi từng mục **Đạt / Lỗi / Chưa thử**, kèm thao tác và ảnh nếu có lỗi.
+Chỉ cập nhật trạng thái tương ứng sau phản hồi; chưa có kết quả mới cho lượt này.
 
 Xem local: `http://localhost/derasoft-pm/admin.php?op=login` nếu Apache ánh xạ
 workspace tại `/derasoft-pm`; nếu chạy workspace ở document root, dùng
