@@ -2,7 +2,7 @@
   "version": "0.11.0-phase11-local-rc1",
   "date": "2026-10-06",
   "baseline": "3df33493da81f53e2fdc67d826998850812dbd2f",
-  "application_base_commit": "2bb9665",
+  "application_base_commit": "1cad212",
   "release_ref": "feature/pm-phase11-requirements",
   "source": "git diff --name-only --no-renames BASELINE (tracked working tree, including Phase 10 fixes, Phase 9b UI and Phase 11 requirements)",
   "required_migrations": [
@@ -255,7 +255,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "b2ea2b91c588e0cde9ff064642abddcefe7772ee1c2276bbea6711ac6c16ea97"
+      "sha256": "0fc6a2b8ae2490d3f2f29f11ae37dff75bcd6aa48e8e5543f2239e2dc9464c5b"
     },
     {
       "status": "A",

@@ -8,8 +8,8 @@ Kết quả agent: [LOCAL_VERIFY_PHASE11.md](LOCAL_VERIFY_PHASE11.md), 46 regres
 scripts và 14 browser suites PASS. Chưa merge/push/deploy; migration 009 cần duyệt riêng.
 
 BUILD đã kiểm tra tự động; chưa tick UAT thay người dùng. Nhánh local
-feature/pm-phase11-requirements, runtime 2bb9665 (gồm sửa mật khẩu 7227906 và
-Bootstrap form controls), schema 009 chỉ chạy local.
+feature/pm-phase11-requirements, runtime 1cad212 (gồm sửa mật khẩu 7227906,
+Bootstrap form controls và cải tiến nút/form), schema 009 chỉ chạy local.
 
 1. Đăng nhập Admin: Nhân sự, Dự án, Chấm công, Báo cáo, Import, sidebar D và
    đăng xuất giữ giao diện Inter; desktop/mobile, zoom trình duyệt 200%.

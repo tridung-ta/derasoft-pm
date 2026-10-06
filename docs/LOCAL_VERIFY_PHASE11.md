@@ -5,6 +5,11 @@ trong lượt này; không sửa runtime, không áp migration mới, không tru
 Người dùng yêu cầu agent kiểm thử local, chuyển kiểm thử thủ công sang sau triển khai.
 Kết quả dưới đây là automated VERIFY, không phải UAT hoặc production PASS.
 
+Follow-up UI `1cad212`: shared CSS polish only, tested again with 46 regression
+scripts and 14 browser suites PASS; desktop/mobile personnel screenshots inspected.
+Select arrow/padding and outlined edit control explicitly tested. No business/schema
+changes; existing coverage limits below remain. Manifest/ZIP updated to this runtime.
+
 ## Kết quả theo 10 nhóm yêu cầu
 
 | Nhóm | Kết quả đã chạy | Căn cứ chính |

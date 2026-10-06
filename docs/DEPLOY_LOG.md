@@ -3,8 +3,8 @@
 ## Phase 11 local candidate — 06/10/2026 (NOT DEPLOYED)
 
 Current preparation: 0.11.0-phase11-local-rc1, branch
-feature/pm-phase11-requirements, runtime commit 2bb9665 (auth fix 7227906 and
-Bootstrap control states included). Earlier Phase 9b entries
+feature/pm-phase11-requirements, runtime commit 1cad212 (auth fix 7227906,
+Bootstrap control states and interaction polish included). Earlier Phase 9b entries
 below are historical; do not mix their ZIP/hash with the current manifest.
 UAT: docs/UAT_PHASE11.md — user deferred remaining manual testing until after
 deployment on 06/10/2026. Agent reran local verification (46 regression scripts,
