@@ -66,6 +66,7 @@ docs/DEPLOY_DIFF_ALL.txt
 docs/DEPLOY_FILES.txt
 docs/DEPLOY_LOG.md
 docs/DEPLOY_MANIFEST.json
+docs/LOCAL_VERIFY_PHASE11.md
 docs/PHASE10_PLAN.md
 docs/PHASE10_VERIFY.md
 docs/PHASE11_REQUIREMENTS.md
@@ -244,6 +245,7 @@ tests/pm_timesheets_smoke.php
 tests/pm_ui_browser.js
 tests/pm_ui_fixture_router.php
 tests/pm_ui_http_smoke.php
+tests/pm_users_crud_smoke.php
 tests/smoke_pm_admin.php
 tests/smoke_pm_allocations.php
 tests/smoke_pm_audit.php

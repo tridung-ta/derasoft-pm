@@ -47,8 +47,10 @@ có cần hỏi riêng; không suy diễn quyền HR toàn tenant từ từ ng�
   Hoàn thiện form-control/form-select/btn trên template PM ngày 06/10;
   token Bootstrap theo theme Inter, focus/disabled/file input đã kiểm tra browser.
   Không đổi nội dung form, route, controller hoặc database.
-- Phần 6: bảng đối chiếu bên dưới; 44 regression PASS, 101 prepared query shapes
+- Phần 6: bảng đối chiếu bên dưới; 46 regression PASS, 101 prepared query shapes
   EXPLAIN PASS; browser sidebar và báo cáo mới PASS. Chưa UAT/production Phase 11.
+  Rerun 06/10: 14 browser suites PASS; docs/LOCAL_VERIFY_PHASE11.md ghi phạm vi
+  và giới hạn thật. Theo yêu cầu mới, kiểm thử tay còn lại chuyển sang sau deploy.
 
 ## Đối chiếu 10 nhóm yêu cầu
 

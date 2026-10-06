@@ -2,7 +2,7 @@
 async (page) => {
  const ctx=await page.context().browser().newContext();const p=await ctx.newPage();const errors=[];
  p.on('pageerror',e=>errors.push(e.message));
- const fixtures=['/.local/phase9b-capture/after/overview.html','/.local/phase9b-capture/after/users.html'];
+ const fixtures=['/.local/phase9-dashboard.html','/.local/phase9-users-1.html'];
  for(const fixture of fixtures){
   await p.goto('http://127.0.0.1:18767'+fixture);await p.evaluate(()=>document.fonts.ready);
   if(await p.locator('.brand-mark').count()!==1)throw Error('Brand missing/duplicated: '+fixture);

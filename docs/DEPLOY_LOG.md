@@ -6,7 +6,10 @@ Current preparation: 0.11.0-phase11-local-rc1, branch
 feature/pm-phase11-requirements, runtime commit 2bb9665 (auth fix 7227906 and
 Bootstrap control states included). Earlier Phase 9b entries
 below are historical; do not mix their ZIP/hash with the current manifest.
-UAT: docs/UAT_PHASE11.md pending. No Phase 11 merge/push/deploy authorization.
+UAT: docs/UAT_PHASE11.md — user deferred remaining manual testing until after
+deployment on 06/10/2026. Agent reran local verification (46 regression scripts,
+14 browser suites PASS); evidence/gaps in docs/LOCAL_VERIFY_PHASE11.md.
+This is not UAT PASS or Phase 11 merge/push/deploy authorization.
 Current manifest: 86 runtime files including Inter and Bootstrap license/CSS;
 all file SHA256 values verified against the transfer workspace. The ZIP was
 rebuilt after the auth/Bootstrap changes, with inventory/CRC/per-file checks.

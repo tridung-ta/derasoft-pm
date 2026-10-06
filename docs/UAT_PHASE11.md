@@ -1,5 +1,12 @@
 # Phase 11 — nghiệm thu local
 
+**Quy trình cập nhật 06/10/2026:** người dùng dừng kiểm thử tay local, yêu cầu
+agent kiểm thử lại toàn bộ phạm vi PM trước và sẽ kiểm thử tay sau triển khai.
+Các mục chưa xác nhận bên dưới chuyển sang chờ kiểm thử thủ công sau triển khai,
+không chặn agent hoàn tất VERIFY local và không tự đổi thành UAT PASS.
+Kết quả agent: [LOCAL_VERIFY_PHASE11.md](LOCAL_VERIFY_PHASE11.md), 46 regression
+scripts và 14 browser suites PASS. Chưa merge/push/deploy; migration 009 cần duyệt riêng.
+
 BUILD đã kiểm tra tự động; chưa tick UAT thay người dùng. Nhánh local
 feature/pm-phase11-requirements, runtime 2bb9665 (gồm sửa mật khẩu 7227906 và
 Bootstrap form controls), schema 009 chỉ chạy local.
@@ -79,6 +86,7 @@ workspace tại `/derasoft-pm`; nếu chạy workspace ở document root, dùng
 - PM/HR HTTP bằng tài khoản thật chưa có bằng chứng; service permission tests
   không thay phần này. XLSX đã round-trip tự động nhưng chưa mở trực tiếp trong Excel.
 
-Kết quả: **ĐANG NGHIỆM THU — MẬT KHẨU ĐẠT, CÁC MỤC KHÁC CHỜ**.
+Kết quả: **VERIFY LOCAL ĐẠT TRONG PHẠM VI ĐÃ CHẠY; MẬT KHẨU ĐƯỢC NGƯỜI DÙNG
+XÁC NHẬN; CÁC MỤC KIỂM THỬ TAY CÒN LẠI HOÃN ĐẾN SAU TRIỂN KHAI**.
 Người dùng ghi lỗi/kết quả và duyệt merge/push/
 deploy riêng. Không dùng file ZIP UI b0eca4c cho Phase 11.

@@ -1,5 +1,17 @@
 # DeraSoft PM — Progress
 
+## Full PM local verification rerun — 2026-10-06
+
+User moved manual acceptance to after deployment and requested agent full local
+verification. Reran 46 regression scripts and 14 browser suites: PASS. Added real
+personnel DAO CRUD tests using a connection-local MyISAM temporary mirror; expanded
+reports render/escaping coverage for tasks/users/projects and refreshed sidebar
+browser fixtures. No runtime changes or real personnel writes in added tests.
+Full 10-group evidence and gaps: docs/LOCAL_VERIFY_PHASE11.md. PM/HR HTTP actors,
+real browser zoom/Excel manual viewing remain unverified; not UAT/production PASS.
+No merge/push/deploy, no production migration. Manual local UAT is no longer a
+required next action under the user's latest instruction; deployment approval is separate.
+
 ## Phase 11 acceptance in progress — 2026-10-06
 
 User confirmed shared email/username new-password login and rejection of old

@@ -392,6 +392,11 @@
     },
     {
       "status": "A",
+      "path": "docs/LOCAL_VERIFY_PHASE11.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
       "path": "docs/PHASE10_PLAN.md",
       "action": "exclude_nonruntime"
     },
@@ -1323,6 +1328,11 @@
     {
       "status": "A",
       "path": "tests/pm_ui_http_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_users_crud_smoke.php",
       "action": "exclude_nonruntime"
     },
     {
