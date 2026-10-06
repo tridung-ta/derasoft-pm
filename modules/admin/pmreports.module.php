@@ -3,7 +3,7 @@ include_once(ROOT_PATH.'classes/services/pmreportservice.class.php');
 $pmAccess=new PmAccess($db,(int)$storeId,(int)$userInfo->getId());requirePermission('pm.reports.view');
 $service=new PmReportService($db,(int)$storeId,(int)$userInfo->getId());$templateFile='pm-reports.tpl.html';$error='';$report=null;
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
-$input=[];foreach(['from','to','project_id','user_id','page','mode'] as $key){$v=$request->element($key);if($v!==''&&$v!==null)$input[$key]=$v;}
+$input=[];foreach(['from','to','project_id','user_id','page','mode','role_code'] as $key){$v=$request->element($key);if($v!==''&&$v!==null)$input[$key]=$v;}
 try{
     if($_SERVER['REQUEST_METHOD']==='POST'){
         if(!is_string($request->element('csrf_token'))||!hash_equals($_SESSION['pm_csrf_token'],$request->element('csrf_token')))throw new InvalidArgumentException('Phiên đã hết hạn. Vui lòng tải lại trang.');

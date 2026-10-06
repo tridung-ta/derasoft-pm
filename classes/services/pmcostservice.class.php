@@ -30,9 +30,11 @@ class PmCostService {
     }
     public function dashboard(array $input=[]): array {
         if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new DomainException('Bạn không có quyền xem chi phí.');
-        foreach(['page','project_id'] as $key)if(isset($input[$key])&&(!is_scalar($input[$key])||!preg_match('/^\d{1,9}$/D',(string)$input[$key])))throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
+        foreach(['page','project_id','user_id'] as $key)if(isset($input[$key])&&(!is_scalar($input[$key])||!preg_match('/^\d{1,9}$/D',(string)$input[$key])))throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
+        $role=$input['role_code']??'';if(!is_string($role)||($role!==''&&!in_array($role,['ADMIN','PM','HR','EMPLOYEE'],true)))throw new InvalidArgumentException('Role không hợp lệ.');
         $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
         $f=['store_id'=>$this->storeId,'manager_id'=>$this->access->hasRole('ADMIN')?null:$this->actorId,'project_id'=>(int)($input['project_id']??0),'from'=>$this->date($input['from']??null),'to'=>$this->date($input['to']??null),'valuation_date'=>$today];
+        $f['user_id']=(int)($input['user_id']??0);$f['role_code']=$role;
         if($f['from']&&$f['to']&&$f['from']>$f['to'])throw new InvalidArgumentException('Ngày bắt đầu phải trước ngày kết thúc.');
         $db=$this->costs->db();
         // Guard and SUM must see the same rows, including during concurrent polling/writes.

@@ -37,4 +37,7 @@ có cần hỏi riêng; không suy diễn quyền HR toàn tenant từ từ ng�
 - Phần 2: hoàn tất local metadata/forms; local backup and migration 009 twice PASS;
   43 regression PASS. completed_at unknown for legacy done; preserved on done edit,
   cleared on reopen. Project roles descriptive only, no RBAC elevation.
-- Phần 3–6: chưa BUILD; chỉ plan, chưa có PASS/UAT/production claim.
+- Phần 3: báo cáo giờ theo tuần, task hoàn thành/quá hạn/trễ, nhóm theo dự án/
+  nhân viên, lọc role và phân tích chi phí theo phòng ban/role/task đã BUILD local.
+  Báo cáo dựa trạng thái/phân loại hiện tại; không tự dựng lịch sử assignment.
+- Phần 4–6: chưa BUILD; chỉ plan, chưa có PASS/UAT/production claim.

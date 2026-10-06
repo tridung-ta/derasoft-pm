@@ -32,6 +32,7 @@ class PmCosts {
         $where.=' AND s.deleted_at IS NULL';
         if($f['from']!==null){$where.=' AND s.work_date>=?';$types.='s';$params[]=$f['from'];}
         if($f['to']!==null){$where.=' AND s.work_date<=?';$types.='s';$params[]=$f['to'];}
+        [$extra,$extraTypes,$extraParams]=$this->personFilter($f,'s.user_id');$where.=$extra;$types.=$extraTypes;array_push($params,...$extraParams);
         $from="dc_pm_timesheets s JOIN dc_pm_projects p ON p.store_id=s.store_id AND p.id=s.project_id LEFT JOIN dc_users u ON u.store_id=s.store_id AND u.id=s.user_id";
         return [$from,$where,$types,$params,$expressions[$group]];
     }
@@ -54,6 +55,7 @@ class PmCosts {
     }
     private function estimateQuery(array $f): array {
         [$where,$types,$params]=$this->scope($f);
+        [$extra,$extraTypes,$extraParams]=$this->personFilter($f,'t.assignee_id');$where.=$extra;$types.=$extraTypes;array_push($params,...$extraParams);
         // Resolve exactly one user rate or primary-role rate, matching PmRateService priority.
         $rateId="COALESCE((SELECT hr.id FROM dc_pm_hourly_rates hr WHERE hr.store_id=t.store_id AND hr.user_id=t.assignee_id AND hr.status=1 AND hr.effective_from<=? AND (hr.effective_to IS NULL OR hr.effective_to>=?) ORDER BY hr.effective_from DESC,hr.id DESC LIMIT 1),
             (SELECT hr.id FROM dc_pm_hourly_rates hr JOIN dc_pm_user_roles ur ON ur.store_id=hr.store_id AND ur.role_id=hr.role_id WHERE hr.store_id=t.store_id AND ur.user_id=t.assignee_id AND ur.is_primary=1 AND hr.status=1 AND hr.effective_from<=? AND (hr.effective_to IS NULL OR hr.effective_to>=?) ORDER BY hr.effective_from DESC,hr.id DESC LIMIT 1))";
@@ -78,5 +80,11 @@ class PmCosts {
     public function taskNames(array $f): array {
         [$where,$types,$params]=$this->scope($f);
         return $this->db->fetchAll("SELECT t.id,t.name,t.project_id,t.deleted_at FROM dc_pm_tasks t JOIN dc_pm_projects p ON p.store_id=t.store_id AND p.id=t.project_id WHERE $where ORDER BY t.id",$types,$params);
+    }
+    private function personFilter(array $f,string $column): array {
+        $where='';$types='';$params=[];
+        if(!empty($f['user_id'])){$where.=" AND $column=?";$types.='i';$params[]=$f['user_id'];}
+        if(!empty($f['role_code'])){$where.=" AND EXISTS(SELECT 1 FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=p.store_id AND ur.user_id=$column AND r.status=1 AND r.code=?)";$types.='s';$params[]=$f['role_code'];}
+        return [$where,$types,$params];
     }
 }

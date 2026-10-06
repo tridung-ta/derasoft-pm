@@ -1,5 +1,24 @@
 # DeraSoft PM — Progress
 
+## Phase 11 — task/weekly and cost reporting — 2026-10-06
+
+Reports now include weekly user hours/regular/OT, task completion in date range,
+overdue unfinished tasks, late completion and unknown legacy completion dates;
+group task counts by project/user without performance ratios. Added role filters
+for hours/tasks and user/role filters for cost actual/estimate while preserving
+single-currency guards and DECIMAL. Exposed existing department/primary-role/task
+cost groups and included new statistics in literal-text XLSX.
+No new permissions: Admin tenant, PM managed projects, HR/Employee own reports.
+Task inclusion: completion date OR due date in filter; overdue uses current status
+and min(today, to), not a historical state reconstruction. Current role/department
+classification explicitly labeled; filtered costs don't change project budget.
+Security review: prepared filters/EXISTS avoids multi-role duplicate sums; escaped
+templates; report/export permissions and CSRF/no-store unchanged. No production.
+Verification: pm_reports_smoke.php and pm_costs_smoke.php PASS, task/weekly/role/
+unknown-date/DECIMAL assertions; 43 regression PASS. Playwright
+pm_phase11_reports_browser.js PASS desktop/mobile/200% text scaling/pageerror.
+XLSX personnel/project export and Bootstrap integration remain open.
+
 ## Phase 11 — project/task metadata complete locally — 2026-10-06
 
 Added customer name to project forms/service, task start date/range validation,

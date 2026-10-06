@@ -22,6 +22,17 @@ try{
     $service=new PmReportService($db,$store,$actor);$filter=['from'=>'2026-10-01','to'=>'2026-10-01','project_id'=>$p];$r=$service->report($filter);
     reportCheck($r['data']['summary']['hours']==='10.00'&&count($r['data']['rows'])===2,'Hours inclusive/summary failed.');
     reportCheck(!isset($r['data']['rows'][0]['cost'])&&!isset($r['data']['rows'][0]['rate_snapshot']),'Hours report leaked money.');
+    reportCheck($r['data']['by_week'][0]['week_start']==='2026-09-28'&&$r['data']['by_week'][0]['hours']==='10.00','Weekly totals wrong.');
+    reportCheck($service->report(array_replace($filter,['role_code'=>'ADMIN']))['data']['summary']['hours']==='10.00','Role filter wrong.');
+    reportDenied(fn()=>$service->report(array_replace($filter,['role_code'=>['ADMIN']])));
+    $q->execute("UPDATE dc_pm_tasks SET status='done',due_date='2026-10-01',completed_at='2026-10-02 12:00:00' WHERE store_id=? AND id=?",'ii',[$store,$t]);
+    $late=$projects->saveTask($p,['name'=>'Overdue task','assignee_id'=>$actor,'due_date'=>'2026-10-01']);
+    $unknown=$projects->saveTask($p,['name'=>'=1+1','assignee_id'=>$actor,'status'=>'done','due_date'=>'2026-10-01']);$q->execute('UPDATE dc_pm_tasks SET completed_at=NULL WHERE store_id=? AND id=?','ii',[$store,$unknown]);
+    $taskFilter=array_replace($filter,['mode'=>'tasks','to'=>'2026-10-03']);$taskReport=$service->report($taskFilter);
+    reportCheck((int)$taskReport['data']['summary']['completed']===1&&(int)$taskReport['data']['summary']['overdue']===1&&(int)$taskReport['data']['summary']['completed_late']===1&&(int)$taskReport['data']['summary']['completion_unknown']===1,'Task statistics/unknown dates wrong.');
+    reportCheck(count($taskReport['data']['by_project_user'])===1,'Task group aggregate wrong.');
+    reportCheck(str_starts_with($service->xlsx($taskFilter),'PK'),'Task XLSX failed.');
+    if(in_array('--preview',$argv,true)){$s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());$s->assign(['pageTitle'=>'Task reports','report'=>$taskReport,'error'=>'','csrfToken'=>'fixture','canExportReports'=>true,'canReportCosts'=>true]);file_put_contents(ROOT_PATH.'.local/phase11-tasks.html',str_replace('<head>','<head><base href="/">',$s->fetch('admin/pm-reports.tpl.html')));}
     foreach([['from'=>'2026-02-30'],['from'=>'2026-10-02','to'=>'2026-10-01'],['page'=>'0'],['project_id'=>['1']],['mode'=>'invalid']] as $bad)reportDenied(fn()=>$service->report(array_replace($filter,$bad)));
     reportCheck($service->report(array_replace($filter,['from'=>'2000-01-01','to'=>'2000-01-01']))['data']['summary']['entries']===0,'Empty report failed.');
     $bytes=$service->xlsx($filter);reportCheck(str_starts_with($bytes,'PK'),'Not XLSX.');$path=tempnam(sys_get_temp_dir(),'pm-report-test-');file_put_contents($path,$bytes);
@@ -35,10 +46,12 @@ try{
     reportCheck($sheet->getCell('E3')->getDataType()==='s'&&$sheet->getCell('I3')->getValue()==='@SUM(1,1)','Formula-like shift/description unsafe.');$book->disconnectWorksheets();unlink($path);$path=null;
     $q->execute('UPDATE dc_pm_timesheets SET cost=? WHERE store_id=? AND id=?','sii',['1234567890123456.78',$store,$first]);
     $costFilter=array_replace($filter,['mode'=>'costs']);$r=$service->report($costFilter);reportCheck($r['data']['summary']['cost']==='1234567890123456.78','DECIMAL report altered money.');
+    reportCheck($service->report(array_replace($costFilter,['user_id'=>$actor,'role_code'=>'ADMIN']))['data']['summary']['cost']==='1234567890123456.78','Cost person/role filter lost DECIMAL.');
     $q->execute("UPDATE dc_pm_timesheets SET currency='USD' WHERE store_id=? AND id=?",'ii',[$store,$second]);$r=$service->report($costFilter);reportCheck($r['data']['summary']['cost']===null,'Mixed-currency report added money.');
     reportCheck(str_starts_with($service->xlsx($costFilter),'PK'),'Cost XLSX failed.');
     $q->execute("UPDATE dc_pm_roles SET status=0 WHERE store_id=? AND code IN ('PM','HR')",'i',[$store]);$q->execute("INSERT IGNORE INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,0 FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE'",'iii',[$store,$owner,$store]);
     $q->execute('UPDATE dc_pm_timesheets SET user_id=? WHERE store_id=? AND id=?','iii',[$owner,$store,$first]);$employee=new PmReportService($db,$store,$owner);$r=$employee->report($filter);reportCheck($r['data']['summary']['hours']==='6.00','Own report scope failed.');reportDenied(fn()=>$employee->report(array_replace($filter,['user_id'=>$actor])));reportDenied(fn()=>$employee->xlsx($costFilter));
+    reportDenied(fn()=>$employee->report($taskFilter));reportDenied(fn()=>$employee->report(array_replace($taskFilter,['user_id'=>$actor])));
     $q->execute("UPDATE dc_pm_roles SET status=1 WHERE store_id=? AND code='PM'",'i',[$store]);$q->execute("INSERT IGNORE INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,0 FROM dc_pm_roles WHERE store_id=? AND code='PM'",'iii',[$store,$owner,$store]);$pm=new PmReportService($db,$store,$owner);reportDenied(fn()=>$pm->report($filter));reportDenied(fn()=>$pm->xlsx($filter));
     reportDenied(fn()=>(new PmReportService($db,$store+99999,$actor))->report($filter));
     $q->execute("UPDATE dc_pm_roles SET status=0 WHERE store_id=? AND code IN ('PM','EMPLOYEE')",'i',[$store]);$q->execute("UPDATE dc_pm_roles SET status=1 WHERE store_id=? AND code='HR'",'i',[$store]);$q->execute("INSERT IGNORE INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,0 FROM dc_pm_roles WHERE store_id=? AND code='HR'",'iii',[$store,$owner,$store]);
