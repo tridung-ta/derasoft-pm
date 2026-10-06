@@ -255,7 +255,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "1275b31b3c7399e527e8885b33478758b2623b6e8aa0b812fa5750864c1b7d98"
+      "sha256": "b9d3a966df88c4d4870a7762533ec740c8be6d5295d7f3e038c34044e8ce42e2"
     },
     {
       "status": "A",
@@ -1133,6 +1133,11 @@
     {
       "status": "A",
       "path": "tests/pm_import_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_login_contrast_browser.js",
       "action": "exclude_nonruntime"
     },
     {

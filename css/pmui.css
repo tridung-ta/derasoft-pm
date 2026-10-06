@@ -179,3 +179,14 @@ body.pm-app .pm-module-nav button.pm-logout:hover,body.pm-app .sidebar button.pm
 .pm-app .pm-project-card h3{line-height:1.5}
 .pm-app .pm-project-card h3 a:hover{text-decoration:underline}
 @media(max-width:640px){.pm-app .actions>button,.pm-app .actions>.button{flex:1 1 auto}.pm-app .pm-person-dialog{padding:20px}.pm-app .pm-table-region td{padding:12px}.pm-app button,.pm-app .button{padding:10px 14px}}
+
+/* The neutral card rule must not leave legacy white intro text on white. */
+.pm-login-page .layout{overflow:hidden;border:1px solid var(--border);border-radius:8px;box-shadow:none}
+.pm-app.pm-login-page main.layout>.intro{background:var(--muted);color:var(--foreground);border:0;border-right:1px solid var(--border);border-radius:0;box-shadow:none}
+.pm-login-page .intro .brand,.pm-login-page .intro h1{color:var(--foreground)}
+.pm-login-page .intro h1{font-size:clamp(2rem,4vw,3rem);line-height:1.15;letter-spacing:-.025em;margin:48px 0 24px}
+.pm-login-page .intro p{color:#52525b;line-height:1.7;margin:0;max-width:34ch}
+.pm-app.pm-login-page main.layout>.panel{border:0;border-radius:0}
+.pm-login-page button.submit{background:var(--primary);color:var(--primary-foreground);border:1px solid var(--primary)}
+.pm-login-page button.submit:hover{background:#27272a}.pm-login-page button.submit:active{background:#3f3f46}
+@media(max-width:760px){.pm-app.pm-login-page main.layout>.intro{border-right:0;border-bottom:1px solid var(--border)}.pm-login-page .intro h1{margin:24px 0 16px}}

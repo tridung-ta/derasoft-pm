@@ -206,6 +206,7 @@ tests/pm_import_migration.php
 tests/pm_import_native_duplicate.php
 tests/pm_import_results_migration.php
 tests/pm_import_smoke.php
+tests/pm_login_contrast_browser.js
 tests/pm_phase10_browser.js
 tests/pm_phase10_contrast_browser.js
 tests/pm_phase10_fixture.php

@@ -1,5 +1,20 @@
 # DeraSoft PM — Progress
 
+## Login contrast regression fixed locally — 2026-10-06
+
+User screenshot showed invisible brand/title and pale description in login intro.
+Cause: legacy white intro text combined with neutral shared card background rule;
+legacy orange submit also overrode Bootstrap variables. Added login-scoped CSS
+for muted intro/foreground, readable description, clean borders and primary submit.
+No authentication/template/controller/DAO/database changes.
+46 regression scripts PASS; general UI browser (13 fixtures) PASS; new
+pm_login_contrast_browser PASS at desktop/mobile/200% text scaling and keyboard.
+Final measured ratios: title/brand 18.10:1, description 7.03:1. Inspected final
+mobile screenshot. Test guards against generic-card override and legacy orange.
+Fix stays on phase branch; not newly merged/pushed/deployed. One-file CSS patch
+prepared separately; production schema screenshot shows four expected nullable
+columns already present in dung_pm, so no further 009 ALTER is needed on that evidence.
+
 ## Phase 11 local merge and production preparation approved — 2026-10-06
 
 User approved local merge/preparation after deferring remaining manual testing
