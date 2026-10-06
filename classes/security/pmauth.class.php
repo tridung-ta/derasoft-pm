@@ -70,22 +70,14 @@ class PmAuth {
 
     private function findUser(int $storeId, string $identity): ?array {
         $identity = trim($identity);
-        $byUsername = $this->database->fetchOne(
+        // Both identifiers address one credential row. Never choose another
+        // account's username ahead of this account's email on a collision.
+        $matches = $this->database->fetchAll(
             'SELECT id, password, password_hash, status FROM dc_users
-             WHERE store_id = ? AND username = ? LIMIT 1',
-            'is',
-            [$storeId, $identity]
+             WHERE store_id = ? AND (username = ? OR email = ?) LIMIT 2',
+            'iss',
+            [$storeId, $identity, $identity]
         );
-        if ($byUsername) {
-            return $byUsername;
-        }
-
-        $byEmail = $this->database->fetchAll(
-            'SELECT id, password, password_hash, status FROM dc_users
-             WHERE store_id = ? AND email = ? LIMIT 2',
-            'is',
-            [$storeId, $identity]
-        );
-        return count($byEmail) === 1 ? $byEmail[0] : null;
+        return count($matches) === 1 ? $matches[0] : null;
     }
 }

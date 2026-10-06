@@ -4,7 +4,7 @@ Push-Location $projectRoot
 try {
     $php = Join-Path $projectRoot '.tools/php83/php.exe'
     $tests = @(
-        'pm_auth_rbac_smoke', 'pm_rates_smoke', 'pm_departments_smoke', 'pm_projects_smoke',
+        'pm_auth_rbac_smoke', 'pm_auth_identity_smoke', 'pm_rates_smoke', 'pm_departments_smoke', 'pm_projects_smoke',
         'pm_phase5_migration', 'pm_phase5_audit_permissions', 'pm_timesheets_smoke',
         'pm_timesheet_window_smoke', 'pm_audit_smoke', 'smoke_pm_timesheets',
         'smoke_pm_audit', 'smoke_pm_admin', 'smoke_pm_users', 'smoke_pm_projects',

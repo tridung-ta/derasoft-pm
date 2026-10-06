@@ -156,6 +156,7 @@ modules/admin/pmprojects.module.php
 modules/admin/pmreports.module.php
 modules/admin/pmtimesheets.module.php
 modules/admin/pmusers.module.php
+modules/admin/profile/password.module.php
 modules/ajax/pmallocations.module.php
 modules/ajax/pmcosts.module.php
 pm_ajax.php
@@ -183,6 +184,7 @@ tests/pm_allocations_concurrency.php
 tests/pm_allocations_http_smoke.php
 tests/pm_allocations_smoke.php
 tests/pm_audit_smoke.php
+tests/pm_auth_identity_smoke.php
 tests/pm_auth_rbac_smoke.php
 tests/pm_confirmation_browser.js
 tests/pm_costs_browser.js

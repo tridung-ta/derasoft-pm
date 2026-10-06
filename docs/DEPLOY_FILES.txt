@@ -61,6 +61,7 @@ modules/admin/pmprojects.module.php
 modules/admin/pmreports.module.php
 modules/admin/pmtimesheets.module.php
 modules/admin/pmusers.module.php
+modules/admin/profile/password.module.php
 modules/ajax/pmallocations.module.php
 modules/ajax/pmcosts.module.php
 pm_ajax.php

@@ -1,5 +1,24 @@
 # DeraSoft PM — Progress
 
+## Shared email/username credentials fix — 2026-10-06
+
+Both identifiers resolve one tenant-scoped credential row; ambiguous cross-account
+email/username matches fail closed rather than selecting another account. Legacy
+profile password changes now call the same secure password update as PM, instead
+of updating only the obsolete MD5 column. PM login explicitly labels both identifiers.
+Existing modern hashes remain authoritative; an old MD5 cannot bypass a changed password.
+
+Verified `.tools/php83/php.exe tests/pm_auth_identity_smoke.php`: 20 checks PASS
+(legacy upgrade, both identifiers before/after change, old/wrong passwords, disabled
+accounts, tenant isolation, collisions). A connection-local TEMPORARY dc_users table
+shadows the real table; no real account passwords changed.
+`powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+45 scripts PASS. Diff/security review: prepared identity lookup, same user ID/store
+for updates, no password/secret output or credential fallback after modern hash.
+Production behavior has not been reproduced directly; these are confirmed code
+defects, not a claim that the production incident's exact cause was established.
+Local only; no push/merge/production changes.
+
 ## Phase 11 — local requirements implementation verified — 2026-10-06
 
 Completed remaining XLSX directory modes (users/projects), retaining existing

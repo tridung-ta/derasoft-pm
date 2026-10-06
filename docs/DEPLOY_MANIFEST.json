@@ -147,7 +147,7 @@
       "status": "A",
       "path": "classes/security/pmauth.class.php",
       "action": "upload_runtime",
-      "sha256": "e9a401a312edf3254c20cf1866db5b6090ca8339548a9d3d3bad1f3913bc24ec"
+      "sha256": "3a56ae35353dd80fb55d54f26f406d586da2bb2cc356c73da0f7653f1608fe37"
     },
     {
       "status": "A",
@@ -863,6 +863,12 @@
       "sha256": "08dd3a4ec5e9a5f96be37b1e2a908ebe9722ab1f048826bdacd10b492ce9be7d"
     },
     {
+      "status": "M",
+      "path": "modules/admin/profile/password.module.php",
+      "action": "upload_runtime",
+      "sha256": "e4f1bd3f38cb43bcb9381d5159fa07e2a5b9582ea069c4a61743c98de3869580"
+    },
+    {
       "status": "A",
       "path": "modules/ajax/pmallocations.module.php",
       "action": "upload_runtime",
@@ -908,7 +914,7 @@
       "status": "M",
       "path": "templates/admin/pm-login.tpl.html",
       "action": "upload_runtime",
-      "sha256": "7fa84906a857aed0f486c51c3d0b3ea0a67b5c19b5b1fc2b1fb9aa3cc96c7e7f"
+      "sha256": "a3ae1300c75c80e3ec5f0ee6680526d3c0db0b4aa5f7c8fa654e6821bb94cde0"
     },
     {
       "status": "A",
@@ -1017,6 +1023,11 @@
     {
       "status": "A",
       "path": "tests/pm_audit_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_auth_identity_smoke.php",
       "action": "exclude_nonruntime"
     },
     {

@@ -21,7 +21,7 @@
 				<div class="error" role="alert">{foreach from=$error.message item=message}{$message|escape}<br>{/foreach}</div>
 			{/if}
 			<form action="/{$aScript}" method="post" autocomplete="off">
-				<div class="field"><label for="username">Tên đăng nhập</label><input id="username" name="username" type="text" required autocomplete="username"></div>
+				<div class="field"><label for="username">Email hoặc tên đăng nhập</label><input id="username" name="username" type="text" required autocomplete="username"></div>
 				<div class="field"><label for="password">Mật khẩu</label><input id="password" name="password" type="password" required autocomplete="current-password"></div>
 				<input type="hidden" name="site" value="admin">
 				<input type="hidden" name="op" value="login">
