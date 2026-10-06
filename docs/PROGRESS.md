@@ -1,5 +1,43 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 7 — Timesheet ledger — 2026-10-06
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Seven-day ledger
+above the entry form shows persisted total/regular/OT hours, today and textual OT
+with amber accent. Mobile reflows all seven days without page overflow. Admin OT
+settings remain at the end in native details, closed by default/open on errors.
+Missing-rate history warning uses the shared business-warning treatment.
+
+User explicitly approved the read-only service/controller addition. One prepared
+weekly aggregate uses tenant, authorized user, Monday–Sunday and deleted_at IS NULL.
+Default scope is actor; Admin editing another user's record sees that edit target.
+Stored DECIMAL strings retained; no recomputation of OT or rates, no writes/schema,
+DAO, route or permission changes. Unavailable/invalid-date state never fabricates zero.
+
+Files: classes/services/pmtimesheetservice.class.php,
+modules/admin/pmtimesheets.module.php, templates/admin/pm-timesheets.tpl.html,
+css/pmui.css, tests/pm_timesheets_smoke.php, tests/smoke_pm_timesheets.php,
+tests/pm_phase9b_timesheets_browser.js, docs/PHASE9B_STEP7_PLAN.md, docs/PROGRESS.md.
+
+Executed verification:
+- ./tests/pm_regression.ps1: 42 scripts PASS, local database only, rollback fixtures.
+- PHP lint changed service/controller and database test PASS; Smarty preview PASS.
+- pm_timesheets_smoke.php: real aggregate over 21 rows beyond one history page,
+  stored regular/OT values, Monday/Sunday and year boundary, empty days, invalid date,
+  deleted rows, other user/tenant exclusion, employee denial and Admin target PASS.
+  Initial added fixture lacked required snapshot columns; corrected fixture and reran.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_timesheets_browser.js:
+  PASS for 360/390/768/1440, 200% text scaling, labelled days, today/OT text,
+  Inter/tabular/right-aligned numerals, keyboard/no-JS collapse, CSRF, Admin/employee
+  visibility and unavailable state. Desktop/mobile screenshots inspected.
+- pm_ui_browser.js: 13 Phase 9 synthetic screen/state fixtures PASS including
+  keyboard skip/focus, labels, responsive, text scaling and CSP compatibility.
+- Original form markup compared byte-for-byte against HEAD: identical. Diff/security
+  review and git diff --check PASS; new query bound, tenant/user checks before query.
+
+Preview: http://127.0.0.1:18767/.local/phase9-timesheets-1.html (synthetic, do not submit).
+Manual UAT/actual browser zoom pending. No production access, push, merge or deployment.
+
 ## Phase 9b Step 6 - Project cards and real task progress - 2026-10-05
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Project list is a

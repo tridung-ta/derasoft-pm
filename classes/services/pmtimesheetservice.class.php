@@ -68,6 +68,19 @@ class PmTimesheetService {
         $rows=$this->db->fetchAll('SELECT s.*,t.name task_name,p.name project_name FROM dc_pm_timesheets s LEFT JOIN dc_pm_tasks t ON t.store_id=s.store_id AND t.id=s.task_id LEFT JOIN dc_pm_projects p ON p.store_id=s.store_id AND p.id=s.project_id WHERE s.store_id=? AND s.deleted_at IS NULL ORDER BY s.work_date DESC,s.id DESC LIMIT 20 OFFSET ?','ii',[$this->storeId,(max(1,$page)-1)*20]);
         return ['rows'=>$rows,'total'=>$total];
     }
+    public function weeklySummary(string $date,?int $userId=null): array {
+        $this->ownPermission();$this->validDate($date);$userId=$userId??$this->actorId;
+        if($userId!==$this->actorId&&!$this->access->hasRole('ADMIN'))throw new DomainException('Không có quyền truy cập nhân sự này.');
+        $selected=new DateTimeImmutable($date,new DateTimeZone('Asia/Ho_Chi_Minh'));
+        $start=$selected->modify('-'.((int)$selected->format('N')-1).' days');$end=$start->modify('+6 days');
+        $rows=$this->db->fetchAll('SELECT work_date,SUM(hours) hours,SUM(regular_hours) regular_hours,SUM(ot_hours) ot_hours FROM dc_pm_timesheets WHERE store_id=? AND user_id=? AND work_date BETWEEN ? AND ? AND deleted_at IS NULL GROUP BY work_date','iiss',[$this->storeId,$userId,$start->format('Y-m-d'),$end->format('Y-m-d')]);
+        $byDate=array_column($rows,null,'work_date');$days=[];
+        foreach(['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'] as $i=>$label){
+            $day=$start->modify('+'.$i.' days');$key=$day->format('Y-m-d');$row=$byDate[$key]??[];
+            $days[]=['date'=>$key,'label'=>$label,'short_date'=>$day->format('d/m'),'is_today'=>$key===$this->today(),'has_entries'=>isset($byDate[$key]),'hours'=>$row['hours']??'0.00','regular_hours'=>$row['regular_hours']??'0.00','ot_hours'=>$row['ot_hours']??'0.00','has_ot'=>isset($row['ot_hours'])&&(float)$row['ot_hours']>0];
+        }
+        return ['start'=>$start->format('d/m/Y'),'end'=>$end->format('d/m/Y'),'user_id'=>$userId,'days'=>$days];
+    }
     private function lockDay(string $date,int $userId): array {
         $settings=$this->settings();
         $this->db->execute('INSERT INTO dc_pm_timesheet_days(store_id,user_id,work_date,standard_hours,ot_multiplier) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE user_id=user_id','iisss',[$this->storeId,$userId,$date,$settings['standard_hours_per_day'],$settings['ot_multiplier']]);

@@ -35,6 +35,7 @@ try{
     $otherId=(int)$other['id'];
     $query->execute("INSERT INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,0 FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1 ON DUPLICATE KEY UPDATE is_primary=is_primary",'iii',[$store,$otherId,$store]);
     $otherTs=new PmTimesheetService($db,$store,$otherId);
+    try{$otherTs->weeklySummary('2026-06-01',$actor);throw new RuntimeException('Another user read weekly totals.');}catch(DomainException $expected){}
     try{$otherTs->getOwn($second);throw new RuntimeException('Another user read timesheet.');}catch(OutOfBoundsException $expected){}
     try{$otherTs->save($input,$second);throw new RuntimeException('Another user edited timesheet.');}catch(OutOfBoundsException $expected){}
     try{$otherTs->delete($second);throw new RuntimeException('Another user deleted timesheet.');}catch(OutOfBoundsException $expected){}
@@ -43,6 +44,17 @@ try{
     }
     if($row['regular_hours']!=='2.00'||$row['ot_hours']!=='2.00')throw new RuntimeException('Daily OT allocation failed.');
     if($row['cost']!=='6172839450617.25')throw new RuntimeException('Exact decimal OT cost failed.');
+    $week=$ts->weeklySummary('2026-06-07');
+    $aggregate=$query->fetchOne('SELECT SUM(hours) hours,SUM(regular_hours) regular_hours,SUM(ot_hours) ot_hours FROM dc_pm_timesheets WHERE store_id=? AND user_id=? AND work_date=? AND deleted_at IS NULL','iis',[$store,$actor,'2026-06-01']);
+    if(count($week['days'])!==7||$week['start']!=='01/06/2026'||$week['end']!=='07/06/2026'||$week['days'][0]['hours']!==$aggregate['hours']||$week['days'][0]['ot_hours']!==$aggregate['ot_hours'])throw new RuntimeException('Weekly persisted aggregation failed.');
+    try{$ts->weeklySummary('2026-02-30');throw new RuntimeException('Invalid weekly date accepted.');}catch(InvalidArgumentException $expected){}
+    // More than one history page; same user, another user, foreign tenant, deleted row.
+    $insert="INSERT INTO dc_pm_timesheets(store_id,user_id,project_id,task_id,work_date,shift_label,hours,regular_hours,ot_hours,deleted_at,rate_snapshot,rate_source,currency,ot_multiplier_snapshot) VALUES(?,?,?,?,?,?,?,?,?,?,0,'fallback','VND',1)";
+    for($i=0;$i<21;$i++)$query->execute($insert,'iiiissssss',[$store,$actor,$project,$task,'2099-12-31','Weekly QA','0.01','0.01','0.00',null]);
+    foreach([[$store,$otherId,null],[$store+99999,$actor,null],[$store,$actor,'2099-12-31 00:00:00']] as [$testStore,$testUser,$deleted])$query->execute($insert,'iiiissssss',[$testStore,$testUser,$project,$task,'2099-12-31','Weekly excluded','1.00','1.00','0.00',$deleted]);
+    $full=$ts->weeklySummary('2100-01-03');
+    if($full['start']!=='28/12/2099'||$full['end']!=='03/01/2100'||$full['days'][3]['hours']!=='0.21'||$full['days'][3]['regular_hours']!=='0.21'||$full['days'][3]['has_ot']||$full['days'][0]['has_entries']||$full['days'][0]['hours']!=='0.00')throw new RuntimeException('Weekly pagination/tenant/user/deleted/year boundary failed.');
+    if($ts->weeklySummary('2099-12-31',$otherId)['days'][3]['hours']!=='1.00')throw new RuntimeException('Admin edit-target weekly scope failed.');
     $query->execute('UPDATE dc_pm_hourly_rates SET rate=? WHERE store_id=? AND user_id=? AND effective_from=?','siis',['100.25',$store,$actor,'2026-06-01']);
     $input['hours']='4';$ts->save($input,$second);
     if($ts->getOwn($second)['rate_snapshot']!=='1234567890123.45')throw new RuntimeException('Same-day rate snapshot changed.');

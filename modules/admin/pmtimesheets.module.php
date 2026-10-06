@@ -25,4 +25,9 @@ $page=max(1,(int)$request->element('page',1));$result=$service->listTimesheets($
 foreach($result['rows'] as &$row){$row['is_locked']=$service->isLocked($row['work_date']);$row['can_edit']=$service->canEdit($row['work_date']);}unset($row);
 $tasks=$service->assignedTasks($edit?(int)$edit['user_id']:null);
 if($edit&&$pmAccess->hasRole('ADMIN')&&!in_array((int)$edit['task_id'],array_column($tasks,'id')))$tasks[]=['id'=>$edit['task_id'],'name'=>'Công việc #'.$edit['task_id'].' (lịch sử)','project_name'=>'Dự án #'.$edit['project_id']];
+$weeklySummary=null;$weeklyError='';
+try{$weeklySummary=$service->weeklySummary((string)$data['work_date'],$edit?(int)$edit['user_id']:null);}
+catch(InvalidArgumentException $e){$weeklyError='Chọn ngày hợp lệ để xem tổng giờ trong tuần.';}
+catch(Throwable $e){error_log('PM timesheet weekly summary failed.');$weeklyError='Không thể tải tổng giờ trong tuần. Vui lòng tải lại trang.';}
+$template->assign(['weeklySummary'=>$weeklySummary,'weeklyError'=>$weeklyError]);
 $template->assign(['pageTitle'=>'Chấm công — DeraSoft PM','notice'=>$notice,'error'=>$error,'csrfToken'=>$_SESSION['pm_csrf_token'],'timesheets'=>$result['rows'],'assignedTasks'=>$tasks,'formData'=>$data,'editId'=>$id,'canEdit'=>!$edit||$service->canEdit($edit['work_date']),'editingLocked'=>$edit&&$service->isLocked($edit['work_date']),'editingUserId'=>$edit?(int)$edit['user_id']:null,'page'=>$page,'totalPages'=>max(1,(int)ceil($result['total']/20)),'isAdmin'=>$pmAccess->hasRole('ADMIN'),'settings'=>$service->settings()]);
