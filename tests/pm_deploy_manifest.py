@@ -41,7 +41,7 @@ def main():
         rows.append(row)
     assert sorted(names)==sorted(r['path'] for r in rows)
     assert FONT_ASSETS.issubset({r['path'] for r in rows if r['action']=='upload_runtime'}),'Required Inter font/license missing from runtime delta'
-    payload={'version':'0.10.0-phase9b-local-rc1','date':'2026-10-06','baseline':baseline,'application_base_commit':'d4cde62','release_ref':'feature/pm-phase9b-ui-theme','source':'git diff --name-only --no-renames BASELINE (tracked working tree, including Phase 10 fixes and Phase 9b UI)','files':rows}
+    payload={'version':'0.11.0-phase11-local-rc1','date':'2026-10-06','baseline':baseline,'application_base_commit':'b57e7ba','release_ref':'feature/pm-phase11-requirements','source':'git diff --name-only --no-renames BASELINE (tracked working tree, including Phase 10 fixes, Phase 9b UI and Phase 11 requirements)','required_migrations':['database/migrations/009_add_pm_project_task_metadata.sql'],'files':rows}
     docs=root/'docs';json_text=json.dumps(payload,ensure_ascii=False,indent=2)+'\n'
     text='\n'.join(r['path'] for r in rows if r['action']=='upload_runtime')+'\n'
     raw='\n'.join(names)+'\n'

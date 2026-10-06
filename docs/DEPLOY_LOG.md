@@ -1,5 +1,26 @@
 # Deployment preparation log — FileZilla
 
+## Phase 11 local candidate — 06/10/2026 (NOT DEPLOYED)
+
+Current preparation: 0.11.0-phase11-local-rc1, branch
+feature/pm-phase11-requirements, runtime commit b57e7ba. Earlier Phase 9b entries
+below are historical; do not mix their ZIP/hash with the current manifest.
+UAT: docs/UAT_PHASE11.md pending. No Phase 11 merge/push/deploy authorization.
+
+Mandatory schema prerequisite: database/migrations/009_add_pm_project_task_metadata.sql.
+Only ADD nullable client_name/project_role/start_date/completed_at, no backfill.
+Production requires separate review of table/column types, fresh affected-table
+backup and maintenance before 009. The user's prior UI-only backup waiver does
+not authorize skipping this new schema review. Execute complete versioned file
+in ONE connection (PREPARE/EXECUTE cannot be split across phpMyAdmin requests).
+Verify four expected nullable columns and unchanged existing rows before upload.
+If any same-name column has a different definition, STOP; do not ALTER MODIFY.
+Keep existing dc_users engine and config. Rollback old code, retain additive data.
+
+ZIP is a reviewed local runtime delta from Phase 0, NOT an inspected live-host delta.
+SQL excluded from web payload; never upload SQL/DB backup to public_html. All
+previous maintenance/allowlist/verification gates still apply. No production PASS.
+
 ## UI follow-up patch — 06/10/2026
 
 After reviewing production screenshots, prepared a three-file update for the D

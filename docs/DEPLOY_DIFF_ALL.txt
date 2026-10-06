@@ -1,3 +1,4 @@
+.gitattributes
 .gitignore
 AGENTS.md
 README.md
@@ -39,6 +40,9 @@ css/pm-users-v2-base.css
 css/pmallocations.css
 css/pmcosts.css
 css/pmui.css
+css/vendor/bootstrap-5.3.8/LICENSE
+css/vendor/bootstrap-5.3.8/README.md
+css/vendor/bootstrap-5.3.8/bootstrap.min.css
 database/migrations/001_create_pm_auth_rbac.sql
 database/migrations/002_create_pm_users_rates.sql
 database/migrations/003_create_pm_projects_tasks.sql
@@ -47,6 +51,7 @@ database/migrations/005_create_pm_allocations.sql
 database/migrations/006_create_pm_import_staging.sql
 database/migrations/007_add_pm_users_email_unique.sql
 database/migrations/008_create_pm_import_results.sql
+database/migrations/009_add_pm_project_task_metadata.sql
 database/migrations/README.md
 database/seeds/001_seed_pm_auth_rbac.sql
 database/seeds/002_seed_pm_phase5_audit_permissions.sql
@@ -63,6 +68,7 @@ docs/DEPLOY_LOG.md
 docs/DEPLOY_MANIFEST.json
 docs/PHASE10_PLAN.md
 docs/PHASE10_VERIFY.md
+docs/PHASE11_REQUIREMENTS.md
 docs/PHASE4_PLAN.md
 docs/PHASE5_PLAN.md
 docs/PHASE6_PLAN.md
@@ -86,6 +92,7 @@ docs/PLAN_FINAL.md
 docs/PORTFOLIO.md
 docs/PROGRESS.md
 docs/UAT_FINAL_LOCAL.md
+docs/UAT_PHASE11.md
 docs/UAT_PHASE5_6.md
 docs/UAT_PHASE7.md
 docs/assets/repository-cover.svg
@@ -161,6 +168,10 @@ templates/admin/pm-navigation.tpl.html
 templates/admin/pm-project-form.tpl.html
 templates/admin/pm-projects.tpl.html
 templates/admin/pm-rates-panel.tpl.html
+templates/admin/pm-report-cost-groups.tpl.html
+templates/admin/pm-report-directory.tpl.html
+templates/admin/pm-report-tasks.tpl.html
+templates/admin/pm-report-weeks.tpl.html
 templates/admin/pm-reports.tpl.html
 templates/admin/pm-task-form.tpl.html
 templates/admin/pm-timesheets.tpl.html
@@ -196,6 +207,9 @@ tests/pm_phase10_contrast_browser.js
 tests/pm_phase10_fixture.php
 tests/pm_phase10_native_crash.php
 tests/pm_phase10_verify_cleanup.php
+tests/pm_phase11_bootstrap.php
+tests/pm_phase11_metadata.php
+tests/pm_phase11_reports_browser.js
 tests/pm_phase2_migration.php
 tests/pm_phase3_migration.php
 tests/pm_phase4_migration.php

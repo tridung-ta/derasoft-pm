@@ -22,6 +22,9 @@ docs/PHASE11_REQUIREMENTS.md for matrix and honest limits.
 Phase 11 BUILD/automated verification local complete; user UAT and production
 remain pending. Migration 009 mandatory before new code; not production-approved
 by the previous UI-only backup waiver. No push/merge/deploy performed here.
+Prepared local review ZIP 0.11.0-phase11-local-rc1: 85 runtime files, SHA256/CRC
+verified; 5 manifest classification tests PASS. Source runtime b57e7ba.
+See docs/UAT_PHASE11.md. Manifest requires 009 but excludes SQL from ZIP.
 
 ## Phase 11 — task/weekly and cost reporting — 2026-10-06
 

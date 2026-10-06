@@ -36,6 +36,9 @@ css/pm-users-v2-base.css
 css/pmallocations.css
 css/pmcosts.css
 css/pmui.css
+css/vendor/bootstrap-5.3.8/LICENSE
+css/vendor/bootstrap-5.3.8/README.md
+css/vendor/bootstrap-5.3.8/bootstrap.min.css
 includes/admin/sessions.inc.php
 includes/pm_response.inc.php
 includes/smarty_runtime.inc.php
@@ -70,6 +73,10 @@ templates/admin/pm-navigation.tpl.html
 templates/admin/pm-project-form.tpl.html
 templates/admin/pm-projects.tpl.html
 templates/admin/pm-rates-panel.tpl.html
+templates/admin/pm-report-cost-groups.tpl.html
+templates/admin/pm-report-directory.tpl.html
+templates/admin/pm-report-tasks.tpl.html
+templates/admin/pm-report-weeks.tpl.html
 templates/admin/pm-reports.tpl.html
 templates/admin/pm-task-form.tpl.html
 templates/admin/pm-timesheets.tpl.html
