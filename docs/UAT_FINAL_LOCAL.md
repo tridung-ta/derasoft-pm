@@ -71,7 +71,8 @@ không gửi password/hash/token hoặc dump. Sau sửa, chạy lại ca liên q
 Nghiệm thu Phase 9b: **người dùng đã xác nhận 06/10/2026**; candidate `cf21eff`,
 runtime `d4cde62`. Không có lỗi mới được báo trong xác nhận này; không coi đây là
 chứng minh mọi tổ hợp ca/role đều đã chạy. Chi tiết người kiểm tra/ca còn để bổ sung.
-Ảnh trước gốc và phê duyệt merge vẫn chờ quyết định riêng.
+Merge local đã được người dùng duyệt và thực hiện bằng --ff-only ngày 06/10/2026.
+Ảnh trước gốc vẫn ghi thiếu; push/deploy chưa được duyệt hoặc thực hiện.
 Người kiểm tra: người dùng; ngày: 06/10/2026;
 version/commit: ______; lỗi còn mở: ______; quyết định: ______.
 Sau nghiệm thu, người dùng xem DEPLOY_LOG.md rồi tự quyết định deployment thủ công.

@@ -18,6 +18,13 @@ Before manual deployment fill: **actual commit: ______; deploy date/time: ______
 
 ## Phase 9b release gate — 06/10/2026
 
+Update: user confirmed acceptance and explicitly approved local merge; --ff-only
+advanced develop from 1dc761f to 624c085 on 06/10/2026. Source branch retained.
+Original before screenshots still missing; no push/deploy approval inferred.
+Windows checkout normalized some text to CRLF, so the local manifest and ZIP were
+regenerated to match current bytes. Always run --check against the actual transfer
+workspace after checkout; an older ZIP/hash must not be mixed with a fresh manifest.
+
 This candidate adds all nine UI steps, the shared `css/pmui.css`, PM template/JS
 changes and the approved read-only project-progress/weekly-timesheet aggregates.
 It does not require a new Phase 9b SQL migration or changing the dc_users engine.

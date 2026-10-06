@@ -37,7 +37,7 @@
       "status": "A",
       "path": "assets/fonts/inter/OFL.txt",
       "action": "upload_runtime",
-      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a"
+      "sha256": "b3195af0fb14368d1b3b10fb9d3fe503b7163ea083859d2ee553bc74da07c320"
     },
     {
       "status": "A",
@@ -169,7 +169,7 @@
       "status": "A",
       "path": "classes/services/pmprojectservice.class.php",
       "action": "upload_runtime",
-      "sha256": "7bdff11bdec56393718a7feeb48cbcace706990a5e8c7a92f38a8c5fefbcbda1"
+      "sha256": "36b84f70930fe31674a0e084356f219c4c9d51ad46827c7b64078bfb4feca135"
     },
     {
       "status": "A",
@@ -187,7 +187,7 @@
       "status": "A",
       "path": "classes/services/pmtimesheetservice.class.php",
       "action": "upload_runtime",
-      "sha256": "292cffc874f3970432ed77100c7c9dc7868e42a2da616a52ccab16dc4c53d345"
+      "sha256": "3f33f0e2d6d19cf7d9489b08ce09fd294685755a3bf769aac7c2b2271fe608dc"
     },
     {
       "status": "A",
@@ -247,7 +247,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "df3d34aecdb2b9645703a9df1037269d4db928444095af8ed595516c2ab8bb49"
+      "sha256": "c64e5825be9340eed89af97791c115a119827e96655d200837d6080516a626b5"
     },
     {
       "status": "A",
@@ -628,19 +628,19 @@
       "status": "A",
       "path": "js/pmallocationweek.js",
       "action": "upload_runtime",
-      "sha256": "8596c08326b58a9221aac45b1aabc9bc94ed8125e1bb7cd1ee3400c0170884eb"
+      "sha256": "8fdef6c3f3acc21a0ce5fdc7012e86075dbe7998972152414a2e78785d25ff3b"
     },
     {
       "status": "A",
       "path": "js/pmcosts.js",
       "action": "upload_runtime",
-      "sha256": "6be296a81157ba6e9651e4a30019e6eb4c3801954cc627e3f1ffdc35c5161128"
+      "sha256": "66a6a23fa274f9259574203623b5decc3c29dc2ca387b1c323bbd96a36d11c9d"
     },
     {
       "status": "A",
       "path": "js/pmui.js",
       "action": "upload_runtime",
-      "sha256": "68cecb5d86dac0eb37ace03836354d0a3215c884520aa1c2d1decd0bbb5fb2b1"
+      "sha256": "021e20c05402ada89b41fc70cee00b6c11e617c1f7aca5a2b684855e4e597b5b"
     },
     {
       "status": "A",
@@ -718,7 +718,7 @@
       "status": "A",
       "path": "modules/admin/pmtimesheets.module.php",
       "action": "upload_runtime",
-      "sha256": "544eb0abc8ed137513533a95d9bd63688980a5ef28a44c46ea76093c507fc1b8"
+      "sha256": "1b88ef4115a18f85ac188428e941467a14c077ce7c42e530065344b1db99b234"
     },
     {
       "status": "A",
@@ -748,7 +748,7 @@
       "status": "A",
       "path": "templates/admin/pm-allocations.tpl.html",
       "action": "upload_runtime",
-      "sha256": "266a903a640419e2075b5811d1d6dabe39ac8073628a935c7df3b7d475adcace"
+      "sha256": "24074774ba0cc5fa07cd67e082a8096de6e42eeb95ac37806001b4f2a9a21c81"
     },
     {
       "status": "A",
@@ -772,13 +772,13 @@
       "status": "M",
       "path": "templates/admin/pm-login.tpl.html",
       "action": "upload_runtime",
-      "sha256": "c8aa99ab3b604ffc97f68328aa80401cc90165e9ade47a5abae5fecf7c1773e0"
+      "sha256": "dc40ba477060e00b43259c34b79e0a727a6a50da13fef97b3ed12f92d2146747"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-navigation.tpl.html",
       "action": "upload_runtime",
-      "sha256": "73eacc3c0f6c20a0381ac0aefa14d66a4b80f849b20089c4c6875b160430628a"
+      "sha256": "d9eff4df5b84167b5d3a1e63a73f79d4bbb70488c24a96ab57dbd076323e9a97"
     },
     {
       "status": "A",
@@ -790,13 +790,13 @@
       "status": "A",
       "path": "templates/admin/pm-projects.tpl.html",
       "action": "upload_runtime",
-      "sha256": "93887b7445e9f00e2bceb8765d46efee9a7a01f6a63e198c58bd8805d77d0566"
+      "sha256": "15a77866a505f6f80d07762fe5c5ac3690813b1304b49c09df65fb6ed68829dd"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-rates-panel.tpl.html",
       "action": "upload_runtime",
-      "sha256": "74e4e455316f7509486dc6b55ddd3e88ad25892e568a7423793697827d1316e8"
+      "sha256": "0576be43b04ce92219cb5065d545c9f82b3bf0ce3ed3033f78b2fe7777858f87"
     },
     {
       "status": "A",
@@ -820,7 +820,7 @@
       "status": "A",
       "path": "templates/admin/pm-users-v2.tpl.html",
       "action": "upload_runtime",
-      "sha256": "a778374c4d41dc9a1355c727b5290b461ca2b730dcd0cb308619d2607e8b550c"
+      "sha256": "49de076da82e462cbc416eced9ad29d712ed52fcc9d216f35006e730a50779f0"
     },
     {
       "status": "A",

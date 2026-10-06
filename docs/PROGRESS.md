@@ -1,5 +1,26 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — approved local integration — 2026-10-06
+
+After explicit confirmation “tôi đồng ý hãy tiếp tục”, merged
+feature/pm-phase9b-ui-theme into develop with --ff-only: 1dc761f → 624c085.
+Fast-forward succeeded; no merge commit/conflict, no rebase/force. Phase 9 df76268
+is an ancestor of develop, which now contains all nine Phase 9b build steps,
+release preparation and user acceptance. Before-image evidence remains recorded
+as missing; approval to merge is not a claim that screenshots were supplied.
+
+Post-checkout manifest check found SHA256 differences because core.autocrlf=true
+materialized CRLF for 14 runtime text files. Source semantics unchanged; manifest
+and local ZIP regenerated against current on-disk bytes, rather than ignoring the
+failed check. Font binary unchanged. Integration record is committed on the phase
+branch, then develop fast-forwarded to include this record; no direct develop commit.
+No push, deployment, production access or branch deletion.
+
+Post-integration verification: ./tests/pm_regression.ps1 42 scripts PASS;
+python -B tests/pm_deploy_manifest_test.py 5 tests PASS; regenerated manifest
+--check and --package PASS (78 runtime files, SHA256/CRC). Phase 9 ancestor check
+PASS. No application logic changed for this integration record.
+
 ## Phase 9b — user acceptance recorded — 2026-10-06
 
 User explicitly stated “tôi đã nghiệm thu xong” after candidate cf21eff/runtime
