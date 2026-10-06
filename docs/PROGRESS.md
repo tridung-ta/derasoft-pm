@@ -1,5 +1,19 @@
 # DeraSoft PM — Progress
 
+## UI interaction polish — 2026-10-06
+
+Applied Impeccable polish to the current Inter/Bootstrap world, preserving pinned
+colors and all business behavior. Shared CSS only: clearer outlined personnel
+edit action, add/create/settings disclosure controls, consistent button weight/
+padding, form spacing, dialog section separation, table rows and mobile actions.
+Fixed a CSS background shorthand that erased Bootstrap's select arrow; reserved
+40px right padding to keep text clear of the restored arrow.
+Verified 46 regression scripts and 14 browser suites PASS. Inspected desktop
+personnel list and mobile dialog screenshots after the change; added computed
+select-arrow/edit-boundary assertions to the Bootstrap browser test. No template,
+JS/controller/DAO/permission/schema edits; no production access/merge/push/deploy.
+Manual visual acceptance remains deferred by the user's instruction.
+
 ## Full PM local verification rerun — 2026-10-06
 
 User moved manual acceptance to after deployment and requested agent full local

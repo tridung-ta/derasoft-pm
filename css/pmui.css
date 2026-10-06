@@ -75,7 +75,7 @@ body.pm-app{font-family:Inter,Arial,sans-serif;background:var(--background);colo
 .pm-nav-icon{width:20px;height:20px;flex:0 0 20px}
 .pm-app .brand-mark{border-radius:6px;background:var(--primary);color:var(--primary-foreground)}
 .pm-app .sidebar-footer{border-color:var(--border)}.pm-app .identity,.pm-app .identity strong{color:var(--foreground)}
-.pm-app input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.pm-app select,.pm-app textarea{background:var(--background);color:var(--foreground);border:1px solid #71717a;border-radius:6px;caret-color:var(--foreground)}
+.pm-app input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.pm-app select,.pm-app textarea{background-color:var(--background);color:var(--foreground);border:1px solid #71717a;border-radius:6px;caret-color:var(--foreground)}
 .pm-app input::placeholder,.pm-app textarea::placeholder{color:var(--muted-foreground)}
 /* Bootstrap controls use the PM palette and retain a visible keyboard focus. */
 .pm-app .btn{--bs-btn-color:var(--primary-foreground);--bs-btn-bg:var(--primary);--bs-btn-border-color:var(--primary);--bs-btn-hover-color:var(--primary-foreground);--bs-btn-hover-bg:#27272a;--bs-btn-hover-border-color:#27272a;--bs-btn-active-color:var(--primary-foreground);--bs-btn-active-bg:#3f3f46;--bs-btn-active-border-color:#3f3f46;--bs-btn-disabled-color:#52525b;--bs-btn-disabled-bg:var(--muted);--bs-btn-disabled-border-color:#71717a;--bs-btn-disabled-opacity:1;--bs-btn-border-radius:6px}
@@ -154,3 +154,28 @@ body.pm-app .pm-module-nav button.pm-logout:hover,body.pm-app .sidebar button.pm
 .pm-overview-workspace li a:hover{background:var(--muted)}.pm-overview-workspace strong{display:block;font-size:1rem;font-weight:600}.pm-workspace-description{display:block;color:var(--muted-foreground);font-size:.875rem;line-height:1.6;margin-top:6px}
 .pm-overview-workspace svg{width:20px;height:20px;flex:0 0 20px}.pm-workspace-hint{font-size:.875rem;margin:20px 0 0}
 @media(max-width:900px){.pm-app .pm-nav-brand{width:100%;padding:8px 10px 16px}.pm-app .pm-module-nav .pm-logout-form{margin-top:8px;padding:0 8px}.pm-overview-workspace ul{grid-template-columns:1fr}}
+
+/* Shared interaction polish: task actions stay legible without competing surfaces. */
+.pm-app button,.pm-app .button{font-weight:600;line-height:1.4;padding:10px 16px;text-decoration:none;cursor:pointer}
+.pm-app button:disabled{cursor:not-allowed}
+.pm-app .form-control,.pm-app .form-select{padding:10px 12px;line-height:1.5}
+.pm-app .form-select{padding-right:40px;background-position:right 12px center}
+.pm-app textarea.form-control{min-height:104px;resize:vertical}
+.pm-app label{font-size:.9375rem;font-weight:500}
+.pm-app label .form-control,.pm-app label .form-select{margin-top:6px;font-weight:400}
+.pm-app form>.grid{gap:16px 20px}
+.pm-app form>p:last-child,.pm-app form>.actions{margin-top:20px;margin-bottom:0}
+.pm-app .actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.pm-app .pm-person-editor>summary{display:list-item;width:fit-content;min-height:44px;padding:10px 14px;margin-bottom:8px;border:1px solid #71717a;border-radius:6px;background:var(--background);font-weight:600}
+.pm-app .pm-person-editor>summary:hover{background:var(--muted)}
+.pm-app :is(.pm-add-person,.pm-project-create,.pm-timesheet-settings)>summary{padding:12px 16px;border:1px solid var(--border);border-radius:6px;background:var(--muted);font-weight:600;min-height:44px;cursor:pointer}
+.pm-app :is(.pm-add-person,.pm-project-create,.pm-timesheet-settings)[open]>summary{margin-bottom:20px}
+.pm-app .pm-person-dialog section+section{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
+.pm-app .pm-table-region th{padding:12px 14px;font-weight:600;white-space:nowrap}
+.pm-app .pm-table-region td{padding:14px;vertical-align:top}
+.pm-app .pm-table-region tbody tr:hover{background:var(--muted)}
+.pm-app .pm-table-hint{line-height:1.6;margin:12px 0}
+.pm-app .pm-person-actions form{margin:4px 8px 4px 0}
+.pm-app .pm-project-card h3{line-height:1.5}
+.pm-app .pm-project-card h3 a:hover{text-decoration:underline}
+@media(max-width:640px){.pm-app .actions>button,.pm-app .actions>.button{flex:1 1 auto}.pm-app .pm-person-dialog{padding:20px}.pm-app .pm-table-region td{padding:12px}.pm-app button,.pm-app .button{padding:10px 14px}}

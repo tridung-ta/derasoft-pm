@@ -13,6 +13,9 @@ async page => {
     if(!await input.evaluate(e=>e.classList.contains('form-control')&&getComputedStyle(e).outlineWidth==='3px'&&getComputedStyle(e).boxShadow==='none'))throw Error('Input focus lost');
     const select=page.locator('.pm-add-person select[name="department_id"]');
     if(!await select.evaluate(e=>e.classList.contains('form-select')&&e.getBoundingClientRect().height>=44))throw Error('Select touch target lost');
+    if(!await select.evaluate(e=>getComputedStyle(e).backgroundImage!=='none'&&parseFloat(getComputedStyle(e).paddingRight)>=40))throw Error('Select arrow hidden or text overlap');
+    const editor=page.locator('.pm-person-editor>summary').first();
+    if(!await editor.evaluate(e=>getComputedStyle(e).borderTopStyle==='solid'&&e.getBoundingClientRect().height>=44))throw Error('Edit action not clearly bounded');
     for(const width of [1440,390,720]){
         await page.setViewportSize({width,height:1000});
         await page.evaluate(scale=>document.documentElement.style.fontSize=scale,width===720?'200%':'');
