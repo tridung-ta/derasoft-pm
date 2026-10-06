@@ -7,7 +7,9 @@ if(($config['db_name']??'')!=='derasoft_pm_local')throw new RuntimeException('Re
 // This exercises real prepared queries and real role checks without committed fixtures.
 class ProjectSmokeConnection extends mysqli {
     public array $progressQueries=[];
+    public bool $failAudit=false;
     public function prepare(string $query): mysqli_stmt|false {
+        if($this->failAudit&&str_starts_with($query,'INSERT INTO dc_pm_audit_logs'))throw new RuntimeException('Injected audit failure');
         if(str_contains($query,"SUM(status='done')"))$this->progressQueries[]=$query;
         return parent::prepare($query);
     }
@@ -81,7 +83,15 @@ try{
     $rows=array_column($service->listProjects($data['code'])['rows'],null,'id');
     if($rows[$id]['progress_percent']!==0.0)throw new RuntimeException('Zero progress lost.');
     try{$service->setMember($id,$other,false);throw new RuntimeException('Assigned member removal accepted.');}catch(DomainException $expected){}
+    $auditRows=$query->fetchAll("SELECT * FROM dc_pm_audit_logs WHERE store_id=? AND entity_type='task' AND entity_id=? ORDER BY id",'ii',[$store,$taskId]);
+    if(count($auditRows)!==3||$auditRows[0]['action']!=='create'||$auditRows[0]['old_values']!==null||(int)$auditRows[0]['actor_id']!==$actor||!$auditRows[0]['created_at'])throw new RuntimeException('Task create audit missing.');
+    if(json_decode($auditRows[1]['old_values'],true)['status']!=='todo'||json_decode($auditRows[1]['new_values'],true)['status']!=='done')throw new RuntimeException('Task update audit snapshots wrong.');
+    $connection->failAudit=true;
+    try{$service->saveTask($id,['name'=>'Must roll back'],$taskId);throw new LogicException('Audit failure accepted');}catch(RuntimeException $expected){if($expected->getMessage()!=='Injected audit failure')throw $expected;}finally{$connection->failAudit=false;}
+    if($query->fetchOne('SELECT name FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$store,$taskId])['name']!=='Smoke task')throw new RuntimeException('Task edit survived audit failure.');
     $service->deleteTask($id,$taskId);$service->setMember($id,$other,false);
+    $deletedAudit=$query->fetchOne("SELECT new_values FROM dc_pm_audit_logs WHERE store_id=? AND entity_type='task' AND entity_id=? AND action='soft_delete'",'ii',[$store,$taskId]);
+    if(!json_decode($deletedAudit['new_values'],true)['deleted_at'])throw new RuntimeException('Task soft delete audit missing.');
     if($service->tasks($id)!==[])throw new RuntimeException('Soft deleted task still visible.');
     $service->deleteProject($id);
     if($adminAccess->hasProjectAccess($id))throw new RuntimeException('Deleted project access accepted.');

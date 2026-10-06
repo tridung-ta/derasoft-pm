@@ -47,6 +47,8 @@ try{
     $query->execute('UPDATE dc_pm_projects SET manager_id=? WHERE store_id=? AND id=?','iii',[$owner,$store,$project]);
     $pmRows=(new PmAuditLogs($db,$store,$owner))->list()['rows'];
     if(!$pmRows)throw new RuntimeException('PM managed-project audit missing.');
+    $taskAudit=(new PmAuditLogs($db,$store,$owner))->list(['entity_type'=>'task']);
+    if(!$taskAudit['total']||!isset(json_decode($taskAudit['rows'][0]['new_values'],true)['name']))throw new RuntimeException('PM task audit scope or task snapshot missing.');
     foreach($pmRows as $row)foreach(['old_values','new_values'] as $column)if($row[$column]!==null&&str_contains($row[$column],'rate_snapshot'))throw new RuntimeException('PM rate snapshot leaked.');
     $query->execute("UPDATE dc_pm_roles SET status=0 WHERE store_id=? AND code='PM'",'i',[$store]);
     $query->execute("UPDATE dc_pm_roles SET status=1 WHERE store_id=? AND code='HR'",'i',[$store]);
@@ -55,6 +57,7 @@ try{
     $adminTask=$projects->saveTask($project,['name'=>'Other department task','assignee_id'=>$actor,'status'=>'todo','priority'=>'normal','estimated_hours'=>'4','due_date'=>'']);
     $auditData['task_id']=$adminTask;$otherSheet=$adminService->save($auditData);
     $hrRows=(new PmAuditLogs($db,$store,$owner))->list()['rows'];
+    if((new PmAuditLogs($db,$store,$owner))->list(['entity_type'=>'task'])['total'])throw new RuntimeException('HR task audit exposed.');
     if(!$hrRows)throw new RuntimeException('HR own audit missing.');
     foreach($hrRows as $row)if((int)$row['entity_id']===$otherSheet)throw new RuntimeException('HR without department saw another user.');
     foreach($hrRows as $row)if($row['entity_type']!=='timesheet'||str_contains((string)$row['new_values'],'rate_snapshot'))throw new RuntimeException('HR scope/redaction failed.');

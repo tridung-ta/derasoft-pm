@@ -13,4 +13,4 @@ try {
 } catch (Throwable $e) {
     error_log('PM audit read failed.'); $error = 'Không thể tải nhật ký. Vui lòng thử lại.';
 }
-$template->assign(['pageTitle' => 'Nhật ký kiểm toán — DeraSoft PM', 'auditRows' => $result['rows'], 'filters' => $filters, 'page' => $result['page'], 'totalPages' => max(1, (int)ceil($result['total'] / 20)), 'error' => $error, 'canViewAllocationAudit'=>$pmAccess->hasRole('ADMIN')]);
+$template->assign(['pageTitle' => 'Nhật ký kiểm toán — DeraSoft PM', 'auditRows' => $result['rows'], 'filters' => $filters, 'page' => $result['page'], 'totalPages' => max(1, (int)ceil($result['total'] / 20)), 'error' => $error, 'canViewAllocationAudit'=>$pmAccess->hasRole('ADMIN'), 'canViewTaskAudit'=>$pmAccess->hasRole('ADMIN')||$pmAccess->hasRole('PM')]);

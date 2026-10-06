@@ -17,7 +17,6 @@ class PmAuditLogs {
         }
         $where = 'a.store_id=?'; $types = 'i'; $params = [$this->storeId];
         if (!$this->access->hasRole('ADMIN')) {
-            $where .= " AND a.entity_type='timesheet'";
             $scopes = [];
             if ($this->access->hasRole('PM')) {
                 // Both snapshots must be in scope: moving a row must not reveal an unrelated project.
@@ -26,11 +25,11 @@ class PmAuditLogs {
                     $projectScope[] = "(a.$column IS NULL OR EXISTS(SELECT 1 FROM dc_pm_projects p WHERE p.store_id=a.store_id AND p.id=CAST(JSON_UNQUOTE(JSON_EXTRACT(a.$column,'$.project_id')) AS UNSIGNED) AND p.manager_id=?))";
                     $types .= 'i'; $params[] = $this->actorId;
                 }
-                $scopes[] = '('.implode(' AND ', $projectScope).')';
+                $scopes[] = "(a.entity_type IN ('timesheet','task') AND (a.old_values IS NOT NULL OR a.new_values IS NOT NULL) AND ".implode(' AND ', $projectScope).')';
             }
             if ($this->access->hasRole('HR')) {
                 // Provisional HR read scope: own active department, otherwise personal history.
-                $scopes[] = "(CAST(JSON_UNQUOTE(JSON_EXTRACT(COALESCE(a.new_values,a.old_values),'$.user_id')) AS UNSIGNED)=? OR EXISTS(SELECT 1 FROM dc_users owner JOIN dc_users viewer ON viewer.store_id=owner.store_id AND viewer.department_id=owner.department_id JOIN dc_pm_departments d ON d.store_id=viewer.store_id AND d.id=viewer.department_id AND d.status=1 AND d.deleted_at IS NULL WHERE owner.store_id=a.store_id AND owner.id=CAST(JSON_UNQUOTE(JSON_EXTRACT(COALESCE(a.new_values,a.old_values),'$.user_id')) AS UNSIGNED) AND viewer.id=?))";
+                $scopes[] = "(a.entity_type='timesheet' AND (CAST(JSON_UNQUOTE(JSON_EXTRACT(COALESCE(a.new_values,a.old_values),'$.user_id')) AS UNSIGNED)=? OR EXISTS(SELECT 1 FROM dc_users owner JOIN dc_users viewer ON viewer.store_id=owner.store_id AND viewer.department_id=owner.department_id JOIN dc_pm_departments d ON d.store_id=viewer.store_id AND d.id=viewer.department_id AND d.status=1 AND d.deleted_at IS NULL WHERE owner.store_id=a.store_id AND owner.id=CAST(JSON_UNQUOTE(JSON_EXTRACT(COALESCE(a.new_values,a.old_values),'$.user_id')) AS UNSIGNED) AND viewer.id=?)))";
                 $types .= 'ii'; $params[] = $this->actorId; $params[] = $this->actorId;
             }
             $where .= ' AND ('.implode(' OR ', $scopes).')';
@@ -38,7 +37,7 @@ class PmAuditLogs {
         foreach (['entity_type', 'action'] as $key) {
             $value = (string)($filters[$key] ?? '');
             if ($value === '') continue;
-            $allowed = $key === 'entity_type' ? ['timesheet', 'settings', 'allocation', 'capacity', 'import'] : ['create', 'update', 'soft_delete', 'stage', 'apply', 'provision_password', 'recalculate', 'admin_update_locked', 'admin_delete_locked', 'admin_create_locked'];
+            $allowed = $key === 'entity_type' ? ['timesheet', 'task', 'settings', 'allocation', 'capacity', 'import'] : ['create', 'update', 'soft_delete', 'stage', 'apply', 'provision_password', 'recalculate', 'admin_update_locked', 'admin_delete_locked', 'admin_create_locked'];
             if (!in_array($value, $allowed, true)) throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
             $where .= ' AND a.'.$key.'=?'; $types .= 's'; $params[] = $value;
         }
@@ -48,10 +47,11 @@ class PmAuditLogs {
         if (!$this->access->hasRole('ADMIN')) {
             $visibleFields = array_flip(['id','store_id','user_id','project_id','task_id','work_date','shift_label','hours','regular_hours','ot_hours','description','deleted_at','created_at','updated_at']);
             foreach ($rows as &$row) {
+                $fields=$row['entity_type']==='task'?array_flip(['id','store_id','project_id','name','description','assignee_id','status','priority','estimated_hours','due_date','deleted_at','created_by','created_at','updated_at']):$visibleFields;
                 foreach (['old_values','new_values'] as $column) {
                     if ($row[$column] !== null) {
                         $values = json_decode($row[$column], true, 512, JSON_THROW_ON_ERROR);
-                        $row[$column] = json_encode(array_intersect_key($values, $visibleFields), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+                        $row[$column] = json_encode(array_intersect_key($values, $fields), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
                     }
                 }
             }

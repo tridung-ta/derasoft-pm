@@ -1,5 +1,22 @@
 # DeraSoft PM — Progress
 
+## Phase 11 — task audit complete, remaining requirements in progress — 2026-10-06
+
+Plan: docs/PHASE11_REQUIREMENTS.md. User approved self-hosted Bootstrap 5 and
+statistics only (no performance ratio). Branch starts from the Phase 9b UI fix
+65cfbd5; that fix has not been integrated/pushed yet.
+
+Task create/update/soft-delete now writes actor/time and before/after snapshots
+atomically with the task mutation. PM audit limited to managed projects in tenant,
+checking both snapshots; HR remains timesheet-only. Task filter exposed only to
+Admin/PM. No schema migration, production access or push/deployment in this step.
+Security review: prepared writes/reads, tenant/project checks before mutation,
+escaped Smarty output; no financial fields added to non-admin timesheet snapshots.
+Verification: pm_projects_smoke.php, pm_audit_smoke.php, smoke_pm_audit.php PASS;
+tests/pm_regression.ps1 42 PASS. New cases prove snapshots, soft-delete audit,
+rollback on injected audit failure, PM task details and HR task audit exclusion.
+Other requirements remain open; Phase 11 is NOT declared complete.
+
 ## Phase 9b — sidebar and overview follow-up — 2026-10-06
 
 Fixed the missing D brand on standalone module sidebars (real template markup,
