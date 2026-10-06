@@ -441,6 +441,11 @@
     },
     {
       "status": "A",
+      "path": "docs/PHASE9B_UI_COMPARISON.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
       "path": "docs/PHASE9_CSP_INVENTORY.md",
       "action": "exclude_nonruntime"
     },
@@ -592,6 +597,96 @@
     {
       "status": "A",
       "path": "docs/screenshots/before/README.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/allocations-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/allocations-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/audit-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/audit-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/costs-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/costs-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/imports-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/imports-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/overview-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/overview-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/projects-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/projects-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/reports-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/reports-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/timesheets-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/timesheets-mobile.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/users-desktop.png",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/screenshots/before/users-mobile.png",
       "action": "exclude_nonruntime"
     },
     {

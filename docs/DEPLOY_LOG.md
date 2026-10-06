@@ -290,3 +290,8 @@ ENGINE conversion. Schema rollback and a whole-DB restore can discard post-backu
 and break import provenance, so neither is an automatic rollback action. If data recovery
 is necessary, stop writes and agree a separately authorized recovery plan with the operator.
 Record rollback file version, whether writes occurred, outcome and unresolved data issues.
+# Screenshot supplement — 2026-10-06
+
+Completed the user-authorized [illustrative comparison](PHASE9B_UI_COMPARISON.md):
+36 local captures, reconstructed before and synthetic after, with source labels.
+No new runtime files or deployment action; original screenshots remain unavailable.

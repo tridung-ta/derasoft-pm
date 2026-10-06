@@ -1,5 +1,14 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — reconstructed comparison completed — 2026-10-06
+
+User authorized creating suitable images. Added 18 reconstructed before captures
+from 1dc761f and refreshed 18 after captures from 471950d with matching synthetic
+fixtures; desktop/mobile for all nine pages. See [comparison](PHASE9B_UI_COMPARISON.md).
+Playwright capture: 36/36 without pageerror or whole-page horizontal overflow.
+Original 05/10 images remain unavailable; these labeled illustrations are not UAT
+or production evidence. No application/DB change, push or deployment.
+
 ## Phase 9b — approved local integration — 2026-10-06
 
 After explicit confirmation “tôi đồng ý hãy tiếp tục”, merged

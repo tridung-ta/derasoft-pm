@@ -77,3 +77,8 @@ Người kiểm tra: người dùng; ngày: 06/10/2026;
 version/commit: ______; lỗi còn mở: ______; quyết định: ______.
 Sau nghiệm thu, người dùng xem DEPLOY_LOG.md rồi tự quyết định deployment thủ công.
 Post-deploy smoke trong DEPLOY_LOG.md là checklist khác và chỉ được tick sau deploy.
+# Screenshot supplement — 2026-10-06
+
+User authorized synthetic illustrations: [nine-page before/after comparison](PHASE9B_UI_COMPARISON.md).
+Before is reconstructed from 1dc761f; after is 471950d. These do not replace user
+acceptance, missing original images or unrecorded per-case UAT results.
