@@ -40,4 +40,31 @@ có cần hỏi riêng; không suy diễn quyền HR toàn tenant từ từ ng�
 - Phần 3: báo cáo giờ theo tuần, task hoàn thành/quá hạn/trễ, nhóm theo dự án/
   nhân viên, lọc role và phân tích chi phí theo phòng ban/role/task đã BUILD local.
   Báo cáo dựa trạng thái/phân loại hiện tại; không tự dựng lịch sử assignment.
-- Phần 4–6: chưa BUILD; chỉ plan, chưa có PASS/UAT/production claim.
+- Phần 4: hoàn tất local XLSX modes users/projects/hours/tasks/costs;
+  literal-text cells, whitelist columns, permission gates, CSRF/no-store.
+- Phần 5: Bootstrap 5.3.8 CSS tự host/license/digest; nạp trước theme,
+  table-responsive/card/btn, giữ JS hiện có. 9 bộ browser Phase 9b PASS.
+- Phần 6: bảng đối chiếu bên dưới; 44 regression PASS, 101 prepared query shapes
+  EXPLAIN PASS; browser sidebar và báo cáo mới PASS. Chưa UAT/production Phase 11.
+
+## Đối chiếu 10 nhóm yêu cầu
+
+| Nhóm | Chức năng local và căn cứ kiểm tra |
+| --- | --- |
+| Auth/RBAC | Email login, password_hash/verify (bcrypt default PHP 8.3), multi-role, controller guards; auth/session HTTP/service tests |
+| Nhân sự/rates | Danh sách, tìm kiếm/phân trang, phòng ban, role, rate, khóa/xóa mềm; workforce tests |
+| Dự án/task | Khách hàng, ngày kế hoạch, vai trò thành viên, task start/due/priority/status và Kanban; project smoke |
+| Chấm công/OT/audit | Ca/giờ, daily OT/snapshot, create/update/soft-delete task audit; timesheet/window/audit tests |
+| Chi phí | Actual/estimate/budget/task, Chart.js cột, polling, currency guards; costs service/HTTP/browser |
+| Phân bổ | Lưới tuần, giờ/ngày/tuần, trùng giờ/quá tải và capacity suggestions; allocation tests |
+| Báo cáo | Tuần/user/OT, task hoàn thành/trễ/quá hạn theo dự án/user, ngày/user/project/role, cost groups; report tests |
+| Excel/import | XLSX users/projects/hours/tasks/costs; personnel preview/duplicate/errors/resumable Apply; XLSX/import tests |
+| Bootstrap/responsive | Self-host CSS trước Inter theme; sidebar/forms/cards/table-responsive, keyboard/mobile; digest/9 browser suites |
+| SQL/security | Prepared queries/EXISTS/tenant scopes, CSRF/escape, paging/caps, existing tenant indexes; 101 EXPLAIN shapes |
+
+Giới hạn được công khai: thống kê thay tỷ lệ hiệu suất theo quyết định người dùng;
+assignment/role/department/trạng thái dùng dữ liệu hiện tại, không tái dựng lịch sử.
+Task legacy chưa có completed_at không được gán ngày giả. Nhân sự export hiện tại
+không áp ngày; dự án export lọc khoảng kế hoạch; hours lọc work_date; task lọc
+completion hoặc due_date. Bộ kiểm tra HTTP có Admin/Employee, PM/HR chủ yếu qua
+service fixtures rollback. Automated PASS không phải UAT PASS.

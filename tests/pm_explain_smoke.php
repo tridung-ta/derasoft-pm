@@ -25,6 +25,7 @@ try{
     $c->family='costs';(new PmCostService($db,$store,$actor))->dashboard(['project_id'=>$project,'from'=>'2026-10-01','to'=>'2026-10-04']);
     $c->family='allocations';(new PmAllocationService($db,$store,$actor))->dashboard(['week'=>'2026-10-04','project_id'=>$project]);
     $c->family='reports';(new PmReportService($db,$store,$actor))->report(['from'=>'2026-10-01','to'=>'2026-10-04','project_id'=>$project],true);
+    foreach(['tasks','users','projects','costs'] as $mode){$input=['mode'=>$mode,'from'=>'2026-10-01','to'=>'2026-10-04'];if($mode!=='users')$input['project_id']=$project;if(in_array($mode,['tasks','users','costs'],true))$input['role_code']='ADMIN';(new PmReportService($db,$store,$actor))->report($input,true);}
     $c->family='imports';$imports=new PmImportService($db,$store,$actor);$imports->history();$imports->detail($import);
     $captured=$c->captured;$report=[];$seen=[];
     foreach($captured as [$sql,$types,$params,$family]){

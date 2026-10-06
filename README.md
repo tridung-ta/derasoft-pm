@@ -11,6 +11,13 @@
 
 # DeraSoft PM
 
+**Local update — 06 Oct 2026:** Phase 11 adds scoped task audits, customer/member
+roles/task dates, weekly/task statistics, directory XLSX exports and self-hosted
+Bootstrap CSS with the existing Inter theme. 44 regression scripts and nine
+Phase 9b UI suites passed locally; Phase 11 UAT/deployment remain pending.
+See [requirements matrix](docs/PHASE11_REQUIREMENTS.md). Branch
+`feature/pm-phase11-requirements` is local and has not been pushed.
+
 **Project & timesheet management built by extending an existing PHP application.**
 
 DeraSoft PM connects workforce management, projects, tasks and time tracking in a tenant-scoped workspace for Admin, Project Manager, HR and employees. It preserves the existing DeraSoft architecture while adding prepared queries, access boundaries and auditable business operations.

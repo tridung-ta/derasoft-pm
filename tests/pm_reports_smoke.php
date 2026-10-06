@@ -21,6 +21,10 @@ try{
     $timesheets=new PmTimesheetService($db,$store,$actor);$entry=['task_id'=>$t,'work_date'=>'2026-10-01','shift_label'=>'=1+1','hours'=>'6','description'=>'@SUM(1,1)'];$first=$timesheets->save($entry);$entry['hours']='4';$second=$timesheets->save($entry);
     $service=new PmReportService($db,$store,$actor);$filter=['from'=>'2026-10-01','to'=>'2026-10-01','project_id'=>$p];$r=$service->report($filter);
     reportCheck($r['data']['summary']['hours']==='10.00'&&count($r['data']['rows'])===2,'Hours inclusive/summary failed.');
+    $directory=$service->report(['mode'=>'users','user_id'=>$actor]);reportCheck(count($directory['data']['rows'])===1&&!isset($directory['data']['rows'][0]['password_hash']),'Personnel export leaked secret or wrong scope.');
+    $directory=$service->report(['mode'=>'projects','project_id'=>$p]);reportCheck(count($directory['data']['rows'])===1&&!isset($directory['data']['rows'][0]['budget']),'Project directory leaked budget.');
+    foreach(['users','projects'] as $mode)reportCheck(str_starts_with($service->xlsx(['mode'=>$mode]),'PK'),'Directory XLSX failed.');
+    $directoryBytes=$service->xlsx(['mode'=>'projects','project_id'=>$p]);$directoryPath=tempnam(sys_get_temp_dir(),'pm-directory-test-');try{file_put_contents($directoryPath,$directoryBytes);$directoryBook=\PhpOffice\PhpSpreadsheet\IOFactory::load($directoryPath);reportCheck($directoryBook->getActiveSheet()->getCell('C3')->getDataType()==='s'&&$directoryBook->getActiveSheet()->getCell('C3')->getValue()==='=HYPERLINK("bad")','Project directory formula injection');$directoryBook->disconnectWorksheets();}finally{unlink($directoryPath);}
     reportCheck(!isset($r['data']['rows'][0]['cost'])&&!isset($r['data']['rows'][0]['rate_snapshot']),'Hours report leaked money.');
     reportCheck($r['data']['by_week'][0]['week_start']==='2026-09-28'&&$r['data']['by_week'][0]['hours']==='10.00','Weekly totals wrong.');
     reportCheck($service->report(array_replace($filter,['role_code'=>'ADMIN']))['data']['summary']['hours']==='10.00','Role filter wrong.');
@@ -31,6 +35,7 @@ try{
     $taskFilter=array_replace($filter,['mode'=>'tasks','to'=>'2026-10-03']);$taskReport=$service->report($taskFilter);
     reportCheck((int)$taskReport['data']['summary']['completed']===1&&(int)$taskReport['data']['summary']['overdue']===1&&(int)$taskReport['data']['summary']['completed_late']===1&&(int)$taskReport['data']['summary']['completion_unknown']===1,'Task statistics/unknown dates wrong.');
     reportCheck(count($taskReport['data']['by_project_user'])===1,'Task group aggregate wrong.');
+    reportCheck((int)$taskReport['data']['by_week'][0]['completed']===1&&$taskReport['data']['rows'][0]['late_days']===1,'Task weekly/late days wrong.');
     reportCheck(str_starts_with($service->xlsx($taskFilter),'PK'),'Task XLSX failed.');
     if(in_array('--preview',$argv,true)){$s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());$s->assign(['pageTitle'=>'Task reports','report'=>$taskReport,'error'=>'','csrfToken'=>'fixture','canExportReports'=>true,'canReportCosts'=>true]);file_put_contents(ROOT_PATH.'.local/phase11-tasks.html',str_replace('<head>','<head><base href="/">',$s->fetch('admin/pm-reports.tpl.html')));}
     foreach([['from'=>'2026-02-30'],['from'=>'2026-10-02','to'=>'2026-10-01'],['page'=>'0'],['project_id'=>['1']],['mode'=>'invalid']] as $bad)reportDenied(fn()=>$service->report(array_replace($filter,$bad)));

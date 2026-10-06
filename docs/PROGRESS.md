@@ -1,5 +1,28 @@
 # DeraSoft PM — Progress
 
+## Phase 11 — local requirements implementation verified — 2026-10-06
+
+Completed remaining XLSX directory modes (users/projects), retaining existing
+hours/tasks/costs exports, field whitelists, literal strings, CSRF/no-store and
+permissions matching read surfaces. Projects directory omits finance entirely.
+Added completed-task weekly totals and delay days; no performance ratios.
+Bootstrap 5.3.8 CSS self-hosted with official SHA384 and MIT license; loaded once
+before PM base/theme, card/btn/table-responsive integration, no new JS runtime.
+Preserved shared Inter/neutral tokens and existing native dialogs/details.
+
+Final verification: tests/pm_regression.ps1 44 PASS; 101 actual prepared query
+shapes EXPLAIN PASS. 9 existing Phase 9b browser suites PASS after Bootstrap;
+pm_sidebar_overview_browser.js and pm_phase11_reports_browser.js PASS.
+New HTTP directory/task modes and invalid array filters PASS; XLSX directory
+formula-like text round-trip stays string, no password/hash or budget exported.
+Security/code review: scoped joins, no duplicate sums from multi-role EXISTS,
+CSRF preserved, escaped templates, no secret/cache/dump in commit. See
+docs/PHASE11_REQUIREMENTS.md for matrix and honest limits.
+
+Phase 11 BUILD/automated verification local complete; user UAT and production
+remain pending. Migration 009 mandatory before new code; not production-approved
+by the previous UI-only backup waiver. No push/merge/deploy performed here.
+
 ## Phase 11 — task/weekly and cost reporting — 2026-10-06
 
 Reports now include weekly user hours/regular/OT, task completion in date range,

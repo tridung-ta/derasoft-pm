@@ -11,7 +11,7 @@
 <label>Đến ngày (để trống nếu không giới hạn)<input name="effective_to" type="date"></label>
 </div><p><button>Lưu đơn giá vai trò</button></p>
 </form>{/if}
-<p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>Nhân viên / Vai trò</th><th>Đơn giá</th><th>Hiệu lực</th><th>Trạng thái</th></tr></thead><tbody>
+<p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>Nhân viên / Vai trò</th><th>Đơn giá</th><th>Hiệu lực</th><th>Trạng thái</th></tr></thead><tbody>
 {foreach from=$hourlyRates item=hr}
 <tr><td>{if $hr.user_id}Nhân viên: {$hr.user_name|default:'Không còn hoạt động'|escape}{else}Vai trò: {$hr.role_name|default:'Không còn hoạt động'|escape}{/if}</td>
 <td colspan="2" class="num-cell">

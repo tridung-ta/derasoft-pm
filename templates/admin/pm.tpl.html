@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex, nofollow">
 	<title>{$pageTitle|escape}</title>
-	<link rel="stylesheet" href="css/pm-dashboard-base.css">
+	<link rel="stylesheet" href="css/vendor/bootstrap-5.3.8/bootstrap.min.css"><link rel="stylesheet" href="css/pm-dashboard-base.css">
 <link rel="stylesheet" href="css/pmui.css"></head>
 <body class="pm-app pm-page">
 	<div class="shell">
@@ -14,7 +14,7 @@
 			{include file='./pm-navigation.tpl.html'}
 			<div class="sidebar-footer">
 				<div class="identity"><strong>{$displayName|escape}</strong>{$profileUser->getUsername()|escape}</div>
-					<form method="post" action="admin.php"><input type="hidden" name="op" value="logout"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="logout pm-logout" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 4H4v16h6m5-13 5 5-5 5m-7-5h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Đăng xuất</button></form>
+					<form method="post" action="admin.php"><input type="hidden" name="op" value="logout"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="logout pm-logout btn" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 4H4v16h6m5-13 5 5-5 5m-7-5h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Đăng xuất</button></form>
 			</div>
 		</aside>
 
@@ -39,7 +39,7 @@
 
 				{elseif $section eq 'team'}
 					<header class="page-header"><div><p class="eyebrow">Nhân sự</p><h1>Danh sách tài khoản</h1><p>Đọc dữ liệu nhân sự từ hệ thống người dùng hiện có.</p></div><span class="badge">{$teamCount} tài khoản</span></header>
-					<div class="table-wrap"><p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table class="table"><thead><tr><th>Nhân sự</th><th>Tên đăng nhập</th><th>Liên hệ</th><th>Trạng thái</th></tr></thead><tbody>{foreach from=$teamMembers item=member}<tr><td><div class="user-name">{$member->getFullName()|default:'Chưa cập nhật'|escape}</div><div class="user-meta">ID #{$member->getId()}</div></td><td>{$member->getUsername()|escape}</td><td>{$member->getEmail()|default:'—'|escape}</td><td>{if $member->getStatus() eq 1}<span class="status">Hoạt động</span>{else}<span class="status off">Tạm khóa</span>{/if}</td></tr>{foreachelse}<tr><td colspan="4">Chưa có tài khoản nào.</td></tr>{/foreach}</tbody></table></div></div>
+					<div class="table-wrap"><p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table class="table"><thead><tr><th>Nhân sự</th><th>Tên đăng nhập</th><th>Liên hệ</th><th>Trạng thái</th></tr></thead><tbody>{foreach from=$teamMembers item=member}<tr><td><div class="user-name">{$member->getFullName()|default:'Chưa cập nhật'|escape}</div><div class="user-meta">ID #{$member->getId()}</div></td><td>{$member->getUsername()|escape}</td><td>{$member->getEmail()|default:'—'|escape}</td><td>{if $member->getStatus() eq 1}<span class="status">Hoạt động</span>{else}<span class="status off">Tạm khóa</span>{/if}</td></tr>{foreachelse}<tr><td colspan="4">Chưa có tài khoản nào.</td></tr>{/foreach}</tbody></table></div></div>
 				{/if}
 			</div>
 		</main>

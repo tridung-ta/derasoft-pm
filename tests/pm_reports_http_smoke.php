@@ -14,7 +14,7 @@ function allocationHttp(string $url,?string $session=null,?array $post=null): ar
 $server=proc_open([PHP_BINARY,'-d','session.save_path='.$dir,'-S','127.0.0.1:18768','-t',ROOT_PATH],[0=>['pipe','r'],1=>['file',ROOT_PATH.'.local/phase7-http.log','a'],2=>['file',ROOT_PATH.'.local/phase7-http.log','a']],$pipes,ROOT_PATH);if(!is_resource($server))throw new RuntimeException('No server.');fclose($pipes[0]);
 try{
     for($i=0;$i<50;$i++){$socket=@fsockopen('127.0.0.1',18768,$errno,$error,0.1);if($socket){fclose($socket);break;}usleep(100000);}
-    foreach([['',200],['&mode=costs',200],['&from=2026-02-30',400],['&project_id=999999999',403],['&user_id[]=x',400]] as [$suffix,$expected]){
+    foreach([['',200],['&mode=costs',200],['&mode=tasks',200],['&mode=users',200],['&mode=projects',200],['&from=2026-02-30',400],['&project_id=999999999',403],['&user_id[]=x',400],['&role_code[]=ADMIN',400]] as [$suffix,$expected]){
         [$code,$body]=allocationHttp($base.'/admin.php?op=pmreports'.$suffix,$session);if($code!==$expected)throw new RuntimeException('Report page expected '.$expected.', got '.$code);
         if($expected===200&&!str_contains($body,'Báo cáo & Excel'))throw new RuntimeException('Missing report page.');
     }

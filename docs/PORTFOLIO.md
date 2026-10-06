@@ -1,5 +1,14 @@
 # Portfolio notes — DeraSoft PM
 
+## Verified local extension — 06/10/2026
+
+Added atomic task audits, project customer/member-role/task date metadata,
+weekly/task/late-work statistics, scoped cost filters and XLSX personnel/project
+exports. Integrated self-hosted Bootstrap CSS without replacing the legacy MVC
+or shared Inter theme. 44 regression scripts, 101 prepared EXPLAIN query shapes
+and nine UI suites passed locally. Phase 11 has not been manually accepted or
+deployed; do not describe these results as production readiness.
+
 ## CV summary
 
 **DeraSoft PM — Project & Timesheet Management** · PHP, Smarty, MySQL, custom MVC

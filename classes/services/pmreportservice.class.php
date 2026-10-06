@@ -15,11 +15,19 @@ class PmReportService {
         if($f['from']>$f['to'])throw new InvalidArgumentException('Khoảng ngày đảo ngược.');
         foreach(['project_id','user_id'] as $key){$v=$input[$key]??'';if($v!==''&&$v!==null&&!preg_match('/^[1-9]\d{0,9}$/D',(string)$v))throw new InvalidArgumentException('ID không hợp lệ.');$f[$key]=$v===''||$v===null?null:(int)$v;}
         $page=(string)($input['page']??'1');if(!preg_match('/^[1-9]\d{0,5}$/D',$page))throw new InvalidArgumentException('Trang không hợp lệ.');$f['page']=(int)$page;
-        $mode=$input['mode']??'hours';if(!in_array($mode,['hours','tasks','costs'],true))throw new InvalidArgumentException('Loại báo cáo không hợp lệ.');$f['mode']=$mode;
+        $mode=$input['mode']??'hours';if(!in_array($mode,['hours','tasks','costs','users','projects'],true))throw new InvalidArgumentException('Loại báo cáo không hợp lệ.');$f['mode']=$mode;
         $f['role_code']=(string)($input['role_code']??'');if($f['role_code']!==''&&!in_array($f['role_code'],['ADMIN','PM','HR','EMPLOYEE'],true))throw new InvalidArgumentException('Role không hợp lệ.');return $f;
     }
     public function report(array $input=[],bool $export=false): array {
         $this->permission($export);$f=$this->filter($input);$scope=$this->access->hasRole('ADMIN')?'admin':($this->access->hasRole('PM')?'pm':'own');
+        if(in_array($f['mode'],['users','projects'],true)){
+            if(!$this->access->hasPermission($f['mode']==='users'?'pm.team.view':'pm.projects.view'))throw new DomainException('Không có quyền xuất danh sách.');
+            if($f['mode']==='users'&&$f['project_id']!==null)throw new InvalidArgumentException('Danh sách nhân sự không lọc dự án.');
+            if($f['mode']==='projects'&&($f['user_id']!==null||$f['role_code']!==''))throw new InvalidArgumentException('Danh sách dự án lọc ngày và ID dự án.');
+            $f['store_id']=$this->storeId;$f['actor_id']=$this->actorId;$f['scope']=$scope;
+            $this->db->beginTransaction();try{$data=$this->reports->directory($f,$export);$this->db->commit();}catch(Throwable $e){$this->db->rollBack();throw $e;}
+            unset($f['store_id'],$f['actor_id'],$f['scope']);return ['mode'=>$f['mode'],'filters'=>$f,'data'=>$data];
+        }
         if($f['mode']==='costs'){
             $costInput=['from'=>$f['from'],'to'=>$f['to'],'project_id'=>$f['project_id'],'user_id'=>$f['user_id'],'role_code'=>$f['role_code'],'page'=>$f['page']];
             $costs=(new PmCostService($this->database,$this->storeId,$this->actorId))->dashboard($costInput);
@@ -41,7 +49,9 @@ class PmReportService {
         include_once(ROOT_PATH.'classes/PhpSpreadSheet/PhpOffice/autoload.php');
         $book=new \PhpOffice\PhpSpreadsheet\Spreadsheet();$sheet=$book->getActiveSheet();$sheet->setTitle('Report');
         $rows=[['DeraSoft PM',$report['mode'],$report['filters']['from'],$report['filters']['to']]];
-        if($report['mode']==='hours'){
+        if(in_array($report['mode'],['users','projects'],true)){
+            $rows[]=array_values($report['data']['fields']);foreach($report['data']['rows'] as $r){$row=[];foreach($report['data']['fields'] as $key=>$label)$row[]=$r[$key]??'';$rows[]=$row;}
+        }elseif($report['mode']==='hours'){
             $rows[]=['Ngày','Nhân viên','Dự án','Task','Ca','Giờ','Giờ thường','OT','Mô tả','Lịch sử'];
             foreach($report['data']['rows'] as $r)$rows[]=[$r['work_date'],$r['user_name'],$r['project_name'],$r['task_name'],$r['shift_label'],$r['hours'],$r['regular_hours'],$r['ot_hours'],$r['description'], $r['historical']?'Lịch sử':''];
             $s=$report['data']['summary'];$rows[]=['Tổng giờ','','','','',$s['hours'],$s['regular_hours'],$s['ot_hours']];
@@ -49,6 +59,7 @@ class PmReportService {
         }elseif($report['mode']==='tasks'){
             $rows[]=['Task','Dự án','Nhân viên','Trạng thái','Bắt đầu','Hạn','Hoàn thành','Hoàn thành trong kỳ','Quá hạn','Hoàn thành trễ'];
             foreach($report['data']['rows'] as $r)$rows[]=[$r['name'],$r['project_name'],$r['user_name'],$r['status'],$r['start_date'],$r['due_date'],$r['completed_at'],(string)$r['completed_in_period'],(string)$r['overdue'],(string)$r['completed_late']];
+            $rows[]=['Tuần bắt đầu','Nhân viên','Task hoàn thành'];foreach($report['data']['by_week'] as $w)$rows[]=[$w['week_start'],$w['user_name'],$w['completed']];
         }else{
             $rows[]=['Dự án','Budget VND','Actual khoảng lọc','Currency','Actual lifetime','Currency','Ước tính','Currency'];
             foreach($report['data']['projects'] as $p)$rows[]=[$p['name'],$p['budget'],$p['actual']['cost']??'Không khả dụng',$p['actual']['currency']??'',$p['lifetime']['cost']??'Không khả dụng',$p['lifetime']['currency']??'',$p['estimate']['cost']??'Chưa đủ dữ liệu',$p['estimate']['currency']??''];
