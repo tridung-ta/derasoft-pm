@@ -10,7 +10,7 @@
 | Application base commit | `d4cde62` — Phase 9b Step 9; includes Phase 9 `df76268` and Phase 10 fixes. Per-file hashes identify packaged runtime bytes |
 | Release commit/ref | `feature/pm-phase9b-ui-theme`; resolve `git rev-parse HEAD` after preparation commit and record the full hash before any approved upload |
 | Production status | Operator uploaded to pm.dung.derasoft.com / dung_pm on 05/10/2026; maintenance enabled, smoke testing incomplete. Agent did not access production. |
-| User UAT | Pending user confirmation; automated verification is not UAT |
+| User UAT | User confirmed Phase 9b acceptance on 06/10/2026 for candidate cf21eff/runtime d4cde62; per-case/role evidence not supplied. Merge/push/deploy approval remains separate |
 
 The preparation document belongs to the release commit itself, so its own hash is resolved
 from Git rather than recursively embedded. The final response reports the created commit.

@@ -1,5 +1,18 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — user acceptance recorded — 2026-10-06
+
+User explicitly stated “tôi đã nghiệm thu xong” after candidate cf21eff/runtime
+d4cde62 was handed over. Record overall Phase 9b acceptance as user-reported;
+no new defect reported with that statement. Detailed per-case/role/browser-zoom
+results and original before screenshots were not supplied; no invented test evidence.
+Historical automated coverage remains 42 regression scripts / 10 browser suites.
+
+Read-only Git check: develop is 1dc761f and merge-base(develop, cf21eff) is exactly
+1dc761f. Develop is an ancestor, so proposed local merge can use --ff-only.
+No merge attempted. Original before evidence disposition and explicit merge approval
+remain pending; push and deployment are separate decisions. No runtime change.
+
 ## Phase 9b — release preparation / manual UAT gate — 2026-10-06
 
 Prepared candidate 0.10.0-phase9b-local-rc1; runtime base d4cde62 on

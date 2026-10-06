@@ -1,13 +1,16 @@
 # UAT cuối bản local — người dùng thực hiện
 
-UAT chưa thực hiện. Automated PASS không điền thay các ô dưới đây.
+Ngày 06/10/2026, người dùng xác nhận: “tôi đã nghiệm thu xong”. Ghi nhận nghiệm thu
+tổng thể Phase 9b trên candidate đã bàn giao; chưa có bảng kết quả từng ca/role hoặc
+ảnh UAT mới. Không suy ra từng ca dưới đây đã được chạy chỉ từ kiểm tra tự động.
 Version candidate: 0.10.0-phase9b-local-rc1; nhánh feature/pm-phase9b-ui-theme.
 Runtime đã BUILD: `d4cde62`; ghi thêm commit chuẩn bị phát hành khi bắt đầu UAT.
 Chỉ dùng local và dữ liệu giả; không chạy trên production.
 
 ## Lượt nghiệm thu bổ sung Phase 9b — 06/10/2026
 
-Chín bước BUILD và kiểm tra tự động đã đạt; các ô dưới đây vẫn **chưa UAT**.
+Chín bước BUILD và kiểm tra tự động đã đạt; nghiệm thu tổng thể được người dùng
+xác nhận 06/10/2026. Các ô dưới đây chờ ghi kết quả chi tiết của người kiểm tra.
 Mở app thật tại `http://127.0.0.1:18770/admin.php` sau khi chạy từ repository:
 
 ```powershell
@@ -20,15 +23,15 @@ là fixture giả lập, không dùng chúng để lưu dữ liệu hoặc nghi�
 
 | Thứ tự / trang | Luồng cần kiểm tra | Kết quả người dùng |
 | --- | --- | --- |
-| 1. Tổng quan | Đăng nhập; sidebar ổn định giữa các trang; KPI không lộ số ngoài quyền; lối tắt mở đúng chức năng | Chưa UAT |
-| 2. Nhân sự | Thêm/sửa nhân sự giả qua modal; Tab/Escape/trả focus; Khóa khác Mở khóa, Xóa khác Khôi phục; xác nhận hiện có còn hoạt động | Chưa UAT |
-| 3. Dự án & công việc | Mở form thu gọn; tạo dự án/task giả; card mở đúng dự án; tiến độ thay đổi theo task hoàn thành; dự án không task không giả 0% | Chưa UAT |
-| 4. Chấm công | Ghi 9 giờ rồi sửa còn 3 giờ; dải tuần phản ánh giờ đã lưu, ngày/nhân sự đúng; Admin sửa người khác không trộn tổng; lịch sử/OT/snapshot giữ đúng | Chưa UAT |
-| 5. Nhật ký | Thay đổi vừa làm có trong scope; filter/pager; mở trước/sau ngay trong bảng bằng chuột/bàn phím; trường tiền bị che đúng quyền | Chưa UAT |
-| 6. Chi phí | Dữ liệu vừa ghi phản ánh đúng tiền; thiếu rate có cảnh báo; tab dự án/nhóm; không dữ liệu có thông báo thay chart trục trống; polling không mất tab | Chưa UAT |
-| 7. Phân bổ | Lưới tuần đúng người/ngày; thêm/sửa/ẩn allocation giả; vượt tải/trùng giờ có chữ cảnh báo; Employee chỉ thấy phạm vi mình | Chưa UAT |
-| 8. Báo cáo | Lọc dữ liệu vừa tạo; XLSX cạnh tiêu đề tải/mở đúng nội dung và filter; tài khoản không có quyền export/cost không thấy thao tác tương ứng | Chưa UAT |
-| 9. Import | Tải mẫu → Preview/staging → mở lịch sử → Apply/resume với dữ liệu giả; kết quả còn hiển thị; duplicate không sửa tài khoản cũ; chỉ inactive được cấp password | Chưa UAT |
+| 1. Tổng quan | Đăng nhập; sidebar ổn định giữa các trang; KPI không lộ số ngoài quyền; lối tắt mở đúng chức năng | Chưa gh kết quả ca |
+| 2. Nhân sự | Thêm/sửa nhân sự giả qua modal; Tab/Escape/trả focus; Khóa khác Mở khóa, Xóa khác Khôi phục; xác nhận hiện có còn hoạt động | Chưa gh kết quả ca |
+| 3. Dự án & công việc | Mở form thu gọn; tạo dự án/task giả; card mở đúng dự án; tiến độ thay đổi theo task hoàn thành; dự án không task không giả 0% | Chưa gh kết quả ca |
+| 4. Chấm công | Ghi 9 giờ rồi sửa còn 3 giờ; dải tuần phản ánh giờ đã lưu, ngày/nhân sự đúng; Admin sửa người khác không trộn tổng; lịch sử/OT/snapshot giữ đúng | Chưa gh kết quả ca |
+| 5. Nhật ký | Thay đổi vừa làm có trong scope; filter/pager; mở trước/sau ngay trong bảng bằng chuột/bàn phím; trường tiền bị che đúng quyền | Chưa gh kết quả ca |
+| 6. Chi phí | Dữ liệu vừa ghi phản ánh đúng tiền; thiếu rate có cảnh báo; tab dự án/nhóm; không dữ liệu có thông báo thay chart trục trống; polling không mất tab | Chưa gh kết quả ca |
+| 7. Phân bổ | Lưới tuần đúng người/ngày; thêm/sửa/ẩn allocation giả; vượt tải/trùng giờ có chữ cảnh báo; Employee chỉ thấy phạm vi mình | Chưa gh kết quả ca |
+| 8. Báo cáo | Lọc dữ liệu vừa tạo; XLSX cạnh tiêu đề tải/mở đúng nội dung và filter; tài khoản không có quyền export/cost không thấy thao tác tương ứng | Chưa gh kết quả ca |
+| 9. Import | Tải mẫu → Preview/staging → mở lịch sử → Apply/resume với dữ liệu giả; kết quả còn hiển thị; duplicate không sửa tài khoản cũ; chỉ inactive được cấp password | Chưa gh kết quả ca |
 
 Trên cả 9 trang: resize 360/390/768/1440px, browser zoom thật 200%, Tab/Shift+Tab,
 focus/labels, không tràn trang; nút thường tối và nút nguy hiểm đỏ; Inter tải local,
@@ -65,7 +68,11 @@ sau đó mới đề nghị duyệt merge vào develop. Push và deploy là quy�
 Ghi lỗi bằng route, role, thao tác, kết quả mong đợi/thực tế; screenshot chỉ dữ liệu giả,
 không gửi password/hash/token hoặc dump. Sau sửa, chạy lại ca liên quan và regression.
 
-Nghiệm thu local: **chưa xác nhận**. Người kiểm tra: ______; ngày: ______;
+Nghiệm thu Phase 9b: **người dùng đã xác nhận 06/10/2026**; candidate `cf21eff`,
+runtime `d4cde62`. Không có lỗi mới được báo trong xác nhận này; không coi đây là
+chứng minh mọi tổ hợp ca/role đều đã chạy. Chi tiết người kiểm tra/ca còn để bổ sung.
+Ảnh trước gốc và phê duyệt merge vẫn chờ quyết định riêng.
+Người kiểm tra: người dùng; ngày: 06/10/2026;
 version/commit: ______; lỗi còn mở: ______; quyết định: ______.
 Sau nghiệm thu, người dùng xem DEPLOY_LOG.md rồi tự quyết định deployment thủ công.
 Post-deploy smoke trong DEPLOY_LOG.md là checklist khác và chỉ được tick sau deploy.
