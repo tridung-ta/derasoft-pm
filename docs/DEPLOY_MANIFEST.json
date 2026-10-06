@@ -2,7 +2,7 @@
   "version": "0.11.0-phase11-local-rc1",
   "date": "2026-10-06",
   "baseline": "3df33493da81f53e2fdc67d826998850812dbd2f",
-  "application_base_commit": "b57e7ba",
+  "application_base_commit": "2bb9665",
   "release_ref": "feature/pm-phase11-requirements",
   "source": "git diff --name-only --no-renames BASELINE (tracked working tree, including Phase 10 fixes, Phase 9b UI and Phase 11 requirements)",
   "required_migrations": [

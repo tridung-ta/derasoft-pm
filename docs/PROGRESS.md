@@ -1,5 +1,17 @@
 # DeraSoft PM — Progress
 
+## Phase 11 final local handoff — 2026-10-06
+
+UAT checklist now covers the latest runtime 2bb9665, shared email/username password
+changes and Bootstrap states. Every manual acceptance item remains pending.
+Release manifest/application base and deployment notes updated to the same runtime;
+86-file ZIP rebuilt and verified (inventory, CRC, SHA256 for each runtime file).
+`python -B tests/pm_deploy_manifest.py --check` PASS;
+`python -B tests/pm_deploy_manifest_test.py`: 5 tests PASS. No runtime changes
+in this handoff; previously verified 45 regression scripts/10 browser suites stand.
+Next gate: user local UAT, then explicit merge/push decision; migration 009 and
+production deployment require separate approval. No production access or SQL.
+
 ## Bootstrap form controls completed locally — 2026-10-06
 
 Applied Bootstrap `form-control`, `form-select`, and `btn` to active PM templates
