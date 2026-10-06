@@ -1,5 +1,39 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 8 — Personnel import steps — 2026-10-06
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Ordered three-step
+navigation links to template download, upload/preview and Apply history. Upload gets
+neutral emphasis; instructions use neutral text rather than a business warning color.
+History is native details, closed by default. Current Preview/Apply results and inactive
+account password provisioning stay outside the collapse. No invented completion state.
+No controller/service/DAO/route/permission/schema/engine or import behavior change.
+
+Exact files: templates/admin/pm-imports.tpl.html, css/pmui.css,
+tests/smoke_pm_imports.php, tests/pm_phase9b_imports_browser.js,
+docs/PHASE9B_STEP8_PLAN.md, docs/PROGRESS.md.
+
+Executed verification:
+- ./tests/pm_regression.ps1: 42 scripts PASS; includes import multipart HTTP,
+  staging/Apply/security/1062/retry/two-connection checks. Local fixtures only;
+  core dc_users not populated by Apply tests, target engine remains MyISAM.
+- PHP lint tests/smoke_pm_imports.php and --preview PASS: initial/empty, escaped
+  validation errors, staged/in-progress/partial/completed action conditions and
+  inactive-only password form. All original form markup identical to HEAD.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_imports_browser.js:
+  PASS for three anchors, native file input/label/required/multipart, CSRF, empty/error,
+  keyboard/no-JS collapse, visible Apply results/password, history action gates,
+  360/390/768/1440 responsive, 200% text scaling and CSP/no JS exceptions.
+  Synthetic fixtures only, no business POST; desktop/mobile screenshots inspected.
+- pm_ui_browser.js: 13 Phase 9 screen/state fixtures PASS for responsive, labels,
+  keyboard skip/focus, text scaling and CSP. git diff --check PASS.
+- Diff/security review: conditional action/password visibility and escaping retained,
+  no inline scripts, no dependency and no backend change.
+
+Preview: http://127.0.0.1:18767/.local/phase9b-import-initial.html
+(synthetic; do not submit). Manual UAT/actual browser zoom pending.
+No push, merge, deployment or production access. Step 9 remains.
+
 ## Phase 9b Step 7 — Timesheet ledger — 2026-10-06
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Seven-day ledger
