@@ -36,6 +36,9 @@ async page => {
     }
     // Chromium reports the font that actually renders every Vietnamese precomposed glyph.
     await page.evaluate(()=>{const span=document.createElement('span');span.id='pm-font-coverage';span.textContent=Array.from({length:90},(_,i)=>String.fromCharCode(0x1ea0+i)).join('');document.getElementById('pm-main').append(span)});
+    // Font inspection needs a rendered node, not just an inserted DOM node.
+    await page.locator('#pm-font-coverage').scrollIntoViewIfNeeded();
+    await page.evaluate(async()=>{await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))});
     const session=await page.context().newCDPSession(page);
     try{
         await session.send('DOM.enable');await session.send('CSS.enable');

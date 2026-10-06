@@ -1,5 +1,15 @@
 # DeraSoft PM — Progress
 
+## Phase 11 acceptance in progress — 2026-10-06
+
+User confirmed shared email/username new-password login and rejection of old
+password. Marked only that manual UAT item accepted; other items remain pending.
+Reran 45 regression scripts and 9 Phase 9b browser suites plus Bootstrap controls:
+PASS. Corrected test-only font-inspection race by waiting for fonts/layout and
+scrolling the glyph probe into view; Vietnamese Inter verification then PASS.
+No runtime/schema changes, no merge/push/deploy. Exact test scope and remaining
+real-role/Excel/visual gaps recorded in docs/UAT_PHASE11.md.
+
 ## Phase 11 final local handoff — 2026-10-06
 
 UAT checklist now covers the latest runtime 2bb9665, shared email/username password

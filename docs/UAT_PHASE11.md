@@ -33,7 +33,7 @@ Bootstrap form controls), schema 009 chỉ chạy local.
 | Hạng mục | Kết quả người dùng | Ghi chú/lỗi |
 | --- | --- | --- |
 | Giao diện/Bootstrap/sidebar/logout | Chưa nghiệm thu | |
-| Email/username/đổi mật khẩu | Chưa nghiệm thu | |
+| Email/username/đổi mật khẩu | Đạt — người dùng xác nhận 06/10/2026 | Cả hai dùng mật khẩu mới; mật khẩu cũ bị từ chối |
 | Dự án/task/metadata/audit | Chưa nghiệm thu | |
 | Chấm công/OT/chi phí | Chưa nghiệm thu | |
 | Báo cáo/XLSX | Chưa nghiệm thu | |
@@ -45,5 +45,22 @@ workspace tại `/derasoft-pm`; nếu chạy workspace ở document root, dùng
 `op=pmprojects`, `op=pmtimesheets`, `op=pmreports`, `op=pmimports`.
 Đây là ví dụ ánh xạ local; không khẳng định Apache đang chạy ở URL này.
 
-Kết quả: **CHƯA THỰC HIỆN**. Người dùng ghi lỗi/kết quả và duyệt merge/push/
+## Kiểm tra hỗ trợ nghiệm thu — 06/10/2026
+
+- Runtime 2bb9665, branch feature/pm-phase11-requirements; schema 009 local.
+- Chạy lại `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+  45 scripts PASS, gồm 20 shared-password checks, HTTP/service/Excel round-trip
+  và 101 prepared query shapes EXPLAIN. Không áp migration bởi runner.
+- Refresh 9 Smarty preview fixtures từ template hiện hành; chạy 9 browser suites
+  Phase 9b bằng `.local/run-phase11-ui.js`: PASS. Bootstrap controls browser: PASS.
+  Fixture ảnh/dữ liệu giả; không thay nghiệm thu nội dung bằng mắt hoặc zoom thật.
+- Sửa race trong test font: chờ fonts/render và đưa glyph probe vào viewport
+  trước CDP font inspection; sau đó xác nhận glyph tiếng Việt dùng Inter.
+- Người dùng xác nhận mục mật khẩu: email/username đều dùng mật khẩu mới;
+  mật khẩu cũ bị từ chối. Không suy ra nghiệm thu tài khoản khóa/collision hay các mục khác.
+- PM/HR HTTP bằng tài khoản thật chưa có bằng chứng; service permission tests
+  không thay phần này. XLSX đã round-trip tự động nhưng chưa mở trực tiếp trong Excel.
+
+Kết quả: **ĐANG NGHIỆM THU — MẬT KHẨU ĐẠT, CÁC MỤC KHÁC CHỜ**.
+Người dùng ghi lỗi/kết quả và duyệt merge/push/
 deploy riêng. Không dùng file ZIP UI b0eca4c cho Phase 11.
