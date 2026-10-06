@@ -1,5 +1,16 @@
 # Database schema baseline
 
+## Phase 11 — migration 009 (local only, 06/10/2026)
+
+Added nullable client_name VARCHAR(150) to projects, project_role VARCHAR(50)
+to project_members, start_date DATE and completed_at DATETIME to tasks.
+No existing rows backfilled; legacy completed tasks retain unknown completion.
+done transition sets current Vietnam datetime; editing done preserves it;
+reopening clears it. Project roles are descriptive, not RBAC grants.
+Local PM tables backed up under ignored .local/checkpoints before DDL;
+versioned 009 executed twice on guarded derasoft_pm_local, idempotent PASS.
+Rollback code only, retain columns/data. NOT applied to production.
+
 Ngày kiểm tra: 2026-09-30
 
 ## Nguồn và giới hạn

@@ -38,10 +38,16 @@ try{
     if($service->getProject($id)['name']!=='Project smoke')throw new RuntimeException('Project creation failed.');
     $data['name']='Project updated';$service->saveProject($data,$id);
     if($service->getProject($id)['name']!=='Project updated')throw new RuntimeException('Project update failed.');
+    $data['client_name']='Client <script>fixture</script>';$service->saveProject($data,$id);
+    if($service->getProject($id)['client_name']!==$data['client_name'])throw new RuntimeException('Client metadata missing.');
     try{(new PmProjectService($db,$store+999999,$actor))->getProject($id);throw new RuntimeException('Cross tenant read accepted.');}catch(DomainException|OutOfBoundsException $expected){}
     $task=['name'=>'Smoke task','assignee_id'=>$actor,'status'=>'todo','priority'=>'normal','estimated_hours'=>'4','due_date'=>'2026-02-01'];
     $taskId=$service->saveTask($id,$task);$task['status']='done';$service->saveTask($id,$task,$taskId);
     if($service->tasks($id)[0]['status']!=='done')throw new RuntimeException('Kanban update failed.');
+    $completed=$service->tasks($id)[0]['completed_at'];if(!$completed)throw new RuntimeException('Completion timestamp missing.');
+    $task['start_date']='2026-01-01';$service->saveTask($id,$task,$taskId);
+    if($service->tasks($id)[0]['completed_at']!==$completed||$service->tasks($id)[0]['start_date']!=='2026-01-01')throw new RuntimeException('Done edit changed completion or start date lost.');
+    try{$service->saveTask($id,array_replace($task,['start_date'=>'2026-03-01']),$taskId);throw new LogicException('Invalid date range accepted');}catch(InvalidArgumentException $expected){}
     $pending=$task;$pending['status']='todo';$pendingId=$service->saveTask($id,$pending);
     $query=new PmDb($db);
     $query->execute("INSERT INTO dc_pm_tasks(store_id,project_id,name,status,created_by) VALUES(?,?,'Other tenant fixture','done',?)",'iii',[$store+999999,$id,$actor]);
@@ -67,6 +73,9 @@ try{
     $pm=new PmProjectService($db,$store,$other);
     try{$pm->getProject($id);throw new RuntimeException('Non-member read accepted.');}catch(DomainException $expected){}
     $service->setMember($id,$other,true);
+    $service->setMember($id,$other,true,'qa');
+    $memberRows=array_column($service->members($id),null,'user_id');if($memberRows[$other]['project_role']!=='qa')throw new RuntimeException('Project role missing.');
+    try{$service->setMember($id,$other,true,'ADMIN');throw new LogicException('RBAC role accepted as project role');}catch(InvalidArgumentException $expected){}
     $visible=$pm->listProjects($data['code']);
     if(count($visible['rows'])!==1||(int)$visible['rows'][0]['id']!==$id)throw new RuntimeException('Progress project-membership scope failed.');
     // Simulate removal of task-view permission in this service's access snapshot.
@@ -80,11 +89,12 @@ try{
     try{$service->setMember($id,2147483647,false);throw new RuntimeException('Unknown membership removal accepted.');}catch(OutOfBoundsException $expected){}
     try{$pm->saveTask($id,['name'=>'Forbidden task']);throw new RuntimeException('PM managed another manager project.');}catch(DomainException $expected){}
     $task['assignee_id']=$other;$task['status']='todo';$service->saveTask($id,$task,$taskId);
+    if($query->fetchOne('SELECT completed_at FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$store,$taskId])['completed_at']!==null)throw new RuntimeException('Reopened task kept completion timestamp.');
     $rows=array_column($service->listProjects($data['code'])['rows'],null,'id');
     if($rows[$id]['progress_percent']!==0.0)throw new RuntimeException('Zero progress lost.');
     try{$service->setMember($id,$other,false);throw new RuntimeException('Assigned member removal accepted.');}catch(DomainException $expected){}
     $auditRows=$query->fetchAll("SELECT * FROM dc_pm_audit_logs WHERE store_id=? AND entity_type='task' AND entity_id=? ORDER BY id",'ii',[$store,$taskId]);
-    if(count($auditRows)!==3||$auditRows[0]['action']!=='create'||$auditRows[0]['old_values']!==null||(int)$auditRows[0]['actor_id']!==$actor||!$auditRows[0]['created_at'])throw new RuntimeException('Task create audit missing.');
+    if(count($auditRows)!==4||$auditRows[0]['action']!=='create'||$auditRows[0]['old_values']!==null||(int)$auditRows[0]['actor_id']!==$actor||!$auditRows[0]['created_at'])throw new RuntimeException('Task create audit missing.');
     if(json_decode($auditRows[1]['old_values'],true)['status']!=='todo'||json_decode($auditRows[1]['new_values'],true)['status']!=='done')throw new RuntimeException('Task update audit snapshots wrong.');
     $connection->failAudit=true;
     try{$service->saveTask($id,['name'=>'Must roll back'],$taskId);throw new LogicException('Audit failure accepted');}catch(RuntimeException $expected){if($expected->getMessage()!=='Injected audit failure')throw $expected;}finally{$connection->failAudit=false;}

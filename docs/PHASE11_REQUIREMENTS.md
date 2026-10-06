@@ -34,4 +34,7 @@ có cần hỏi riêng; không suy diễn quyền HR toàn tenant từ từ ng�
 
 - Phần 1: hoàn tất local, 42 regression PASS; test audit failure rollback và
   snapshot/create/update/soft-delete, PM scoped task audit, HR deny task audit.
-- Phần 2–6: chưa BUILD; chỉ plan, chưa có PASS/UAT/production claim.
+- Phần 2: hoàn tất local metadata/forms; local backup and migration 009 twice PASS;
+  43 regression PASS. completed_at unknown for legacy done; preserved on done edit,
+  cleared on reopen. Project roles descriptive only, no RBAC elevation.
+- Phần 3–6: chưa BUILD; chỉ plan, chưa có PASS/UAT/production claim.

@@ -72,14 +72,15 @@ class PmProjectService {
         $status=(string)($data['status']??'planned');if(!in_array($status,['planned','active','paused','completed'],true))throw new InvalidArgumentException('Trạng thái dự án không hợp lệ.');
         $start=$this->date($data['start_date']??null);$end=$this->date($data['end_date']??null);if($start&&$end&&$end<$start)throw new InvalidArgumentException('Ngày kết thúc phải sau ngày bắt đầu.');
         $budget=$this->number($data['budget']??'0',13);
+        $client=trim((string)($data['client_name']??''));if(mb_strlen($client)>150)throw new InvalidArgumentException('Tên khách hàng quá dài.');
         $manager=$this->access->hasRole('ADMIN')?(int)($data['manager_id']??0):$this->actorId;
         if(!in_array($manager,array_map('intval',array_column($this->availableUsers(true),'id')),true))throw new InvalidArgumentException('Người phụ trách phải là Admin/PM đang hoạt động trong tenant.');
         $this->db->beginTransaction();
         try{
             if($id){$project=$this->getProject($id,true);$this->requireManage($project,'pm.projects.manage');}
             if($this->db->fetchOne('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=? AND id<>?','isi',[$this->storeId,$code,$id??0]))throw new DomainException('Mã dự án đã tồn tại.');
-            if($id)$this->db->execute('UPDATE dc_pm_projects SET code=?,name=?,description=?,manager_id=?,start_date=?,end_date=?,budget=?,status=? WHERE store_id=? AND id=?','sssissssii',[$code,$name,$description,$manager,$start,$end,$budget,$status,$this->storeId,$id]);
-            else{$this->db->execute('INSERT INTO dc_pm_projects(store_id,code,name,description,manager_id,start_date,end_date,budget,status,created_by) VALUES(?,?,?,?,?,?,?,?,?,?)','isssissssi',[$this->storeId,$code,$name,$description,$manager,$start,$end,$budget,$status,$this->actorId]);$id=(int)$this->db->fetchOne('SELECT LAST_INSERT_ID() id')['id'];}
+            if($id){if(!array_key_exists('client_name',$data))$client=$project['client_name'];$this->db->execute('UPDATE dc_pm_projects SET code=?,name=?,description=?,manager_id=?,start_date=?,end_date=?,budget=?,status=?,client_name=? WHERE store_id=? AND id=?','sssisssssii',[$code,$name,$description,$manager,$start,$end,$budget,$status,$client?:null,$this->storeId,$id]);}
+            else{$this->db->execute('INSERT INTO dc_pm_projects(store_id,code,name,description,manager_id,start_date,end_date,budget,status,created_by,client_name) VALUES(?,?,?,?,?,?,?,?,?,?,?)','isssissssis',[$this->storeId,$code,$name,$description,$manager,$start,$end,$budget,$status,$this->actorId,$client?:null]);$id=(int)$this->db->fetchOne('SELECT LAST_INSERT_ID() id')['id'];}
             $this->db->execute('INSERT INTO dc_pm_project_members(store_id,project_id,user_id,status) VALUES(?,?,?,1) ON DUPLICATE KEY UPDATE status=1','iii',[$this->storeId,$id,$manager]);
             $this->db->commit();return $id;
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
@@ -89,16 +90,17 @@ class PmProjectService {
     }
     public function members(int $projectId): array {
         $this->getProject($projectId);
-        return $this->db->fetchAll('SELECT m.user_id,u.fullname,u.status user_status FROM dc_pm_project_members m INNER JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id WHERE m.store_id=? AND m.project_id=? AND m.status=1 ORDER BY u.fullname','ii',[$this->storeId,$projectId]);
+        return $this->db->fetchAll('SELECT m.user_id,m.project_role,u.fullname,u.status user_status FROM dc_pm_project_members m INNER JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id WHERE m.store_id=? AND m.project_id=? AND m.status=1 ORDER BY u.fullname','ii',[$this->storeId,$projectId]);
     }
-    public function setMember(int $projectId,int $userId,bool $active): void {
+    public function setMember(int $projectId,int $userId,bool $active,?string $projectRole=null): void {
         if($userId<=0)throw new InvalidArgumentException('Thành viên không hợp lệ.');
+        if($projectRole!==null&&!in_array($projectRole,['manager','developer','qa','analyst','other'],true))throw new InvalidArgumentException('Vai trò trong dự án không hợp lệ.');
         $this->db->beginTransaction();try{
             $project=$this->getProject($projectId,true);$this->requireManage($project,'pm.project_members.manage');
             if(!$active&&!$this->db->fetchOne('SELECT id FROM dc_pm_project_members WHERE store_id=? AND project_id=? AND user_id=? AND status=1','iii',[$this->storeId,$projectId,$userId]))throw new OutOfBoundsException('Không tìm thấy thành viên trong dự án.');
             if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$userId])&&$active)throw new InvalidArgumentException('Thành viên phải đang hoạt động trong tenant.');
             if(!$active){if((int)$project['manager_id']===$userId)throw new DomainException('Không thể gỡ người phụ trách dự án.');if($this->db->fetchOne('SELECT id FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND assignee_id=? AND deleted_at IS NULL LIMIT 1','iii',[$this->storeId,$projectId,$userId]))throw new DomainException('Cần giao lại hoặc bỏ người được giao của các task trước khi gỡ thành viên.');}
-            $this->db->execute('INSERT INTO dc_pm_project_members(store_id,project_id,user_id,status) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status)','iiii',[$this->storeId,$projectId,$userId,$active?1:0]);$this->db->commit();
+            $this->db->execute('INSERT INTO dc_pm_project_members(store_id,project_id,user_id,status,project_role) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),project_role=COALESCE(VALUES(project_role),project_role)','iiiis',[$this->storeId,$projectId,$userId,$active?1:0,$projectRole]);$this->db->commit();
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
     public function tasks(int $projectId): array {
@@ -114,8 +116,11 @@ class PmProjectService {
             if($assignee&&!$this->db->fetchOne('SELECT m.id FROM dc_pm_project_members m INNER JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id AND u.status=1 WHERE m.store_id=? AND m.project_id=? AND m.user_id=? AND m.status=1','iii',[$this->storeId,$projectId,$assignee]))throw new InvalidArgumentException('Task chỉ được giao cho thành viên active của dự án.');
             $old=$id?$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','iii',[$this->storeId,$projectId,$id]):null;
             if($id&&!$old)throw new OutOfBoundsException('Không tìm thấy task.');
+            $start=$this->date($data['start_date']??($old['start_date']??null));if($start&&$due&&$start>$due)throw new InvalidArgumentException('Ngày bắt đầu phải trước hạn hoàn thành.');
             if($id)$this->db->execute('UPDATE dc_pm_tasks SET name=?,description=?,assignee_id=?,status=?,priority=?,estimated_hours=?,due_date=? WHERE store_id=? AND project_id=? AND id=?','ssissssiii',[$name,$description,$assignee,$status,$priority,$hours,$due,$this->storeId,$projectId,$id]);
             else{$this->db->execute('INSERT INTO dc_pm_tasks(store_id,project_id,name,description,assignee_id,status,priority,estimated_hours,due_date,created_by) VALUES(?,?,?,?,?,?,?,?,?,?)','iississssi',[$this->storeId,$projectId,$name,$description,$assignee,$status,$priority,$hours,$due,$this->actorId]);$id=(int)$this->db->fetchOne('SELECT LAST_INSERT_ID() id')['id'];}
+            $completed=$status==='done'?($old&&$old['status']==='done'?$old['completed_at']:(new DateTimeImmutable('now',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d H:i:s')):null;
+            $this->db->execute('UPDATE dc_pm_tasks SET start_date=?,completed_at=? WHERE store_id=? AND project_id=? AND id=?','ssiii',[$start,$completed,$this->storeId,$projectId,$id]);
             $this->auditTask($id,$old?'update':'create',$old,$this->taskSnapshot($projectId,$id));
             $this->db->commit();return $id;
         }catch(Throwable $e){$this->db->rollBack();throw $e;}

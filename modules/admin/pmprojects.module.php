@@ -11,11 +11,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     else try{
         $action=(string)$request->element('action');
         if($action==='project_save'){
-            $data=[];foreach(['code','name','description','manager_id','start_date','end_date','budget','status'] as $key)$data[$key]=$request->element($key);
+            $data=[];foreach(['code','name','description','manager_id','start_date','end_date','budget','status','client_name'] as $key)$data[$key]=$request->element($key);
             $projectId=$service->saveProject($data,$projectId?:null);$notice='Đã lưu dự án.';
         }elseif($action==='project_delete'){$service->deleteProject($projectId);$projectId=0;$notice='Đã ẩn dự án.';}
-        elseif($action==='member_save'){$service->setMember($projectId,(int)$request->element('member_id'),(string)$request->element('member_active')==='1');$notice='Đã cập nhật thành viên.';}
-        elseif($action==='task_save'){$data=[];foreach(['name','description','assignee_id','status','priority','estimated_hours','due_date'] as $key)$data[$key]=$request->element($key);$service->saveTask($projectId,$data,((int)$request->element('task_id'))?:null);$notice='Đã lưu công việc.';}
+        elseif($action==='member_save'){$service->setMember($projectId,(int)$request->element('member_id'),(string)$request->element('member_active')==='1',$request->element('project_role')!==''?(string)$request->element('project_role'):null);$notice='Đã cập nhật thành viên.';}
+        elseif($action==='task_save'){$data=[];foreach(['name','description','assignee_id','status','priority','estimated_hours','due_date','start_date'] as $key)$data[$key]=$request->element($key);$service->saveTask($projectId,$data,((int)$request->element('task_id'))?:null);$notice='Đã lưu công việc.';}
         elseif($action==='task_delete'){$service->deleteTask($projectId,(int)$request->element('task_id'));$notice='Đã ẩn công việc.';}
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
         try{$trackings->addData(['store_id'=>$storeId,'username'=>$userInfo->getUsername(),'action'=>'PM projects: '.$action.' project #'.$projectId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>$_SERVER['REMOTE_ADDR']??'']);}catch(Throwable $logError){error_log('PM project tracking failed.');}

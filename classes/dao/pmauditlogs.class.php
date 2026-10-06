@@ -47,7 +47,7 @@ class PmAuditLogs {
         if (!$this->access->hasRole('ADMIN')) {
             $visibleFields = array_flip(['id','store_id','user_id','project_id','task_id','work_date','shift_label','hours','regular_hours','ot_hours','description','deleted_at','created_at','updated_at']);
             foreach ($rows as &$row) {
-                $fields=$row['entity_type']==='task'?array_flip(['id','store_id','project_id','name','description','assignee_id','status','priority','estimated_hours','due_date','deleted_at','created_by','created_at','updated_at']):$visibleFields;
+                $fields=$row['entity_type']==='task'?array_flip(['id','store_id','project_id','name','description','assignee_id','status','priority','estimated_hours','start_date','due_date','completed_at','deleted_at','created_by','created_at','updated_at']):$visibleFields;
                 foreach (['old_values','new_values'] as $column) {
                     if ($row[$column] !== null) {
                         $values = json_decode($row[$column], true, 512, JSON_THROW_ON_ERROR);

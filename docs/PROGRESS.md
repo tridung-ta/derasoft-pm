@@ -1,5 +1,21 @@
 # DeraSoft PM — Progress
 
+## Phase 11 — project/task metadata complete locally — 2026-10-06
+
+Added customer name to project forms/service, task start date/range validation,
+member project-role selector/display (manager/developer/qa/analyst/other, distinct
+from RBAC), and completion datetime tracking for accurate future reports.
+Versioned migration 009 adds four nullable columns. Before DDL, backed up affected
+local PM tables using mysqldump under ignored .local/checkpoints; guarded host and
+database. Executed complete file twice on same local connection: idempotent PASS.
+No dc_users engine/data change, no backfill, no production SQL.
+Tests: tests/pm_regression.ps1 — 43 PASS; project smoke verifies customer/role,
+invalid range/role rejection, completed timestamp stability and reopen clearing;
+metadata test verifies types/nullability. Smarty rendering PASS.
+Review: prepared statements, existing CSRF/ownership preserved, labels/output
+escaped; project role does not grant permission. Schema rollback retains columns.
+Reporting/export/Bootstrap remain pending; not a complete Phase 11 release.
+
 ## Phase 11 — task audit complete, remaining requirements in progress — 2026-10-06
 
 Plan: docs/PHASE11_REQUIREMENTS.md. User approved self-hosted Bootstrap 5 and
