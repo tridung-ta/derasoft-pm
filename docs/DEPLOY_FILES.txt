@@ -1,4 +1,6 @@
 admin.php
+assets/fonts/inter/InterVariable.woff2
+assets/fonts/inter/OFL.txt
 classes/dao/pmallocations.class.php
 classes/dao/pmauditlogs.class.php
 classes/dao/pmcosts.class.php
@@ -39,6 +41,7 @@ includes/pm_response.inc.php
 includes/smarty_runtime.inc.php
 index.php
 js/pmallocations.js
+js/pmallocationweek.js
 js/pmcosts.js
 js/pmui.js
 js/vendor/chartjs-4.5.1/LICENSE.md

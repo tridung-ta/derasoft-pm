@@ -1,5 +1,41 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — release preparation / manual UAT gate — 2026-10-06
+
+Prepared candidate 0.10.0-phase9b-local-rc1; runtime base d4cde62 on
+feature/pm-phase9b-ui-theme. Updated the Phase 10 release metadata/lists and final
+UAT checklist to include all nine Phase 9b UI steps and the two approved read-only
+aggregates. Historical operator production evidence retained separately.
+
+Manifest now explicitly includes assets/fonts/inter/InterVariable.woff2 and OFL.txt;
+the assets directory is not generally allowlisted. Added an optional local ZIP artifact
+under ignored .local/releases, verified against per-file SHA256 and ZIP CRC. All
+runtime paths retained; protected config/license directory/uploads/SQL/logs excluded.
+This is the recorded Phase 0 baseline delta, not an independently inspected live-host
+delta or standalone fresh install. Font license ships with the font.
+
+Executed checks:
+- python -B tests/pm_deploy_manifest_test.py: 5 tests PASS covering font/license,
+  unreviewed assets, protected paths, deleted-remote keep and existing runtime/docs.
+- python -B tests/pm_deploy_manifest.py then --check --package: PASS, 78 runtime
+  entries, identical ZIP inventory, matching SHA256 for every extracted entry and CRC.
+- Inter CSS relative URL and exact font/license hashes verified; font 352240 bytes.
+- Copied 18 existing synthetic after screenshots for nine pages into
+  docs/screenshots/after, with provenance README; PNG signatures checked.
+  Before screenshots not fabricated. Original nine before files still unavailable.
+- Local UAT config guard PASS (derasoft_pm_local, localhost/127.0.0.1); PHP server
+  on 127.0.0.1:18770 started and admin.php returned HTTP 200 with login password form.
+  No login bypass, business POST or production access during this preparation.
+- Application verification from Step 9: 42 local regression scripts and 10 browser
+  suites PASS. No application code changed in this packaging/documentation work.
+
+Only manual UAT remains unconfirmed: run docs/UAT_FINAL_LOCAL.md with actual local
+accounts, real browser zoom and whole-flow review. PM/HR authenticated browser cases
+still need appropriate local actors; do not substitute service fixtures for manual UAT.
+User must decide whether to supply original before images or accept missing evidence.
+After UAT and this decision, request explicit approval before merge into develop;
+push/deploy separately. No merge, push, deployment or production modification performed.
+
 ## Phase 9b Step 9 — Overview, audit and reports — 2026-10-06
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Overview combines

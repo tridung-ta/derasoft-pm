@@ -4,17 +4,46 @@
 
 | Field | Prepared value |
 | --- | --- |
-| Version | 0.10.0-local-rc1 — local candidate, not a production release |
-| Preparation date | 04/10/2026; verification updated 05/10/2026, Asia/Saigon |
+| Version | 0.10.0-phase9b-local-rc1 — local candidate, not a production release |
+| Preparation date | 04/10/2026; Phase 9b packaging updated 06/10/2026, Asia/Saigon |
 | Baseline before Phase 1 | `3df33493da81f53e2fdc67d826998850812dbd2f` — Phase 0 audit; first-parent predecessor of Phase 1 merge `c732a324` |
-| Application base commit | `df76268` — Phase 9; Phase 10 runtime fixes are included in the manifest by tracked working-tree diff |
-| Release commit/ref | `feature/pm-phase10-test-release`; resolve `git rev-parse HEAD` on this branch after the completed Phase 10 commit and record that full hash below before upload |
+| Application base commit | `d4cde62` — Phase 9b Step 9; includes Phase 9 `df76268` and Phase 10 fixes. Per-file hashes identify packaged runtime bytes |
+| Release commit/ref | `feature/pm-phase9b-ui-theme`; resolve `git rev-parse HEAD` after preparation commit and record the full hash before any approved upload |
 | Production status | Operator uploaded to pm.dung.derasoft.com / dung_pm on 05/10/2026; maintenance enabled, smoke testing incomplete. Agent did not access production. |
 | User UAT | Pending user confirmation; automated verification is not UAT |
 
 The preparation document belongs to the release commit itself, so its own hash is resolved
 from Git rather than recursively embedded. The final response reports the created commit.
 Before manual deployment fill: **actual commit: ______; deploy date/time: ______; operator: ______**.
+
+## Phase 9b release gate — 06/10/2026
+
+This candidate adds all nine UI steps, the shared `css/pmui.css`, PM template/JS
+changes and the approved read-only project-progress/weekly-timesheet aggregates.
+It does not require a new Phase 9b SQL migration or changing the dc_users engine.
+The historical 05/10 operator evidence below is retained; it is not evidence that
+this new UI candidate has been deployed or manually accepted.
+
+Inter must ship together with the stylesheet, preserving these exact relative paths:
+
+- `assets/fonts/inter/InterVariable.woff2`
+- `assets/fonts/inter/OFL.txt` (font distribution license)
+- `css/pmui.css` resolves `../assets/fonts/inter/InterVariable.woff2`.
+
+The manifest explicitly allowlists these two assets rather than the whole assets
+directory. Run `python tests/pm_deploy_manifest_test.py`, regenerate/check the lists,
+then create the local review artifact with `python tests/pm_deploy_manifest.py --check --package`.
+The ZIP lives under ignored `.local/releases/`; it contains runtime files only,
+preserves paths, and is verified against manifest SHA256 and ZIP CRC. It is a delta
+from the recorded Phase 0 baseline, **not** a standalone fresh-install image or a
+verified delta from the uninspected live host. Do not upload the archive itself or
+perform blind directory synchronization. No production config, SQL, logs or uploads
+are included. Reconcile the actual host/backup before any separately approved rollout.
+
+Before merge: user's whole-flow [UAT_FINAL_LOCAL.md](UAT_FINAL_LOCAL.md) must be
+reviewed and accepted. Before push/deploy: separate explicit approval, resolved commit,
+fresh manifest check, source/DB backup and operator plan. Agent has not merged,
+pushed, uploaded, executed production SQL or marked manual UAT PASS.
 
 ## Complete file lists
 

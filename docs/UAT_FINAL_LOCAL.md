@@ -1,8 +1,52 @@
 # UAT cuối bản local — người dùng thực hiện
 
 UAT chưa thực hiện. Automated PASS không điền thay các ô dưới đây.
-Version candidate: 0.10.0-local-rc1; nhánh feature/pm-phase10-test-release.
+Version candidate: 0.10.0-phase9b-local-rc1; nhánh feature/pm-phase9b-ui-theme.
+Runtime đã BUILD: `d4cde62`; ghi thêm commit chuẩn bị phát hành khi bắt đầu UAT.
 Chỉ dùng local và dữ liệu giả; không chạy trên production.
+
+## Lượt nghiệm thu bổ sung Phase 9b — 06/10/2026
+
+Chín bước BUILD và kiểm tra tự động đã đạt; các ô dưới đây vẫn **chưa UAT**.
+Mở app thật tại `http://127.0.0.1:18770/admin.php` sau khi chạy từ repository:
+
+```powershell
+.tools/php83/php.exe -S 127.0.0.1:18770 -t .
+```
+
+Chỉ khởi chạy khi cấu hình đang trỏ DB local đã sao lưu. Các file `.local/*.html`
+là fixture giả lập, không dùng chúng để lưu dữ liệu hoặc nghiệm thu nghiệp vụ.
+Đăng nhập bằng tài khoản local của bạn; không đưa mật khẩu vào tài liệu/ảnh.
+
+| Thứ tự / trang | Luồng cần kiểm tra | Kết quả người dùng |
+| --- | --- | --- |
+| 1. Tổng quan | Đăng nhập; sidebar ổn định giữa các trang; KPI không lộ số ngoài quyền; lối tắt mở đúng chức năng | Chưa UAT |
+| 2. Nhân sự | Thêm/sửa nhân sự giả qua modal; Tab/Escape/trả focus; Khóa khác Mở khóa, Xóa khác Khôi phục; xác nhận hiện có còn hoạt động | Chưa UAT |
+| 3. Dự án & công việc | Mở form thu gọn; tạo dự án/task giả; card mở đúng dự án; tiến độ thay đổi theo task hoàn thành; dự án không task không giả 0% | Chưa UAT |
+| 4. Chấm công | Ghi 9 giờ rồi sửa còn 3 giờ; dải tuần phản ánh giờ đã lưu, ngày/nhân sự đúng; Admin sửa người khác không trộn tổng; lịch sử/OT/snapshot giữ đúng | Chưa UAT |
+| 5. Nhật ký | Thay đổi vừa làm có trong scope; filter/pager; mở trước/sau ngay trong bảng bằng chuột/bàn phím; trường tiền bị che đúng quyền | Chưa UAT |
+| 6. Chi phí | Dữ liệu vừa ghi phản ánh đúng tiền; thiếu rate có cảnh báo; tab dự án/nhóm; không dữ liệu có thông báo thay chart trục trống; polling không mất tab | Chưa UAT |
+| 7. Phân bổ | Lưới tuần đúng người/ngày; thêm/sửa/ẩn allocation giả; vượt tải/trùng giờ có chữ cảnh báo; Employee chỉ thấy phạm vi mình | Chưa UAT |
+| 8. Báo cáo | Lọc dữ liệu vừa tạo; XLSX cạnh tiêu đề tải/mở đúng nội dung và filter; tài khoản không có quyền export/cost không thấy thao tác tương ứng | Chưa UAT |
+| 9. Import | Tải mẫu → Preview/staging → mở lịch sử → Apply/resume với dữ liệu giả; kết quả còn hiển thị; duplicate không sửa tài khoản cũ; chỉ inactive được cấp password | Chưa UAT |
+
+Trên cả 9 trang: resize 360/390/768/1440px, browser zoom thật 200%, Tab/Shift+Tab,
+focus/labels, không tràn trang; nút thường tối và nút nguy hiểm đỏ; Inter tải local,
+chữ Việt đầy đủ; giờ/tiền căn phải và tabular. Bảng rộng được cuộn trong vùng riêng.
+Mở Console kiểm tra lỗi mới trong phiên **đã đăng nhập**, không suy từ fixture polling.
+Kết thúc bằng logout rồi refresh, không còn truy cập dữ liệu riêng.
+
+Automated HTTP hiện có Admin/Employee; PM/HR được kiểm bằng service/permission fixture,
+chưa thay cho UAT bằng tài khoản thật. Nếu chưa có tài khoản local phù hợp, ghi “chưa
+kiểm” và thống nhất việc chuẩn bị tài khoản trước khi đánh dấu toàn bộ 4 role đạt.
+Không tự tạo/thay đổi tài khoản production để phục vụ UAT.
+
+Ảnh sau giả lập: [screenshots/after/README.md](screenshots/after/README.md).
+Ảnh trước gốc còn thiếu: [screenshots/before/README.md](screenshots/before/README.md).
+Ảnh giả lập không thay thế xác nhận thị giác/nghiệp vụ của người dùng.
+
+**Gate chốt Phase 9b:** người dùng xác nhận UAT và quyết định xử lý ảnh trước còn thiếu;
+sau đó mới đề nghị duyệt merge vào develop. Push và deploy là quyết định riêng.
 
 | Nhóm | Thao tác / kết quả mong đợi | Kết quả người dùng |
 | --- | --- | --- |
