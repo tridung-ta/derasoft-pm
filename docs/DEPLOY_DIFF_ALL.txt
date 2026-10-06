@@ -221,6 +221,7 @@ tests/pm_reports_http_smoke.php
 tests/pm_reports_smoke.php
 tests/pm_roles_batch_smoke.php
 tests/pm_session_guard_smoke.php
+tests/pm_sidebar_overview_browser.js
 tests/pm_timesheet_window_smoke.php
 tests/pm_timesheets_smoke.php
 tests/pm_ui_browser.js

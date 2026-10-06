@@ -1,5 +1,27 @@
 # DeraSoft PM — Progress
 
+## Phase 9b — sidebar and overview follow-up — 2026-10-06
+
+Fixed the missing D brand on standalone module sidebars (real template markup,
+replacing the text-only CSS pseudo-element); emphasized both logout forms with
+the existing primary token and an accessible decorative icon. Extended overview
+with descriptive workspace links derived solely from permitted pmNavigation.
+No new queries, counts, routes, controller/DAO or permission changes.
+
+Changed runtime: css/pmui.css, templates/admin/pm-navigation.tpl.html,
+templates/admin/pm.tpl.html. Logout remains POST with CSRF; output remains escaped.
+Review: no scripts/event handlers, secrets, business writes or new dependencies.
+
+Verification: tests/pm_regression.ps1 — 42 PASS; smoke_pm_admin.php --preview,
+smoke_pm_ui.php --preview, smoke_pm_users.php --preview — PASS.
+Playwright tests/pm_sidebar_overview_browser.js — PASS for logo uniqueness,
+computed logout colors/44px target/keyboard focus/CSRF, restricted navigation,
+1440/390/720px and 200% text scaling. Text scaling is not browser zoom UAT.
+Impeccable detector warnings: linked CSS relative resolution limitation,
+existing warning border and the explicitly required Inter; browser verified layout.
+Production verification not performed. New patch is local only until separately
+uploaded by operator; old screenshot comparison remains a historical illustration.
+
 ## Phase 9b — reconstructed comparison completed — 2026-10-06
 
 User authorized creating suitable images. Added 18 reconstructed before captures

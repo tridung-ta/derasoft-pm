@@ -1,5 +1,16 @@
 # Deployment preparation log — FileZilla
 
+## UI follow-up patch — 06/10/2026
+
+After reviewing production screenshots, prepared a three-file update for the D
+sidebar brand, prominent logout and permission-derived overview workspace.
+Upload ONLY css/pmui.css, templates/admin/pm-navigation.tpl.html and
+templates/admin/pm.tpl.html, preserving paths. No SQL or config changes.
+Operator still needs to upload and verify; agent has not accessed production.
+User explicitly chose to waive a new backup for this rollout; this is not a claim
+that rollback files exist. Full candidate archive must be rebuilt from the current
+manifest; the earlier b0eca4c archive lacks this follow-up.
+
 ## Release candidate
 
 | Field | Prepared value |

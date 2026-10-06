@@ -35,6 +35,7 @@ foreach (array('dashboard', 'profile', 'password', 'team') as $section) {
 		'pmNavigation' => [['url'=>'?op=pm&act=profile','label'=>'Hồ sơ','current'=>false],['url'=>'?op=pm&act=password','label'=>'Đổi mật khẩu','current'=>false],['url'=>'?op=pmprojects','label'=>'Dự án & công việc','current'=>false],['url'=>'?op=pmtimesheets','label'=>'Chấm công','current'=>false]],
 	));
 	$html = $smarty->fetch('pm.tpl.html');if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-'.$section.'.html',str_replace('<head>','<head><base href="/">',$html));
+	if(substr_count($html,'class="brand-mark"')!==1 || !str_contains($html,'logout pm-logout'))throw new RuntimeException('Dashboard brand/logout missing or duplicated.');
 	if($section==='dashboard'&&(!str_contains($html,'pm-overview-kpis')||!str_contains($html,'pm-overview-shortcuts')||substr_count($html,'class="metric"')!==3))throw new RuntimeException('Overview strip/shortcuts missing.');
 	if (strpos($html, 'DeraSoft PM') === false) {
 		fwrite(STDERR, "PM template failed for section: {$section}\n");

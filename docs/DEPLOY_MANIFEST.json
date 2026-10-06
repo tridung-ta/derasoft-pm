@@ -247,7 +247,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "c64e5825be9340eed89af97791c115a119827e96655d200837d6080516a626b5"
+      "sha256": "83eb4cad8ebd4d514cd51fb58bf89237ed87b4692f9ad7da35d5c5d6ca4b4cdd"
     },
     {
       "status": "A",
@@ -873,7 +873,7 @@
       "status": "A",
       "path": "templates/admin/pm-navigation.tpl.html",
       "action": "upload_runtime",
-      "sha256": "d9eff4df5b84167b5d3a1e63a73f79d4bbb70488c24a96ab57dbd076323e9a97"
+      "sha256": "882fe75df946a18bc71989b0c3b4f3684ba6136bf76b7b5e0343c1cfd7f82950"
     },
     {
       "status": "A",
@@ -927,7 +927,7 @@
       "status": "M",
       "path": "templates/admin/pm.tpl.html",
       "action": "upload_runtime",
-      "sha256": "4a110b81b94fa7a220bf08cc8157c7460980ad8f3d18e99f8e8c7416ac2105fc"
+      "sha256": "0962f5f0ec33ad35b1680796df1b52b28e12a7f82fc6847c0702b72a64584a2d"
     },
     {
       "status": "A",
@@ -1197,6 +1197,11 @@
     {
       "status": "A",
       "path": "tests/pm_session_guard_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_sidebar_overview_browser.js",
       "action": "exclude_nonruntime"
     },
     {
