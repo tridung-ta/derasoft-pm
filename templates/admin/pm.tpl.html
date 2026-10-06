@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex, nofollow">
-	<title>{$pageTitle}</title>
+	<title>{$pageTitle|escape}</title>
 	<link rel="stylesheet" href="css/pm-dashboard-base.css">
 <link rel="stylesheet" href="css/pmui.css"></head>
 <body class="pm-app pm-page">
@@ -24,9 +24,9 @@
 				{if $error}<div class="alert alert-error" role="alert">{$error|escape}</div>{/if}
 
 				{if $section eq 'dashboard'}
-					<header class="page-header"><div><p class="eyebrow">Tổng quan</p><h1>Xin chào, {$profileUser->getUsername()|escape}.</h1><p>Chọn chức năng trong menu để bắt đầu công việc.</p></div><span class="badge">Không gian làm việc</span></header>
-					<div class="grid"><section class="metric"><div class="metric-label">Nhân sự được xem</div><div class="metric-value">{if $canViewTeam}{$teamCount}{else}Giới hạn{/if}</div></section><section class="metric"><div class="metric-label">Quyền truy cập</div><div class="metric-value">Theo tài khoản</div></section><section class="metric"><div class="metric-label">Phiên làm việc</div><div class="metric-value">Đã đăng nhập</div></section></div>
-					<div class="module-grid"><section class="module"><small>Tài khoản</small><h2>Hồ sơ và bảo mật</h2><p>Cập nhật hồ sơ cá nhân và đổi mật khẩu từ menu tài khoản.</p></section><section class="module"><small>Công việc</small><h2>Dự án và công việc</h2><p>Theo dõi dự án, công việc và tiến độ trong phạm vi được phân quyền.</p></section></div>
+					<header class="page-header"><div><h1>Xin chào, {$profileUser->getUsername()|escape}.</h1><p>Chọn chức năng trong menu để bắt đầu công việc.</p></div><span class="badge">Không gian làm việc</span></header>
+					<div class="pm-overview-kpis"><section class="metric"><div class="metric-label">Nhân sự được xem</div><div class="metric-value{if $canViewTeam} num-cell{/if}">{if $canViewTeam}{$teamCount}{else}Giới hạn{/if}</div></section><section class="metric"><div class="metric-label">Quyền truy cập</div><div class="metric-value">Theo tài khoản</div></section><section class="metric"><div class="metric-label">Phiên làm việc</div><div class="metric-value">Đã đăng nhập</div></section></div>
+					<section class="card pm-overview-shortcuts"><h2>Lối tắt</h2><p>Cập nhật hồ sơ, bảo mật và làm việc trong phạm vi được phân quyền.</p><ul>{foreach from=$pmNavigation|default:[] item=n}{if $n.url eq '?op=pm&act=profile' || $n.url eq '?op=pm&act=password' || $n.url eq '?op=pmprojects' || $n.url eq '?op=pmtimesheets'}<li><a href="{$n.url|escape}">{$n.label|escape}</a></li>{/if}{/foreach}</ul></section>
 
 				{elseif $section eq 'profile'}
 					<header class="page-header"><div><p class="eyebrow">Tài khoản</p><h1>Hồ sơ cá nhân</h1><p>Cập nhật thông tin liên hệ của tài khoản quản trị.</p></div></header>

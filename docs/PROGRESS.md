@@ -1,5 +1,55 @@
 # DeraSoft PM — Progress
 
+## Phase 9b Step 9 — Overview, audit and reports — 2026-10-06
+
+BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Overview combines
+the existing three metrics into one responsive strip (only personnel count is numeric;
+no new measurements invented). One shortcut panel uses existing permission-filtered
+navigation entries. Audit has Inter/tabular timestamps, compact neutral/destructive
+badges and native inline before/after details. Reports retain both tables and filters;
+the unchanged XLSX POST form moves beside the title, with report/export permission
+conditions retained. Summary hours use Inter/tabular/right alignment. Pager spacing
+and touch targets improved. No backend, route, DAO, permission or calculation change.
+
+Exact files: templates/admin/pm.tpl.html, templates/admin/pm-audit.tpl.html,
+templates/admin/pm-reports.tpl.html, css/pmui.css, tests/smoke_pm_admin.php,
+tests/smoke_pm_audit.php, tests/smoke_pm_reports.php,
+tests/pm_phase9b_final_browser.js, docs/PHASE9B_STEP9_PLAN.md, docs/PROGRESS.md.
+
+Executed verification:
+- ./tests/pm_regression.ps1: 42 scripts PASS, local only. Includes real report HTTP
+  XLSX response, workbook round-trip/DECIMAL and permission/security regression.
+- PHP lint three changed smoke tests and their --preview renders PASS. Restricted
+  personnel count/navigation, escaped audit actions/JSON, missing/denied export,
+  hours/costs/error/empty states covered. All original forms identical to HEAD
+  (comparison allows export relocation), including CSRF and hidden filter markup.
+- playwright-cli -s=pmnav run-code --filename=../tests/pm_phase9b_final_browser.js:
+  PASS for overview/restricted shortcuts, audit keyboard/no-JS details, export header
+  and scope/filter/CSRF fields, exact cost string and numeric styles. Header button
+  clicked; POST intercepted to a synthetic XLSX download using a local workbook,
+  with correct route/mode/from/to/CSRF verified. No business write or production UAT.
+  360/390/768/1440 and 200% text scaling PASS. Badge contrast 7.60–18.10:1.
+  Desktop/mobile captures of overview, audit, hours/cost reports generated;
+  overview/audit/hours desktop and mobile inspected.
+- Shared-CSS regression: pm_ui_browser.js (13 Phase 9 fixtures), plus all nine
+  pm_phase9b_{buttons,users,theme,allocation,costs,projects,timesheets,imports,final}_browser.js
+  suites PASS. Theme suite includes self-hosted Inter rendering checks.
+- Diff/security review and git diff --check PASS. Escaping, permission-derived menus,
+  native disclosure, forms and filters retained; no new dependency or inline code.
+  The reused parent allocation preview later emitted a 401 polling response without
+  an authenticated session; isolated Step 9 context had no JS exceptions. This is
+  a synthetic-preview limitation, not an authenticated production console claim.
+
+Preview: http://127.0.0.1:18767/.local/phase9-dashboard.html and
+http://127.0.0.1:18767/.local/phase9b-reports-hours.html (synthetic; do not submit).
+
+All nine Phase 9b BUILD steps now implemented and automatically verified. Phase
+closure remains pending: user's whole-flow visual UAT on nine pages, actual browser
+zoom, before/after evidence, Phase 10 release checklist/manifest update (include
+assets/fonts/inter), and approved merge into develop. Existing manifest generator
+does not yet include the new font directory; do not reuse it for this release as-is.
+No push, merge, deployment or production access performed.
+
 ## Phase 9b Step 8 — Personnel import steps — 2026-10-06
 
 BUILD/automated VERIFY complete on feature/pm-phase9b-ui-theme. Ordered three-step
