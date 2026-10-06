@@ -255,7 +255,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "83eb4cad8ebd4d514cd51fb58bf89237ed87b4692f9ad7da35d5c5d6ca4b4cdd"
+      "sha256": "b2ea2b91c588e0cde9ff064642abddcefe7772ee1c2276bbea6711ac6c16ea97"
     },
     {
       "status": "A",
@@ -890,31 +890,31 @@
       "status": "A",
       "path": "templates/admin/pm-allocations.tpl.html",
       "action": "upload_runtime",
-      "sha256": "b532fb171eca62bc79bee383096be891708e47822893fdc037d8e5b6844eb0ef"
+      "sha256": "42e21dc638496cabdc203a454ff7d385de9bfda3e695e6c4e812e253091ce491"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-audit.tpl.html",
       "action": "upload_runtime",
-      "sha256": "13046a3365bd878457aa72d9a542bae0fc90b189d1a90e4957e351cc6677b35e"
+      "sha256": "e8c9788a39e57445afe5d038b5c7ca53141a2e6c929594492628882a3320356e"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-costs.tpl.html",
       "action": "upload_runtime",
-      "sha256": "3393f4e60163ac8d13eef35d2fc7e47cdb7630fc8b93bf689841ff5957f64547"
+      "sha256": "f2066b93321b795586c525ee5e34468c7be6564f51cbb315de14d6f6873f4313"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-imports.tpl.html",
       "action": "upload_runtime",
-      "sha256": "ab42b425692f33c0ba749fa581264d998b78342c35ac4ed37c8538201ef68b3f"
+      "sha256": "4fa78c972b2688e38bdae1ba751bb1dedf6952122991114e42995aa796eaf309"
     },
     {
       "status": "M",
       "path": "templates/admin/pm-login.tpl.html",
       "action": "upload_runtime",
-      "sha256": "a3ae1300c75c80e3ec5f0ee6680526d3c0db0b4aa5f7c8fa654e6821bb94cde0"
+      "sha256": "165f4f5c24e33683bc82bb47681b3a299a1c475f6b917943c436131135b0ba3e"
     },
     {
       "status": "A",
@@ -926,19 +926,19 @@
       "status": "A",
       "path": "templates/admin/pm-project-form.tpl.html",
       "action": "upload_runtime",
-      "sha256": "14a83f30b9dae45da2fe7e26ac2246267d108e4c8b37a60a93e62343d7df7549"
+      "sha256": "1721b1186f55034ec52047e0b0a7d78363652e208a2d0fc168c3e837cbd26d5f"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-projects.tpl.html",
       "action": "upload_runtime",
-      "sha256": "d73eb8f8f511ae41cbf8a1a18d22f9cca15add37d12af46148cb7653ba2c57f5"
+      "sha256": "bed6ee6d148d92913b0ca28f54f2635647289bb67a621107182f4b87f697f865"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-rates-panel.tpl.html",
       "action": "upload_runtime",
-      "sha256": "0beee6950590cd88c1cc6000bddd8699ca812dd67f63b68e86da32b123c02199"
+      "sha256": "36893faad6f1b3c6245adfe6748a478b723d512fba9f82410af31fee734edefd"
     },
     {
       "status": "A",
@@ -968,25 +968,25 @@
       "status": "A",
       "path": "templates/admin/pm-reports.tpl.html",
       "action": "upload_runtime",
-      "sha256": "a9d48d6fb98e172a9a3787b303082027081a447163491d6109f46cd0fe2f87ac"
+      "sha256": "f3c5d52fab880f2584d1e79aaf0645aefc4641c54de38d1d8e860d11249f7f08"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-task-form.tpl.html",
       "action": "upload_runtime",
-      "sha256": "f0c225d7024e67af9a856d33631d15dfe732e91c84e9f81379d603a1e9585504"
+      "sha256": "05b8aa09618be469467b023960f516153314d8998a8ee8354d43e1fba01465a3"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-timesheets.tpl.html",
       "action": "upload_runtime",
-      "sha256": "cdfe8ddd07a823f1c3b86a2d239c554707e8eceb41ebac5ba745944e5d726911"
+      "sha256": "5bbed6a00b5c3b994b8bf361a27493a34762033a2fd74f99208cf93db4bac89d"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-users-v2.tpl.html",
       "action": "upload_runtime",
-      "sha256": "a5999ff1aae68d2980f6403806977ccc483b358b0a182d4af166928ef80b6c47"
+      "sha256": "01dfc56419f2615c7f80e473ace48f4824fc5dbb5e418637a8a2bcf68ca86864"
     },
     {
       "status": "A",
@@ -998,7 +998,7 @@
       "status": "M",
       "path": "templates/admin/pm.tpl.html",
       "action": "upload_runtime",
-      "sha256": "6cd720d689737c46a3b8e44867d665ef805f02ff570a3d20524b1a4f1e92779c"
+      "sha256": "35be55c87d5f38e34c8fcb7f6950b78e5d31a659a0c9eecaf233f4e8f9c118d6"
     },
     {
       "status": "A",
@@ -1033,6 +1033,11 @@
     {
       "status": "A",
       "path": "tests/pm_auth_rbac_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_bootstrap_controls_browser.js",
       "action": "exclude_nonruntime"
     },
     {

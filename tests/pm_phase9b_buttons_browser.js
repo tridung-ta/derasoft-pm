@@ -26,11 +26,11 @@ async page => {
             await button.evaluate(e=>{e.disabled=false;e.blur()});
         }
     }
-    if(await page.getByRole('button',{name:'Khóa',exact:true}).first().getAttribute('class')!=='danger')throw new Error('Lock not destructive');
-    if(await page.getByRole('button',{name:'Khôi phục OLD',exact:true}).getAttribute('class')==='danger')throw new Error('Restore destructive');
+    if(!await page.getByRole('button',{name:'Khóa',exact:true}).first().evaluate(e=>e.classList.contains('danger')))throw new Error('Lock not destructive');
+    if(await page.getByRole('button',{name:'Khôi phục OLD',exact:true}).evaluate(e=>e.classList.contains('danger')))throw new Error('Restore destructive');
     await page.goto('http://127.0.0.1:18767/.local/phase9-users-unlock.html');
     for(const button of await page.getByRole('button',{name:'Mở khóa',exact:true}).all()){
-        if(await button.getAttribute('class')!=='secondary')throw new Error('Unlock destructive');
+        if(!await button.evaluate(e=>e.classList.contains('secondary')&&!e.classList.contains('danger')))throw new Error('Unlock destructive');
     }
     for(const file of ['phase7-preview.html','phase6-preview.html','phase8-import-preview.html']){
         await page.goto('http://127.0.0.1:18767/.local/'+file);

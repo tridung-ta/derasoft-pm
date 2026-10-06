@@ -44,6 +44,9 @@ có cần hỏi riêng; không suy diễn quyền HR toàn tenant từ từ ng�
   literal-text cells, whitelist columns, permission gates, CSRF/no-store.
 - Phần 5: Bootstrap 5.3.8 CSS tự host/license/digest; nạp trước theme,
   table-responsive/card/btn, giữ JS hiện có. 9 bộ browser Phase 9b PASS.
+  Hoàn thiện form-control/form-select/btn trên template PM ngày 06/10;
+  token Bootstrap theo theme Inter, focus/disabled/file input đã kiểm tra browser.
+  Không đổi nội dung form, route, controller hoặc database.
 - Phần 6: bảng đối chiếu bên dưới; 44 regression PASS, 101 prepared query shapes
   EXPLAIN PASS; browser sidebar và báo cáo mới PASS. Chưa UAT/production Phase 11.
 

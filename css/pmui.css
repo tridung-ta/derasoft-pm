@@ -77,6 +77,12 @@ body.pm-app{font-family:Inter,Arial,sans-serif;background:var(--background);colo
 .pm-app .sidebar-footer{border-color:var(--border)}.pm-app .identity,.pm-app .identity strong{color:var(--foreground)}
 .pm-app input:not([type=checkbox]):not([type=radio]):not([type=hidden]),.pm-app select,.pm-app textarea{background:var(--background);color:var(--foreground);border:1px solid #71717a;border-radius:6px;caret-color:var(--foreground)}
 .pm-app input::placeholder,.pm-app textarea::placeholder{color:var(--muted-foreground)}
+/* Bootstrap controls use the PM palette and retain a visible keyboard focus. */
+.pm-app .btn{--bs-btn-color:var(--primary-foreground);--bs-btn-bg:var(--primary);--bs-btn-border-color:var(--primary);--bs-btn-hover-color:var(--primary-foreground);--bs-btn-hover-bg:#27272a;--bs-btn-hover-border-color:#27272a;--bs-btn-active-color:var(--primary-foreground);--bs-btn-active-bg:#3f3f46;--bs-btn-active-border-color:#3f3f46;--bs-btn-disabled-color:#52525b;--bs-btn-disabled-bg:var(--muted);--bs-btn-disabled-border-color:#71717a;--bs-btn-disabled-opacity:1;--bs-btn-border-radius:6px}
+.pm-app .btn.danger{--bs-btn-color:var(--destructive-foreground);--bs-btn-bg:var(--destructive);--bs-btn-border-color:var(--destructive);--bs-btn-hover-color:#fff;--bs-btn-hover-bg:#b91c1c;--bs-btn-hover-border-color:#b91c1c;--bs-btn-active-color:#fff;--bs-btn-active-bg:#991b1b;--bs-btn-active-border-color:#991b1b}
+.pm-app .form-control:focus,.pm-app .form-select:focus{border-color:var(--foreground);box-shadow:none}
+.pm-app .form-control:disabled,.pm-app .form-select:disabled{background-color:var(--muted);color:var(--muted-foreground);opacity:1}
+.pm-app .form-control::file-selector-button{background:var(--muted);color:var(--foreground);border-color:var(--border)}
 .pm-app :is(a,button,input,select,textarea,summary,[tabindex="0"]):focus-visible{outline:3px solid var(--foreground);outline-offset:3px}
 .pm-app .badge{background:var(--muted);color:var(--foreground);border-radius:6px}
 .pm-app .hint,.pm-app .pm-table-hint,.pm-app .eyebrow,.pm-app .user-meta,.pm-app small{color:var(--muted-foreground)}

@@ -1,5 +1,25 @@
 # DeraSoft PM — Progress
 
+## Bootstrap form controls completed locally — 2026-10-06
+
+Applied Bootstrap `form-control`, `form-select`, and `btn` to active PM templates
+and form partials. Hidden/checkbox/radio controls remain unchanged. Kept every
+field name, ID, Smarty condition, CSRF token and confirmation. No controller/DAO,
+permission, database or Bootstrap JS changes. Mapped Bootstrap button variables
+to the existing Inter theme, including destructive/disabled states; neutral input
+focus, disabled controls and file chooser. Fixed an observed transparent/default
+Bootstrap button contrast regression before completing this change.
+
+VERIFY: `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`
+45 scripts PASS; 9 Phase 9b browser fixture suites PASS with current CSS. New
+`playwright-cli -s=pmbootstrap run-code --filename=../tests/pm_bootstrap_controls_browser.js`
+PASS: real classes, disabled colors after transition, 3px focus, >=44px select,
+1440/390/720px and 200% text scaling. Inspected mobile personnel-dialog screenshot.
+Template diff normalized by removing added classes matches HEAD exactly; no
+business form content changes. Existing class tests now check class membership,
+preserving lock/unlock/destructive assertions. Synthetic local fixtures are not UAT.
+No merge/push/deploy; migration 009 still local and requires separate production approval.
+
 ## Shared email/username credentials fix — 2026-10-06
 
 Both identifiers resolve one tenant-scoped credential row; ambiguous cross-account

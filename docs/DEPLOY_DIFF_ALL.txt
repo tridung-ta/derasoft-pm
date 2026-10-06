@@ -186,6 +186,7 @@ tests/pm_allocations_smoke.php
 tests/pm_audit_smoke.php
 tests/pm_auth_identity_smoke.php
 tests/pm_auth_rbac_smoke.php
+tests/pm_bootstrap_controls_browser.js
 tests/pm_confirmation_browser.js
 tests/pm_costs_browser.js
 tests/pm_costs_http_smoke.php
