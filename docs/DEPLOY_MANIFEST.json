@@ -57,13 +57,13 @@
       "status": "A",
       "path": "classes/dao/pmauditlogs.class.php",
       "action": "upload_runtime",
-      "sha256": "cb4ef5ed26579861f4afb7519dbdae5864ca46e87e20c6c88058270bb189e638"
+      "sha256": "0c45ebf218f685d44739933abab19c235f008bb1084181dc8269898bf827cb2e"
     },
     {
       "status": "A",
       "path": "classes/dao/pmcosts.class.php",
       "action": "upload_runtime",
-      "sha256": "6653c3a25f5dfe25fec8a715c7b999ad8f6c8fb5066b6e8c183e8b7fe610011e"
+      "sha256": "c6e5454e998bb54f3964ca3ff85bc919e6c70ab7a6598fdeab7022ed4dc49c74"
     },
     {
       "status": "A",
@@ -93,7 +93,7 @@
       "status": "A",
       "path": "classes/dao/pmreports.class.php",
       "action": "upload_runtime",
-      "sha256": "8daf5e2287b6bf38e31f631d87de9b1e740b2b6cd07d323d7909751160a990c3"
+      "sha256": "4db83eb0cf7a1ceb7fe75c364f4c37274ba26428ca87ee2708eff2a0256ffa55"
     },
     {
       "status": "A",
@@ -147,7 +147,7 @@
       "status": "A",
       "path": "classes/security/pmauth.class.php",
       "action": "upload_runtime",
-      "sha256": "3a56ae35353dd80fb55d54f26f406d586da2bb2cc356c73da0f7653f1608fe37"
+      "sha256": "77531eaa850ad3e30828d6f74786a54b38ff4759d12cebe989d69ed8e6a082c2"
     },
     {
       "status": "A",
@@ -165,7 +165,7 @@
       "status": "A",
       "path": "classes/services/pmcostservice.class.php",
       "action": "upload_runtime",
-      "sha256": "b825190d2c92175a6b5c2995a2d764899e1a4ef3f4eccdf42a7bd909a4c12b38"
+      "sha256": "0a8f6a3835f61c4b513665b8aaffdd6d9c278bb422f405bf546d3277dbc9f746"
     },
     {
       "status": "A",
@@ -177,7 +177,7 @@
       "status": "A",
       "path": "classes/services/pmprojectservice.class.php",
       "action": "upload_runtime",
-      "sha256": "86b9c722bc64103d6fb26d0bc0b6a2a21da0d0192476cb1654aa725321ac160b"
+      "sha256": "5b7f0141fdb8a479ae01a9e112f02b7512825051657d305b8f7d765a8dfd2a61"
     },
     {
       "status": "A",
@@ -189,7 +189,7 @@
       "status": "A",
       "path": "classes/services/pmreportservice.class.php",
       "action": "upload_runtime",
-      "sha256": "f2afb6d34c0d565db531711e37003b5e70dc52a93e369983aba422f3f5a7353e"
+      "sha256": "5f23dc7f9c726fd9c48fdf118878cf3186fe51843974064590605b12fd5e5291"
     },
     {
       "status": "A",
@@ -255,19 +255,19 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "0fc6a2b8ae2490d3f2f29f11ae37dff75bcd6aa48e8e5543f2239e2dc9464c5b"
+      "sha256": "1275b31b3c7399e527e8885b33478758b2623b6e8aa0b812fa5750864c1b7d98"
     },
     {
       "status": "A",
       "path": "css/vendor/bootstrap-5.3.8/LICENSE",
       "action": "upload_runtime",
-      "sha256": "4620c84ad5ce8602ff65640ed6b7c8b78ebb9e036584f0ebc1ccc88206a4bb51"
+      "sha256": "c5f361fe9af814f57c925bfdadbb3d1857e511fa9feef485cdc5cae817ad44dd"
     },
     {
       "status": "A",
       "path": "css/vendor/bootstrap-5.3.8/README.md",
       "action": "upload_runtime",
-      "sha256": "a65291eea13a745f6b706d252303d300839063ca2fcc30de9b325498061eefd7"
+      "sha256": "fbd696024a03c60c69adedb9f82818fca1c4fe50086d3976af2bbf36b4f398e2"
     },
     {
       "status": "A",
@@ -829,7 +829,7 @@
       "status": "A",
       "path": "modules/admin/pmaudit.module.php",
       "action": "upload_runtime",
-      "sha256": "b2624481bd6faed2f7ba2d9e5fb90855df6fbe112f3ab185cca6ecef2a9aed6f"
+      "sha256": "c63aefeacbd60a01f0359c76a858665216db6eda3f1d67c014923afa58c08508"
     },
     {
       "status": "A",
@@ -847,13 +847,13 @@
       "status": "A",
       "path": "modules/admin/pmprojects.module.php",
       "action": "upload_runtime",
-      "sha256": "5228798b5e74c7bd13bb8fef3d1c196a5d3b90a48a97b7fd78bda8cd4af7fef5"
+      "sha256": "41bfd155859e165e618a1e6ec948ee0824464fef87753b10c2b24a3ce4bf5606"
     },
     {
       "status": "A",
       "path": "modules/admin/pmreports.module.php",
       "action": "upload_runtime",
-      "sha256": "c7198a43f129c6a9c597cc5ba70f82923c11c0cc028e497029a3113d1546a6ad"
+      "sha256": "36ae63050f94b41539d6d121bfe1d229f2564e1667c7a28fc308d1eb8b88c81c"
     },
     {
       "status": "A",
@@ -871,7 +871,7 @@
       "status": "M",
       "path": "modules/admin/profile/password.module.php",
       "action": "upload_runtime",
-      "sha256": "e4f1bd3f38cb43bcb9381d5159fa07e2a5b9582ea069c4a61743c98de3869580"
+      "sha256": "89a1cdea83934849d4c6ca00fe294a9d963ea49120aa7c4eb85320255c44653e"
     },
     {
       "status": "A",
@@ -895,115 +895,115 @@
       "status": "A",
       "path": "templates/admin/pm-allocations.tpl.html",
       "action": "upload_runtime",
-      "sha256": "42e21dc638496cabdc203a454ff7d385de9bfda3e695e6c4e812e253091ce491"
+      "sha256": "dc329b11d8c8c3ca5ba5af0a1753dee9d29e82b071a1dc4e8dce702a14c4e466"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-audit.tpl.html",
       "action": "upload_runtime",
-      "sha256": "e8c9788a39e57445afe5d038b5c7ca53141a2e6c929594492628882a3320356e"
+      "sha256": "591265052de39cb0fc451c70124def790fda750c43a2471b9eeeba1f62d402e7"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-costs.tpl.html",
       "action": "upload_runtime",
-      "sha256": "f2066b93321b795586c525ee5e34468c7be6564f51cbb315de14d6f6873f4313"
+      "sha256": "9963686fc17aaacadf687540bde809b2bca4fad55d471418d946d359fd19d804"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-imports.tpl.html",
       "action": "upload_runtime",
-      "sha256": "4fa78c972b2688e38bdae1ba751bb1dedf6952122991114e42995aa796eaf309"
+      "sha256": "03f02c36578333f1ffe98d6ddcf4079db3463f79ef6c34975cdb485ac76ede7b"
     },
     {
       "status": "M",
       "path": "templates/admin/pm-login.tpl.html",
       "action": "upload_runtime",
-      "sha256": "165f4f5c24e33683bc82bb47681b3a299a1c475f6b917943c436131135b0ba3e"
+      "sha256": "6c4714beb43909c4f6b560b7f4125c37ffe59752b2732ec3401bacee556a8a45"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-navigation.tpl.html",
       "action": "upload_runtime",
-      "sha256": "78aebdcf04e76b08ae9aa50e1aa40809dfc8cdb97ce33852e1e6a0ef427815e3"
+      "sha256": "13d914045c7c4ec20b803fef36c5d9fcb215bc86a705d0660e370e1cbda086b3"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-project-form.tpl.html",
       "action": "upload_runtime",
-      "sha256": "1721b1186f55034ec52047e0b0a7d78363652e208a2d0fc168c3e837cbd26d5f"
+      "sha256": "586d639bd751babd01a03dc5f63c5c52d7400b3ac3f6833231d67425c2e1b7de"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-projects.tpl.html",
       "action": "upload_runtime",
-      "sha256": "bed6ee6d148d92913b0ca28f54f2635647289bb67a621107182f4b87f697f865"
+      "sha256": "c22ff1a04bb617ce1b1831b6d0a031ea06151fa1bc136c8ea90f763188297f61"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-rates-panel.tpl.html",
       "action": "upload_runtime",
-      "sha256": "36893faad6f1b3c6245adfe6748a478b723d512fba9f82410af31fee734edefd"
+      "sha256": "23e8eb965e2760285216e696630a1893f0f7c01d76c765a0894a52b59444d8c5"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-report-cost-groups.tpl.html",
       "action": "upload_runtime",
-      "sha256": "081a1a9b68ff904a96e5d2f08c2e2162344414a2ecd663da71205e18a07945fa"
+      "sha256": "474029aeeee01a01110ee58172c34920c8468b0a9f797d0aac2566243d21f8e4"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-report-directory.tpl.html",
       "action": "upload_runtime",
-      "sha256": "531d4af2610017393f94567641f79994a8f726872457dfc4297aeb831a9f6001"
+      "sha256": "68048b9541f2da9f88bcbc85ce30238fdb7f5dc5d9819b5919083c6055afdf3c"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-report-tasks.tpl.html",
       "action": "upload_runtime",
-      "sha256": "bcefb1de458e25b40591d8c94ae12f98682fa6bfdc26754a4dd892434f3676af"
+      "sha256": "959b01d3a5756f9ead438b7e70350655f1aa823c621276f00aad54805a2c7285"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-report-weeks.tpl.html",
       "action": "upload_runtime",
-      "sha256": "7879afc982b96050651470a69310a222bbdcb43a67e014dd90c878531efe9391"
+      "sha256": "d60b4b1d19134a22f211c1054d0fb2ae773b92f7906c98fe89bee3af00ccf7fd"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-reports.tpl.html",
       "action": "upload_runtime",
-      "sha256": "f3c5d52fab880f2584d1e79aaf0645aefc4641c54de38d1d8e860d11249f7f08"
+      "sha256": "b7ba4df234b8d1460226ba0776c17cc28c287fa44c679b07d2edd7ad6fa11116"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-task-form.tpl.html",
       "action": "upload_runtime",
-      "sha256": "05b8aa09618be469467b023960f516153314d8998a8ee8354d43e1fba01465a3"
+      "sha256": "1ecf02929eb88abe176dca6ec384bfa86ee024bb45ee8ba3f0f6b45b3e471f9f"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-timesheets.tpl.html",
       "action": "upload_runtime",
-      "sha256": "5bbed6a00b5c3b994b8bf361a27493a34762033a2fd74f99208cf93db4bac89d"
+      "sha256": "97c8c2a319026eab742ba01e19464a0253ce2f52f2ca7373b390956c76030263"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-users-v2.tpl.html",
       "action": "upload_runtime",
-      "sha256": "01dfc56419f2615c7f80e473ace48f4824fc5dbb5e418637a8a2bcf68ca86864"
+      "sha256": "9e85104680c3888916e9ebe837f18ae2560cb106807f4ae23377afac1daaff5d"
     },
     {
       "status": "A",
       "path": "templates/admin/pm-users.tpl.html",
       "action": "upload_runtime",
-      "sha256": "c9cccf1ab8ff83c095f45e10f0b842ca7f0ec00d6f1512ef5fb8bed3465602f9"
+      "sha256": "17b3fa49fa729aa0b4d8bc18fed00db4fb60af21ad69567f1e1524ba131a7a1d"
     },
     {
       "status": "M",
       "path": "templates/admin/pm.tpl.html",
       "action": "upload_runtime",
-      "sha256": "35be55c87d5f38e34c8fcb7f6950b78e5d31a659a0c9eecaf233f4e8f9c118d6"
+      "sha256": "837993953034875d550b7b5b259c8483c5e2752f9df541594c2cc84dd9ce6988"
     },
     {
       "status": "A",

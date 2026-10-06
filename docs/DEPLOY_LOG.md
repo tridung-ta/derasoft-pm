@@ -10,6 +10,12 @@ UAT: docs/UAT_PHASE11.md — user deferred remaining manual testing until after
 deployment on 06/10/2026. Agent reran local verification (46 regression scripts,
 14 browser suites PASS); evidence/gaps in docs/LOCAL_VERIFY_PHASE11.md.
 This is not UAT PASS or Phase 11 merge/push/deploy authorization.
+Update: user approved local merge and production preparation. On 06/10/2026,
+`git merge --ff-only feature/pm-phase11-requirements` advanced local develop
+from b0eca4c to e2f21dd with no merge commit/conflict. No push/upload/production
+SQL was performed. Migration 009 production authorization remains separate.
+Manifest/ZIP regenerated after Windows checkout normalization to match actual
+transfer bytes. Use only this regenerated candidate, not an older ZIP/hash.
 Current manifest: 86 runtime files including Inter and Bootstrap license/CSS;
 all file SHA256 values verified against the transfer workspace. The ZIP was
 rebuilt after the auth/Bootstrap changes, with inventory/CRC/per-file checks.

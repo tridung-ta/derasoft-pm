@@ -1,5 +1,14 @@
 # DeraSoft PM — Progress
 
+## Phase 11 local merge and production preparation approved — 2026-10-06
+
+User approved local merge/preparation after deferring remaining manual testing
+until deployment. Fast-forward merged feature/pm-phase11-requirements into develop:
+b0eca4c -> e2f21dd, no conflict/merge commit. Source branch retained. Production
+upload/push/SQL not performed; migration 009 requires separate authorization.
+Regenerated manifest/ZIP after checkout CRLF normalization; per-file bytes verified.
+This log/preparation update stays on the phase branch and is fast-forwarded to develop.
+
 ## UI interaction polish — 2026-10-06
 
 Applied Impeccable polish to the current Inter/Bootstrap world, preserving pinned
