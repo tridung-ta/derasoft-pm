@@ -1,5 +1,13 @@
 # DeraSoft PM — Progress
 
+## Skill selection memory — 2026-10-07
+
+Recorded user's requirement for purposeful skill selection in AGENTS.md and
+docs/SKILL_USAGE.md. Added task-to-skill mapping and verified lessons from login
+contrast, asset delivery/cache, Bootstrap select backgrounds and font testing.
+Documentation only; no runtime or production changes. Verification: git diff
+--check and review of the documentation scope; no application tests required.
+
 ## User confirmed login issue resolved — 2026-10-07
 
 User confirmed login UI issue fixed. Recorded only login visual acceptance in

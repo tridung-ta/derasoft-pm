@@ -1,5 +1,11 @@
 # AGENTS.md — DeraSoft PM
 
+## Chọn skill theo công việc — yêu cầu ngày 07/10/2026
+
+- Đọc `docs/SKILL_USAGE.md` khi chọn skill; dùng skill theo phạm vi thực tế, không theo từ khóa hoặc bật tất cả cùng lúc.
+- Thông báo skill áp dụng lần đầu, đọc hướng dẫn trước khi dùng. Quyết định đã ghi nhận được tái sử dụng nếu bối cảnh vẫn phù hợp; kiểm tra lại khi yêu cầu hoặc hướng dẫn thay đổi.
+- Sau trường hợp mới, ghi nguyên nhân, cách xử lý và bằng chứng kiểm tra vào tài liệu; không ghi suy đoán thành kết luận hoặc PASS chưa chạy.
+
 ## Bối cảnh
 
 Dự án xây dựng hệ thống quản lý dự án và chấm công trên nền DeraSoft hiện có: PHP thuần, Smarty, MySQL và kiến trúc MVC tùy chỉnh. Không viết lại hệ thống từ đầu. Người dùng chính gồm Admin, Project Manager, HR và Nhân viên.
