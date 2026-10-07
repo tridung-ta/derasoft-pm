@@ -1829,3 +1829,11 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - Đã chạy theo nhóm, tenant schema 19 PM tables/12 business unique keys đạt; phạm vi all-endpoint tenant còn CHƯA CHẠY. Regression 47 process PASS, lint 103 PHP files PASS; không suy checklist tổng đạt. Ghi rõ ba browser tests lỗi thời và các diagnostic harness lỗi đã chạy lại.
 - Phát hiện pm_audit_smoke UPDATE department_id user thật MyISAM rồi chỉ rollback: checksum dc_users đổi, 2 user tham chiếu department fixture đã rollback. Kết luận fixture sạch ở báo cáo trước bị phủ định bởi kiểm tra bổ sung này. Dừng rerun test này/runner tới khi có isolation; chưa khôi phục giá trị gốc, không gán NULL hoặc đổi engine. Các bảng PM checksum/engine giữ nguyên. Đây là ảnh hưởng LOCAL, không production.
 - FAIL theo checklist: Kanban AJAX chưa có, task overload riêng chưa có, partial-valid import khác all-file staging hiện tại, tracking raw username và fixture cleanup MyISAM. Không sửa runtime/giao diện/database, không merge/push/deploy; chưa sẵn sàng kết luận UAT đầy đủ.
+
+### 07/10/2026 — Bước A đang chờ xác nhận nguồn khôi phục
+- Tra cứu theo thứ tự người dùng: audit/tracking không có department_id history; Git seed/fixture qua 6 revision không định nghĩa user ID 93/110. Đã hỏi loại dữ liệu và nguồn phòng ban gốc; không đoán NULL, không sửa/xóa user, không đổi engine. Chưa thực hiện B/C/D/E, giữ nguyên thứ tự; chưa sửa pm_audit_smoke trước khi khôi phục theo yêu cầu. Kết quả chi tiết ở TEST_REPORT_FULL.md. Không commit hoàn tất khi A còn chờ xác nhận.
+
+### 2026-10-07 - Step A complete
+- User confirmed original department_id=NULL for IDs 93/110. Restored only those fields; all other user rows/fields unchanged, MyISAM retained.
+- Audit smoke uses exact-schema temporary users plus synchronized viewer mirror for HR self-join. Independent connection checks persistent rows/engine in finally. No runtime/DAO changes.
+- PHP lint PASS; audit smoke twice PASS; checksum 129141672 unchanged, dangling departments=0. See TEST_REPORT_FULL.md. No merge/push/deploy; B/C/D/E remain sequential.

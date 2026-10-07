@@ -6,6 +6,16 @@ require ROOT_PATH.'classes/services/pmtimesheetservice.class.php';
 require ROOT_PATH.'classes/dao/pmauditlogs.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true))throw new RuntimeException('Refusing non-local database.');
 class WindowSmokeConnection extends mysqli {
+    public function prepare(string $query): mysqli_stmt|false {
+        // MySQL cannot reopen one temporary table for the HR self-join.
+        // Refresh a second exact-schema shadow before each such SELECT.
+        if(str_contains($query,'dc_users owner JOIN dc_users viewer')){
+            parent::query('DELETE FROM pm_audit_viewer_users');
+            parent::query('INSERT INTO pm_audit_viewer_users SELECT * FROM dc_users');
+            $query=str_replace('JOIN dc_users viewer','JOIN pm_audit_viewer_users viewer',$query);
+        }
+        return parent::prepare($query);
+    }
     public function beginFixture(): bool{return parent::begin_transaction();}
     public function endFixture(): bool{return parent::rollback();}
     public function begin_transaction(int $flags=0,?string $name=null): bool{return $this->query('SAVEPOINT pm_window_step');}
@@ -18,6 +28,19 @@ class WindowSmokeService extends PmTimesheetService {
 }
 $connection=new WindowSmokeConnection($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$connection->set_charset('utf8mb4');
 $db=(object)['connection'=>$connection];$query=new PmDb($db);
+// MyISAM cannot roll back user changes. Shadow the exact local schema and keep
+// all copied rows connection-local; no real account data is written or logged.
+$persistentUsers=$query->fetchAll('SELECT * FROM dc_users ORDER BY id');
+$userDdl=$connection->query('SHOW CREATE TABLE dc_users')->fetch_row()[1];
+if(!str_contains($userDdl,'ENGINE=MyISAM'))throw new RuntimeException('Unexpected user engine.');
+$connection->query(str_replace('CREATE TABLE','CREATE TEMPORARY TABLE',$userDdl));
+$connection->query(str_replace(['CREATE TABLE','`dc_users`'],['CREATE TEMPORARY TABLE','`pm_audit_viewer_users`'],$userDdl));
+if($persistentUsers){
+    $columns=array_keys($persistentUsers[0]);
+    foreach($columns as $column)if(!preg_match('/^[A-Za-z0-9_]+$/D',$column))throw new RuntimeException('Unsafe schema identifier.');
+    $insert='INSERT INTO dc_users (`'.implode('`,`',$columns).'`) VALUES ('.implode(',',array_fill(0,count($columns),'?')).')';
+    foreach($persistentUsers as $userRow)$query->execute($insert,str_repeat('s',count($columns)),array_values($userRow));
+}
 $admin=$query->fetchOne("SELECT u.id,u.store_id FROM dc_users u JOIN dc_pm_user_roles ur ON ur.store_id=u.store_id AND ur.user_id=u.id JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE u.status=1 AND r.status=1 AND r.code='ADMIN' LIMIT 1");
 if(!$admin)throw new RuntimeException('No local Admin.');
 $store=(int)$admin['store_id'];$actor=(int)$admin['id'];
@@ -74,6 +97,17 @@ try{
     $query->execute('UPDATE dc_users SET department_id=? WHERE store_id=? AND id=?','iii',[$department,$store,$actor]);
     $query->execute('UPDATE dc_pm_departments SET status=0 WHERE store_id=? AND id=?','ii',[$store,$department]);
     foreach((new PmAuditLogs($db,$store,$owner))->list()['rows'] as $row)if((int)$row['entity_id']===$otherSheet)throw new RuntimeException('Inactive department scope accepted.');
-}finally{$connection->endFixture();}
+}finally{
+    $connection->endFixture();
+    // A separate connection bypasses the temporary shadow and reads real users.
+    $verifyConnection=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);
+    $verifyConnection->set_charset('utf8mb4');
+    $verifyDb=(object)['connection'=>$verifyConnection];$verifyQuery=new PmDb($verifyDb);
+    try{
+        if($verifyQuery->fetchAll('SELECT * FROM dc_users ORDER BY id')!==$persistentUsers)throw new RuntimeException('Persistent users changed during audit fixture.');
+        $engine=$verifyQuery->fetchOne("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_users'")['ENGINE'];
+        if($engine!=='MyISAM')throw new RuntimeException('Persistent user engine changed.');
+    }finally{$verifyConnection->close();}
+}
 if($query->fetchOne('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=?','is',[$store,$code]))throw new RuntimeException('Fixture rollback failed.');
-echo "PASS: audit role/tenant/project boundaries, financial redaction, filter validation and fixture rollback.\n";
+echo "PASS: audit role/tenant/project boundaries, financial redaction, filter validation and fixture rollback; exact-schema temporary users, persistent user rows/engine unchanged.\n";

@@ -200,3 +200,29 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 7. Sửa ba browser tests lỗi thời; bổ sung các CHƯA CHẠY, đặc biệt full tenant matrix, no-role HTTP, rate concurrency, session/role refresh, exact 8h/8+2, cost snapshot assertion, four formula prefixes, CSP headers và real zoom/keyboard.
 
 Không merge nhánh trong lượt này. Không dùng số PASS scripts thay chứng nhận sản phẩm/fixture sạch. Chỉ xét UAT sau xử lý FAIL và hoàn tất/ghi nhận giới hạn CHƯA CHẠY với người dùng. Gói ZIP UI đã giao vẫn ở b8e0774; không tự đóng gói/deploy lại từ báo cáo này.
+
+## Bước A — Tra cứu khôi phục, đang chờ xác nhận (07/10/2026)
+
+Theo chỉ định mới, ưu tiên audit/tracking, rồi seed/fixture Git, rồi hỏi người dùng; không suy đoán giá trị gốc. Hai target local ID 93/110 không có user audit history/department snapshot. Read-only toàn bảng: tracking chứa department_id=0, audit snapshots chứa department_id=0. Lệnh `.tools/php83/php.exe .local/recovery_audit_read.php` xác nhận; không in dữ liệu cá nhân.
+
+`python .local/recovery_seed_history.py` kiểm tra 6 revision liên quan database/seeds, docs/fixtures, tests/pm_phase10_fixture.php: không có định nghĩa gốc cho ID 93/110. Fixture Phase 10 chỉ tạo ID 900000001..900000004/900000010 trên schema riêng. Đã đọc backup trước khi nhận thứ tự ưu tiên chi tiết; không dùng backup để sửa ngoài quy trình người dùng vừa chỉ định.
+
+Đã hỏi người dùng hai tài khoản có phải fixture/test được phép lập phương án tạo lại, hoặc dữ liệu cần giữ để tìm phòng ban gốc. Chưa sửa/xóa user, chưa sửa test audit và chưa chuyển Bước B. Các mục 8.4/10.6 sẽ cập nhật theo quyết định đã duyệt ở Bước B sau khi A hoàn tất; PII chờ Bước C. Không merge/push/deploy, không rerun runner audit chưa cô lập.
+
+Xác nhận người dùng: ID 93/110 là **dữ liệu cần giữ — chờ xác định phòng ban gốc**. Không được lập phương án xóa/tạo lại; Bước A chưa hoàn tất. Tiếp tục giữ nguyên dữ liệu hiện tại tới khi có nguồn gốc được xác nhận. Không chuyển Bước B–E hoặc build gap trong lúc A còn chờ.
+
+### Tiếp tục Bước A — nguồn binlog local (07/10/2026)
+
+Đã kiểm tra chỉ đọc: local MySQL log_bin=ON, binlog_format=ROW, binlog_row_image=FULL. SHOW BINARY LOGS bị từ chối mã 1227; đọc thư mục Data local cũng bị Windows từ chối. Không tự cấp privilege hoặc thay ACL, không sửa database. Có khả năng tìm before-image bằng binlog nhưng chưa đọc được, nên không coi đây là bằng chứng đã khôi phục.
+
+Hai backup 02/10 11:18 và 11:33 lưu department_id=NULL của cả hai target; backup về sau có các department fixture khác nhau. Đây chỉ là bằng chứng lịch sử, chưa chứng minh giá trị đúng ngay trước lượt test. Không tự áp dụng NULL. Đã hỏi người dùng chọn nguồn đối chiếu (chuẩn bị binlog local hoặc cung cấp/xác nhận phòng ban gốc). Giữ nguyên Bước A chờ nguồn được xác nhận; chưa sửa test, chưa chuyển B–E.
+
+## Step A complete - 2026-10-07
+
+User confirmed original department_id=NULL for IDs 93 and 110. Executed `.tools/php83/php.exe .local/restore_confirmed_departments.php`: PASS, only those fields restored; all other user rows/fields unchanged; MyISAM retained. No accounts deleted or recreated. Earlier pending notes above are historical.
+
+`tests/pm_audit_smoke.php` now uses SHOW CREATE TABLE exact-schema temporary users. HR self-join uses a synchronized second temporary viewer mirror to avoid MySQL temporary-table reopen limitation; only test connection rewrites the viewer alias. No production DAO/runtime change. Independent connection in finally compares all persistent user rows and engine before/after.
+
+Executed `.tools/php83/php.exe -l tests/pm_audit_smoke.php`: PASS. Executed `.tools/php83/php.exe tests/pm_audit_smoke.php` twice: PASS audit role/tenant/project boundaries, financial redaction, filter validation, rollback, persistent rows/engine unchanged. Initial mirror development failed Can't reopen table owner; corrected harness before both successful reruns. Executed `.tools/php83/php.exe .local/checksum_diagnostic.php`: EXTENDED checksum=129141672 unchanged after both runs; high-id fixture rows=0; missing-department references=0.
+
+11.5 audit fixture defect is fixed with targeted evidence. Final related-case reconciliation remains Step E; no claim that all other tests were rerun. No merge/push/deploy.
