@@ -1611,3 +1611,24 @@ Verification: `.tools/php83/php.exe -l pm-launch.php` PASS; CLI render with
 ROOT_PATH defined PASS, confirmed new Vietnamese copy and existing /admin.php
 link. Reviewed the focused diff; no new dynamic output or write operation.
 No browser visual verification or production deployment performed for this edit.
+# Login visual refinement - 2026-10-07
+
+User requested a more prominent login page, local only until reviewing all
+changes together. Applied Impeccable bolder refinement within the existing Inter
+neutral theme. Added D brand mark and factual capability list; balanced columns,
+spacing, input boundaries and keyboard focus. Login-specific selectors only;
+form names/action, CSRF and authentication unchanged. CSS cache version login3.
+
+Verification: smoke_pm_ui.php --preview PASS; pm_login_contrast_browser via
+Playwright PASS at desktop/mobile and 200% text scaling, keyboard focus and
+18.10:1 intro text contrast. Inspected desktop/mobile screenshots. General
+pm_ui_browser PASS on 13 synthetic fixtures at four viewport sizes. Regression
+pm_regression.ps1 PASS, 47 scripts. Not manual browser zoom or production UAT.
+Preview console reported missing favicon (404), no JS page exception in UI suite.
+
+Impeccable detector run once: template-relative CSS resolution produced an
+incomplete hierarchy warning; actual computed/browser layout verified instead.
+Inter is pinned by user; shared business warning border outside this task retained.
+Reviewed scoped diff: no backend, schema or permission changes. Commit local only;
+no push, merge or deployment. Release manifest/archive must be refreshed when
+the user approves the combined rollout; prior archive does not include this edit.
