@@ -15,6 +15,7 @@ if (!in_array($fixtureRole, ['PM', 'HR'], true)
         (($_POST['op'] ?? '') === 'pmreports' && ($_POST['action'] ?? '') === 'export')
         || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','task_save','task_delete'], true))
         || (($_POST['op'] ?? '') === 'pmtimesheets' && in_array($_POST['action'] ?? '', ['save','delete','settings'], true))
+        || (($_POST['op'] ?? '') === 'pmallocations' && in_array($_POST['action'] ?? '', ['save','delete','capacity'], true))
     ))) {
     http_response_code(400); exit;
 }
@@ -43,6 +44,7 @@ class DB extends PmRoleHttpBaseDb {
         // MySQL temporary tables cannot carry FK constraints; retain columns/indexes.
         $tables=['dc_pm_user_roles','dc_pm_projects','dc_pm_project_members','dc_pm_tasks','dc_pm_audit_logs','dc_trackings'];
         if (($_GET['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings','dc_pm_hourly_rates'];
+        if (($_GET['op']??'')==='pmallocations') $tables=[...$tables,'dc_pm_allocations','dc_pm_allocation_locks','dc_pm_capacity_overrides'];
         foreach ($tables as $table) {
             $ddl=$c->query('SHOW CREATE TABLE '.$table)->fetch_row()[1];
             $ddl=preg_replace('/,\n\s*CONSTRAINT[^\n]+/', '', $ddl);
@@ -59,6 +61,13 @@ class DB extends PmRoleHttpBaseDb {
         $stmt->bind_param('iiiiii',$store,$actor,$store,$actor,$store,$actor); $stmt->execute();
         $stmt=$c->prepare('UPDATE dc_pm_tasks SET assignee_id=? WHERE id=900000011');
         $stmt->bind_param('i',$actor); $stmt->execute();
+        if (($_GET['op']??'')==='pmallocations') {
+            $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
+            $stmt=$c->prepare("INSERT INTO dc_pm_allocations (id,store_id,project_id,task_id,user_id,work_date,hours,start_time,end_time,created_by,updated_by) VALUES (900000031,?,900000001,900000011,?,?,'7.00','08:00','15:00',?,?)");
+            $stmt->bind_param('iisii',$store,$actor,$today,$actor,$actor); $stmt->execute();
+            $stmt=$c->prepare("INSERT INTO dc_pm_capacity_overrides (store_id,user_id,daily_limit_hours,weekly_limit_hours,effective_from,created_by,updated_by) VALUES (?,?,'8.00','8.00','2000-01-02',?,?)");
+            $stmt->bind_param('iiii',$store,$actor,$actor,$actor); $stmt->execute();
+        }
         if (($_GET['op']??'')!=='pmtimesheets') return $result;
         $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
         $stmt=$c->prepare("INSERT INTO dc_pm_system_settings (store_id,setting_key,setting_value) VALUES (?,'standard_hours_per_day','8.00'), (?,'ot_multiplier','1.50')");
@@ -76,13 +85,15 @@ $entry = file_get_contents(ROOT_PATH.'admin.php');
 $entry = str_replace("include_once(ROOT_PATH.'classes/database/mysql.class.php');", '', $entry, $count);
 if ($count !== 1) throw new RuntimeException('Admin fixture entry no longer matches.');
 eval('?>'.$entry);
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets'],true)) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets','pmallocations'],true)) {
     // Observe request-local committed state before DB teardown; never a production endpoint.
     $fixtureState=[];
     $tables=['dc_pm_projects','dc_pm_tasks','dc_pm_audit_logs'];
     if (($_POST['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings'];
+    if (($_POST['op']??'')==='pmallocations') $tables=[...$tables,'dc_pm_allocations','dc_pm_capacity_overrides'];
     foreach ($tables as $table) {
         $fixtureState[$table]=$db->connection->query('SELECT * FROM '.$table.' ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     }
+    if (($_POST['op']??'')==='pmallocations') $fixtureState['warnings']=$warnings??[];
     echo '\n<!-- PM_FIXTURE_STATE '.base64_encode(json_encode($fixtureState,JSON_THROW_ON_ERROR)).' -->';
 }

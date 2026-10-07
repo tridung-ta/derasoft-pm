@@ -19,6 +19,9 @@ function rolePersistentState(PmDb $q): string {
         $q->fetchAll('SELECT * FROM dc_pm_timesheet_days ORDER BY id'),
         $q->fetchAll('SELECT * FROM dc_pm_system_settings ORDER BY id'),
         $q->fetchAll('SELECT * FROM dc_pm_hourly_rates ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_allocations ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_allocation_locks ORDER BY store_id,user_id,work_date'),
+        $q->fetchAll('SELECT * FROM dc_pm_capacity_overrides ORDER BY id'),
         $q->fetchOne("SELECT engine FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='dc_users'")
     ]));
 }
@@ -76,6 +79,14 @@ function roleTime(array $state,int $id): array {
 function roleTimeUnchanged(array $state): void {
     roleAssert(count($state['dc_pm_timesheets'])===3&&!$state['dc_pm_audit_logs'],'Rejected timesheet action inserted data/audit.');
     roleAssert(roleTime($state,900000021)['hours']==='4.00'&&roleTime($state,900000022)['cost']==='1150.00','Rejected action altered timesheet values.');
+}
+function roleAllocationWrite(array $changes,int $expected=200): array {
+    global $actor;
+    $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
+    $post=array_replace(['op'=>'pmallocations','action'=>'save','csrf_token'=>'role-http-csrf','task_id'=>'900000011','user_id'=>(string)$actor['id'],'work_date'=>$today,'hours'=>'2','start_time'=>'14:00','end_time'=>'16:00'],$changes);
+    $html=roleHttp('PM','op=pmallocations',$expected,$post);
+    if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing allocation write state.');
+    return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
 }
 try {
     $ready=false;
@@ -146,10 +157,24 @@ try {
         roleTimeUnchanged($state);
         roleAssert(array_column($state['dc_pm_system_settings'],'setting_value','setting_key')===['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.50'],'Non-Admin changed OT settings.');
     }
+    $state=roleAllocationWrite([]);
+    roleAssert(count($state['dc_pm_allocations'])===2&&($state['dc_pm_audit_logs'][0]['action']??'')==='create','HTTP allocation create/audit failed.');
+    roleAssert(count($state['warnings'])===3,'Missing daily/weekly/overlap warnings.');
+    foreach(['ngày','tuần','Trùng'] as $word) roleAssert(str_contains(implode(' ',$state['warnings']),$word),'Missing allocation warning '.$word);
+    $state=roleAllocationWrite(['id'=>'900000031','start_time'=>'08:00','end_time'=>'10:00']);
+    roleAssert($state['dc_pm_allocations'][0]['hours']==='2.00'&&($state['dc_pm_audit_logs'][0]['action']??'')==='update'&&!$state['warnings'],'HTTP allocation edit/audit failed.');
+    $state=roleAllocationWrite(['id'=>'900000031','action'=>'delete']);
+    roleAssert($state['dc_pm_allocations'][0]['deleted_at']!==null&&($state['dc_pm_audit_logs'][0]['action']??'')==='soft_delete','HTTP allocation hide/audit failed.');
+    foreach ([[['end_time'=>'17:00'],400],[['csrf_token'=>'wrong'],400],[['task_id'=>'900000013'],403],[['action'=>'capacity','daily_limit_hours'=>'7','weekly_limit_hours'=>'30','effective_from'=>'2000-01-02'],403]] as [$bad,$expected]) {
+        $state=roleAllocationWrite($bad,$expected);
+        roleAssert(count($state['dc_pm_allocations'])===1&&$state['dc_pm_allocations'][0]['hours']==='7.00'&&!$state['dc_pm_audit_logs'],'Rejected allocation action wrote data/audit.');
+        roleAssert($state['dc_pm_capacity_overrides'][0]['daily_limit_hours']==='8.00'&&$state['dc_pm_capacity_overrides'][0]['weekly_limit_hours']==='8.00','PM changed capacity override.');
+    }
+    roleHttp('HR','op=pmallocations',403,['op'=>'pmallocations','action'=>'save','csrf_token'=>'role-http-csrf']);
 } finally {
     proc_terminate($server); proc_close($server);
     putenv('PM_ROLE_HTTP_TOKEN'); putenv('PM_ROLE_HTTP_ACTOR'); putenv('PM_ROLE_HTTP_STORE');
     session_id($sid); session_start(); session_destroy();
     if (rolePersistentState($q)!==$before) throw new RuntimeException('Persistent role/project state or user engine changed.');
 }
-echo "PASS: $cases PM/HR HTTP controller cases with temporary fixtures; page/report gates, XLSX, project/task writes/audit, timesheet create/edit/move/hide daily OT/rate/cost/audit and rejection boundaries. Persistent business tables/settings/rates and user engine unchanged. Not real-account login/browser UAT.\n";
+echo "PASS: $cases PM/HR HTTP controller cases with temporary fixtures; pages/reports/XLSX, project/task/timesheet/allocation writes/audit, daily OT/cost, overbooking/overlap warnings and rejection boundaries. Persistent business tables/settings/rates/locks and user engine unchanged. Not real-account login/browser UAT.\n";

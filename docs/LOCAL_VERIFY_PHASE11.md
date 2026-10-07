@@ -1,5 +1,25 @@
 # Kiểm thử lại Phase 11 local — 06/10/2026
 
+## Allocation HTTP verification - 2026-10-07
+
+Extended combined role HTTP suite from 52 to 60 cases. Requests run unchanged
+controllers with temporary allocations, lock sentinels and capacity overrides;
+each request has a fresh seven-hour assignment, eight-hour day/week threshold.
+
+- Create overlapping two-hour allocation: daily/weekly/overlap warnings plus audit.
+- Edit to two non-overlapping hours: saved values, update audit and no warnings.
+- Hide: deleted_at and soft_delete audit.
+- Invalid duration and CSRF return 400; foreign task and PM capacity edit return
+  403, preserving fixture allocation/capacity values and empty audit.
+- HR allocation POST returns 403 at permission gate.
+
+Commands: pm_role_http_smoke.php 60 cases PASS; PHP lint both role HTTP files PASS;
+full pm_regression.ps1 47 scripts PASS; git diff --check PASS. Fingerprints verify
+persistent roles/projects/members/tasks/audit/tracking/timesheets/day ledger/
+settings/rates/allocations/locks/capacity and dc_users engine unchanged.
+No new production/runtime/schema change. HTTP fixtures are not browser form or
+password-login UAT and do not replace the existing real two-connection lock tests.
+
 ## Timesheet HTTP verification - 2026-10-07
 
 Added 11 controller POST cases for timesheets and one test-router routing guard,

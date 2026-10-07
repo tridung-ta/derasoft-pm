@@ -1,5 +1,20 @@
 # DeraSoft PM — Progress
 
+## Phase 11 allocation HTTP write coverage - 2026-10-07
+
+Continued approved local verification with eight allocation POST cases (60 total
+role HTTP cases). Temporary allocations/locks/capacity tables isolate every new
+write target. Seeded seven-hour assignment and eight-hour day/week thresholds.
+Create returns day/week/overlap warnings and audit; edit removes warnings and
+records update; hide records soft_delete. Duration mismatch, invalid CSRF,
+foreign task and PM capacity write are rejected without fixture mutation/audit;
+HR allocation POST denied at permission gate. No application defect found.
+Commands: PHP lint both role HTTP files PASS; targeted 60 cases PASS; full
+pm_regression.ps1 47 scripts PASS; git diff --check PASS. Reviewed fixed actions,
+route agreement, local/token gates and complete temporary write isolation.
+Persistent business rows/settings/rates/allocation locks and dc_users engine
+unchanged. No runtime/schema/production changes, no real-login/browser UAT claim.
+
 ## GitHub contribution workflow recorded — 2026-10-07
 
 Recorded user's profile/contribution priority in AGENTS.md for future repository
