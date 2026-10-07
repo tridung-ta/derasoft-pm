@@ -1,6 +1,8 @@
 <?php
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 include_once(ROOT_PATH.'classes/dao/pmimports.class.php');
+include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
+include_once(ROOT_PATH.'classes/services/pmuseridentityservice.class.php');
 class PmImportService {
     public const HEADERS=['username','fullname','email','department_code','weekly_limit_hours','role_code'];
     private PmDb $db;private PmAccess $access;private mysqli $connection;
@@ -34,17 +36,24 @@ class PmImportService {
         try{
             $sheet=$book->getActiveSheet();$headers=[];foreach(range('A','F') as $c){$cell=$sheet->getCell($c.'1');if($cell->getDataType()==='f')throw new InvalidArgumentException('Không nhận công thức.');$headers[]=trim((string)$cell->getValue());}
             if($headers!==self::HEADERS)throw new InvalidArgumentException('Header phải đúng thứ tự theo file mẫu.');
-            $rows=[];$errors=[];$seenUsers=[];$seenEmails=[];
+            $rows=[];$errors=[];$seen=[];$identity=new PmUserIdentityService((object)['connection'=>$this->connection]);
             for($i=2;$i<=$sheet->getHighestDataRow();$i++){
                 $values=[];$formula=false;foreach(range('A','F') as $c){$cell=$sheet->getCell($c.$i);$formula=$formula||$cell->getDataType()==='f';$values[]=trim((string)$cell->getValue());}
                 if(implode('',$values)==='')continue;$r=array_combine(self::HEADERS,$values);$messages=[];
                 if($formula)$messages[]='Không nhận công thức.';
-                if(!preg_match('/^[A-Za-z0-9_.-]{3,50}$/D',$r['username']))$messages[]='Username không hợp lệ.';
-                if($r['fullname']===''||mb_strlen($r['fullname'])>100||preg_match('/[\x00-\x1f\x7f]/',$r['fullname']))$messages[]='Tên không hợp lệ.';
-                if(!filter_var($r['email'],FILTER_VALIDATE_EMAIL)||strlen($r['email'])>50)$messages[]='Email không hợp lệ hoặc vượt 50 ký tự của cột dc_users.email.';
-                $userKey=mb_strtolower($r['username']);$emailKey=mb_strtolower($r['email']);
-                if(isset($seenUsers[$userKey])||isset($seenEmails[$emailKey]))$messages[]='Trùng username/email trong file.';$seenUsers[$userKey]=true;$seenEmails[$emailKey]=true;
-                if($this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND (username=? OR email=?) LIMIT 1','iss',[$this->storeId,$r['username'],$r['email']]))$messages[]='Username/email đã tồn tại trong tenant.';
+                if(!preg_match('/^[A-Za-z0-9_.-]{3,30}$/D',$r['username']))$messages[]='Username cần 3–30 ký tự chữ, số, dấu chấm, gạch dưới hoặc gạch ngang.';
+                try{PmUserInputService::validateFields($r['username'],$r['fullname'],$r['email'],'');}catch(PmUserInputException $e){array_push($messages,...array_values($e->getFieldErrors()));}
+                if(mb_check_encoding($r['username'],'UTF-8')&&mb_check_encoding($r['email'],'UTF-8')){
+                    $rowKeys=[];
+                    foreach(['username','email'] as $field){
+                        if(mb_strlen($r[$field],'UTF-8')>50||$r[$field]==='')continue;
+                        $key=$identity->identityKey($r[$field]);
+                        if(isset($seen[$key]))$messages[]=$field.' trùng '.$seen[$key]['field'].' ở dòng '.$seen[$key]['row'].'.';
+                        $rowKeys[$key]=['field'=>$field,'row'=>$i];
+                    }
+                    foreach($rowKeys as $key=>$entry)$seen[$key]??=$entry;
+                    if($identity->conflicts($this->storeId,$r['username'],$r['email']))$messages[]='Username/email trùng định danh tài khoản khác trong tenant.';
+                }
                 if(!preg_match('/^\d{1,3}(?:\.\d{1,2})?$/D',$r['weekly_limit_hours'])||(float)$r['weekly_limit_hours']<=0||(float)$r['weekly_limit_hours']>168)$messages[]='Giới hạn tuần phải >0 và <=168.';
                 if($r['role_code']!=='EMPLOYEE'||!$this->db->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[$this->storeId]))$messages[]='Chỉ staging role EMPLOYEE active; không tự cấp quyền quản trị.';
                 $r['department_id']=null;
@@ -80,7 +89,9 @@ class PmImportService {
         $this->permission();if($id<=0)throw new InvalidArgumentException('Batch không hợp lệ.');
         $dao=new PmImports((object)['connection'=>$this->connection]);$dao->requireEmailUnique();
         $lock=$dao->lockName($this->storeId,$id);if(!$dao->acquire($lock))throw new OverflowException('Batch đang được Admin khác áp dụng.');
+        $identity=new PmUserIdentityService((object)['connection'=>$this->connection]);$identityLock=null;
         try{
+            $identityLock=$identity->acquire($this->storeId);
             $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new DomainException('Không tìm thấy batch trong tenant.');
             if($batch['status']==='completed')return $this->batchDetail($dao,$id);
             if(!in_array($batch['status'],['staged','partial','in_progress'],true))throw new InvalidArgumentException('Trạng thái batch không hợp lệ.');
@@ -92,8 +103,10 @@ class PmImportService {
                 if(in_array($intent['status'],['applied','skipped_duplicate'],true))continue;
                 $dao->attempt($this->storeId,$id,$source);
                 try{$r=json_decode($row['payload'],true,512,JSON_THROW_ON_ERROR);$roleId=$this->validateApplyRow($r);}
+                catch(PmUserInputException $e){$dao->outcome($this->storeId,$id,$source,'failed','invalid_user_fields');continue;}
                 catch(InvalidArgumentException|JsonException $e){$dao->outcome($this->storeId,$id,$source,'failed','invalid_row_or_reference');continue;}
                 $marker=['store_id'=>$this->storeId,'import_id'=>$id,'source_row'=>$source,'token'=>$intent['provenance_token']];$recovered=false;
+                if($identity->conflicts($this->storeId,$r['username'],$r['email'],0,true)){$dao->outcome($this->storeId,$id,$source,'failed','identity_collision');continue;}
                 try{$userId=$dao->insertUser($this->storeId,$r,$marker);}
                 catch(mysqli_sql_exception $e){
                     if((int)$e->getCode()!==1062){$dao->outcome($this->storeId,$id,$source,'failed','insert_failed');continue;}
@@ -103,7 +116,7 @@ class PmImportService {
                     $userId=(int)$existing['id'];$recovered=true;
                 }
                 $this->afterUserInsert();
-                if($dao->usernameCollision($this->storeId,$r['username'],$userId)){$dao->outcome($this->storeId,$id,$source,'failed','username_collision_inactive',$userId);continue;}
+                if($identity->conflicts($this->storeId,$r['username'],$r['email'],$userId)){$dao->outcome($this->storeId,$id,$source,'failed','identity_collision_inactive',$userId);continue;}
                 // Only PM journal/role/audit writes are transactional, never dc_users.
                 $this->db->beginTransaction();try{
                     $this->db->execute('INSERT IGNORE INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) VALUES(?,?,?,1)','iii',[$this->storeId,$userId,$roleId]);
@@ -113,27 +126,31 @@ class PmImportService {
                 }catch(Throwable $e){$this->db->rollBack();throw $e;}
             }
             $result=$this->batchDetail($dao,$id);$dao->setStatus($this->storeId,$id,($result['counts']['failed']+$result['counts']['pending'])>0?'partial':'completed');return $this->batchDetail($dao,$id);
-        }finally{$dao->release($lock);}
+        }finally{try{if($identityLock!==null)$identity->release($identityLock);}finally{$dao->release($lock);}}
     }
     protected function afterUserInsert(): void {}
     public function provisionPassword(int $id,int $row,string $password): array {
         $this->permission();if($id<=0||$row<2||strlen($password)<12||strlen($password)>72||str_contains($password,"\0"))throw new InvalidArgumentException('Mật khẩu cần 12–72 byte, không chứa ký tự NUL; batch/dòng phải hợp lệ.');
         $dao=new PmImports((object)['connection'=>$this->connection]);$lock=$dao->lockName($this->storeId,$id);
         if(!$dao->acquire($lock))throw new OverflowException('Batch đang được Admin khác xử lý.');
+        $identity=new PmUserIdentityService((object)['connection'=>$this->connection]);$identityLock=null;
         try{
+            $identityLock=$identity->acquire($this->storeId);
             $u=$dao->ownedUser($this->storeId,$id,$row);$p=$u?@unserialize($u['properties'],['allowed_classes'=>false]):null;
             $marker=['store_id'=>$this->storeId,'import_id'=>$id,'source_row'=>$row,'token'=>$u['provenance_token']??''];
             if(!$u||(int)$u['status']!==0||!is_array($p)||($p['pm_import']??null)!==$marker)throw new DomainException('Chỉ cấp mật khẩu cho tài khoản import của dòng này đang chưa kích hoạt.');
-            if($dao->usernameCollision($this->storeId,$u['username'],(int)$u['id']))throw new InvalidArgumentException('Username đang trùng; chưa thể cấp mật khẩu.');
+            $identity->assertAvailable($this->storeId,$u['username'],$u['email'],(int)$u['id']);
             if(!$dao->setPassword($this->storeId,(int)$u['id'],password_hash($password,PASSWORD_DEFAULT)))throw new DomainException('Trạng thái tài khoản đã thay đổi.');
             $this->db->execute("INSERT INTO dc_pm_audit_logs(store_id,actor_id,entity_type,entity_id,action,new_values) VALUES(?,?,'import',?,'provision_password',?)",'iiis',[$this->storeId,$this->actorId,$id,json_encode(['source_row'=>$row,'user_id'=>(int)$u['id'],'account_status'=>0],JSON_THROW_ON_ERROR)]);
             return $this->batchDetail($dao,$id);
-        }finally{$dao->release($lock);}
+        }finally{try{if($identityLock!==null)$identity->release($identityLock);}finally{$dao->release($lock);}}
     }
     private function validateApplyRow(mixed $r): int {
         if(!is_array($r)||!array_key_exists('department_id',$r)||($r['department_id']!==null&&(!is_int($r['department_id'])||$r['department_id']<=0)))throw new InvalidArgumentException('Invalid row.');
         foreach(self::HEADERS as $key)if(!isset($r[$key])||!is_string($r[$key]))throw new InvalidArgumentException('Invalid row.');
-        if(!preg_match('/^[A-Za-z0-9_.-]{3,50}$/D',$r['username'])||$r['fullname']===''||mb_strlen($r['fullname'])>100||preg_match('/[\x00-\x1f\x7f]/',$r['fullname'])||!filter_var($r['email'],FILTER_VALIDATE_EMAIL)||strlen($r['email'])>50||!preg_match('/^\d{1,3}(?:\.\d{1,2})?$/D',$r['weekly_limit_hours'])||(float)$r['weekly_limit_hours']<=0||(float)$r['weekly_limit_hours']>168||$r['role_code']!=='EMPLOYEE')throw new InvalidArgumentException('Invalid row.');
+        if(array_key_exists('tel',$r)&&!is_string($r['tel']))throw new InvalidArgumentException('Invalid phone field.');
+        PmUserInputService::validateFields($r['username'],$r['fullname'],$r['email'],$r['tel']??'');
+        if(!preg_match('/^[A-Za-z0-9_.-]{3,30}$/D',$r['username'])||!preg_match('/^\d{1,3}(?:\.\d{1,2})?$/D',$r['weekly_limit_hours'])||(float)$r['weekly_limit_hours']<=0||(float)$r['weekly_limit_hours']>168||$r['role_code']!=='EMPLOYEE')throw new InvalidArgumentException('Invalid row.');
         $role=$this->db->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[$this->storeId]);if(!$role)throw new InvalidArgumentException('Inactive role.');
         if($r['department_code']!==''){
             $d=$this->db->fetchOne('SELECT id FROM dc_pm_departments WHERE store_id=? AND code=? AND status=1 AND deleted_at IS NULL','is',[$this->storeId,$r['department_code']]);

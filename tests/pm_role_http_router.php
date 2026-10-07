@@ -17,6 +17,7 @@ if (!in_array($fixtureRole, ['PM', 'HR'], true)
         || (($_POST['op'] ?? '') === 'pmtimesheets' && in_array($_POST['action'] ?? '', ['save','delete','settings'], true))
         || (($_POST['op'] ?? '') === 'pmallocations' && in_array($_POST['action'] ?? '', ['save','delete','capacity'], true))
         || (($_POST['op'] ?? '') === 'pmusers' && in_array($_POST['action'] ?? '', ['save','status'], true))
+        || (($_POST['op'] ?? '') === 'pm' && ($_GET['act']??'')==='profile' && ($_POST['act']??'')==='profile')
     ))) {
     http_response_code(400); exit;
 }
@@ -47,7 +48,7 @@ class DB extends PmRoleHttpBaseDb {
         if (($_GET['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings','dc_pm_hourly_rates'];
         if (($_GET['op']??'')==='pmallocations') $tables=[...$tables,'dc_pm_allocations','dc_pm_allocation_locks','dc_pm_capacity_overrides'];
         $actorRow=null;
-        if (($_GET['op']??'')==='pmusers') {
+        if (($_GET['op']??'')==='pmusers' || (($_GET['op']??'')==='pm' && ($_GET['act']??'')==='profile')) {
             $stmt=$c->prepare('SELECT * FROM dc_users WHERE store_id=? AND id=?');
             $stmt->bind_param('ii',$store,$actor); $stmt->execute();
             $actorRow=$stmt->get_result()->fetch_assoc();
@@ -67,7 +68,8 @@ class DB extends PmRoleHttpBaseDb {
                 array_replace($actorRow,['id'=>900000041,'username'=>'http-member','email'=>'http-member@example.test','fullname'=>'HTTP Member','code'=>'HTTP41','status'=>1,'tel'=>'0900000000','weekly_limit_hours'=>'40.00','department_id'=>null]),
                 array_replace($actorRow,['id'=>900000042,'username'=>'http-locked','email'=>'http-locked@example.test','fullname'=>'HTTP Locked','code'=>'HTTP42','status'=>0]),
                 array_replace($actorRow,['id'=>900000043,'store_id'=>$store+1,'username'=>'http-other','email'=>'http-other@example.test','fullname'=>'HTTP Other Tenant','code'=>'HTTP43','status'=>1]),
-                array_replace($actorRow,['id'=>900000044,'username'=>'http-hidden','email'=>'http-hidden@example.test','fullname'=>'HTTP Hidden','code'=>'HTTP44','status'=>2])
+                array_replace($actorRow,['id'=>900000044,'username'=>'http-hidden','email'=>'http-hidden@example.test','fullname'=>'HTTP Hidden','code'=>'HTTP44','status'=>2]),
+                array_replace($actorRow,['id'=>900000045,'username'=>'http-legacy@example.test','email'=>'legacy-address@example.test','fullname'=>'HTTP Legacy','code'=>'HTTP45','status'=>0])
             ] as $row) {
                 $values=array_values($row); $stmt->bind_param(str_repeat('s',count($values)),...$values); $stmt->execute();
             }
@@ -108,7 +110,7 @@ $entry = str_replace("include_once(ROOT_PATH.'classes/database/mysql.class.php')
 if ($count !== 1) throw new RuntimeException('Admin fixture entry no longer matches.');
 register_shutdown_function(function(){
 global $db,$warnings;
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets','pmallocations','pmusers'],true)) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets','pmallocations','pmusers','pm'],true)) {
     // Observe request-local committed state before DB teardown; never a production endpoint.
     $fixtureState=[];
     $tables=['dc_pm_projects','dc_pm_tasks','dc_pm_audit_logs'];
@@ -119,7 +121,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? ''
     }
     $fixtureState['tracking']=$db->connection->query('SELECT username,ip FROM dc_trackings ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     if (($_POST['op']??'')==='pmallocations') $fixtureState['warnings']=$warnings??[];
-    if (($_POST['op']??'')==='pmusers') {
+    if (($_POST['op']??'')==='pmusers' || (($_POST['op']??'')==='pm' && ($_GET['act']??'')==='profile')) {
         $fixtureState['users']=$db->connection->query('SELECT id,store_id,fullname,email,tel,status,weekly_limit_hours FROM dc_users ORDER BY id')->fetch_all(MYSQLI_ASSOC);
         $fixtureState['tracking_count']=(int)$db->connection->query('SELECT COUNT(*) FROM dc_trackings')->fetch_row()[0];
     }

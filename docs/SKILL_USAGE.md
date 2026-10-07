@@ -177,3 +177,11 @@ and lifetime completeness separate, and block misleading complete-cost chart
 comparisons while keeping legitimate zero charts. SSR partial and JS textContent
 share visible labels. Cost service/HTTP/template checks, 50 regression scripts
 and two focused/existing browser suites PASS; 19 pending checklist items retained.
+
+## BƯỚC 2 schema và identity — 07/10/2026
+
+Áp dụng feature-development cho BUILD đã duyệt, code-review cho kiểm tra query/lock/fixture, git-feature-commit cho commit local hoàn tất. Không thêm workflow UI khi không đổi thiết kế giao diện. Nguyên nhân xác minh: import nhận username 50/fullname 100 trong khi cột thật 30/50; checks riêng hai cột bỏ collision chéo. Dùng validator chung và so theo collation DB, không lowercase PHP để giả lập accent equality. Apply vẫn INSERT + native 1062; kiểm tra collision khác trước MyISAM write, named lock database+store_id và finally release; legacy ngoài PM không được lock này bảo vệ.
+
+Fixture CRUD/Apply lấy schema thật, không dùng cột rộng giả tạo PASS. Khi thêm HTTP profile route vào test router phải thêm cả guard, user mirror và shutdown observer; thiếu observer gây test fail dù controller chạy. Đã sửa harness và chạy lại: 43 identity case, 139 HTTP case, 51 regression script, PHP lint 14 file PASS. Quét read-only toàn bộ 10 user local: 0 cặp, có positive two-direction fixture scan để kiểm chứng query; không sửa user cũ. Giữ 19 case chưa chạy và dừng trước bước OT theo yêu cầu người dùng.
+
+Một lượt regression có HTTP connection timeout sau case lock, chưa xác định nguyên nhân. Suite HTTP riêng và regression đầy đủ chạy lại đều đạt; giữ lần fail trong TEST_REPORT_FULL, không giấu bằng retry request tự động và không gán nguyên nhân chưa chứng minh. Runner trả session_id phải chờ exit code cuối trước chốt kết quả của lượt đó.

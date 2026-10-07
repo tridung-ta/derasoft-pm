@@ -1,5 +1,7 @@
 <?php
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
+include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
+include_once(ROOT_PATH.'classes/services/pmuseridentityservice.class.php');
 
 $pmAccess = new PmAccess($db, (int) $storeId, (int) $userInfo->getId());
 $templateFile = 'pm.tpl.html';
@@ -34,26 +36,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$address = trim((string) $request->element('address'));
 		$telephone = trim((string) $request->element('telephone'));
 
-		if ($fullname === '') {
-			$error = 'Vui lòng nhập họ và tên.';
-		} elseif ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$error = 'Địa chỉ email chưa đúng định dạng.';
-		} elseif ($email !== '' && $users->checkDuplicate($email, 'email', "`id` <> '".(int) $userInfo->getId()."'")) {
-			$error = 'Địa chỉ email đã được sử dụng bởi tài khoản khác.';
-		} else {
-			$updated = $users->updateData(array(
-				'fullname' => $fullname,
-				'email' => $email,
-				'address' => $address,
-				'tel' => $telephone,
-			), $userInfo->getId());
-			if ($updated) {
-				$notice = 'Thông tin cá nhân đã được cập nhật.';
-				$userInfo = $users->getObject($userInfo->getId(), 'id');
-				$template->assign('authUser', $userInfo);
-			} else {
-				$error = 'Không thể cập nhật thông tin. Vui lòng thử lại.';
+		$identity = new PmUserIdentityService($db);
+		$identityLock = null;
+		try {
+			foreach (['fullname','email','telephone','address'] as $field) {
+				if (isset($_POST[$field]) && !is_string($_POST[$field])) throw new InvalidArgumentException('Thông tin hồ sơ không hợp lệ.');
 			}
+			PmUserInputService::validateFields('', $fullname, $email, $telephone, false, false);
+			$identityLock = $identity->acquire((int)$storeId);
+			$profileDb = new PmDb($db);
+			$current = $profileDb->fetchOne('SELECT username FROM dc_users WHERE store_id=? AND id=? AND status=1', 'ii', [(int)$storeId,(int)$userInfo->getId()]);
+			if (!$current) throw new DomainException('Không tìm thấy tài khoản trong đơn vị.');
+			$identity->assertAvailable((int)$storeId, $current['username'], $email, (int)$userInfo->getId());
+			$profileDb->execute('UPDATE dc_users SET fullname=?,email=?,address=?,tel=? WHERE store_id=? AND id=? AND status=1', 'ssssii', [$fullname,$email,$address,$telephone,(int)$storeId,(int)$userInfo->getId()]);
+			$notice = 'Thông tin cá nhân đã được cập nhật.';
+			$userInfo = $users->getObject($userInfo->getId(), 'id');
+			$template->assign('authUser', $userInfo);
+		} catch (InvalidArgumentException|DomainException|OverflowException $e) {
+			$error = $e->getMessage();
+		} catch (Throwable $e) {
+			error_log('PM profile update failed.');
+			$error = 'Không thể cập nhật thông tin. Vui lòng thử lại.';
+		} finally {
+			if ($identityLock !== null) $identity->release($identityLock);
 		}
 	} elseif ($section === 'password') {
 		$currentPassword = (string) $request->element('current_password');

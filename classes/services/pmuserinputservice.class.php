@@ -5,6 +5,18 @@ class PmUserInputException extends InvalidArgumentException {
     public function getFieldErrors(): array{return $this->fieldErrors;}
 }
 class PmUserInputService {
+    public static function validateFields(string $username,string $fullname,string $email,string $phone,bool $requireEmail=true,bool $checkUsername=true): void {
+        $errors=[];
+        foreach(['username'=>[$username,30],'fullname'=>[$fullname,50],'email'=>[$email,50],'tel'=>[$phone,15]] as $field=>[$value,$max]){
+            if($field==='username'&&!$checkUsername)continue;
+            $label=['username'=>'Tên đăng nhập','fullname'=>'Họ và tên','email'=>'Email','tel'=>'Điện thoại'][$field];
+            if(!mb_check_encoding($value,'UTF-8')||mb_strlen($value,'UTF-8')>$max||preg_match('/[\x00-\x1f\x7f]/',$value))$errors[$field]=$label.' không được vượt '.$max.' ký tự, chứa UTF-8 lỗi hoặc ký tự điều khiển.';
+        }
+        if($checkUsername&&$username==='')$errors['username']='Vui lòng nhập tên đăng nhập.';
+        if($fullname==='')$errors['fullname']='Vui lòng nhập họ và tên.';
+        if(($requireEmail||$email!=='')&&!filter_var($email,FILTER_VALIDATE_EMAIL))$errors['email']='Email không đúng định dạng.';
+        if($errors)throw new PmUserInputException($errors);
+    }
     public static function validateCreate(string $email,string $password,string $phone): void {
         $errors=[];
         if(strlen($email)>50||!filter_var($email,FILTER_VALIDATE_EMAIL)){

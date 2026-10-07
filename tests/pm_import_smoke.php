@@ -8,6 +8,13 @@ class ImportFixtureConnection extends mysqli {
     public function begin_transaction(int $flags=0,?string $name=null): bool{return $this->query('SAVEPOINT import_step');}public function commit(int $flags=0,?string $name=null): bool{return $this->query('RELEASE SAVEPOINT import_step');}public function rollback(int $flags=0,?string $name=null): bool{$this->query('ROLLBACK TO SAVEPOINT import_step');return $this->query('RELEASE SAVEPOINT import_step');}
 }
 $connection=new ImportFixtureConnection($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$connection->set_charset('utf8mb4');$db=(object)['connection'=>$connection];$q=new PmDb($db);$a=$q->fetchOne("SELECT u.id,u.store_id FROM dc_users u JOIN dc_pm_user_roles ur ON ur.store_id=u.store_id AND ur.user_id=u.id JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE u.status=1 AND r.status=1 AND r.code='ADMIN' LIMIT 1");$store=(int)$a['store_id'];$actor=(int)$a['id'];$service=new PmImportService($db,$store,$actor);
+$persistentUsers=$q->fetchAll('SELECT * FROM dc_users ORDER BY id');
+$q->execute('CREATE TEMPORARY TABLE pm_import_original_users LIKE dc_users');
+$q->execute('INSERT INTO pm_import_original_users SELECT * FROM dc_users');
+$q->execute('CREATE TEMPORARY TABLE dc_users LIKE pm_import_original_users');
+$q->execute('INSERT INTO dc_users SELECT * FROM pm_import_original_users');
+$q->execute('ALTER TABLE dc_users AUTO_INCREMENT=1000000000');
+(new PmImports($db))->insertUser($store,['username'=>'réal@example.test','fullname'=>'Legacy fixture','email'=>'legacy-fixture@example.test','department_id'=>null,'weekly_limit_hours'=>'40'],['fixture'=>true]);
 function importCheck(bool $ok,string $m): void{if(!$ok)throw new RuntimeException($m);}
 function importDenied(callable $fn): void{try{$fn();}catch(InvalidArgumentException|DomainException $e){return;}throw new RuntimeException('Expected import denial.');}
 function importWorkbook(string $path,array $rows,array $headers=PmImportService::HEADERS): void {
@@ -19,6 +26,12 @@ try{
     file_put_contents($path,$service->template());importCheck(!$service->preview($path,'sample.xlsx')['valid'],'Empty template considered valid.');
     importWorkbook($path,[$row]);$p=$service->preview($path,'sample.xlsx');importCheck($p['valid']&&!$p['applied']&&count($p['rows'])===1,'Valid preview failed.');
     $result=$service->stage($path,'sample.xlsx');importCheck(isset($result['import_id'])&&!$result['applied'],'Stage did not identify un-applied data.');
+    $boundary=[str_repeat('u',30),str_repeat('á',50),str_repeat('a',37).'@example.test','','40','EMPLOYEE'];
+    importWorkbook($path,[$boundary]);importCheck($service->preview($path,'sample.xlsx')['valid'],'Schema boundary row rejected.');
+    foreach([0,1,2] as $field){$badBoundary=$boundary;$badBoundary[$field].='a';importWorkbook($path,[$row,$badBoundary]);$logsBefore=$q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_logs')['total'];$badResult=$service->stage($path,'sample.xlsx');importCheck(!$badResult['valid']&&!isset($badResult['import_id'])&&$badResult['errors'][0]['row']===3,'Overlength row staged or lost row number.');importCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_logs')['total']===$logsBefore,'Invalid file partly staged.');}
+    importWorkbook($path,[['fresh-legacy','User','real@example.test','','40','EMPLOYEE']]);importCheck(!$service->preview($path,'sample.xlsx')['valid'],'Cross identity/accent collision against legacy user accepted.');
+    $caseRow=$row;$caseRow[0]=strtoupper($row[0]);$caseRow[2]='other-case@example.test';importWorkbook($path,[$row,$caseRow]);$casePreview=$service->preview($path,'sample.xlsx');importCheck(!$casePreview['valid']&&$casePreview['errors'][0]['row']===3,'In-file DB collation collision missed.');
+    foreach([0,2] as $crossField){$crossRow=$row;$crossRow[0]='fresh-cross';$crossRow[2]='fresh-cross@example.test';$crossRow[$crossField]=$row[$crossField===0?2:0];importWorkbook($path,[$row,$crossRow]);$crossPreview=$service->stage($path,'sample.xlsx');importCheck(!$crossPreview['valid']&&!isset($crossPreview['import_id'])&&str_contains(implode(' ',$crossPreview['errors'][0]['messages']),'ở dòng 2'),'In-file cross direction lost specific row error.');}
     importCheck((int)$q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_staging WHERE store_id=? AND import_id=?','ii',[$store,$result['import_id']])['total']===1,'Staged row absent.');
     importCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total']===$users,'Staging wrote dc_users.');
     importDenied(fn()=>(new PmImportService($db,$store+99999,$actor))->preview($path,'sample.xlsx'));
@@ -36,4 +49,4 @@ try{
     importCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_logs')['total']===$before&&$q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_staging')['total']===$stagingBefore,'Partial staging survived failure.');
     importCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total']===$users,'Import touched users.');
     echo "PASS: import preview/staging, Admin/tenant gates, headers/duplicates/identities/row errors, macro/external/DTD/formula/ZIP/size/row limits, injected atomic rollback; dc_users unchanged. Fixtures rolled back.\n";
-}finally{if(is_file($path))unlink($path);$connection->endFixture();}
+}finally{if(is_file($path))unlink($path);$connection->endFixture();$verify=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$verify->set_charset('utf8mb4');$vq=new PmDb((object)['connection'=>$verify]);try{importCheck($vq->fetchAll('SELECT * FROM dc_users ORDER BY id')===$persistentUsers,'Persistent users changed.');importCheck($vq->fetchOne("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_users'")['ENGINE']==='MyISAM','Core engine changed.');}finally{$verify->close();}}

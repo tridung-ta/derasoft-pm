@@ -7,12 +7,10 @@ require ROOT_PATH.'classes/dao/pmusers.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server']??'', ['localhost','127.0.0.1'],true))throw new RuntimeException('Non-local refused');
 foreach(['DEBUG','QUERY_ERROR','QUERY_DEBUG'] as $key)if(!defined($key))define($key,false);
 $database=new DB();$q=new PmDb($database);
-$q->execute('CREATE TEMPORARY TABLE dc_users (
- id INT AUTO_INCREMENT PRIMARY KEY, store_id INT, username VARCHAR(100),
- password VARCHAR(32), password_hash VARCHAR(255), email VARCHAR(150), fullname VARCHAR(150),
- tel VARCHAR(50), cell VARCHAR(50), department_id INT NULL, weekly_limit_hours DECIMAL(5,2),
- type INT, date_created DATETIME, status INT, properties TEXT
-) ENGINE=MyISAM AUTO_INCREMENT=1000000000');
+$persistentUsers=$q->fetchAll('SELECT * FROM dc_users ORDER BY id');
+$schema=$q->fetchOne('SHOW CREATE TABLE dc_users')['Create Table'];
+$q->execute(preg_replace('/^CREATE TABLE `dc_users`/','CREATE TEMPORARY TABLE `dc_users`',$schema));
+$q->execute('ALTER TABLE dc_users AUTO_INCREMENT=1000000000');
 $users=new PmUsers($database);
 $data=['username'=>'crud-local','password'=>'Temporary-password-only','email'=>'crud@example.test',
  'fullname'=>'CRUD Sample','tel'=>'0900000000','department_id'=>null,'weekly_limit_hours'=>'40.00'];
@@ -40,4 +38,6 @@ checkPersonnel(!$users->setStatus(2,$id,2),'Cross-tenant status update accepted'
 checkPersonnel($users->setStatus(1,$id,2)&&$users->get(1,$id)===null&&$users->count(1)===0,'Soft delete still listed');
 checkPersonnel(!$users->updateSafe(1,$id,$update),'Hidden target reported success');
 checkPersonnel((int)$q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total']===1,'Soft delete removed data');
-echo "PASS: personnel DAO create/hash/search/page/contact edit/duplicate/lock/unlock/soft-delete and tenant boundaries; temporary MyISAM mirror only.\n";
+$verify=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$verify->set_charset('utf8mb4');$vq=new PmDb((object)['connection'=>$verify]);
+try{checkPersonnel($vq->fetchAll('SELECT * FROM dc_users ORDER BY id')===$persistentUsers,'Persistent users changed');checkPersonnel($vq->fetchOne("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_users'")['ENGINE']==='MyISAM','Core engine changed');}finally{$verify->close();}
+echo "PASS: personnel DAO create/hash/search/page/contact edit/duplicate/lock/unlock/soft-delete and tenant boundaries; exact-schema temporary MyISAM mirror, persistent users/engine unchanged.\n";

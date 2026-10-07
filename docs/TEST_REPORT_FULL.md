@@ -4,11 +4,11 @@ Checklist: [QUY_TRINH_KIEM_THU_TONG.md](QUY_TRINH_KIEM_THU_TONG.md). Baseline lo
 
 **Kết luận: CHƯA ĐẠT checklist tổng; chưa sẵn sàng tuyên bố UAT đầy đủ.** Có lỗi sản phẩm, thay đổi yêu cầu so với quyết định cũ, test lỗi thời và lỗi fixture MyISAM. Đã chạy nhóm 0 rồi kiểm tra cổng Tenant trước nhóm 2–8; 1.1/1.2 và scope suites không FAIL, nhưng 1.3/1.4 chưa đủ coverage toàn endpoint. Nhóm 9–10 browser; nhóm 11 regression/lint/checksum. Các probe bổ sung chỉ xác minh case còn thiếu, không thay trạng thái CHƯA CHẠY bằng suy luận.
 
-**Sự cố kiểm thử đã xử lý ở A:** runner cũ báo 47 PASS nhưng pm_audit_smoke thay department_id user thật trên MyISAM. Người dùng đã xác nhận giá trị gốc NULL cho cả hai user; đã khôi phục và cô lập test bằng temporary exact-schema mirror, xác minh bảng thật không đổi khi chạy lại. Lịch sử điều tra giữ bên dưới; 11.5 chờ đối chiếu cuối ở E. Không có bằng chứng đã thay production.
+**Sự cố kiểm thử đã xử lý ở A:** runner cũ báo 47 PASS nhưng pm_audit_smoke thay department_id user thật trên MyISAM. Người dùng đã xác nhận giá trị gốc NULL cho cả hai user; đã khôi phục và cô lập test bằng temporary exact-schema mirror, xác minh bảng thật không đổi khi chạy lại. Lịch sử điều tra giữ bên dưới; 11.5 đã đối chiếu PASS tại BƯỚC 1 bên dưới. Không có bằng chứng đã thay production.
 
 Quyết định người dùng: department tùy chọn, tên/email kiểm tra format/độ dài/control characters; không đánh giá tên vô nghĩa hoặc xác minh hộp thư. Validator hiện chưa đầy đủ: fullname/email 50, username 30, tel 15; import cho fullname 100/username 50. Xem [CONSTRAINT_REVIEW_20261007.md](CONSTRAINT_REVIEW_20261007.md). Giữ dc_users MyISAM.
 
-**80 mục: 58 PASS, 3 FAIL, 19 CHƯA CHẠY.** PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
+**80 mục: 59 PASS, 2 FAIL, 19 CHƯA CHẠY.** Đối chiếu BƯỚC 1 ngày 07/10/2026: giữ 4.4 PASS, đổi 11.5 sang PASS theo test thực chạy và kiểm tra dữ liệu thật trước/sau. Hai mục chưa PASS là 7.4 (D2) và 11.4 (audit/log toàn phạm vi). PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
 
 ## Lệnh và output được sử dụng
 
@@ -187,7 +187,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 11.2 | **PASS** | PHP 8.3 lint 103 file .php đổi từ 3df3349..HEAD: không syntax error; log G11-lint. Không chỉ lint bốn runtime mới. |
 | 11.3 | **PASS** | Tracked inventory + scoped diff không có config thật/.env/dump/cache/upload trong phần chuẩn bị commit; chỉ docs mới. includes/config.inc.php.example và templates_c/.gitkeep là placeholders. Không quét lịch sử secret toàn repository. |
 | 11.4 | **FAIL** | Chính sách C đã chốt: log mới chỉ lưu ID tài khoản, lịch sử giữ nguyên. Các điểm tracking PM login/lock/logout/users/projects đã sửa và kiểm thử ID-only, không thu IP mới; log cũ không sửa. Test 10 auth-module fixtures và 73 HTTP PASS; chưa kiểm tra đầy đủ mọi loại log/audit theo mục này, nên chưa nâng toàn mục thành PASS. Xem bằng chứng Bước C cuối báo cáo; đối chiếu toàn phạm vi ở E. |
-| 11.5 | **FAIL** | dc_users checksum 879749036 -> 951768798; 2 users tham chiếu department đã mất. pm_audit_smoke.php:56,67,71,74 UPDATE bảng thật MyISAM, finally chỉ rollback; PM department fixture rollback nhưng user reference không rollback. 19 bảng PM checksum/engine giữ nguyên, user engine vẫn MyISAM, high-id fixtures=0. Quay Phase 5/9/10 test isolation; dừng chạy test này/runner trước khi sửa. Chưa khôi phục giá trị gốc vì không có baseline field values. |
+| 11.5 | **PASS** | Lỗi fixture cũ đã xử lý ở A: người dùng xác nhận department_id gốc NULL, đã khôi phục. BƯỚC 1 chạy lại `.tools/php83/php.exe tests/pm_audit_smoke.php` exit 0, output exact-schema temporary users / persistent user rows and engine unchanged. Test đối chiếu toàn bộ user thật qua connection độc lập và engine MyISAM; checksum helper trước/sau đều EXTENDED=3533612692, high-id fixture=0, missing-department=0. Lịch sử lỗi và khôi phục giữ ở phần A; không dùng checksum hiện tại suy ra giá trị gốc. |
 
 ## Thứ tự sửa / kiểm tra lại — lịch sử đề xuất trước A/B/C/D1
 
@@ -451,3 +451,43 @@ escaped partial/textContent and no raw rate-warning content leak. No schema writ
 or persistent data repair. Tests above do not complete separate snapshot-concurrency
 case 5.5, D2 task-hour warning or E reconciliation; 19 CHƯA CHẠY remain unchanged.
 No merge/push/deploy; OT/daily-hard-limit question remains open.
+
+## BƯỚC 1 — Đối chiếu E cho 4.4 và 11.5 (07/10/2026)
+
+4.4 giữ PASS: đã chạy lại `.tools/php83/php.exe tests/pm_task_status_http_smoke.php`, exit 0, output `PASS: 33 task-status HTTP cases, ADMIN/PM, CSRF/method/scalar/role/tenant/ownership/hidden guards, audit/no-op/completion; persistent users/projects/tasks/audit/tracking unchanged.` Bằng chứng browser thực chạy ở phần D1 được giữ: `playwright-cli -s=kanban run-code --filename=../tests/pm_kanban_browser.js` PASS với preview/intercept và no-JS POST payload. Lượt đối chiếu này không chạy lại browser; không gọi đó là browser-to-DB E2E.
+
+11.5 đổi FAIL sang PASS: chạy lần lượt `.tools/php83/php.exe .local/checksum_diagnostic.php`, `.tools/php83/php.exe tests/pm_audit_smoke.php`, rồi checksum helper lần nữa; cả ba exit 0. Audit output `PASS: audit role/tenant/project boundaries, financial redaction, filter validation and fixture rollback; exact-schema temporary users, persistent user rows/engine unchanged.` Helper trước/sau: EXTENDED checksum=3533612692; high-id fixture rows=0; missing-department references=0; tracking raw username count=5341 không đổi. Test còn assert toàn bộ user thật và engine qua connection độc lập. Khôi phục gốc NULL đã có bằng chứng ở A; không suy từ checksum.
+
+Tổng hiện hành **59 PASS / 2 FAIL / 19 CHƯA CHẠY = 80**. Hai mục chưa PASS: 7.4 (D2 chưa BUILD), 11.4 (chưa audit toàn phạm vi log). Không nâng các mục khác, không chạy lại toàn bộ checklist. Đây là đối chiếu E giới hạn đúng hai mục được yêu cầu; không tuyên bố E toàn phạm vi hay dự án hoàn tất. Các con số cũ phía trên là lịch sử.
+
+BƯỚC 0 đã báo trước khi chạy test: reflog main fast-forward 07/10/2026 15:37:45 +0700, origin/main update by push 15:37:58, đích 3253dbaff295e0e9517808ba15f649c2da56b261, theo lệnh người dùng “push vô main để hiện chấm xanh”. Không push/merge mới trong lượt này.
+
+## BƯỚC 2 — BUILD và VERIFY local (07/10/2026)
+
+PLAN được người dùng duyệt, bổ sung bắt buộc quét read-only dữ liệu hiện có. Validator chung giới hạn username 30/fullname 50/email 50/tel 15, kiểm tra UTF-8/control; tạo nhân sự vẫn điện thoại tùy chọn chỉ số tối đa 10. Import giữ HEADERS 6 cột và tel rỗng; Preview/Stage báo lỗi theo dòng, từ chối cả file sai. Apply revalidate batch cũ, INSERT từng dòng và bắt native 1062 cho email duplicate/recovery. Collision khác bị chặn trước INSERT; không đổi engine, DDL persistent hoặc dữ liệu cũ.
+
+Nhân sự tạo/sửa, PM Hồ sơ, Apply và cấp mật khẩu import dùng cùng namespace named lock `pmidentity:` + hash(database:store_id). Hai tenant khác nhau dùng tên khác nhau. Import lấy batch lock trước identity lock, nhả identity trước batch bằng finally; các đường khác chỉ lấy identity lock. Các đường legacy/SQL ngoài PM không tham gia lock, không tuyên bố bảo vệ chúng.
+
+### Bằng chứng đã chạy
+
+- `.tools/php83/php.exe .local/step2_sql_mode_read.php` (BƯỚC 2 PLAN): exit 0, SESSION và GLOBAL `ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION`; giới hạn cột 30/50/50/15, identity collation utf8mb4_unicode_ci. Không kiểm tra production.
+- `.tools/php83/php.exe tests/pm_user_identity_smoke.php`: exit 0, **43 case PASS**: boundary, Unicode/control/invalid UTF-8, same-user exclusion và own email=username, same/cross identity, DB case/accent/padding, tenant khác, user khóa/ẩn, hai connection lock timeout/release và tenant khác vẫn ghi được vào mirror. Positive fixture scan assert chính xác một cặp và hai cờ username_email/email_username. Exact-schema MyISAM temporary mirrors; user thật và engine được đối chiếu không đổi.
+- `.tools/php83/php.exe tests/pm_import_smoke.php`: exit 0, Preview/Stage boundary 30/50/50, lỗi dòng 3, file có dòng tốt+xấu không stage phần nào; collision case trong file, cả hai chiều chéo có thông báo dòng, collision với legacy username dạng email theo accent/case DB. Các kiểm tra file/security/staging rollback cũ vẫn PASS. Fixture users là schema/index thật trong temporary mirrors, user thật/engine không đổi. Chạy lại sau bổ sung assertions cross-file, PASS.
+- `.tools/php83/php.exe tests/pm_import_apply_smoke.php`: exit 0, Apply boundary và batch cũ vượt username/fullname/email/tel failed `invalid_user_fields` không thêm user; username/cross collision failed trước ghi; duplicate email 1062/provenance recovery/row retry vẫn PASS. Tenant identity lock chặn Apply/provision bằng connection thứ hai, batch lock không rò sau timeout, Apply thành công sau nhả lock. Không đổi core user rows/engine qua connection độc lập.
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php`: exit 0, **139 HTTP case PASS**; thêm create/edit/profile boundary và collision, CSRF/no-write/no false saved notice, lỗi identity lock timeout rõ ở nhân sự/Hồ sơ và không ghi. Profile giữ email tùy chọn. Lượt đầu harness thiếu shutdown observation cho route profile, fail `Missing profile write state`; đã sửa guard observer test-only rồi chạy đạt. Không phải lỗi sản phẩm, không browser/password-login UAT.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`: exit 0, **51 script PASS**, gồm 43 identity case, 139 role HTTP case, 33 task status HTTP case và 101 EXPLAIN shapes. Không apply migration. Lần cuối gồm assertions import cross-file và timeout HTTP đã bổ sung.
+- PHP `-l` cho 14 file PHP sửa/mới: PASS. Diff whitespace check PASS trước ghi tài liệu, kiểm tra lại trước commit.
+
+Một lượt regression sau bổ sung timeout HTTP thất bại tại pm_role_http_smoke: `file_get_contents` connection timeout, `HR/op=pmusers expected 200 got none`, ở request invalid create sau hai lock-timeout cases. Không bỏ qua hoặc tự retry request trong test. Chạy lại suite HTTP riêng đạt 139 case; chưa xác định nguyên nhân timeout từ bằng chứng hiện có, không quy lỗi runtime hoặc môi trường bằng suy đoán. Lượt regression đầy đủ chạy lại được ghi kết quả cuối riêng ở trên; giữ lịch sử thất bại này.
+
+### Quét read-only toàn bộ user hiện có — bổ sung bắt buộc
+
+Lệnh `.tools/php83/php.exe tests/pm_identity_collision_audit.php`, exit 0; chạy lại sau regression:
+
+`READ_ONLY identity collision scan: users=10 pairs=0`
+
+`PASS: scan executed for all stores/statuses using DB collation and same-store pairs; user rows unchanged. Finding count is reported separately, not a clean-data assertion.`
+
+Quét không lọc trạng thái, cùng store_id và khác ID, cả username=username, email=email, username=email, email=username bằng phép so cột MySQL. Nếu có kết quả script xuất store_id/user_a/user_b/cờ loại collision, không xuất email/username hoặc sửa/khóa. **Danh sách cặp collision local hiện có: rỗng (0 cặp trên 10 user)**. Đây chỉ là kết quả local tại thời điểm chạy, không suy ra production.
+
+Review bảo mật: input limits trước ghi; prepared parameters; tên collation lấy metadata và whitelist identifier; permission/CSRF/tenant giữ nguyên; collision không bỏ user khóa/ẩn; credential không in hoặc đưa vào audit; batch/identity lock thứ tự thống nhất và nhả khi lỗi; fixture không ghi bảng users thật. Không phát hiện defect còn mở trong phạm vi BƯỚC 2 đã review. Giữ **59 PASS / 2 FAIL / 19 CHƯA CHẠY**; không tự nâng checklist từ regression. Không sửa OT, Audit Log UI hay D2; dừng trước BƯỚC 3. Không push/merge/deploy mới.

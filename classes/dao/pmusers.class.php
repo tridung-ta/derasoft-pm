@@ -1,8 +1,11 @@
 <?php
 include_once(ROOT_PATH.'classes/database/pmdb.class.php');
+include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
+include_once(ROOT_PATH.'classes/services/pmuseridentityservice.class.php');
 class PmUsers {
     private PmDb $db;
-    public function __construct($database){$this->db=new PmDb($database);}
+    private PmUserIdentityService $identity;
+    public function __construct($database){$this->db=new PmDb($database);$this->identity=new PmUserIdentityService($database);}
     public function list(int $storeId,array $filters,int $page=1,int $limit=20): array {
         $where=['u.store_id=?','u.status<>2'];$types='i';$params=[$storeId];
         if(($filters['q']??'')!==''){$where[]='(u.fullname LIKE ? OR u.email LIKE ? OR u.username LIKE ?)';$term='%'.$filters['q'].'%';$types.='sss';array_push($params,$term,$term,$term);}
@@ -33,6 +36,11 @@ class PmUsers {
         return $this->db->fetchOne('SELECT 1 FROM dc_users WHERE store_id=? AND username=? AND status<>2 LIMIT 1','is',[$storeId,$username])!==null;
     }
     public function create(int $storeId,array $data): int {
+        PmUserInputService::validateFields((string)$data['username'],(string)$data['fullname'],(string)$data['email'],(string)$data['tel']);
+        PmUserInputService::validateCreate((string)$data['email'],(string)$data['password'],(string)$data['tel']);
+        $lock=$this->identity->acquire($storeId);
+        try{
+        $this->identity->assertAvailable($storeId,(string)$data['username'],(string)$data['email']);
         $hash=password_hash((string)$data['password'],PASSWORD_DEFAULT);
         $this->db->execute('INSERT INTO dc_users(store_id,username,password,password_hash,email,fullname,tel,department_id,weekly_limit_hours,type,date_created,status,properties)
             VALUES(?,?,NULL,?,?,?,?,?,?,1,NOW(),1,?)','isssssids',[
@@ -41,13 +49,20 @@ class PmUsers {
             ]);
         $row=$this->db->fetchOne('SELECT LAST_INSERT_ID() id');
         return (int)$row['id'];
+        }finally{$this->identity->release($lock);}
     }
     public function updateSafe(int $storeId,int $id,array $data): bool {
+        PmUserInputService::validateFields('',(string)$data['fullname'],(string)$data['email'],(string)$data['tel'],true,false);
+        $lock=$this->identity->acquire($storeId);
+        try{
+        $old=$this->get($storeId,$id);if(!$old)return false;
+        $this->identity->assertAvailable($storeId,(string)$old['username'],(string)$data['email'],$id);
         $affected=$this->db->execute('UPDATE dc_users SET fullname=?,email=?,tel=?,department_id=?,weekly_limit_hours=? WHERE store_id=? AND id=? AND status<>2',
             'sssidii',[(string)$data['fullname'],(string)$data['email'],(string)$data['tel'],$data['department_id'],(float)$data['weekly_limit_hours'],$storeId,$id]);
         // Zero changed rows is valid for an unchanged form, but not a missing,
         // hidden or cross-tenant target. Keep both cases distinct.
         return $affected>0||($affected===0&&$this->get($storeId,$id)!==null);
+        }finally{$this->identity->release($lock);}
     }
     public function setStatus(int $storeId,int $id,int $status): bool {
         return $this->db->execute('UPDATE dc_users SET status=? WHERE store_id=? AND id=?','iii',[$status,$storeId,$id])===1;

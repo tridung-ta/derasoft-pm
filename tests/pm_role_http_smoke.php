@@ -2,6 +2,7 @@
 define('ROOT_PATH', dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'includes/config.inc.php';
 require ROOT_PATH.'classes/database/pmdb.class.php';
+require ROOT_PATH.'classes/services/pmuseridentityservice.class.php';
 if (($config['db_name'] ?? '') !== 'derasoft_pm_local' || !in_array($config['db_server'], ['localhost','127.0.0.1'], true)) throw new RuntimeException('Non-local refused.');
 $c = new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);
 $q = new PmDb((object)['connection'=>$c]);
@@ -110,6 +111,12 @@ function roleUserWrite(array $changes,string $role='HR',int $expected=200): ?arr
 function roleUser(array $state,int $id): array {
     foreach($state['users'] as $row) if ((int)$row['id']===$id) return $row;
     throw new RuntimeException('Missing fixture personnel.');
+}
+function roleProfileWrite(array $changes): array {
+    $post=array_replace(['op'=>'pm','act'=>'profile','csrf_token'=>'role-http-csrf','fullname'=>'Profile Updated','email'=>'profile-updated@example.test','telephone'=>'0901234567','address'=>'Local fixture'],$changes);
+    $html=roleHttp('HR','op=pm&act=profile',200,$post);
+    if(!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m))throw new RuntimeException('Missing profile write state.');
+    $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);$state['_html']=$html;return $state;
 }
 try {
     $ready=false;
@@ -229,11 +236,23 @@ try {
     $state=roleUserWrite(['fullname'=>'HTTP Member','email'=>'http-member@example.test','weekly_limit_hours'=>'40']);
     roleAssert(str_contains($state['_html'],'Đã lưu thông tin nhân sự.')&&$state['tracking_count']===1,'Unchanged valid personnel form rejected.');
     $personnelCount=count($state['users']);
+    foreach([['fullname'=>str_repeat('a',51)],['email'=>str_repeat('a',38).'@example.test'],['tel'=>str_repeat('1',16)],['email'=>'http-legacy@example.test']] as $bad){$state=roleUserWrite($bad);roleAssert(roleUser($state,900000041)['fullname']==='HTTP Member'&&$state['tracking_count']===0,'Invalid personnel edit persisted.');}
+    $state=roleUserWrite(['fullname'=>str_repeat('á',50),'tel'=>str_repeat('1',15)]);roleAssert(roleUser($state,900000041)['fullname']===str_repeat('á',50)&&roleUser($state,900000041)['tel']===str_repeat('1',15),'Edit schema boundary failed.');
     $newPerson=['id'=>'0','username'=>'http-new-person','password'=>'password123','email'=>'http-new@example.test'];
     foreach(['','0901234567'] as $phone){
         $state=roleUserWrite(array_replace($newPerson,['tel'=>$phone]));
         roleAssert(count($state['users'])===$personnelCount+1&&$state['tracking_count']===1,'Valid create/optional phone rejected.');
     }
+    foreach([['username'=>str_repeat('a',31)],['fullname'=>str_repeat('a',51)],['username'=>'http-locked@example.test'],['email'=>'http-legacy@example.test']] as $bad){$state=roleUserWrite(array_replace($newPerson,$bad));roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0,'Invalid or cross-identity create persisted.');}
+    $state=roleProfileWrite(['fullname'=>str_repeat('á',50),'telephone'=>str_repeat('1',15)]);roleAssert(roleUser($state,(int)$actor['id'])['fullname']===str_repeat('á',50)&&roleUser($state,(int)$actor['id'])['tel']===str_repeat('1',15),'Profile boundary write failed.');
+    $profileOriginal=roleUser(roleProfileWrite(['csrf_token'=>'wrong']),(int)$actor['id']);
+    foreach([['fullname'=>str_repeat('a',51)],['email'=>str_repeat('a',38).'@example.test'],['telephone'=>str_repeat('1',16)],['email'=>'HTTP-LEGACY@example.test'],['email'=>'http-locked@example.test'],['csrf_token'=>'wrong']] as $bad){$state=roleProfileWrite($bad);roleAssert(roleUser($state,(int)$actor['id'])===$profileOriginal&&!str_contains($state['_html'],'Thông tin cá nhân đã được cập nhật.'),'Rejected profile update persisted or reported saved.');}
+    $state=roleProfileWrite(['email'=>'']);roleAssert(roleUser($state,(int)$actor['id'])['email']==='','Optional profile email rule changed.');
+    $identityLockWorker=new PmUserIdentityService((object)['connection'=>$c]);$heldIdentity=$identityLockWorker->acquire((int)$actor['store_id'],0);
+    try{
+        $state=roleUserWrite($newPerson);roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0&&str_contains($state['_html'],'Nhân sự của đơn vị đang được cập nhật.'),'Personnel timeout missing useful error or wrote data.');
+        $state=roleProfileWrite([]);roleAssert(roleUser($state,(int)$actor['id'])===$profileOriginal&&str_contains($state['_html'],'Nhân sự của đơn vị đang được cập nhật.'),'Profile timeout missing useful error or wrote data.');
+    }finally{$identityLockWorker->release($heldIdentity);}
     foreach([['password'=>''],['password'=>'1234567'],['password'=>'        '],['email'=>'invalid'],['tel'=>'090abc1234'],['tel'=>'09012345678'],['tel'=>'+84901234567'],['tel'=>'090 123456'],['tel'=>"0901234567\n"],['csrf_token'=>'wrong']] as $bad){
         $state=roleUserWrite(array_replace($newPerson,$bad));
         roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0&&!str_contains($state['_html'],'Đã lưu thông tin nhân sự.'),'Rejected create wrote personnel/tracking or reported success.');

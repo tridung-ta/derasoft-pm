@@ -53,6 +53,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }elseif($action==='rate'){
             $rateService=new PmRateService($db);$rateService->saveRate((int)$storeId,['user_id'=>$targetId,'role_id'=>null,'rate'=>$request->element('rate'),'currency'=>'VND','effective_from'=>$request->element('effective_from'),'effective_to'=>$request->element('effective_to')],(int)$userInfo->getId());$notice='Đã thêm đơn giá.';
         }elseif($action==='save'){
+            foreach(['username','fullname','email','tel'] as $field)if(isset($_POST[$field])&&!is_string($_POST[$field]))throw new InvalidArgumentException('Thông tin nhân sự không hợp lệ.');
             $email=trim((string)$request->element('email'));$fullname=trim((string)$request->element('fullname'));
             if(!$targetId){
                 foreach(['email','password','tel'] as $field){
@@ -71,8 +72,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $notice='Đã lưu thông tin nhân sự.';
         }
         if($notice!=='')$trackings->addData(['store_id'=>$storeId,'username'=>(string)(int)$userInfo->getId(),'action'=>'PM users: '.$action.' user #'.$targetId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>'']);
-    }catch(PmUserInputException $e){$newPersonErrors=$e->getFieldErrors();$error=$e->getMessage();}
-    catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
+    }catch(PmUserInputException $e){$newPersonErrors=$targetId?[]:$e->getFieldErrors();$error=$e->getMessage();}
+    catch(InvalidArgumentException|DomainException|OutOfBoundsException|OverflowException $e){$error=$e->getMessage();}
     catch(Throwable $e){error_log('PM user management operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng kiểm tra dữ liệu và thử lại.';}
 }
 $page=max(1,(int)$request->element('page',1));$q=trim((string)$request->element('q'));$departmentFilter=(int)$request->element('department_id');$roleFilter=(int)$request->element('role_id');

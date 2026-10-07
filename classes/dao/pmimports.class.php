@@ -33,6 +33,6 @@ class PmImports {
     }
     public function duplicate(int $storeId,string $email): ?array {return $this->db->fetchOne('SELECT id,properties FROM dc_users WHERE store_id=? AND email=? LIMIT 1','is',[$storeId,$email]);}
     public function usernameCollision(int $storeId,string $username,int $userId): bool {return $this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND username=? AND id<>? LIMIT 1','isi',[$storeId,$username,$userId])!==null;}
-    public function ownedUser(int $storeId,int $id,int $row): ?array {return $this->db->fetchOne("SELECT u.id,u.username,u.properties,u.status,r.provenance_token FROM dc_pm_import_results r JOIN dc_users u ON u.store_id=r.store_id AND u.id=r.user_id WHERE r.store_id=? AND r.import_id=? AND r.source_row=? AND r.status='applied'",'iii',[$storeId,$id,$row]);}
+    public function ownedUser(int $storeId,int $id,int $row): ?array {return $this->db->fetchOne("SELECT u.id,u.username,u.email,u.properties,u.status,r.provenance_token FROM dc_pm_import_results r JOIN dc_users u ON u.store_id=r.store_id AND u.id=r.user_id WHERE r.store_id=? AND r.import_id=? AND r.source_row=? AND r.status='applied'",'iii',[$storeId,$id,$row]);}
     public function setPassword(int $storeId,int $userId,string $hash): bool {return $this->db->execute('UPDATE dc_users SET password=NULL,password_hash=? WHERE store_id=? AND id=? AND status=0','sii',[$hash,$storeId,$userId])===1;}
 }
