@@ -1837,3 +1837,7 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - User confirmed original department_id=NULL for IDs 93/110. Restored only those fields; all other user rows/fields unchanged, MyISAM retained.
 - Audit smoke uses exact-schema temporary users plus synchronized viewer mirror for HR self-join. Independent connection checks persistent rows/engine in finally. No runtime/DAO changes.
 - PHP lint PASS; audit smoke twice PASS; checksum 129141672 unchanged, dangling departments=0. See TEST_REPORT_FULL.md. No merge/push/deploy; B/C/D/E remain sequential.
+
+### 2026-10-07 - Step B complete
+- Corrected report 8.4 to PASS: original design validates/rejects entire file at Stage with row errors. 10.6 PASS matches approved light warning background and #d97706 border.
+- Documentation only; prior execution evidence retained, no rerun claimed. 57 PASS / 4 FAIL / 19 NOT RUN; Step E will reconcile targeted audit fix. PII policy pending Step C, no redaction. No merge/push/deploy.

@@ -8,7 +8,7 @@ Checklist: [QUY_TRINH_KIEM_THU_TONG.md](QUY_TRINH_KIEM_THU_TONG.md). App local b
 
 Quyết định người dùng: department tùy chọn, tên/email kiểm tra format/độ dài/control characters; không đánh giá tên vô nghĩa hoặc xác minh hộp thư. Validator hiện chưa đầy đủ: fullname/email 50, username 30, tel 15; import cho fullname 100/username 50. Xem [CONSTRAINT_REVIEW_20261007.md](CONSTRAINT_REVIEW_20261007.md). Giữ dc_users MyISAM.
 
-**80 mục: 56 PASS, 5 FAIL, 19 CHƯA CHẠY.** PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
+**80 mục: 57 PASS, 4 FAIL, 19 CHƯA CHẠY.** PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
 
 ## Lệnh và output được sử dụng
 
@@ -151,7 +151,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 8.1 | **PASS** | Hours/report totals, own scope, XLSX round-trip/DECIMAL/role aggregates khớp fixture. G8. |
 | 8.2 | **PASS** | Report fixture nhân dòng vượt 5000: xlsx bị từ chối, không silently truncate. G8 pm_reports_smoke; limit guards trong pmreports DAO. |
 | 8.3 | **CHƯA CHẠY** | XLSX đã assert =HYPERLINK và @SUM là type string; tất cả cells export explicit string. Chưa tạo đủ mẫu + và - để round-trip từng prefix trong lượt này. G8. |
-| 8.4 | **FAIL** | Import hiện preview cả file, stage() return ngay nếu valid=false, dòng đúng không được staging khi cùng file có dòng sai. pmimportservice: stage() + pm_import_smoke “Duplicate file staged” assertion. Quay Phase 8; khác quyết định cũ validate toàn bộ rồi stage, cần chốt thay đổi semantics trước BUILD. |
+| 8.4 | **PASS** | Reconciled with approved Phase 8 design: Stage validates the entire file, reports row errors and rejects the whole file if any row is invalid. Existing pm_import_smoke execution covered rejection (Duplicate file staged assertion). Previous FAIL incorrectly assumed partial staging; no code changed or new test run in Step B. |
 | 8.5 | **PASS** | Macro/formula/external link/DTD/ZIP-size/file-size/row-limit fixtures bị từ chối. G8 pm_import_smoke/http. |
 | 8.6 | **PASS** | Apply mirror có injected crash/provenance/retry/UNIQUE gate và không duplicate; native email 1062 verified local. G8 pm_import_apply_smoke. Không dùng production. |
 | 8.7 | **PASS** | Hai connection kiểm tra mutex/abandoned lock và apply concurrency gate; durable in_progress/retry. G8 pm_import_apply_smoke. |
@@ -176,7 +176,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 10.3 | **CHƯA CHẠY** | CSS warning foreground là #92400e, #d97706 dùng border; chưa computed-scan mọi small text trong mọi cảnh báo/state. Không coi grep CSS là kiểm thử toàn UI. |
 | 10.4 | **PASS** | Lock/deactivate danger; unlock/restore secondary không danger, confirmation existing được giữ. G10-buttons. |
 | 10.5 | **PASS** | Một theme chung css/pmui.css; computed stylesheet list còn Bootstrap và pmcosts.css legacy. Đây là 1 theme chung, không phải 1 stylesheet tổng cộng; không tạo theme thứ hai. E9-visibility + template review. |
-| 10.6 | **PASS** | Week renderer 8 headers (employee + 7 days), exact totals/overbooking, same-day rows, year rollover. G10-allocation; ô vượt dùng nền amber nhẹ + viền warning #d97706, không solid amber toàn ô. Nếu checklist đòi solid background, đây là điểm cần duyệt lại. |
+| 10.6 | **PASS** | Existing G10-allocation browser evidence: 8 headers, exact totals/overbooking, same-day rows and year rollover. User approved light warning background with border #d97706; solid fill is not required and reduces number readability. No code change or new test run in Step B. |
 | 10.7 | **PASS** | Grid card/native progress empty/0/50/100/restricted/task-delete aggregation + contrast badges. G4 and G10-projects. |
 
 ### Nhóm 11
@@ -226,3 +226,7 @@ User confirmed original department_id=NULL for IDs 93 and 110. Executed `.tools/
 Executed `.tools/php83/php.exe -l tests/pm_audit_smoke.php`: PASS. Executed `.tools/php83/php.exe tests/pm_audit_smoke.php` twice: PASS audit role/tenant/project boundaries, financial redaction, filter validation, rollback, persistent rows/engine unchanged. Initial mirror development failed Can't reopen table owner; corrected harness before both successful reruns. Executed `.tools/php83/php.exe .local/checksum_diagnostic.php`: EXTENDED checksum=129141672 unchanged after both runs; high-id fixture rows=0; missing-department references=0.
 
 11.5 audit fixture defect is fixed with targeted evidence. Final related-case reconciliation remains Step E; no claim that all other tests were rerun. No merge/push/deploy.
+
+## Step B complete - 2026-10-07
+
+8.4 corrected FAIL to PASS by reconciliation with original approved all-file Stage validation (not partial staging). 10.6 remains PASS; removed solid-fill caveat according to explicit approval of light background plus #d97706 border. Existing executed evidence retained, no new execution claimed. Total now 57 PASS / 4 FAIL / 19 NOT RUN; targeted 11.5 reconciliation deferred to Step E. No runtime changes. Step C PII policy still pending; no username redaction or status change.
