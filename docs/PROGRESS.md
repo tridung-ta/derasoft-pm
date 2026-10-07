@@ -1809,3 +1809,9 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - Sửa riêng css/pmui.css: giảm cỡ chữ và khoảng cách tiêu đề; đóng khung refresh-status ở góc phải desktop, xuống hàng mobile; cân lại tiêu đề phụ/tab, giữ vùng bấm tối thiểu 44px và role/status hiện có. Không đổi xử lý dữ liệu, polling, route hoặc quyền.
 - VERIFY: playwright-cli -s=pmlogin run-code --filename=../tests/pm_phase9b_costs_browser.js (chạy từ .local) PASS: Chart.js empty/mixed/zero/recovery, tab bàn phím, polling lỗi/quyền, responsive 360/390/768/1440, text scaling 200%, CSP và fallback không JS/thiếu chart. Đã xem ảnh fixture desktop/mobile; không coi fixture là UAT production. Regression 47 script thuộc lần sửa bộ lọc trước, không chạy lại cho thay đổi CSS này.
 - Impeccable detect: cảnh báo Inter và viền cảnh báo nghiệp vụ có sẵn; giữ theo theme đã duyệt. Review diff chỉ CSS, git diff --check đạt. Giữ local, chưa push/merge/deploy.
+
+### 07/10/2026 — Cân lại giao diện Phân bổ
+- Nguyên nhân: tiêu đề/mô tả và tiêu đề công cụ lớn đồng loạt, trạng thái polling lẫn trong nội dung.
+- Sửa css/pmui.css riêng pm-allocations-page: phân cấp đầu trang, cỡ chữ mô tả/tiêu đề công cụ, khoảng cách bộ lọc/form; viền section rõ hơn; khung trạng thái cập nhật căn phải. Giữ nguyên nội dung, ID/role, thu/mở, lưới tuần, route và nghiệp vụ.
+- VERIFY: playwright-cli -s=pmlogin run-code --filename=../tests/pm_phase9b_allocation_browser.js từ .local PASS: tuần giao năm, tổng từ server, quá tải, polling, escape, bàn phím/form, responsive 360/390/768/1440, text scaling 200%, trạng thái rỗng và fallback không JS. Đã xem ảnh fixture desktop; đây không phải UAT production. Không chạy lại toàn bộ regression cho thay đổi CSS này.
+- Impeccable detect chỉ báo Inter và viền cảnh báo có sẵn, giữ theo yêu cầu đã chốt. Review chỉ CSS, không sửa xử lý dữ liệu/permission. Giữ local, chưa push/merge/deploy.
