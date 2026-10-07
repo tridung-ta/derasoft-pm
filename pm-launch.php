@@ -31,8 +31,6 @@ header('X-Robots-Tag: noindex, nofollow, noarchive');
 		.status-label{font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:#cbd5e1}
 		.status h2{font-size:1.45rem;line-height:1.3;margin:14px 0}
 		.status p{color:#cbd5e1;line-height:1.65;margin:0}
-		.progress{height:3px;background:#334155;margin-top:30px;overflow:hidden}
-		.progress span{display:block;width:38%;height:100%;background:#f97316}
 		.admin-link{color:#fff;text-underline-offset:5px;font-size:.9rem}
 		.admin-link:focus-visible{outline:3px solid #fb923c;outline-offset:6px}
 		@media(max-width:760px){main{grid-template-columns:1fr}.eyebrow{margin-top:48px}.status{min-height:300px}.content{padding:40px 28px}.status{padding:36px 28px}}
@@ -45,14 +43,13 @@ header('X-Robots-Tag: noindex, nofollow, noarchive');
 			<div class="brand"><span class="mark" aria-hidden="true">D</span><span>DeraSoft PM</span></div>
 			<p class="eyebrow">Nền tảng vận hành nội bộ</p>
 			<h1 id="page-title">Quản lý dự án rõ ràng hơn.</h1>
-			<p class="lead">Hệ thống quản lý dự án và chấm công mới đang được thiết lập. Giao diện cũ đã được tạm ẩn trong thời gian xây dựng.</p>
+			<p class="lead">Quản lý dự án, phân công công việc, ghi nhận giờ làm và theo dõi chi phí trên một hệ thống thống nhất.</p>
 		</section>
 		<aside class="status" aria-label="Trạng thái dự án">
 			<div>
-				<span class="status-label">Trạng thái</span>
-				<h2>Đang xây dựng hệ thống mới</h2>
-				<p>Chúng tôi đang chuẩn bị không gian làm việc tập trung cho dự án, nhân sự và thời gian.</p>
-				<div class="progress" aria-hidden="true"><span></span></div>
+				<span class="status-label">Không gian làm việc</span>
+				<h2>Hệ thống đã hoàn thành</h2>
+				<p>Đăng nhập để quản lý dự án, chấm công, phân bổ nguồn lực và xem báo cáo theo quyền được cấp.</p>
 			</div>
 			<a class="admin-link" href="/admin.php">Đăng nhập quản trị</a>
 		</aside>
@@ -66,4 +63,3 @@ header('X-Robots-Tag: noindex, nofollow, noarchive');
 	</script>
 </body>
 </html>
-

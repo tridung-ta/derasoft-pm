@@ -1600,3 +1600,14 @@ Executed after resolving conflicts:
 
 No production deployment or SQL executed. Personnel fix 1f1ef1c remains pending
 deployment; automated results do not replace the remaining manual acceptance.
+# Public launch copy - 2026-10-07
+
+User confirmed project completion and requested removing development wording
+from the public introduction. Updated pm-launch.php descriptions and heading
+to completed-system copy; removed the decorative 38% construction bar and its
+unused CSS. Login URL, access checks, responsive rules and business logic unchanged.
+
+Verification: `.tools/php83/php.exe -l pm-launch.php` PASS; CLI render with
+ROOT_PATH defined PASS, confirmed new Vietnamese copy and existing /admin.php
+link. Reviewed the focused diff; no new dynamic output or write operation.
+No browser visual verification or production deployment performed for this edit.
