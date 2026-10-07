@@ -11,6 +11,10 @@ function rolePersistentState(PmDb $q): string {
     return hash('sha256',serialize([
         $q->fetchAll('SELECT * FROM dc_pm_user_roles ORDER BY id'),
         $q->fetchAll('SELECT * FROM dc_pm_projects ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_project_members ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_tasks ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_audit_logs ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_trackings ORDER BY id'),
         $q->fetchOne("SELECT engine FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='dc_users'")
     ]));
 }
@@ -42,6 +46,18 @@ function roleHttp(string $role,string $query,int $expected,?array $post=null): s
     if (str_contains($body,'Fatal error:')||str_contains($body,'mysqli_sql_exception')) throw new RuntimeException('HTTP runtime error.');
     $cases++; return $body;
 }
+function roleWrite(array $changes, string $role='PM', int $expected=200): ?array {
+    $post=array_replace(['op'=>'pmprojects','project_id'=>'900000001','action'=>'task_save','csrf_token'=>'role-http-csrf','name'=>'HTTP created task','description'=>'HTTP fixture','status'=>'todo','priority'=>'normal','estimated_hours'=>'2','start_date'=>'2026-01-01','due_date'=>'2026-12-31','assignee_id'=>''],$changes);
+    $html=roleHttp($role,'op=pmprojects',$expected,$post);
+    if ($expected!==200) return null;
+    if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing request-local write state.');
+    return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+}
+function roleAssert(bool $ok,string $message): void { if (!$ok) throw new RuntimeException($message); }
+function roleTask(array $state,int $id): array {
+    foreach($state['dc_pm_tasks'] as $task) if ((int)$task['id']===$id) return $task;
+    throw new RuntimeException('Missing fixture task.');
+}
 try {
     $ready=false;
     for($i=0;$i<50;$i++) { $socket=@fsockopen('127.0.0.1',18770,$errno,$error,.1); if($socket){fclose($socket);$ready=true;break;} usleep(100000); }
@@ -63,10 +79,37 @@ try {
     if (!str_contains($own,'HTTP own project')) throw new RuntimeException('Own project not rendered.');
     $foreign=roleHttp('PM','op=pmprojects&project_id=900000002',403);
     if (str_contains($foreign,'HTTP foreign project')) throw new RuntimeException('Foreign project leaked.');
+    $state=roleWrite(['status'=>'done']);
+    $created=array_values(array_filter($state['dc_pm_tasks'],fn($t)=>$t['name']==='HTTP created task'));
+    roleAssert(count($created)===1&&$created[0]['completed_at']!==null,'HTTP task create/completion failed.');
+    roleAssert(count($state['dc_pm_audit_logs'])===1&&$state['dc_pm_audit_logs'][0]['action']==='create','Create audit missing.');
+    $state=roleWrite(['task_id'=>'900000012','status'=>'done','name'=>'Edited completed task']);
+    roleAssert(roleTask($state,900000012)['completed_at']==='2026-01-01 09:00:00','Done edit replaced completion date.');
+    $audit=$state['dc_pm_audit_logs'][0]??[];
+    roleAssert(($audit['action']??'')==='update'&&(int)($audit['actor_id']??0)===(int)$actor['id'],'Update audit actor/action incorrect.');
+    roleAssert(json_decode($audit['old_values'],true)['name']==='HTTP done task'&&json_decode($audit['new_values'],true)['name']==='Edited completed task','Audit snapshots incorrect.');
+    $state=roleWrite(['task_id'=>'900000012','status'=>'todo']);
+    roleAssert(roleTask($state,900000012)['completed_at']===null,'HTTP reopen did not clear completion date.');
+    $state=roleWrite(['action'=>'task_delete','task_id'=>'900000011']);
+    roleAssert(roleTask($state,900000011)['deleted_at']!==null&&($state['dc_pm_audit_logs'][0]['action']??'')==='soft_delete','HTTP soft delete/audit failed.');
+    $state=roleWrite(['task_id'=>'900000011','csrf_token'=>'wrong']);
+    roleAssert(roleTask($state,900000011)['name']==='HTTP todo task'&&!$state['dc_pm_audit_logs'],'Bad CSRF wrote task/audit.');
+    $state=roleWrite(['task_id'=>'900000011','start_date'=>'2026-12-31','due_date'=>'2026-01-01']);
+    roleAssert(roleTask($state,900000011)['name']==='HTTP todo task'&&!$state['dc_pm_audit_logs'],'Invalid dates wrote task/audit.');
+    // Controller returns 403 after reloading the inaccessible project; observe denial state as well.
+    $html=roleHttp('PM','op=pmprojects',403,['op'=>'pmprojects','project_id'=>'900000002','action'=>'task_save','task_id'=>'900000013','name'=>'Unauthorized task','status'=>'todo','priority'=>'normal','estimated_hours'=>'1','csrf_token'=>'role-http-csrf']);
+    roleAssert(preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)===1,'Missing denial state.');
+    $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    roleAssert(roleTask($state,900000013)['name']==='HTTP foreign task'&&!$state['dc_pm_audit_logs'],'Foreign project mutation succeeded.');
+    roleWrite([], 'HR',403);
+    $state=roleWrite(['action'=>'project_save','code'=>'HTTP-EDIT','name'=>'HTTP edited project','client_name'=>'HTTP client','budget'=>'100','status'=>'active','start_date'=>'2026-01-01','end_date'=>'2026-12-31']);
+    roleAssert($state['dc_pm_projects'][0]['client_name']==='HTTP client'&&$state['dc_pm_projects'][0]['name']==='HTTP edited project','HTTP project metadata update failed.');
+    $state=roleWrite(['action'=>'project_delete']);
+    roleAssert($state['dc_pm_projects'][0]['deleted_at']!==null,'HTTP project soft delete failed.');
 } finally {
     proc_terminate($server); proc_close($server);
     putenv('PM_ROLE_HTTP_TOKEN'); putenv('PM_ROLE_HTTP_ACTOR'); putenv('PM_ROLE_HTTP_STORE');
     session_id($sid); session_start(); session_destroy();
     if (rolePersistentState($q)!==$before) throw new RuntimeException('Persistent role/project state or user engine changed.');
 }
-echo "PASS: $cases PM/HR HTTP controller cases with connection-local role/project fixtures; page gates, project ownership, report scope, CSRF and XLSX. No persistent business writes. Not real-account login UAT.\n";
+echo "PASS: $cases PM/HR HTTP controller cases with temporary fixtures; page/report gates, XLSX, task create/done/reopen/soft-delete/audit, project metadata/soft-delete, CSRF/date/ownership denial. Persistent roles/projects/members/tasks/audit/tracking and user engine unchanged. Not real-account login/browser UAT.\n";

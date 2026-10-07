@@ -59,3 +59,12 @@ cannot carry foreign keys; fixture copies retain columns/indexes and omit FK
 constraints only in the connection-local role table. Verified 30 HTTP cases,
 47 regression scripts, unchanged persistent roles/projects/user engine. These
 fixtures do not constitute password-login or production UAT evidence.
+
+## HTTP mutation isolation - 2026-10-07
+
+Before allowing test POST actions, trace every write target, including legacy
+tracking, and shadow all targets in connection-local temporary tables. Capture
+request-local state before connection teardown, and compare persistent state
+before/after. Verified project/task POST through unchanged controllers with
+40 HTTP cases and 47 regression scripts PASS. This verifies isolated request
+writes; it does not establish cross-request persistence or browser form E2E.

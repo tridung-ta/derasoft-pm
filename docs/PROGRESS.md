@@ -1,5 +1,21 @@
 # DeraSoft PM — Progress
 
+## Phase 11 project/task HTTP writes - 2026-10-07
+
+Extended existing PM/HR HTTP fixtures with 10 mutation cases (40 total).
+Shadowed every project mutation write target: roles/projects/members/tasks/audit
+and legacy tracking, using connection-local temporary copies. Observer captures
+committed temporary state after controller rendering, before connection teardown.
+Verified task create/done, preserved completion on done edit, reopen clearing,
+soft-delete and audit actor/before-after/action; project metadata and soft-delete.
+Invalid CSRF/date order and foreign project mutation do not change task/audit;
+HR project POST is denied at the route gate. No application defect found.
+Commands: PHP lint both test files PASS; pm_role_http_smoke.php 40 cases PASS;
+pm_regression.ps1 47 scripts PASS; git diff --check PASS. Security review checked
+router token/loopback/local DB gates, fixed actions and complete write isolation.
+Persistent roles/projects/members/tasks/audit/tracking and user engine unchanged.
+No production, runtime, schema or permission changes; not browser/login UAT.
+
 ## Phase 11 PM/HR HTTP coverage - 2026-10-07
 
 Added pm_role_http_smoke.php and its loopback-only token-guarded test router.

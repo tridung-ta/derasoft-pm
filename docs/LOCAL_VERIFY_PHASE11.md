@@ -1,5 +1,27 @@
 # Kiểm thử lại Phase 11 local — 06/10/2026
 
+## Project/task controller write coverage - 2026-10-07
+
+Expanded pm_role_http_smoke.php from 30 to 40 cases, with real POST requests
+through controller/service/DAO against connection-local temporary write tables.
+Each request starts from a fresh deterministic fixture, so this does not claim
+multi-request persistence or browser-form E2E. Post-request state is captured
+before connection teardown; persistent tables are fingerprinted before/after.
+
+- Task create with done records completed_at and create audit.
+- Editing done preserves completed_at; audit actor and old/new name verified.
+- Reopening clears completed_at; hiding sets deleted_at and soft_delete audit.
+- Invalid CSRF and reversed task dates leave task/audit unchanged.
+- PM foreign-project task mutation returns 403 and leaves task/audit unchanged;
+  HR project POST returns 403 at controller permission gate.
+- Project save persists client metadata/name in fixture; hide sets deleted_at.
+- All project writes, including legacy tracking, are isolated in temporary tables.
+
+Commands: PHP lint both role HTTP files PASS; targeted HTTP 40 cases PASS;
+full pm_regression.ps1 47 scripts PASS; git diff --check PASS. No runtime defect
+found or application change made. Real account login, browser write flows and
+production remain outside this automated result.
+
 ## Additional PM/HR HTTP verification - 2026-10-07
 
 - `.tools/php83/php.exe tests/pm_role_http_smoke.php`: 30 cases PASS.
