@@ -16,6 +16,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }elseif($action==='project_delete'){$service->deleteProject($projectId);$projectId=0;$notice='Đã ẩn dự án.';}
         elseif($action==='member_save'){$service->setMember($projectId,(int)$request->element('member_id'),(string)$request->element('member_active')==='1',$request->element('project_role')!==''?(string)$request->element('project_role'):null);$notice='Đã cập nhật thành viên.';}
         elseif($action==='task_save'){$data=[];foreach(['name','description','assignee_id','status','priority','estimated_hours','due_date','start_date'] as $key)$data[$key]=$request->element($key);$service->saveTask($projectId,$data,((int)$request->element('task_id'))?:null);$notice='Đã lưu công việc.';}
+        elseif($action==='task_status'){
+            foreach(['project_id','task_id'] as $key){$value=(string)$request->element($key);if(!preg_match('/^[1-9]\d{0,17}$/D',$value)||filter_var($value,FILTER_VALIDATE_INT)===false)throw new InvalidArgumentException('Công việc không hợp lệ.');}
+            $service->changeTaskStatus($projectId,(int)$request->element('task_id'),(string)$request->element('status'));$notice='Đã cập nhật trạng thái công việc.';
+        }
         elseif($action==='task_delete'){$service->deleteTask($projectId,(int)$request->element('task_id'));$notice='Đã ẩn công việc.';}
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
         try{$trackings->addData(['store_id'=>$storeId,'username'=>(string)(int)$userInfo->getId(),'action'=>'PM projects: '.$action.' project #'.$projectId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>'']);}catch(Throwable $logError){error_log('PM project tracking failed.');}

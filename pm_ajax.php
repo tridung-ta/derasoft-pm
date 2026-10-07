@@ -1,18 +1,22 @@
 <?php
-/** Allowlisted PM read endpoint; legacy ajax.php remains unchanged. */
+/** Allowlisted PM endpoint; legacy ajax.php remains unchanged. */
 define('ROOT_PATH',__DIR__.'/');
 include_once(ROOT_PATH.'includes/pm_response.inc.php');pmResponseHeaders();
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
-if(($_SERVER['REQUEST_METHOD']??'GET')!=='GET'){http_response_code(405);header('Allow: GET');echo json_encode(['error'=>'Method not allowed']);exit;}
+$pmEndpoint=$_GET['op']??'';
+if(!is_string($pmEndpoint)||!in_array($pmEndpoint,['pmcosts','pmallocations','pmtaskstatus'],true)){http_response_code(404);echo json_encode(['error'=>'Unknown PM endpoint']);exit;}
+$allowedMethod=$pmEndpoint==='pmtaskstatus'?'POST':'GET';
+if(($_SERVER['REQUEST_METHOD']??'GET')!==$allowedMethod){http_response_code(405);header('Allow: '.$allowedMethod);echo json_encode(['error'=>'Method not allowed']);exit;}
+foreach([$_GET,$_POST] as $input)foreach($input as $value)if(!is_scalar($value)){http_response_code(400);echo json_encode(['error'=>'Dữ liệu yêu cầu không hợp lệ.']);exit;}
 session_start(['cookie_httponly'=>true,'cookie_samesite'=>'Lax','cookie_secure'=>(!empty($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!=='off')||($_SERVER['SERVER_PORT']??null)==443,'use_strict_mode'=>true]);
 $actorId=(int)($_SESSION['userId']??0);$storeId=(int)($_SESSION['storeId']??0);
+$csrfToken=$_SESSION['pm_csrf_token']??'';
 session_write_close();
 header('Cache-Control: no-store');
 if(!$actorId){http_response_code(401);echo json_encode(['error'=>'Authentication required']);exit;}
-$pmEndpoint=$_GET['op']??'';
-if(!is_string($pmEndpoint)||!in_array($pmEndpoint,['pmcosts','pmallocations'],true)){http_response_code(404);echo json_encode(['error'=>'Unknown PM endpoint']);exit;}
+if($pmEndpoint==='pmtaskstatus'&&(!is_string($csrfToken)||$csrfToken===''||!is_string($_POST['csrf_token']??null)||!hash_equals($csrfToken,$_POST['csrf_token']))){http_response_code(403);echo json_encode(['error'=>'Phiên làm việc đã hết hạn. Vui lòng tải lại trang.']);exit;}
 try{
     include_once(ROOT_PATH.'includes/config.inc.php');
     include_once(ROOT_PATH.'includes/constant.inc.php');
@@ -20,5 +24,6 @@ try{
     include_once(ROOT_PATH.'classes/database/pmdb.class.php');
     $db=new DB();
     if(!(new PmDb($db))->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$storeId,$actorId])){http_response_code(401);echo json_encode(['error'=>'Authentication required']);exit;}
+    if($pmEndpoint==='pmtaskstatus')define('PM_TASK_STATUS_AUTHORIZED',true);
     include(ROOT_PATH.'modules/ajax/'.$pmEndpoint.'.module.php');
-}catch(Throwable $e){http_response_code(500);error_log('PM read endpoint failed.');echo json_encode(['error'=>'Không thể tải dữ liệu.']);}
+}catch(Throwable $e){http_response_code(500);error_log('PM endpoint failed.');echo json_encode(['error'=>'Không thể hoàn tất yêu cầu.']);}

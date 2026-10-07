@@ -1846,3 +1846,8 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - Chính sách người dùng đã chốt; giữ toàn bộ log cũ. PM login/lock/logout/users/projects tracking dùng ID số/IP rỗng; login_times mới không thu IP, UPDATE counter giữ IP lịch sử. Legacy ngoài PM giữ nguyên; không migration.
 - VERIFY: 10 auth-module fixtures, 73 role HTTP case, 20 identity case, session guard và PHP lint 7 file PASS. Regression đầu FAIL import abandoned lock; test riêng PASS, rerun toàn runner 48 script PASS. Nguyên nhân lỗi lock chưa xác định chắc.
 - Persistent user checksum 129141672, missing department=0, fixture high-ID=0. Review không thấy lỗi mới; 11.4 chưa PASS toàn phạm vi và 19 CHƯA CHẠY giữ nguyên. D1 chờ duyệt PLAN; không merge/push/deploy.
+
+### 07/10/2026 — D1 Kanban AJAX BUILD/VERIFY local
+- PLAN được người dùng duyệt. Thêm status-only service/POST AJAX allowlist và native POST fallback; giữ quyền/ownership/CSRF/audit, không migration, không kéo-thả. Full-edit/confirmation giữ nguyên. Client chỉ chuyển card sau success; pending/gửi đôi, timeout/lỗi, focus/live status và full-edit sync được kiểm thử.
+- VERIFY: service/Smarty PASS; 33 status HTTP và 81 role HTTP case PASS, persistent state/engine giữ nguyên. Browser PASS 4 viewports, text 200%, keyboard/errors/no-JS. Lint 9 PHP và diff check PASS. Regression cuối 49 script PASS. Hai lỗi harness (HR expected 200 và script visible) đã sửa rồi chạy lại; không sửa permission để chiều test.
+- Review code/security không thấy lỗi mới; Impeccable detector không resolve CSS template, cảnh báo hierarchy có giới hạn. Đã xem ảnh synthetic desktop/mobile; không coi là production UAT. TEST_REPORT_FULL cập nhật 4.4 PASS, giữ 19 CHƯA CHẠY; D2 chưa BUILD. Không merge/push/deploy.

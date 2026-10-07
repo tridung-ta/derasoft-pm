@@ -107,3 +107,15 @@ Ten module fixtures, 73 HTTP cases and final 48-script regression PASS. First
 regression failed an abandoned import-lock assertion, then standalone and full
 rerun passed; root cause remains unconfirmed. These results do not certify all
 audit payloads or constitute real-account login UAT.
+
+## Kanban status-only mutations - 2026-10-07
+
+Applied feature-development for the endpoint/service, impeccable for the existing
+interaction, playwright-cli for browser behavior, code-review and git-feature-commit.
+Status-only writes must lock and preserve non-status task fields, share completion
+rules with full edits and audit atomically. Guard AJAX modules against direct access
+as well as validating the entry point; legacy dynamic includes must not bypass CSRF.
+Verified 33 endpoint HTTP and 81 role HTTP cases, service rollback/no-op, browser
+pending/duplicate/timeout/focus/responsive/no-JS and 49-script regression. Test HR
+must expect the actual permission denial; script elements are attached, not visible.
+Synthetic browser responses plus isolated backend HTTP are not persistence E2E/UAT.

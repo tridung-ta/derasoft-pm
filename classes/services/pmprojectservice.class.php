@@ -119,10 +119,28 @@ class PmProjectService {
             $start=$this->date($data['start_date']??($old['start_date']??null));if($start&&$due&&$start>$due)throw new InvalidArgumentException('Ngày bắt đầu phải trước hạn hoàn thành.');
             if($id)$this->db->execute('UPDATE dc_pm_tasks SET name=?,description=?,assignee_id=?,status=?,priority=?,estimated_hours=?,due_date=? WHERE store_id=? AND project_id=? AND id=?','ssissssiii',[$name,$description,$assignee,$status,$priority,$hours,$due,$this->storeId,$projectId,$id]);
             else{$this->db->execute('INSERT INTO dc_pm_tasks(store_id,project_id,name,description,assignee_id,status,priority,estimated_hours,due_date,created_by) VALUES(?,?,?,?,?,?,?,?,?,?)','iississssi',[$this->storeId,$projectId,$name,$description,$assignee,$status,$priority,$hours,$due,$this->actorId]);$id=(int)$this->db->fetchOne('SELECT LAST_INSERT_ID() id')['id'];}
-            $completed=$status==='done'?($old&&$old['status']==='done'?$old['completed_at']:(new DateTimeImmutable('now',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d H:i:s')):null;
+            $completed=$this->completionTime($status,$old);
             $this->db->execute('UPDATE dc_pm_tasks SET start_date=?,completed_at=? WHERE store_id=? AND project_id=? AND id=?','ssiii',[$start,$completed,$this->storeId,$projectId,$id]);
             $this->auditTask($id,$old?'update':'create',$old,$this->taskSnapshot($projectId,$id));
             $this->db->commit();return $id;
+        }catch(Throwable $e){$this->db->rollBack();throw $e;}
+    }
+    private function completionTime(string $status,?array $old): ?string {
+        return $status==='done'?($old&&$old['status']==='done'?$old['completed_at']:(new DateTimeImmutable('now',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d H:i:s')):null;
+    }
+    public function changeTaskStatus(int $projectId,int $id,string $status): array {
+        if($projectId<=0||$id<=0||!in_array($status,['todo','in_progress','review','done'],true))throw new InvalidArgumentException('Trạng thái công việc không hợp lệ.');
+        $this->db->beginTransaction();
+        try{
+            $project=$this->getProject($projectId,true);$this->requireManage($project,'pm.tasks.manage');
+            $old=$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','iii',[$this->storeId,$projectId,$id]);
+            if(!$old)throw new OutOfBoundsException('Không tìm thấy task.');
+            if($old['status']!==$status){
+                $completed=$this->completionTime($status,$old);
+                $this->db->execute('UPDATE dc_pm_tasks SET status=?,completed_at=? WHERE store_id=? AND project_id=? AND id=?','ssiii',[$status,$completed,$this->storeId,$projectId,$id]);
+                $new=$this->taskSnapshot($projectId,$id);$this->auditTask($id,'update',$old,$new);
+            }else{$new=$old;}
+            $this->db->commit();return ['id'=>(int)$new['id'],'status'=>$new['status'],'completed_at'=>$new['completed_at']];
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
     public function deleteTask(int $projectId,int $id): void {

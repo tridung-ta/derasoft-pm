@@ -99,7 +99,24 @@ try{
     $connection->failAudit=true;
     try{$service->saveTask($id,['name'=>'Must roll back'],$taskId);throw new LogicException('Audit failure accepted');}catch(RuntimeException $expected){if($expected->getMessage()!=='Injected audit failure')throw $expected;}finally{$connection->failAudit=false;}
     if($query->fetchOne('SELECT name FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$store,$taskId])['name']!=='Smoke task')throw new RuntimeException('Task edit survived audit failure.');
+    $beforeStatus=$query->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$store,$taskId]);
+    $statusResult=$service->changeTaskStatus($id,$taskId,'done');
+    if($statusResult['status']!=='done'||!$statusResult['completed_at'])throw new RuntimeException('Status-only completion failed.');
+    $afterStatus=$query->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$store,$taskId]);
+    foreach(['name','description','assignee_id','priority','estimated_hours','start_date','due_date'] as $field)if($afterStatus[$field]!==$beforeStatus[$field])throw new RuntimeException('Status-only write overwrote task fields.');
+    $statusAudit=$query->fetchOne("SELECT * FROM dc_pm_audit_logs WHERE entity_type='task' AND store_id=? AND entity_id=? ORDER BY id DESC LIMIT 1",'ii',[$store,$taskId]);
+    if((int)$statusAudit['actor_id']!==$actor||json_decode($statusAudit['old_values'],true)['status']!=='todo'||json_decode($statusAudit['new_values'],true)['status']!=='done')throw new RuntimeException('Status-only audit failed.');
+    $auditCount=$query->fetchOne('SELECT COUNT(*) n FROM dc_pm_audit_logs')['n'];
+    if($service->changeTaskStatus($id,$taskId,'done')!==$statusResult||$query->fetchOne('SELECT COUNT(*) n FROM dc_pm_audit_logs')['n']!==$auditCount)throw new RuntimeException('Status-only no-op changed completion/audit.');
+    foreach([[$service,$id,$taskId,'invalid'],[$service,$id,$taskId+9999999,'done'],[$pm,$id,$taskId,'review'],[new PmProjectService($db,$store+999999,$actor),$id,$taskId,'done']] as [$statusService,$statusProject,$statusTask,$targetState]){
+        try{$statusService->changeTaskStatus($statusProject,$statusTask,$targetState);throw new LogicException('Status boundary accepted.');}catch(InvalidArgumentException|DomainException|OutOfBoundsException $expected){}
+    }
+    $connection->failAudit=true;
+    try{$service->changeTaskStatus($id,$taskId,'review');throw new LogicException('Status audit failure accepted.');}catch(RuntimeException $expected){if($expected->getMessage()!=='Injected audit failure')throw $expected;}finally{$connection->failAudit=false;}
+    if($query->fetchOne('SELECT status FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$store,$taskId])['status']!=='done')throw new RuntimeException('Status update survived audit failure.');
+    if($service->changeTaskStatus($id,$taskId,'review')['completed_at']!==null)throw new RuntimeException('Status reopen kept completed_at.');
     $service->deleteTask($id,$taskId);$service->setMember($id,$other,false);
+    try{$service->changeTaskStatus($id,$taskId,'todo');throw new LogicException('Hidden task status accepted.');}catch(OutOfBoundsException $expected){}
     $deletedAudit=$query->fetchOne("SELECT new_values FROM dc_pm_audit_logs WHERE store_id=? AND entity_type='task' AND entity_id=? AND action='soft_delete'",'ii',[$store,$taskId]);
     if(!json_decode($deletedAudit['new_values'],true)['deleted_at'])throw new RuntimeException('Task soft delete audit missing.');
     if($service->tasks($id)!==[])throw new RuntimeException('Soft deleted task still visible.');

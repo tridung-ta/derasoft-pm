@@ -192,6 +192,14 @@ try {
         roleAssert($state['dc_pm_capacity_overrides'][0]['daily_limit_hours']==='8.00'&&$state['dc_pm_capacity_overrides'][0]['weekly_limit_hours']==='8.00','PM changed capacity override.');
     }
     roleHttp('HR','op=pmallocations',403,['op'=>'pmallocations','action'=>'save','csrf_token'=>'role-http-csrf']);
+    $state=roleWrite(['action'=>'task_status','task_id'=>'900000011','status'=>'done']);
+    roleAssert(roleTask($state,900000011)['status']==='done'&&roleTask($state,900000011)['completed_at']!==null&&count($state['dc_pm_audit_logs'])===1&&count($state['tracking'])===1,'Status POST fallback/audit/tracking failed.');
+    roleAssert(roleTask($state,900000011)['name']==='HTTP todo task','Status POST overwrote task name.');
+    foreach([['csrf_token'=>'wrong'],['task_id'=>'900000013'],['task_id'=>'999999999'],['status'=>'invalid'],['task_id'=>'900000011junk'],['project_id'=>'900000001junk']] as $bad){
+        $state=roleWrite(array_replace(['action'=>'task_status','task_id'=>'900000011','status'=>'done'],$bad));
+        roleAssert(roleTask($state,900000011)['status']==='todo'&&!$state['dc_pm_audit_logs']&&!$state['tracking'],'Rejected fallback wrote status/audit/tracking.');
+    }
+    roleWrite(['action'=>'task_status','task_id'=>'900000011','status'=>'done'],'HR',403);
     $state=roleUserWrite([]);
     roleAssert(roleUser($state,900000041)['fullname']==='HTTP Updated'&&roleUser($state,900000041)['tel']==='0900000000'&&$state['tracking_count']===1,'HTTP personnel edit/tracking failed.');
     $state=roleUserWrite(['fullname'=>'HTTP Member','email'=>'http-member@example.test','weekly_limit_hours'=>'40']);

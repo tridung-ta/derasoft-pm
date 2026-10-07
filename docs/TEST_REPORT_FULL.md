@@ -1,14 +1,14 @@
 # Báo cáo kiểm thử tổng — 07/10/2026
 
-Checklist: [QUY_TRINH_KIEM_THU_TONG.md](QUY_TRINH_KIEM_THU_TONG.md). App local b8e0774, nhánh feature/pm-phase11-launch-copy; báo cáo trước lượt này 9263aea. Không merge/push/deploy, không chỉnh UI/runtime, không migration. Chỉ database derasoft_pm_local/loopback được guard.
+Checklist: [QUY_TRINH_KIEM_THU_TONG.md](QUY_TRINH_KIEM_THU_TONG.md). Baseline local b8e0774, nhánh feature/pm-phase11-launch-copy; các cập nhật A/B/C/D1 ghi cuối báo cáo. D1 đã sửa runtime theo PLAN duyệt. Không merge/push/deploy, không migration. Chỉ database derasoft_pm_local/loopback được guard.
 
 **Kết luận: CHƯA ĐẠT checklist tổng; chưa sẵn sàng tuyên bố UAT đầy đủ.** Có lỗi sản phẩm, thay đổi yêu cầu so với quyết định cũ, test lỗi thời và lỗi fixture MyISAM. Đã chạy nhóm 0 rồi kiểm tra cổng Tenant trước nhóm 2–8; 1.1/1.2 và scope suites không FAIL, nhưng 1.3/1.4 chưa đủ coverage toàn endpoint. Nhóm 9–10 browser; nhóm 11 regression/lint/checksum. Các probe bổ sung chỉ xác minh case còn thiếu, không thay trạng thái CHƯA CHẠY bằng suy luận.
 
-**Sự cố kiểm thử cần ưu tiên:** runner báo 47 PASS nhưng pm_audit_smoke thay department_id user thật trên MyISAM và không khôi phục. Đã dừng chạy thêm test ghi dữ liệu thật sau phát hiện. Không được rerun test này/regression trước khi cô lập bảng user; không đoán hoặc reset department_id. Cần tìm backup/bằng chứng giá trị gốc trước khôi phục local. Không có bằng chứng đây là lỗi production hoặc đã thay production.
+**Sự cố kiểm thử đã xử lý ở A:** runner cũ báo 47 PASS nhưng pm_audit_smoke thay department_id user thật trên MyISAM. Người dùng đã xác nhận giá trị gốc NULL cho cả hai user; đã khôi phục và cô lập test bằng temporary exact-schema mirror, xác minh bảng thật không đổi khi chạy lại. Lịch sử điều tra giữ bên dưới; 11.5 chờ đối chiếu cuối ở E. Không có bằng chứng đã thay production.
 
 Quyết định người dùng: department tùy chọn, tên/email kiểm tra format/độ dài/control characters; không đánh giá tên vô nghĩa hoặc xác minh hộp thư. Validator hiện chưa đầy đủ: fullname/email 50, username 30, tel 15; import cho fullname 100/username 50. Xem [CONSTRAINT_REVIEW_20261007.md](CONSTRAINT_REVIEW_20261007.md). Giữ dc_users MyISAM.
 
-**80 mục: 57 PASS, 4 FAIL, 19 CHƯA CHẠY.** PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
+**80 mục: 58 PASS, 3 FAIL, 19 CHƯA CHẠY.** PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
 
 ## Lệnh và output được sử dụng
 
@@ -103,7 +103,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 4.1 | **PASS** | Service và HTTP PM sửa/xem foreign project bị từ chối. G1/G4 và E0. |
 | 4.2 | **PASS** | Project service từ chối assignee không thuộc member active của dự án. G4 pm_projects_smoke. |
 | 4.3 | **PASS** | Employee scope task assignment, permission/foreign project assertions trong G4 pm_projects_smoke. |
-| 4.4 | **FAIL** | Không có luồng Kanban AJAX. Template pm-projects.tpl.html:11 dùng form task_save POST; save/audit POST PASS nhưng không đáp ứng AJAX. Quay Phase 4; không tự đổi framework/route. |
+| 4.4 | **PASS** | D1 đã BUILD theo PLAN duyệt: task_status AJAX qua pm_ajax.php?op=pmtaskstatus, form POST fallback vẫn hoạt động. Service smoke PASS, 33 status HTTP case PASS, 81 role HTTP case PASS và pm_kanban_browser.js PASS: chuyển cột, CSRF, permission/ownership/tenant, audit/completed_at/no-op, pending/gửi đôi, lỗi/timeout, bàn phím, responsive và no-JS. Fixture local; không phải UAT production. Xem bằng chứng D1 cuối báo cáo. |
 | 4.5 | **PASS** | Project/task soft delete và historical data giữ được trong costs/reports. G4/G6/G8. |
 
 ### Nhóm 5
@@ -189,7 +189,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 11.4 | **FAIL** | Chính sách C đã chốt: log mới chỉ lưu ID tài khoản, lịch sử giữ nguyên. Các điểm tracking PM login/lock/logout/users/projects đã sửa và kiểm thử ID-only, không thu IP mới; log cũ không sửa. Test 10 auth-module fixtures và 73 HTTP PASS; chưa kiểm tra đầy đủ mọi loại log/audit theo mục này, nên chưa nâng toàn mục thành PASS. Xem bằng chứng Bước C cuối báo cáo; đối chiếu toàn phạm vi ở E. |
 | 11.5 | **FAIL** | dc_users checksum 879749036 -> 951768798; 2 users tham chiếu department đã mất. pm_audit_smoke.php:56,67,71,74 UPDATE bảng thật MyISAM, finally chỉ rollback; PM department fixture rollback nhưng user reference không rollback. 19 bảng PM checksum/engine giữ nguyên, user engine vẫn MyISAM, high-id fixtures=0. Quay Phase 5/9/10 test isolation; dừng chạy test này/runner trước khi sửa. Chưa khôi phục giá trị gốc vì không có baseline field values. |
 
-## Thứ tự sửa / kiểm tra lại
+## Thứ tự sửa / kiểm tra lại — lịch sử đề xuất trước A/B/C/D1
 
 1. Phase 5/9/10: cô lập pm_audit_smoke bằng temporary dc_users đúng schema; guard toàn runner tránh MyISAM rollback giả. Xác định bản gốc hai department_id trước sửa local; không tự gán NULL, không đổi engine. Lượt này chưa phục hồi dữ liệu.
 2. Phase 3: validator chung đúng cột thật, create/edit/profile/import; chặn control characters/overlength và collision username–email chéo; test schema thật và boundary. Không coi chuỗi tên trong ảnh tự thân là lỗi.
@@ -262,4 +262,59 @@ chuỗi ID số cho bản ghi PM mới, không đổi tên cột. Legacy ngoài 
 Review code/security: ID chỉ lấy từ server; không đổi CSRF/permission/ownership;
 không thấy lỗi mới trong diff. Chưa rà đầy đủ mọi payload audit/log, nên 11.4
 chưa PASS toàn phạm vi, chờ đối chiếu ở E. Giữ 19 CHƯA CHẠY. Không merge/push/deploy.
-D1 mới có PLAN, chưa BUILD.
+D1 mới có PLAN, chưa BUILD ở thời điểm Bước C.
+
+## Bước D1 — Kanban AJAX hoàn tất local (07/10/2026)
+
+Người dùng duyệt docs/PLAN_D1_KANBAN_AJAX.md rồi BUILD riêng D1. Endpoint
+`POST pm_ajax.php?op=pmtaskstatus` được allowlist; endpoints chi phí/phân bổ
+vẫn GET-only. Kiểm tra scalar/method/session/user active cùng tenant/CSRF
+trước ghi. Module writer có guard chống truy cập trực tiếp hoặc include từ
+entry khác chưa xác thực. Client không quyết định actor_id/store_id.
+
+Service khóa project/task, dùng ownership/permission hiện có; cập nhật riêng
+status/completed_at, audit cùng transaction. No-op không tạo audit mới hoặc
+đổi thời điểm hoàn thành. Form POST fallback giữ nguyên; full-edit/ẩn task giữ
+nhãn và confirmation. AJAX không tự gửi lại khi kết quả chưa xác nhận, timeout
+20 giây trả quyền thao tác và hướng dẫn tải lại. Text lỗi dùng textContent.
+
+### Lệnh đã chạy và kết quả
+
+- `.tools/php83/php.exe tests/pm_projects_smoke.php`: **PASS**; thêm assert trường
+  khác giữ nguyên, audit old/new, no-op, completion/reopen, deny và rollback khi
+  audit lỗi. Fixture outer transaction/savepoint; không commit dữ liệu thật.
+- `.tools/php83/php.exe tests/pm_task_status_http_smoke.php`: **PASS 33 HTTP case**;
+  Admin/PM success, no-role/HR/Employee/inactive/session/tenant/method/CSRF/scalar,
+  malformed ID, task/project ẩn hoặc sai scope, client actor/store ignored,
+  no-op/completion và direct-module guard. Exact-schema users temporary MyISAM;
+  persistent users/projects/tasks/audit/tracking và engine không đổi.
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php`: **PASS 81 HTTP case**;
+  bổ sung status POST success, field preservation, CSRF/ID/ownership/role denial,
+  audit và ID-only tracking. Lượt đầu harness mong HR 200 nhưng controller
+  đúng ra trả 403; sửa expected code, không đổi quyền ứng dụng.
+- `.tools/php83/php.exe tests/smoke_pm_projects.php --preview`: **PASS**, tạo
+  preview ignored .local bằng Smarty. Không phải UAT production.
+- `playwright-cli -s=kanban run-code --filename=../tests/pm_kanban_browser.js`
+  (cwd .local): **PASS** success/pending/duplicate, full-edit status sync, focus
+  và live announcement; network/401/500/invalid response/timeout; 360/390/768/1440,
+  text scaling 200%, read-only, escaping và native POST payload khi tắt JS.
+  Browser dùng synthetic preview và response intercept; backend kiểm tra HTTP
+  riêng ở trên. Không chứng nhận browser-to-DB persistence E2E hoặc UAT thật.
+  Lượt đầu harness chờ script visible nên timeout; sửa sang attached rồi PASS.
+- PHP `-l` 9 file PHP sửa/mới: **PASS**; các file guard sửa sau đó lint lại PASS.
+  `git diff --check`: **PASS**.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+  **PASS 49 script**, lần chạy cuối gồm 33 status HTTP và 81 role HTTP. Không
+  migration do runner. Không dùng số script PASS để suy 80 mục đều đạt.
+- `.tools/php83/php.exe .local/checksum_diagnostic.php`: user EXTENDED=129141672,
+  fixture high-ID=0, missing department=0, tracking lịch sử non-empty=5332.
+- Đã xem ảnh .local/kanban-desktop.png và kanban-mobile.png. Impeccable detect
+  báo flat hierarchy nhưng không resolve được linked CSS từ đường dẫn template;
+  detector có giới hạn, không coi cảnh báo đó là computed style thực tế. Giữ
+  theme hiện có, không thêm CSS hoặc thay nền/font trong D1.
+
+Review code/security: prepared queries, lock và audit cùng transaction, không
+ghi user thật, service fail closed theo tenant/ownership, JSON lỗi không lộ
+exception, module chỉ chạy qua entry đã kiểm tra CSRF. Không thấy defect mới
+trong diff đã chốt. Mục 4.4 PASS; tổng 58 PASS / 3 FAIL / 19 CHƯA CHẠY. D2 chưa
+BUILD; 11.4/11.5 chờ đối chiếu E. Không merge/push/deploy.

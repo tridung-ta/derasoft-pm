@@ -13,7 +13,7 @@ if (!in_array($fixtureRole, ['PM', 'HR'], true)
     || (($_SERVER['REQUEST_METHOD']??'')==='POST' && ($_POST['op']??'')!==($_GET['op']??''))
     || ($_SERVER['REQUEST_METHOD'] === 'POST' && !(
         (($_POST['op'] ?? '') === 'pmreports' && ($_POST['action'] ?? '') === 'export')
-        || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','task_save','task_delete'], true))
+        || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','task_save','task_status','task_delete'], true))
         || (($_POST['op'] ?? '') === 'pmtimesheets' && in_array($_POST['action'] ?? '', ['save','delete','settings'], true))
         || (($_POST['op'] ?? '') === 'pmallocations' && in_array($_POST['action'] ?? '', ['save','delete','capacity'], true))
         || (($_POST['op'] ?? '') === 'pmusers' && in_array($_POST['action'] ?? '', ['save','status'], true))
