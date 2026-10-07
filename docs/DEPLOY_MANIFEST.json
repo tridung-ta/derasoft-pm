@@ -255,7 +255,7 @@
       "status": "A",
       "path": "css/pmui.css",
       "action": "upload_runtime",
-      "sha256": "b9d3a966df88c4d4870a7762533ec740c8be6d5295d7f3e038c34044e8ce42e2"
+      "sha256": "c11834c3c9a0f97527f1812a2dd4d7a525d8d702683ce6ad9c847dce3e8a2e59"
     },
     {
       "status": "A",
@@ -919,7 +919,7 @@
       "status": "M",
       "path": "templates/admin/pm-login.tpl.html",
       "action": "upload_runtime",
-      "sha256": "6c4714beb43909c4f6b560b7f4125c37ffe59752b2732ec3401bacee556a8a45"
+      "sha256": "69bada7354ad4bd6b13a78c24b96e11ac97342c94969d885fdd5cfb615e08ae7"
     },
     {
       "status": "A",

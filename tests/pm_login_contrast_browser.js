@@ -5,7 +5,8 @@ async page=>{
         function lum(color){return color.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4}).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0)}
         return nodes.map(e=>{const fg=lum(getComputedStyle(e).color),bg=lum(getComputedStyle(e.closest('.intro')).backgroundColor);return {tag:e.tagName,ratio:(Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05)}});
     });
-    if(results.length!==3||results.some(r=>r.ratio<4.5))throw Error('Login intro unreadable: '+JSON.stringify(results));
+    if(results.length!==3||results.some(r=>r.ratio<15))throw Error('Login intro not strongly legible: '+JSON.stringify(results));
+    if(!await page.locator('link[href*="css/pmui.css"]').evaluate(e=>e.getAttribute('href').includes('v=20261007-login2')))throw Error('Login CSS cache version missing');
     if(!await page.locator('.intro').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(244, 244, 245)'))throw Error('Generic card rule overrides login intro');
     if(!await page.locator('button.submit').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(24, 24, 27)'))throw Error('Legacy orange login button remains');
     for(const width of [1440,390,720]){

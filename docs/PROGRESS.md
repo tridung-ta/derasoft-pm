@@ -1,5 +1,18 @@
 # DeraSoft PM — Progress
 
+## Login legibility and cache follow-up — 2026-10-07
+
+User reported login still faint. Made intro description foreground #09090b at
+weight 500, brand/title bold, panel hint/back #3f3f46 and stronger outer border.
+Added `v=20261007-login2` to PM/base CSS links on login so a transferred patch
+does not rely on the browser expiring its seven-day CSS cache. Cache was a plausible
+deployment cause, not verified on production. Two runtime files only: css/pmui.css
+and templates/admin/pm-login.tpl.html; no auth/DAO/schema changes.
+46 regression scripts PASS; login contrast/cache-version browser and general UI
+browser PASS. Final brand/title/description contrast 18.10:1; desktop/mobile and
+200% text scaling/focus verified, mobile screenshot inspected. Two-file patch
+prepared; not merged/pushed/deployed by agent.
+
 ## Login contrast regression fixed locally — 2026-10-06
 
 User screenshot showed invisible brand/title and pale description in login intro.
