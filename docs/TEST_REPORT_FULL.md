@@ -417,3 +417,37 @@ Giữ trạng thái 80 mục/19 CHƯA CHẠY; không dùng các test này suy ra
 Review: lỗi escaped trên server, JS chỉ textContent, aria liên kết ô và lỗi,
 không in lại mật khẩu, CSRF/quyền/hash/tenant giữ nguyên. Không mở rộng kết quả
 thành UAT hay xác minh email; giữ 19 CHƯA CHẠY và các gap D2/E hiện có.
+
+## Bổ sung 07/10/2026 — Chi phí thực tế thiếu đơn giá
+
+Scope: chỉ cảnh báo completeness, không tính lại tiền/snapshot lịch sử, không chặn
+ghi công hoặc đổi quy tắc OT. rate_source=fallback hoặc rate_warning không rỗng
+được đếm là thiếu đơn giá; cost=0 với user/role rate hợp lệ không bị gắn nhãn thiếu.
+
+- `.tools/php83/php.exe tests/pm_costs_smoke.php` → PASS groups 1–4, bổ sung:
+  partial SUM(cost) giữ nguyên; toàn bộ thiếu rate trả 0.00 + incomplete; nhóm
+  project/task/user/department/role/date cùng đếm; range sạch và lifetime thiếu
+  tách riêng; currency guard đồng thời với missing-rate; deleted row bỏ qua;
+  rate hiện tại không sửa history; dashboard không UPDATE snapshots;
+  PM không nhìn cảnh báo dự án ngoài quyền. Fixtures rollback.
+- `.tools/php83/php.exe tests/smoke_pm_costs.php --preview` → PASS group 5,
+  5 vị trí nhãn server và tiền 0.00 giữ nguyên; ignored .local preview dùng dữ liệu giả.
+- `.tools/php83/php.exe tests/pm_costs_http_smoke.php` → PASS group 3 HTTP,
+  polling metadata count int/complete bool; role/tenant/IDOR/filter/method/no-store.
+- PHP lint DAO/service PASS; `node --check js/pmcosts.js` và
+  `node --check tests/pm_costs_missing_rate_browser.js` PASS.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`
+  → `PASS: 50 regression scripts. No migrations applied by this runner.`
+  Bao gồm 119 role HTTP và 101 prepared query shapes EXPLAIN.
+- Từ `.local`, `playwright-cli -s=personnel run-code --filename=../tests/pm_costs_missing_rate_browser.js`
+  → PASS saved-zero label initial/polling/no-JS, summary/project/task/group,
+  incomplete charts hidden, configured-zero charts retained, transitions, 1440/390 overflow.
+- `playwright-cli -s=personnel run-code --filename=../tests/pm_phase9b_costs_browser.js`
+  → PASS Chart.js empty/mixed/zero/recovery, decimal strings, tab keyboard/state,
+  polling errors/auth, responsive/text scaling/CSP, no-JS/missing-chart fallbacks.
+
+Review: scope and currency guards unchanged, no per-row query, prepared parameters,
+escaped partial/textContent and no raw rate-warning content leak. No schema writes
+or persistent data repair. Tests above do not complete separate snapshot-concurrency
+case 5.5, D2 task-hour warning or E reconciliation; 19 CHƯA CHẠY remain unchanged.
+No merge/push/deploy; OT/daily-hard-limit question remains open.

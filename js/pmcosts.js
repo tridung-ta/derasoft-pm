@@ -8,6 +8,14 @@
     const text = (id, value) => { document.getElementById(id).textContent = value; };
     const amount = row => row.cost === null ? 'Không cộng: khác currency hoặc thiếu dữ liệu' : `${row.cost} ${row.currency}`;
     const node = (tag, value) => { const element = document.createElement(tag); element.textContent = value; return element; };
+    const actualAmount = value => {
+        const element=node('span',amount(value));
+        if(Number(value.missing_rate_entries)>0){
+            const note=node('span',`Chưa đủ đơn giá · ${value.missing_rate_entries} bản ghi`);
+            note.className='pm-cost-incomplete';element.append(note);
+        }
+        return element;
+    };
     const row = (table, values) => { const tr = document.createElement('tr'); values.forEach(value => { const td = document.createElement('td'); if (typeof value === 'string') td.textContent = value; else td.append(value); tr.append(td); }); table.append(tr); };
     const chart = (id, labels, datasets, emptyMessage) => {
         const canvas=document.getElementById(id), empty=document.getElementById(id+'-empty');
@@ -23,10 +31,10 @@
         else charts[id] = new window.Chart(canvas, { type: 'bar', data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom', labels: {font:{family:'Inter'}} }, tooltip:{titleFont:{family:'Inter'},bodyFont:{family:'Inter'},footerFont:{family:'Inter'}} }, scales:{x:{ticks:{font:{family:'Inter'}}},y:{ticks:{font:{family:'Inter'}}}} } });
     };
     function draw() {
-        const sameCurrency = data.summary.cost !== null;
+        const sameCurrency = data.summary.cost !== null && data.summary.cost_complete !== false;
         const dates = Object.keys(data.groups.date).filter(d=>data.groups.date[d].cost!==null && Number.isFinite(Number(data.groups.date[d].cost)));
-        chart('trend-chart', sameCurrency ? dates : [], [{ label: `Actual (${data.summary.currency})`, data: sameCurrency ? dates.map(d => Number(data.groups.date[d].cost)) : [], backgroundColor: '#18181b' }], sameCurrency ? 'Chưa có chi phí theo ngày trong khoảng lọc. Thử đổi khoảng ngày hoặc xem bảng bên dưới.' : 'Không vẽ tổng tiền khi dữ liệu khác tiền tệ hoặc chưa đủ dữ liệu đồng nhất. Xem chi tiết trong bảng.');
-        const comparable = data.projects.filter(p => p.comparable);
+        chart('trend-chart', sameCurrency ? dates : [], [{ label: `Actual (${data.summary.currency})`, data: sameCurrency ? dates.map(d => Number(data.groups.date[d].cost)) : [], backgroundColor: '#18181b' }], sameCurrency ? 'Chưa có chi phí theo ngày trong khoảng lọc. Thử đổi khoảng ngày hoặc xem bảng bên dưới.' : Number(data.summary.missing_rate_entries)>0 ? 'Chưa đủ đơn giá cho chấm công trong khoảng lọc; chưa vẽ tổng chi phí. Số tiền đã lưu vẫn có trong bảng.' : 'Không vẽ tổng tiền khi dữ liệu khác tiền tệ hoặc chưa đủ dữ liệu đồng nhất. Xem chi tiết trong bảng.');
+        const comparable = data.projects.filter(p => p.comparable && p.lifetime.cost_complete !== false);
         chart('budget-chart', comparable.map(p => p.name), [
             { label: 'Ngân sách VND', data: comparable.map(p => Number(p.budget)), backgroundColor: '#71717a' },
             { label: 'Actual toàn đời VND', data: comparable.map(p => Number(p.lifetime.cost)), backgroundColor: '#18181b' },
@@ -34,7 +42,7 @@
         ], data.projects.length ? 'Chưa có dự án đủ dữ liệu VND đồng nhất để so sánh ngân sách, actual toàn đời và ước tính. Xem bảng dự án.' : 'Không có dự án trong phạm vi để so sánh. Thử đổi bộ lọc.');
     }
     function render() {
-        text('actual-cost', amount(data.summary));
+        document.getElementById('actual-cost').replaceChildren(actualAmount(data.summary));
         text('valuation-date', data.valuation_date);
         text('actual-hours', `${data.summary.hours} / ${data.summary.regular_hours} / ${data.summary.ot_hours}`);
         text('estimate-cost', data.estimate_total === null ? 'Chưa đủ dữ liệu đồng nhất' : `${data.estimate_total} ${data.estimate_currency}`);
@@ -43,15 +51,15 @@
         data.projects.forEach(p => {
             const link = node('a', p.name), params = new URLSearchParams({ op: 'pmcosts', project_id: p.id, from: data.filters.from, to: data.filters.to });
             link.href = `?${params}`;
-            row(projects, [link, p.budget, amount(p.actual), amount(p.lifetime), amount(p.estimate)]);
+            row(projects, [link, p.budget, actualAmount(p.actual), actualAmount(p.lifetime), amount(p.estimate)]);
         });
         if (!data.projects.length) { const tr = node('tr', ''), td = node('td', 'Không có dự án trong phạm vi.'); td.colSpan = 5; tr.append(td); projects.append(tr); }
         const tasks = document.getElementById('tasks');
-        if (tasks) { tasks.replaceChildren(); data.tasks.forEach(t => row(tasks, [t.name + (t.deleted_at ? ' (đã ẩn)' : ''), t.actual.hours, amount(t.actual), t.estimate && t.estimate.estimate !== null ? `${t.estimate.estimate} ${t.estimate.currency}` : 'Chưa có ước tính']));
+        if (tasks) { tasks.replaceChildren(); data.tasks.forEach(t => row(tasks, [t.name + (t.deleted_at ? ' (đã ẩn)' : ''), t.actual.hours, actualAmount(t.actual), t.estimate && t.estimate.estimate !== null ? `${t.estimate.estimate} ${t.estimate.currency}` : 'Chưa có ước tính']));
             if(!data.tasks.length){const tr=node('tr',''),td=node('td','Chưa có công việc trong phạm vi.');td.colSpan=4;tr.append(td);tasks.append(tr);}
         }
         const groups = document.getElementById('breakdowns'); groups.replaceChildren();
-        Object.entries({ user: 'Nhân sự', department: 'Phòng ban', role: 'Role chính', date: 'Ngày' }).forEach(([key, label]) => Object.entries(data.groups[key]).forEach(([bucket, r]) => row(groups, [`${label} #${bucket}`, `${r.hours} / ${r.regular_hours} / ${r.ot_hours}`, amount(r)])));
+        Object.entries({ user: 'Nhân sự', department: 'Phòng ban', role: 'Role chính', date: 'Ngày' }).forEach(([key, label]) => Object.entries(data.groups[key]).forEach(([bucket, r]) => row(groups, [`${label} #${bucket}`, `${r.hours} / ${r.regular_hours} / ${r.ot_hours}`, actualAmount(r)])));
         if(!groups.children.length){const tr=node('tr',''),td=node('td','Chưa có chấm công trong khoảng lọc.');td.colSpan=3;tr.append(td);groups.append(tr);}
         const pager = document.getElementById('pager'); pager.replaceChildren();
         [[data.page - 1, 'Trang trước'], [data.page + 1, 'Trang sau']].forEach(([page, label]) => {

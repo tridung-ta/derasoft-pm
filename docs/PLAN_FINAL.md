@@ -81,6 +81,7 @@ Test theo vai trò và nghiệp vụ, UAT trên staging/local copy, lập releas
 
 - Login chuyển tiếp hỗ trợ username hoặc email; seed bốn role hệ thống nhưng schema cho phép mở rộng.
 - Rate tại ngày làm việc: ưu tiên rate theo user, sau đó role, nếu thiếu thì giá trị 0 kèm cảnh báo.
+- Chi phí thực tế (07/10/2026): đếm bản ghi có rate_source fallback hoặc rate_warning đã lưu; giữ nguyên SUM(cost), gắn nhãn chưa đủ đơn giá cho tổng/nhóm và không dùng tổng chưa đầy đủ để vẽ/so sánh ngân sách. Rate 0 được cấu hình hợp lệ không coi là thiếu; rate mới không tự sửa lịch sử.
 - Nếu user có nhiều role và không có rate riêng thì dùng role chính, không dùng role có giá cao nhất.
 - OT: giờ thường tối đa theo `standard_hours_per_day` (mặc định 8); phần vượt là OT; thay đổi một dòng phải tính lại toàn bộ ngày của user.
 - Overbooking: tổng allocation vượt giới hạn tuần hoặc giới hạn ngày sẽ cảnh báo; ngưỡng phải cấu hình được.

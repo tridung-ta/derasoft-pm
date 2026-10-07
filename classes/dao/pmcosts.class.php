@@ -48,7 +48,9 @@ class PmCosts {
     }
     public function actualHours(array $f,string $group): array {
         [$from,$where,$types,$params,$bucket]=$this->actualQuery($f,$group);
-        return $this->db->fetchAll("SELECT $bucket bucket,COUNT(*) entries,SUM(s.hours) hours,SUM(s.regular_hours) regular_hours,SUM(s.ot_hours) ot_hours FROM $from WHERE $where GROUP BY bucket ORDER BY bucket",$types,$params);
+        return $this->db->fetchAll("SELECT $bucket bucket,COUNT(*) entries,SUM(s.hours) hours,SUM(s.regular_hours) regular_hours,SUM(s.ot_hours) ot_hours,
+            SUM(CASE WHEN s.rate_source='fallback' OR (s.rate_warning IS NOT NULL AND s.rate_warning<>'') THEN 1 ELSE 0 END) missing_rate_entries
+            FROM $from WHERE $where GROUP BY bucket ORDER BY bucket",$types,$params);
     }
     /** Only buckets already verified by the service as single-currency may be summed. */
     public function actualAmounts(array $f,string $group,array $safeBuckets): array {

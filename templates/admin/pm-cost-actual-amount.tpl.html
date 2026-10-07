@@ -1,0 +1,1 @@
+{if $actualRow.cost !== null}{$actualRow.cost|escape} {$actualRow.currency|escape}{else}Không cộng: khác currency hoặc thiếu dữ liệu{/if}{if $actualRow.missing_rate_entries|default:0 gt 0}<span class="pm-cost-incomplete">Chưa đủ đơn giá · {$actualRow.missing_rate_entries|escape} bản ghi</span>{/if}

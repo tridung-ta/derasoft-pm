@@ -28,7 +28,8 @@ class PmCostService {
             $key=(string)$r['bucket'];$codes=$currencies[$key];$valid=isset($amounts[$key]);
             $warning=$valid?null:'Khác currency hoặc currency không hợp lệ ('.implode(', ',$codes).'): không cộng chi phí cho '.$group.' #'.$key.'.';
             if($warning)$warnings[]=$warning;
-            $rows[$key]=array_merge($r,['cost'=>$valid?(string)$amounts[$key]['cost']:null,'currency'=>$valid?$codes[0]:null,'currencies'=>$codes,'warning'=>$warning]);
+            $missingRateEntries=(int)$r['missing_rate_entries'];
+            $rows[$key]=array_merge($r,['cost'=>$valid?(string)$amounts[$key]['cost']:null,'currency'=>$valid?$codes[0]:null,'currencies'=>$codes,'warning'=>$warning,'missing_rate_entries'=>$missingRateEntries,'cost_complete'=>$valid&&$missingRateEntries===0]);
         }
         return $rows;
     }
@@ -60,6 +61,13 @@ class PmCostService {
             $tasks=$this->costs->taskNames($f);$taskEstimates=[];foreach($estimateRows as $r)$taskEstimates[(int)$r['id']]=$r;
             foreach($tasks as &$t){$t['actual']=$groups['task'][(string)$t['id']]??self::emptyActual();$t['estimate']=$taskEstimates[(int)$t['id']]??null;}unset($t);
             $summary=$groups['total']['0']??self::emptyActual();
+            if($summary['missing_rate_entries']>0)$warnings[]='Trong khoảng lọc có '.$summary['missing_rate_entries'].' bản ghi chấm công thiếu đơn giá tại thời điểm ghi công. Tổng tiền đã lưu chưa phản ánh đầy đủ chi phí; không tự tính lại theo đơn giá hiện tại.';
+            foreach($projects['rows'] as &$p){
+                if($p['lifetime']['missing_rate_entries']>0){
+                    $p['comparable']=false;
+                    $warnings[]='Dự án #'.$p['id'].' có '.$p['lifetime']['missing_rate_entries'].' bản ghi toàn đời thiếu đơn giá; chưa dùng chi phí này để so sánh ngân sách.';
+                }
+            }unset($p);
             $estimateCodes=[];foreach($estimates as $r)$estimateCodes[$r['currency']]=true;
             $estimateTotal=null;$estimateCurrency=count($estimateCodes)===1?array_key_first($estimateCodes):null;
             if(!$missing&&count($safeProjects)===count($estimateCurrencies)&&count($estimateCodes)<=1)$estimateTotal=$this->costs->decimalSum(array_column($estimates,'cost'));
@@ -68,5 +76,5 @@ class PmCostService {
             $db->commit();return $result;
         }catch(Throwable $error){$db->rollBack();throw $error;}
     }
-    private static function emptyActual(): array {return ['entries'=>0,'hours'=>'0.00','regular_hours'=>'0.00','ot_hours'=>'0.00','cost'=>'0.00','currency'=>'VND','currencies'=>[],'warning'=>null];}
+    private static function emptyActual(): array {return ['entries'=>0,'hours'=>'0.00','regular_hours'=>'0.00','ot_hours'=>'0.00','cost'=>'0.00','currency'=>'VND','currencies'=>[],'warning'=>null,'missing_rate_entries'=>0,'cost_complete'=>true];}
 }

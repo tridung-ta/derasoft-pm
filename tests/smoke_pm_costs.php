@@ -10,6 +10,15 @@ $html=$s->fetch('admin/pm-costs.tpl.html');
 if(!str_contains($html,'name="project_id"><option')||!str_contains($html,'value="1" selected')||!str_contains($html,'&lt;script&gt;Project name&lt;/script&gt;'))throw new RuntimeException('Named project selector or selected value/escaping failed.');
 foreach(['&lt;script&gt;','chartjs-4.5.1','page=2','(đã ẩn)','Không cộng','pm-cost-kpis','cost-tabs','cost-project-panel','cost-group-panel','trend-chart-empty','budget-chart-empty','class="chart" hidden'] as $needle)if(!str_contains($html,$needle))throw new RuntimeException('Cost render missing: '.$needle);
 if(str_contains($html,'<script>bad</script>'))throw new RuntimeException('Cost HTML/JSON escaping failed.');
+$missingData=$data;$missingActual=$actual;
+$missingActual['cost']='0.00';$missingActual['currency']='VND';$missingActual['missing_rate_entries']=2;$missingActual['cost_complete']=false;
+$missingData['summary']=$missingActual;$missingData['projects'][0]['actual']=$missingActual;$missingData['projects'][0]['lifetime']=$missingActual;$missingData['projects'][0]['comparable']=false;
+$missingData['tasks'][0]['actual']=$missingActual;$missingData['groups']['user'][1]=$missingActual;
+$missingData['warnings']=['Trong khoảng lọc có 2 bản ghi chấm công thiếu đơn giá tại thời điểm ghi công. Tổng tiền đã lưu chưa phản ánh đầy đủ chi phí.'];
+$s->assign(['costData'=>$missingData,'costJson'=>json_encode($missingData,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)]);
+$missingHtml=$s->fetch('admin/pm-costs.tpl.html');
+if(substr_count($missingHtml,'class="pm-cost-incomplete"')!==5||!str_contains($missingHtml,'Chưa đủ đơn giá · 2 bản ghi')||!str_contains($missingHtml,'0.00 VND'))throw new RuntimeException('Missing-rate labels/saved zero absent from server render.');
+if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/pm-costs-missing.html',str_replace('<head>','<head><base href="/">',$missingHtml));
 $empty=$data;$empty['projects']=[];$empty['tasks']=[];$empty['groups']=['user'=>[],'department'=>[],'role'=>[],'date'=>[]];
 $s->assign(['costData'=>$empty,'costJson'=>json_encode($empty,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)]);
 $emptyHtml=$s->fetch('admin/pm-costs.tpl.html');
@@ -19,7 +28,7 @@ $s->assign(['costData'=>null,'costJson'=>'null','error'=>'<script>invalid filter
 $html=$s->fetch('admin/pm-costs.tpl.html');if(str_contains($html,'id="cost-data"')||str_contains($html,'<script>invalid'))throw new RuntimeException('Error render/escaping failed.');
 echo "PASS group 5: cost Smarty charts/table, currency warnings, history labels, pagination/filter, error and HTML/JSON escaping.\n";
 if(in_array('--preview',$argv,true)){
-    $actual=['cost'=>'1102.75','currency'=>'VND','hours'=>'10.00','regular_hours'=>'8.00','ot_hours'=>'2.00'];
+    $actual=['cost'=>'1102.75','currency'=>'VND','hours'=>'10.00','regular_hours'=>'8.00','ot_hours'=>'2.00','missing_rate_entries'=>0,'cost_complete'=>true];
     $data['summary']=$actual;$data['estimate_total']='1002.50';$data['estimate_currency']='VND';
     $data['projects'][0]=['id'=>1,'name'=>'Website nội bộ','budget'=>'2000.00','actual'=>$actual,'lifetime'=>$actual,'estimate'=>['cost'=>'1002.50','currency'=>'VND'],'comparable'=>true];
     $data['groups']['date']=['2026-10-01'=>$actual];$data['warnings']=['Phòng ban/role dùng phân loại hiện tại; chưa có snapshot lịch sử.'];

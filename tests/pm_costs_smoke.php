@@ -45,6 +45,34 @@ try{
     checkCost($data['summary']['cost']==='1102.75'&&$data['summary']['hours']==='10.00'&&$data['summary']['ot_hours']==='2.00','Group 1: actual decimal/OT failed.');
     checkCost($data['projects'][0]['lifetime']['cost']==='1303.25'&&$data['estimate_total']==='1002.50','Group 1: lifetime/estimate/date label failed.');
     checkCost($data['valuation_date']===$today&&count($data['warnings'])>=1,'Valuation/snapshot classification warning missing.');
+    checkCost($data['summary']['missing_rate_entries']===0&&$data['summary']['cost_complete'],'Configured actual rates marked incomplete.');
+    $connection->query('SAVEPOINT missing_rate_checks');
+    $query->execute("UPDATE dc_pm_timesheets SET rate_source='fallback',rate_warning='Missing saved rate',rate_snapshot=0,cost=0 WHERE store_id=? AND id=?",'ii',[$store,$first]);
+    $beforeMissing=$query->fetchAll('SELECT * FROM dc_pm_timesheets WHERE store_id=? AND project_id=? ORDER BY id','ii',[$store,$project]);
+    $incomplete=$costs->dashboard($filter);
+    checkCost($incomplete['summary']['cost']==='501.25'&&$incomplete['summary']['missing_rate_entries']===1&&!$incomplete['summary']['cost_complete'],'Missing rate did not flag stored partial sum.');
+    foreach(['project','task','user','department','role','date'] as $g)foreach($incomplete['groups'][$g] as $r)checkCost($r['missing_rate_entries']===1&&!$r['cost_complete'],'Group lost missing-rate flag: '.$g);
+    checkCost(!$incomplete['projects'][0]['comparable']&&$incomplete['tasks'][0]['actual']['missing_rate_entries']===1,'Incomplete lifetime compared against budget/task flag missing.');
+    checkCost(str_contains(implode(' ',$incomplete['warnings']),'1 bản ghi chấm công thiếu đơn giá'),'Missing actual warning absent.');
+    checkCost($query->fetchAll('SELECT * FROM dc_pm_timesheets WHERE store_id=? AND project_id=? ORDER BY id','ii',[$store,$project])===$beforeMissing,'Dashboard changed historical timesheet snapshots.');
+    $query->execute("UPDATE dc_pm_hourly_rates SET rate=200 WHERE store_id=? AND user_id=? AND currency='VND'",'ii',[$store,$actor]);
+    checkCost(!$costs->dashboard($filter)['summary']['cost_complete'],'Current rate repaired historical missing rate implicitly.');
+    $unaffected=$costs->dashboard(['project_id'=>$project,'from'=>'2026-10-02','to'=>'2026-10-02']);
+    checkCost($unaffected['summary']['missing_rate_entries']===0&&$unaffected['summary']['cost_complete']&&!$unaffected['projects'][0]['comparable'],'Filtered clean range/lifetime distinction failed.');
+    $query->execute("UPDATE dc_pm_timesheets SET rate_source='role',rate_warning=NULL WHERE store_id=? AND id=?",'ii',[$store,$first]);
+    checkCost($costs->dashboard($filter)['summary']['cost_complete'],'Explicit configured zero role rate marked missing.');
+    $query->execute("UPDATE dc_pm_timesheets SET rate_source='user',rate_warning='Missing saved rate' WHERE store_id=? AND id=?",'ii',[$store,$first]);
+    checkCost(!$costs->dashboard($filter)['summary']['cost_complete'],'Saved rate_warning ignored.');
+    $query->execute("UPDATE dc_pm_timesheets SET rate_source='fallback',rate_warning=NULL,cost=0 WHERE store_id=? AND id=?",'ii',[$store,$second]);
+    $allMissing=$costs->dashboard($filter);
+    checkCost($allMissing['summary']['cost']==='0.00'&&$allMissing['summary']['missing_rate_entries']===2&&!$allMissing['summary']['cost_complete'],'All missing zero presented as complete.');
+    $query->execute("UPDATE dc_pm_timesheets SET currency='USD' WHERE store_id=? AND id=?",'ii',[$store,$second]);
+    $mixedMissing=$costs->dashboard($filter);
+    checkCost($mixedMissing['summary']['cost']===null&&$mixedMissing['summary']['missing_rate_entries']===2&&!$mixedMissing['summary']['cost_complete'],'Currency guard lost missing-rate metadata.');
+    $query->execute('UPDATE dc_pm_timesheets SET deleted_at=NOW() WHERE store_id=? AND id=?','ii',[$store,$second]);
+    checkCost($costs->dashboard($filter)['summary']['missing_rate_entries']===1,'Deleted timesheet counted as missing rate.');
+    $connection->query('ROLLBACK TO SAVEPOINT missing_rate_checks');
+    $connection->query('RELEASE SAVEPOINT missing_rate_checks');
     $query->execute('UPDATE dc_pm_timesheets SET rate_snapshot=? WHERE store_id=? AND id=?','sii',['9999999999999.99',$store,$first]);
     checkCost($costs->dashboard($filter)['summary']['cost']==='1102.75','Stored cost was recomputed from rate.');
     foreach([['from'=>'2026-02-30'],['from'=>'2026-10-02','to'=>'2026-10-01'],['project_id'=>['1']],['page'=>'-1']] as $invalid){try{$costs->dashboard($invalid);throw new RuntimeException('Group 2: invalid filter accepted.');}catch(InvalidArgumentException $expected){}}
@@ -64,6 +92,10 @@ try{
     $pmChoices=array_map('intval',array_column($pm->projectChoices(),'id'));
     checkCost(in_array($pmProject,$pmChoices,true)&&!in_array($project,$pmChoices,true),'PM project selector ownership failed.');
     foreach($pm->dashboard()['projects'] as $p)checkCost((int)$p['id']!==$project,'PM list leaked other project.');
+    $query->execute("UPDATE dc_pm_timesheets SET rate_source='fallback' WHERE store_id=? AND id=?",'ii',[$store,$third]);
+    $pmScoped=$pm->dashboard(['project_id'=>$pmProject]);
+    checkCost($pmScoped['summary']['missing_rate_entries']===0&&!str_contains(implode(' ',$pmScoped['warnings']),'Dự án #'.$project.' '),'Missing-rate warnings leaked another manager project.');
+    $query->execute("UPDATE dc_pm_timesheets SET rate_source='user' WHERE store_id=? AND id=?",'ii',[$store,$third]);
     try{(new PmCostService($db,$store+99999,$actor))->dashboard();throw new RuntimeException('Cross-tenant cost access accepted.');}catch(DomainException $expected){}
     // Multiple memberships and roles must never duplicate timesheet sums.
     $projects->setMember($project,$owner,true);
@@ -95,4 +127,4 @@ try{
     $page=$costs->dashboard(['page'=>2]);checkCost($page['page']===2&&count($page['projects'])>0&&count($page['projects'])<=20,'Group 2: pagination failed.');
 }finally{$connection->endFixture();}
 checkCost(!$query->fetchOne('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=?','is',[$store,$code]),'Fixture rollback failed.');
-echo "PASS groups 1-4: stored DECIMAL cost/OT/estimate, inclusive filters/empty/paging/double-counting, role/tenant/list/detail boundaries, mixed currency/lifetime guards, missing estimate, hidden task/project, rollback.\n";
+echo "PASS groups 1-4: stored DECIMAL cost/OT/estimate, missing-rate partial/all-zero/group/filter/lifetime/history/PM-scope guards, inclusive filters/empty/paging/double-counting, role/tenant/list/detail boundaries, mixed currency/lifetime guards, missing estimate, hidden task/project, rollback.\n";

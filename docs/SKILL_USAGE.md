@@ -165,3 +165,15 @@ aria-invalid when corrected. Match Unicode character counts rather than UTF-8
 byte lengths; reject all non-digit phone characters, including final newline.
 Verified 21 input cases, 119 HTTP cases, 50 regression scripts and browser exact
 messages/correction/blocked submit/desktop/mobile. No external verification claim.
+
+## Actual cost completeness — 2026-10-07
+
+Used feature-development/impeccable for missing-rate semantics/labels and
+playwright-cli for polling/chart/fallback verification. A stored zero is not
+proof of a configured zero rate: count saved fallback/warning provenance in the
+existing scoped aggregate. Preserve authoritative SUM(cost) and annotate it;
+do not resolve today's rate to repair historical snapshots. Keep filtered actual
+and lifetime completeness separate, and block misleading complete-cost chart
+comparisons while keeping legitimate zero charts. SSR partial and JS textContent
+share visible labels. Cost service/HTTP/template checks, 50 regression scripts
+and two focused/existing browser suites PASS; 19 pending checklist items retained.

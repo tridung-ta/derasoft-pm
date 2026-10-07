@@ -31,6 +31,7 @@ try{
         [$code,$body,$headers]=costRequest($base.'/pm_ajax.php'.$suffix,$session);
         if($code!==$expected||!is_array($body))throw new RuntimeException('HTTP scope/filter failure: expected '.$expected.', got '.$code);
         if($code!==200&&isset($body['summary']))throw new RuntimeException('Error leaked cost data.');
+        if($code===200&&(!is_int($body['summary']['missing_rate_entries']??null)||!is_bool($body['summary']['cost_complete']??null)))throw new RuntimeException('Polling missing actual-cost completeness metadata.');
         if(!in_array('Cache-Control: no-store',$headers,true))throw new RuntimeException('Missing cost cache control.');
     }
     if(costRequest($base.'/pm_ajax.php?op=pmcosts',$adminSession,'POST')[0]!==405)throw new RuntimeException('Read endpoint accepted mutation method.');

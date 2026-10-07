@@ -348,6 +348,7 @@ body.pm-app .pm-module-nav button.pm-logout:hover,body.pm-app .sidebar button.pm
 .pm-app .pm-field-error{display:block;color:#b91c1c;font-size:.875rem;margin-top:6px;line-height:1.5}
 .pm-app .pm-field-error[hidden]{display:none}
 .pm-app [data-pm-new-person] [aria-invalid="true"]{border-color:#dc2626}
+.pm-costs-page .pm-cost-incomplete{display:block;color:#92400e;font-size:.875rem;font-weight:500;line-height:1.5;margin-top:6px;white-space:normal}
 .pm-app .pm-person-dialog section+section{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
 .pm-app .pm-table-region th{padding:12px 14px;font-weight:600;white-space:nowrap}
 .pm-app .pm-table-region td{padding:14px;vertical-align:top}
