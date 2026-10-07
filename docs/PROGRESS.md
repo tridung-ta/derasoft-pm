@@ -1761,3 +1761,21 @@ state, tabular numbers, four viewport sizes and 200% text scaling. Inspected
 desktop screenshot. Detector run once; existing pinned font/warning unchanged.
 git diff --check PASS. No new full regression run for this CSS spacing follow-up;
 preceding timesheet change passed 47 scripts. Local only, no push/merge/deploy.
+# Audit and costs UI refinement - 2026-10-07
+
+User requested careful local refinement for both screens. Applied Impeccable
+scoped CSS: audit filter/table frames, row spacing, outlined inline disclosure,
+wrapped before/after JSON and pager separation; costs filter/KPI/chart/table
+frames, clearer labels, restrained neutral tabs and readable numeric spacing.
+Preserved audit financial redaction, escaping, routes, charts, currency guards,
+polling behavior and permission. No backend, template or JS changes.
+
+Verified smoke_pm_audit.php --preview and smoke_pm_costs.php --preview PASS;
+pm_regression.ps1 PASS (47 scripts). Costs browser suite PASS for real Chart.js
+empty/mixed/zero/recovery, decimal strings, tab keyboard/state, polling errors/auth,
+responsive/text scaling, no-JS and missing-chart fallback. Final browser suite
+PASS including audit inline keyboard/no-JS, action contrast, pagination and
+responsive/200% text scaling. Inspected audit and empty-cost desktop screenshots.
+Detector run once: pinned Inter/existing warnings retained. Scoped security review
+found no behavior changes. Synthetic evidence not manual UAT or actual zoom;
+local only, no push/merge/deploy; combined rollout remains pending user review.

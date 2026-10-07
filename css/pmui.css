@@ -1,4 +1,23 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-app.pm-audit-page main>section:not(.metrics):not(.charts){border:1px solid #a1a1aa;padding:24px}
+.pm-audit-page form label{font-size:.875rem;font-weight:600}
+.pm-app.pm-audit-page th{background:#f4f4f5;color:#09090b;border-bottom-color:#a1a1aa;padding:16px}
+.pm-app.pm-audit-page td{padding:18px 16px;border-bottom-color:#d4d4d8;vertical-align:top;line-height:1.6}
+.pm-audit-page .pm-audit-detail summary{border:1px solid #a1a1aa;border-radius:6px;padding:10px 14px;width:fit-content;font-weight:600}
+.pm-audit-page .pm-audit-detail summary:hover{background:#f4f4f5}
+.pm-audit-page .pm-audit-detail pre{border:1px solid #d4d4d8;padding:16px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;max-width:65ch}
+.pm-audit-page .pm-audit-pager{border-top:1px solid #a1a1aa;padding-top:20px;margin-top:24px}
+.pm-app.pm-costs-page .filters,.pm-app.pm-costs-page .pm-cost-kpis,.pm-app.pm-costs-page main>section:not(.metrics):not(.charts),.pm-app.pm-costs-page .charts article{border:1px solid #a1a1aa}
+.pm-app.pm-costs-page .pm-cost-kpis article{background:#fafafa;border-right-color:#a1a1aa}
+.pm-app.pm-costs-page .pm-cost-kpis h2{color:#52525b;font-weight:600;line-height:1.6}
+.pm-app.pm-costs-page .pm-cost-kpis p{font-size:clamp(1.15rem,2vw,1.6rem);line-height:1.65;overflow-wrap:anywhere}
+.pm-costs-page .filters label{font-size:.875rem;font-weight:600}
+.pm-app.pm-costs-page .pm-cost-tab:not([aria-selected=true]){border-color:#a1a1aa;background:#fafafa}
+.pm-app.pm-costs-page th{background:#f4f4f5;color:#09090b;border-bottom-color:#a1a1aa;padding:16px}
+.pm-app.pm-costs-page td{border-bottom-color:#d4d4d8;padding:16px;vertical-align:top;line-height:1.65}
+.pm-audit-page .pm-table-region:focus-visible,.pm-costs-page .pm-table-region:focus-visible{outline:3px solid #71717a;outline-offset:-3px}
+@media(max-width:760px){.pm-app.pm-costs-page .pm-cost-kpis article{border-bottom-color:#a1a1aa}}
+@media(max-width:640px){.pm-app.pm-audit-page main>section:not(.metrics):not(.charts){padding:20px}}
 .pm-app.pm-timesheets-page .pm-time-week{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;border:0;overflow:visible;background:transparent}
 .pm-timesheets-page .pm-time-week li{border:1px solid #a1a1aa;border-radius:6px;overflow:hidden;background:#fafafa}
 .pm-timesheets-page .pm-time-week li>div{padding:20px;gap:8px;min-height:232px}
