@@ -1,4 +1,18 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-app.pm-projects-page main>section.card,.pm-app.pm-projects-page main>details.card{border:1px solid #a1a1aa;padding:24px}
+.pm-app.pm-projects-page .pm-project-card{border-color:#a1a1aa;padding:24px}
+.pm-projects-page .pm-project-card h3{font-size:1.25rem;font-weight:650}
+.pm-projects-page .pm-project-code,.pm-projects-page .pm-project-card dt,.pm-projects-page .pm-project-progress p{color:#52525b}
+.pm-projects-page .pm-project-code{font-weight:600}
+.pm-projects-page .pm-project-progress{padding:16px;background:#fafafa;border:1px solid #d4d4d8;border-radius:6px}
+.pm-projects-page .pm-project-progress label{font-weight:600}
+.pm-projects-page .pm-project-card dl>div:last-child{border-top-color:#a1a1aa}
+.pm-projects-page .card h2{font-size:1.25rem;font-weight:650}
+.pm-projects-page .card label{font-weight:600;font-size:.875rem}
+.pm-projects-page .column{border:1px solid #a1a1aa;border-radius:8px}
+.pm-projects-page .task{border:1px solid #a1a1aa;border-radius:6px}
+.pm-projects-page .pm-project-card a:focus-visible{outline:3px solid #71717a;outline-offset:3px}
+@media(max-width:640px){.pm-app.pm-projects-page main>section.card,.pm-app.pm-projects-page main>details.card,.pm-app.pm-projects-page .pm-project-card{padding:20px}}
 .pm-app.pm-users-page main>section.card{border:1px solid #a1a1aa;padding:24px}
 .pm-users-page .card h2{font-size:1.25rem;font-weight:650;margin-bottom:16px}
 .pm-users-page .card label{font-size:.875rem;font-weight:600}

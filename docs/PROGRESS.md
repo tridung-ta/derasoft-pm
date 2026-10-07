@@ -1715,3 +1715,18 @@ close/restore, independent CSRF forms, collapsed add, cancelled confirmation,
 no-JS fallback, four viewport/text-scaling configurations. Synthetic fixtures,
 not real-user UAT/actual browser zoom. No production access or push/merge/deploy.
 Reviewed CSS scope/security; prepared local screenshots for user review.
+# Projects and tasks UI refinement - 2026-10-07
+
+Applied requested Impeccable local refinement: stronger project/section/card
+borders, neutral progress grouping, clearer names/metadata, detail form headings
+and Kanban column/task frames. CSS scoped to projects page; no routes, permission,
+progress calculation, task transitions, confirmation or backend changes.
+
+Verified smoke_pm_projects.php --preview PASS; pm_regression.ps1 PASS (47 scripts).
+Playwright pm_phase9b_projects_browser PASS: grid/progress, missing/restricted
+data, collapse keyboard, CSRF, escaping, pagination, responsive/text scaling and
+no-JS. pm_ui_browser PASS: 13 synthetic fixtures including project/task detail,
+four viewport sizes and 200% text scaling. Inspected project desktop screenshot.
+Detector run once: pinned Inter and existing shared warning styles retained.
+Scoped code/security review found no behavior changes. Synthetic verification
+is not manual UAT or actual browser zoom. Local only; no push/merge/deploy.
