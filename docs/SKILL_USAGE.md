@@ -1,5 +1,14 @@
 # Quy tắc sử dụng skill trong DeraSoft PM
 
+## Yêu cầu giao diện xuyên suốt — 07/10/2026
+
+Với mọi công việc giao diện tiếp theo của dự án, áp dụng skill impeccable để
+thiết kế/tinh chỉnh và kiểm soát chất lượng; dùng playwright-cli khi kiểm tra
+trình duyệt. Giữ Inter, màu trung tính, viền rõ, nút dễ nhận biết và accessibility.
+Đọc hướng dẫn trước lần áp dụng đầu, tái sử dụng khi bối cảnh không đổi. Không
+bật các skill ngoài phạm vi. Mọi thay đổi hiện giữ local, chờ người dùng kiểm tra
+toàn bộ rồi duyệt một gói production; không tự push/merge/deploy.
+
 Đã chốt với người dùng ngày 07/10/2026. Đây là bộ nhớ trong repository cho các
 lần làm việc tiếp theo, không thay thế hướng dẫn hiện hành của từng skill.
 

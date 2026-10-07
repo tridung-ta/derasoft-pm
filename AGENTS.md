@@ -2,6 +2,12 @@
 
 ## Chọn skill theo công việc — yêu cầu ngày 07/10/2026
 
+- Mọi công việc giao diện của dự án phải áp dụng skill impeccable, giữ theme
+  Inter trung tính, viền rõ và nút dễ nhận biết; dùng playwright-cli để kiểm tra
+  trình duyệt khi phù hợp. Không áp dụng skill giao diện cho công việc backend.
+- Các chỉnh sửa hiện chỉ giữ local để người dùng xem toàn bộ; chờ duyệt riêng
+  trước push/merge và gom triển khai production một lần.
+
 - Đọc `docs/SKILL_USAGE.md` khi chọn skill; dùng skill theo phạm vi thực tế, không theo từ khóa hoặc bật tất cả cùng lúc.
 - Thông báo skill áp dụng lần đầu, đọc hướng dẫn trước khi dùng. Quyết định đã ghi nhận được tái sử dụng nếu bối cảnh vẫn phù hợp; kiểm tra lại khi yêu cầu hoặc hướng dẫn thay đổi.
 - Sau trường hợp mới, ghi nguyên nhân, cách xử lý và bằng chứng kiểm tra vào tài liệu; không ghi suy đoán thành kết luận hoặc PASS chưa chạy.

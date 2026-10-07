@@ -1652,3 +1652,20 @@ pmNavigation, so it contains no logout button; recreating that fixture does not
 resolve its test-data mismatch. No runtime logout change made or PASS claimed.
 Detector run once: warnings concern pinned Inter and existing shared warning
 border outside this scoped task; retained both. Reviewed diff/security: CSS only.
+# Profile UI and durable skill policy - 2026-10-07
+
+User requested profile refinement and Impeccable for all future UI work. Saved
+policy in AGENTS.md and SKILL_USAGE.md; local review before combined rollout.
+Added one profile-only template class and scoped CSS: stronger frame, clearer
+labels/spacing, readonly username styling, separated save area, mobile full-width
+save button and keyboard focus. Form action/fields/CSRF and backend unchanged.
+
+Verification: smoke_pm_admin.php --preview PASS; pm_regression.ps1 PASS (47
+scripts). Playwright profile-review.js PASS for computed frame, readonly username,
+CSRF presence, visible save, desktop/mobile/200% text scaling and input focus; no
+overflow or JS page exceptions. Inspected desktop/mobile screenshots. First
+frame check caught shared card rule overriding border; corrected selector
+specificity and rechecked. Detector ran once; pinned Inter and existing warning
+styles retained; template-relative CSS lookup makes hierarchy report incomplete.
+Focused code/security review found no backend or permission changes. No actual
+browser zoom, manual UAT or production claim. Not pushed/merged/deployed.

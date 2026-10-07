@@ -1,4 +1,16 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-app.pm-page main .card.pm-profile-form{border:1px solid #a1a1aa;padding:32px;max-width:840px}
+.pm-profile-form .form-grid{gap:24px}
+.pm-profile-form .field{margin-bottom:0}
+.pm-profile-form .field label{font-size:.875rem;font-weight:600;color:#09090b;margin-bottom:10px}
+.pm-profile-form .field input{min-height:50px;border-color:#a1a1aa;caret-color:#09090b}
+.pm-profile-form .field input:not([readonly]):hover{border-color:#71717a}
+.pm-profile-form .field input:focus{outline:3px solid #71717a;outline-offset:2px;border-color:#18181b}
+.pm-app.pm-page .pm-profile-form .field input[readonly]{background:#f4f4f5;color:#52525b;border-style:dashed}
+.pm-profile-form .actions{border-top:1px solid #a1a1aa;padding-top:24px;margin-top:28px}
+.pm-profile-form .actions .button{min-height:48px;font-weight:600;padding:12px 24px}
+.pm-profile-form .actions .button:focus-visible{outline:3px solid #71717a;outline-offset:3px}
+@media(max-width:640px){.pm-app.pm-page main .card.pm-profile-form{padding:24px}.pm-profile-form .actions .button{width:100%}}
 /* Keep the PM navigation in the same left rail on every desktop module. */
 @media(min-width:901px){
 body:has(> .pm-module-nav){padding:0}
