@@ -1632,3 +1632,23 @@ Inter is pinned by user; shared business warning border outside this task retain
 Reviewed scoped diff: no backend, schema or permission changes. Commit local only;
 no push, merge or deployment. Release manifest/archive must be refreshed when
 the user approves the combined rollout; prior archive does not include this edit.
+# Overview visual refinement - 2026-10-07
+
+User requested clearer frames and restrained emphasis on the local overview.
+Used Impeccable refinement with pinned Inter/neutral tokens. Scoped overview CSS:
+stronger gray outer borders/dividers, very light KPI surfaces, darker descriptions,
+weighted section headings/shortcuts and explicit hover/keyboard focus. No template,
+permission, data, controller or route change. Pending combined user review;
+no push/merge/deploy and no release archive refresh yet.
+
+Verified: smoke_pm_admin.php --preview and smoke_pm_users.php --preview PASS;
+pm_regression.ps1 PASS, 47 scripts. Local overview-review.js Playwright check PASS
+for computed borders, 1440/390 layouts, 720 with 200% text scaling, shortcut focus,
+restricted workspace routes and no JS page exceptions. Inspected both screenshots.
+This is synthetic fixture evidence, not real-account UAT or actual browser zoom.
+
+Existing pm_sidebar_overview_browser.js did NOT pass: personnel fixture omits
+pmNavigation, so it contains no logout button; recreating that fixture does not
+resolve its test-data mismatch. No runtime logout change made or PASS claimed.
+Detector run once: warnings concern pinned Inter and existing shared warning
+border outside this scoped task; retained both. Reviewed diff/security: CSS only.

@@ -149,6 +149,21 @@ body.pm-app .pm-module-nav button.pm-logout,body.pm-app .sidebar button.pm-logou
 body.pm-app .pm-module-nav button.pm-logout:hover,body.pm-app .sidebar button.pm-logout:hover{background:#27272a;color:var(--primary-foreground)}
 .pm-logout svg{width:20px;height:20px;flex:0 0 20px}
 .pm-overview-workspace{margin-top:24px}.pm-overview-workspace h2{margin:0 0 8px}.pm-overview-workspace header p,.pm-workspace-hint{color:var(--muted-foreground);line-height:1.6}
+.pm-app .pm-overview-kpis,.pm-app .pm-overview-shortcuts,.pm-app .pm-overview-workspace{border:1px solid #a1a1aa}
+.pm-app .pm-overview-kpis .metric{background:#fafafa;border-right-color:#a1a1aa}
+.pm-overview-kpis .metric-label{color:#52525b;font-size:.875rem;font-weight:500;margin-bottom:12px}
+.pm-overview-kpis .metric-value{font-weight:700}
+.pm-overview-shortcuts h2,.pm-overview-workspace h2{font-size:1.25rem;font-weight:650;letter-spacing:-.015em}
+.pm-app .pm-overview-shortcuts>p,.pm-app .pm-overview-workspace header p,.pm-app .pm-workspace-description,.pm-app .pm-workspace-hint{color:#52525b}
+.pm-app .pm-overview-workspace li{border-top-color:#a1a1aa}
+@media(max-width:900px){.pm-app .pm-overview-kpis .metric{border-bottom-color:#a1a1aa}}
+.pm-overview-shortcuts a{border-color:#a1a1aa;font-weight:600;background:#fafafa}
+.pm-overview-shortcuts a:hover{border-color:#18181b;background:#e4e4e7;text-decoration:none}
+.pm-overview-shortcuts a:focus-visible,.pm-overview-workspace a:focus-visible{outline:3px solid #71717a;outline-offset:3px}
+.pm-overview-workspace header{padding-bottom:20px;border-bottom:1px solid #a1a1aa}
+.pm-overview-workspace header p{margin-bottom:0}
+.pm-overview-workspace li a:hover{background:#e4e4e7}
+.pm-overview-workspace li a:hover svg{color:#09090b}
 .pm-overview-workspace ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px;list-style:none;padding:0;margin:24px 0 0}
 .pm-overview-workspace li{border-top:1px solid var(--border)}.pm-overview-workspace li a{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 8px;min-height:80px;text-decoration:none;border-radius:6px;color:var(--foreground)}
 .pm-overview-workspace li a:hover{background:var(--muted)}.pm-overview-workspace strong{display:block;font-size:1rem;font-weight:600}.pm-workspace-description{display:block;color:var(--muted-foreground);font-size:.875rem;line-height:1.6;margin-top:6px}
