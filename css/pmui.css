@@ -1,4 +1,12 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-app.pm-timesheets-page .pm-time-week{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;border:0;overflow:visible;background:transparent}
+.pm-timesheets-page .pm-time-week li{border:1px solid #a1a1aa;border-radius:6px;overflow:hidden;background:#fafafa}
+.pm-timesheets-page .pm-time-week li>div{padding:20px;gap:8px;min-height:232px}
+.pm-timesheets-page .pm-time-week li:last-child{border:1px solid #a1a1aa}
+.pm-timesheets-page .pm-time-week strong{padding-top:24px;font-size:1.5rem;line-height:1.4;white-space:nowrap}
+.pm-timesheets-page .pm-time-breakdown{line-height:1.8}
+.pm-timesheets-page .pm-time-week li.pm-time-today{background:#18181b;border-color:#18181b}
+@media(max-width:760px){.pm-app.pm-timesheets-page .pm-time-week{grid-template-columns:repeat(2,minmax(0,1fr))}.pm-app.pm-timesheets-page .pm-time-week li{border:1px solid #a1a1aa}.pm-timesheets-page .pm-time-week li:last-child{grid-column:1/-1;border:1px solid #a1a1aa}.pm-timesheets-page .pm-time-week li>div{padding:18px;min-height:220px}}
 .pm-app.pm-timesheets-page main>section:not(.metrics):not(.charts){border:1px solid #a1a1aa;padding:28px}
 .pm-timesheets-page .pm-time-ledger form>.grid{margin-bottom:20px}
 .pm-timesheets-page main>section>h2{font-size:1.35rem;font-weight:650;margin-bottom:16px}

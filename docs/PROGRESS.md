@@ -1747,3 +1747,17 @@ and 200% text scaling. Inspected desktop screenshot; corrected frame/form spacin
 and reran browser suite PASS. Automated synthetic evidence is not manual UAT or
 actual browser zoom. Detector run once; pinned Inter/shared warning retained.
 Scoped security review found no behavior changes. Local only, no push/merge/deploy.
+# Weekly ledger spacing follow-up - 2026-10-07
+
+User found seven adjacent days too cramped. Impeccable scoped refinement changes
+the ledger to four columns on desktop and two on mobile, preserving all seven
+days in chronological order. Separate bordered day surfaces, 12px gutters,
+larger padding, clearer total/breakdown spacing; today and OT distinction retained.
+No data/template/backend changes. Existing daily totals remain complete.
+
+Playwright pm_phase9b_timesheets_browser PASS before and after final CSS priority
+fix: seven days, today/OT, keyboard/settings/no-JS, Admin/Employee, unavailable
+state, tabular numbers, four viewport sizes and 200% text scaling. Inspected
+desktop screenshot. Detector run once; existing pinned font/warning unchanged.
+git diff --check PASS. No new full regression run for this CSS spacing follow-up;
+preceding timesheet change passed 47 scripts. Local only, no push/merge/deploy.
