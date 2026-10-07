@@ -1,4 +1,18 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-app.pm-page .pm-team-table{border:1px solid #a1a1aa;border-radius:8px;overflow:hidden}
+.pm-team-table>.pm-table-hint{margin:0;padding:16px 20px;color:#52525b;border-bottom:1px solid #a1a1aa;font-size:.875rem}
+.pm-app .pm-team-table table{margin-bottom:0}
+.pm-app .pm-team-table th{background:#f4f4f5;color:#09090b;font-weight:650;letter-spacing:.03em;padding:16px 20px;border-bottom-color:#a1a1aa}
+.pm-app .pm-team-table td{padding:18px 20px;border-bottom-color:#d4d4d8;vertical-align:middle}
+.pm-app .pm-team-table tbody tr:hover>td{background:#fafafa}
+.pm-team-table .user-name{font-weight:650}
+.pm-app .pm-team-table .user-meta{color:#52525b;font-size:.8125rem;margin-top:6px;font-variant-numeric:tabular-nums}
+.pm-team-table .status{padding:6px 10px;border:1px solid #d4d4d8;border-radius:6px;color:#18181b;background:#fafafa;font-size:.8125rem;white-space:nowrap}
+.pm-team-table .status:before{background:#18181b}
+.pm-team-table .status.off{color:#52525b;background:#f4f4f5}
+.pm-team-table .status.off:before{background:#71717a}
+.pm-team-table .pm-table-region:focus-visible{outline:3px solid #71717a;outline-offset:-3px}
+@media(max-width:640px){.pm-team-table>.pm-table-hint{padding:14px 16px}.pm-app .pm-team-table th,.pm-app .pm-team-table td{padding:16px}}
 .pm-app.pm-page main .card.pm-password-form{border:1px solid #a1a1aa;padding:32px;max-width:720px}
 .pm-password-form .field{margin-bottom:24px}
 .pm-password-form .field label{font-size:.875rem;font-weight:600;color:#09090b;margin-bottom:10px}

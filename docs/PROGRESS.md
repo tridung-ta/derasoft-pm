@@ -1685,3 +1685,19 @@ mutation sent during visual checks; not actual zoom or manual production UAT.
 Detector run once: pinned Inter/shared warning retained; template-relative CSS
 lookup has incomplete hierarchy output. Focused review found no security behavior
 change. Local commit only; awaiting combined review, no push/merge/deploy.
+# Account list UI refinement - 2026-10-07
+
+Continued user screenshot-driven local UI refinement using Impeccable. Added
+pm-team-table class only to team section. Scoped CSS strengthens frame/header/
+row dividers, darkens secondary identifiers, adds neutral textual status badges
+and row hover. Preserved columns, values, status conditions, permission and routes.
+
+Verification: smoke_pm_admin.php --preview PASS; pm_regression.ps1 PASS (47
+scripts). Playwright team-review.js PASS for computed frame/four columns,
+1440/390 viewports, 720 with 200% text scaling, region focus and keyboard horizontal
+scroll, no page overflow or JS exceptions. Inspected desktop screenshot. Initial
+scroll assertion ran before native smooth scroll; waiting for scroll completion
+verified behavior without runtime changes. Synthetic fixture, not real UAT/zoom.
+Detector ran once: pinned Inter and existing warning rules retained; template
+relative CSS lookup limits hierarchy output. Scoped diff/security review found
+no data or behavior changes. Local only, pending combined user review/rollout.
