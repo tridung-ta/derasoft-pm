@@ -1,0 +1,51 @@
+/* Run with playwright-cli run-code --filename=../tests/pm_costs_browser.js on the synthetic preview server. */
+async (page) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.clock.install();
+    let calls = 0, fail = false, payload;
+    await page.route('**/pm_ajax.php?**', async route => {
+        calls++;
+        const url = new URL(route.request().url());
+        if (url.searchParams.get('project_id') !== '1' || url.searchParams.get('from') !== '2026-10-01') throw new Error('Polling lost filters.');
+        await route.fulfill({ status: fail ? 403 : 200, contentType: 'application/json', body: JSON.stringify(fail ? { error: 'Không có quyền xem chi phí.' } : payload) });
+    });
+    await page.goto('http://127.0.0.1:18767/.local/phase6-preview.html');
+    payload = JSON.parse(await page.locator('#cost-data').textContent());
+    await page.waitForFunction(() => window.Chart && Chart.getChart('trend-chart'));
+    if (await page.evaluate(() => Chart.version) !== '4.5.1') throw new Error('Wrong chart version.');
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.clock.runFor(250);
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw new Error('Desktop overflow.');
+    await page.screenshot({ path: 'phase6-desktop.png', fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.clock.runFor(250);
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw new Error('Mobile overflow.');
+    await page.screenshot({ path: 'phase6-mobile.png', fullPage: true });
+    payload.projects[0].name = '<img src=x onerror="alert(1)">';
+    payload.summary.cost = null; payload.summary.currency = null;
+    payload.valuation_date = '2026-10-03';
+    payload.warnings = ['Khác currency: không cộng chi phí.'];
+    await page.clock.fastForward(60000);
+    await page.waitForFunction(() => document.getElementById('refresh-status').textContent.includes('Đã cập nhật'));
+    if (calls !== 1 || await page.locator('img[src=x]').count()) throw new Error('Polling interval or XSS protection failed.');
+    if (await page.locator('#valuation-date').textContent() !== '2026-10-03') throw new Error('Estimate valuation date became stale after polling.');
+    if ((await page.evaluate(() => Chart.getChart('trend-chart').data.labels)).length) throw new Error('Mixed-currency chart drew money.');
+    fail = true;
+    await page.clock.fastForward(60000);
+    await page.waitForFunction(() => document.getElementById('refresh-status').textContent.includes('Giữ số liệu'));
+    if (calls !== 2) throw new Error('Polling error handling failed.');
+    await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
+    await page.clock.fastForward(120000);
+    if (calls !== 2) throw new Error('Hidden tab kept polling.');
+    await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => false }); document.dispatchEvent(new Event('visibilitychange')); });
+    await page.clock.fastForward(60000);
+    await page.waitForFunction(() => document.getElementById('refresh-status').textContent.includes('Giữ số liệu'));
+    if (calls !== 2 || !(await page.locator('#refresh-status').textContent()).includes('đăng nhập lại')) throw new Error('Expired authorization kept polling.');
+    await page.route('**/chart.umd.js', route => route.abort());
+    await page.goto('http://127.0.0.1:18767/.local/phase6-preview.html');
+    await page.waitForFunction(() => document.getElementById('refresh-status').textContent.includes('Biểu đồ chưa tải'));
+    if (!await page.locator('#projects tr').count()) throw new Error('Chart failure removed table fallback.');
+    if (errors.length) throw new Error(errors.join('; '));
+    return 'PASS group 5 browser: pinned Chart.js, desktop/mobile overflow, 60s polling, hidden-tab stop/resume, filter retention, currency graph guard, XSS-safe refresh, error retention and chart-failure table fallback.';
+}

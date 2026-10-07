@@ -1,0 +1,15 @@
+<a class="pm-skip" href="#pm-main">Chuyển đến nội dung chính</a>
+<nav class="pm-module-nav" aria-label="Điều hướng DeraSoft PM">
+{if $op|default:'' != 'pm'}<div class="brand pm-nav-brand"><span class="brand-mark" aria-hidden="true">D</span><span>DeraSoft PM</span></div>{/if}
+{foreach from=$pmNavigation|default:[] item=n}<a href="{$n.url|escape}"{if $n.current} aria-current="page"{/if}><svg class="pm-nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+{if $n.url eq '?op=pm'}<path d="M3 10 12 3l9 7v11h-6v-7H9v7H3z"/>
+{elseif $n.url eq '?op=pm&act=password'}<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4"/>
+{elseif $n.url eq '?op=pmusers' || $n.url eq '?op=pm&act=team' || $n.url eq '?op=pm&act=profile'}<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
+{elseif $n.url eq '?op=pmprojects'}<path d="M3 6h7l2 3h9v12H3z"/>
+{elseif $n.url eq '?op=pmtimesheets'}<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>
+{elseif $n.url eq '?op=pmallocations'}<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-12 0v10m6-10v10"/>
+{elseif $n.url eq '?op=pmcosts'}<path d="M4 21V11h4v10m2 0V7h4v14m2 0V3h4v18"/>
+{else}<path d="M6 3h9l3 3v15H6zM9 10h6m-6 4h6m-6 4h4"/>{/if}
+</g></svg><span>{$n.label|escape}</span></a>{foreachelse}<a href="?op=pm"><svg class="pm-nav-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 10 12 3l9 7v11h-6v-7H9v7H3z" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><span>Tổng quan</span></a>{/foreach}
+{if isset($pmNavigation) && $pmNavigation && $op|default:'' != 'pm'}<form class="pm-logout-form" method="post" action="admin.php"><input type="hidden" name="op" value="logout"><input type="hidden" name="csrf_token" value="{$csrfToken|default:''|escape}"><button class="pm-logout btn" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 4H4v16h6m5-13 5 5-5 5m-7-5h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Đăng xuất</button></form>{/if}
+</nav>

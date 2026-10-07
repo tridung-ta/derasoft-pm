@@ -16,14 +16,33 @@ if (!defined('ROOT_PATH')) {
 include_once(ROOT_PATH.'classes/security/boot.class.php');
 $boots = new Boot();
 include_once(ROOT_PATH.'includes/pm_mode.inc.php');
+if(PM_HIDE_LEGACY) {
+	include_once(ROOT_PATH.'includes/pm_response.inc.php');
+	pmResponseHeaders();
+	foreach([$_GET,$_POST] as $input)foreach($input as $key=>$value)if(is_array($value)) {
+		$roleList=$key==='role_ids' && ($_SERVER['REQUEST_METHOD']??'GET')==='POST' && ($_POST['op']??'')==='pmusers' && ($_POST['action']??'')==='roles';
+		if(!$roleList || count($value)>100 || array_filter($value,fn($id)=>!is_scalar($id)||!ctype_digit((string)$id)||(int)$id<=0)) {http_response_code(400);exit('Dữ liệu yêu cầu không hợp lệ.');}
+	}
+}
 include_once(ROOT_PATH.'includes/config.inc.php');
+$aops[] = 'login';
+$aops[] = 'logout';
 $aops[] = 'editorial'; // V48 Editorial Control Center
 $aops[] = 'pm';
+$aops[] = 'pmusers';
+$aops[] = 'pmprojects';
+$aops[] = 'pmtimesheets';
+$aops[] = 'pmaudit';
+$aops[] = 'pmcosts';
+$aops[] = 'pmallocations';
+$aops[] = 'pmreports';
+$aops[] = 'pmimports';
 include_once(ROOT_PATH.'includes/constant.inc.php');
 include_once(ROOT_PATH.'classes/data/translator.class.php');
 include_once(ROOT_PATH.'includes/admin/functions.inc.php');
 include_once(ROOT_PATH.'classes/database/mysql.class.php');
 include_once(ROOT_PATH.'classes/template/smarty.class.php');
+include_once(ROOT_PATH.'includes/smarty_runtime.inc.php');
 include_once(ROOT_PATH.'classes/http/request.class.php');
 include_once(ROOT_PATH.'classes/http/url.class.php');
 include_once(ROOT_PATH.'classes/dao/users.class.php');
@@ -44,6 +63,7 @@ $db = new DB();
 
 # Template engine
 $template = new Smarty;
+configureSmartyCompileDir($template);
 $template->compile_check = true;
 $template->debugging = false;
 
@@ -91,9 +111,14 @@ if($op=='admin' && !$userInfo->isAdmin()) $op = DEFAULT_ADMIN_OP;
 $addons = new Addons(1);
 # Session manager
 include_once(ROOT_PATH.'includes/admin/sessions.inc.php');
+if(PM_HIDE_LEGACY)pmResponseHeaders();
+if(PM_HIDE_LEGACY && !empty($_SESSION['userId'])) {
+	if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
+	$template->assign('csrfToken',$_SESSION['pm_csrf_token']);
+}
 
 # In PM mode, authenticated users can only access the new dashboard or logout.
-if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'logout'), true)) {
+if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'pmusers', 'pmprojects', 'pmtimesheets', 'pmaudit', 'pmcosts', 'pmallocations', 'pmreports', 'pmimports', 'logout'), true)) {
 	$op = 'pm';
 	$act = '';
 	$mod = '';
@@ -117,6 +142,11 @@ if(isset($topNav)) $template->assign('topNav',$topNav);
 
 #echo $templateFolder.$templateFile;
 # Display the web page
+if(PM_HIDE_LEGACY && isset($pmAccess) && $pmAccess instanceof PmAccess) {
+	include_once(ROOT_PATH.'classes/services/pmuiservice.class.php');
+	$template->assign('pmNavigation', PmUiService::navigation($pmAccess,(string)$op,(string)$act));
+}
+if(PM_HIDE_LEGACY)pmResponseHeaders();
 $template->assign('templatePath',TEMPLATE_PATH);
 $template->assign('userTemplate',$userTemplate);
 $template->display($templateFolder.$templateFile);

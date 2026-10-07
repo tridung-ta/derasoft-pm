@@ -1,0 +1,21 @@
+<?php
+define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'classes/template/smarty.class.php';$s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+$preview=in_array('--preview',$argv,true);
+$s->assign(['pageTitle'=>'Import thử','csrfToken'=>'test-token','error'=>'','importHistory'=>[],'importResult'=>null,'importBatch'=>null]);
+$html=$s->fetch('admin/pm-imports.tpl.html');
+if(!str_contains($html,'<details><summary id="pm-import-history">')||substr_count($html,'href="#pm-import-')!==3||!str_contains($html,'Chưa có staging.'))throw new RuntimeException('Import steps/empty/collapse failed.');
+if($preview)file_put_contents(ROOT_PATH.'.local/phase9b-import-initial.html',str_replace('<head>','<head><base href="/">',$html));
+$s->assign(['pageTitle'=>'Import thử','csrfToken'=>'test-token','error'=>'','importHistory'=>[],'importResult'=>['valid'=>false,'applied'=>false,'errors'=>[['row'=>2,'messages'=>['<script>error</script>']]],'rows'=>[['row_number'=>2,'username'=>'sample_user','fullname'=>'<img src=x>','email'=>'sample@example.test','department_code'=>'','weekly_limit_hours'=>'40','role_code'=>'EMPLOYEE']]]]);$html=$s->fetch('admin/pm-imports.tpl.html');
+foreach(['&lt;img','&lt;script','multipart/form-data','value="pmimports"','name="csrf_token"','chưa áp dụng'] as $n)if(!str_contains($html,$n))throw new RuntimeException('Missing import view: '.$n);
+if(str_contains($html,'<img src=x>')||str_contains($html,'<script>error'))throw new RuntimeException('Import escaping failed.');
+if($preview)file_put_contents(ROOT_PATH.'.local/phase9b-import-validation.html',str_replace('<head>','<head><base href="/">',$html));
+$s->assign('importHistory',[['id'=>101,'created_at'=>'2026-10-04','row_count'=>1,'status'=>'staged'],['id'=>102,'created_at'=>'2026-10-04','row_count'=>1,'status'=>'in_progress']]);
+$s->assign('importBatch',['id'=>102,'status'=>'partial','counts'=>['applied'=>1,'skipped_duplicate'=>1,'failed'=>1,'pending'=>0],'results'=>[['source_row'=>2,'account_status'=>0,'status'=>'applied','reason_code'=>'created_inactive','user_id'=>900000001,'attempt_count'=>1],['source_row'=>3,'status'=>'failed','reason_code'=>'<script>bad</script>','user_id'=>null,'attempt_count'=>1]]]);$html=$s->fetch('admin/pm-imports.tpl.html');
+foreach(['value="apply"','value="resume"','value="detail"','value="provision_password"','name="import_id"','name="source_row"','autocomplete="new-password"','&lt;script&gt;bad'] as $n)if(!str_contains($html,$n))throw new RuntimeException('Missing Apply view: '.$n);
+if(str_contains($html,'<script>bad')||substr_count($html,'name="password"')!==1)throw new RuntimeException('Unsafe credential/failed-row rendering.');
+if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase8-import-preview.html',str_replace('<head>','<head><base href="/">',$html));
+$s->assign(['importResult'=>null,'importHistory'=>[['id'=>101,'created_at'=>'2026-10-04','row_count'=>1,'status'=>'staged'],['id'=>102,'created_at'=>'2026-10-04','row_count'=>1,'status'=>'in_progress'],['id'=>103,'created_at'=>'2026-10-04','row_count'=>1,'status'=>'partial'],['id'=>104,'created_at'=>'2026-10-04','row_count'=>1,'status'=>'completed']]]);
+$html=$s->fetch('admin/pm-imports.tpl.html');
+if(substr_count($html,'value="apply"')!==1||substr_count($html,'value="resume"')!==2||substr_count($html,'value="detail"')!==4||substr_count($html,'name="password"')!==1)throw new RuntimeException('History action conditions changed.');
+if($preview)file_put_contents(ROOT_PATH.'.local/phase9b-import-apply.html',str_replace('<head>','<head><base href="/">',$html));
+echo "PASS: import Smarty, escaping, upload/CSRF fields and explicit un-applied staging state.\n";

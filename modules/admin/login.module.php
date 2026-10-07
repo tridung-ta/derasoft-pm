@@ -12,20 +12,28 @@ include_once(ROOT_PATH.'classes/security/checklogin.class.php');
 $templateFile = defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? 'pm-login.tpl.html' : 'login.tpl.html';
 $template->assign('userTemplate',$userTemplate);
 $error = array('message' => array());
+$pmLoginMode=defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY;
+$pmLoginCsrfValid=true;
+if($pmLoginMode){
+	if(empty($_SESSION['pm_login_csrf']))$_SESSION['pm_login_csrf']=bin2hex(random_bytes(32));
+	$template->assign('loginCsrfToken',$_SESSION['pm_login_csrf']);
+	if(!empty($pmSessionInvalidated)){$pmLoginCsrfValid=false;$error=['message'=>['Phiên làm việc không còn hợp lệ. Vui lòng đăng nhập lại.']];$template->assign('error',$error);}
+	elseif($_POST){$token=$request->element('csrf_token');$pmLoginCsrfValid=is_string($token)&&hash_equals($_SESSION['pm_login_csrf'],$token);if(!$pmLoginCsrfValid){http_response_code(400);$error=['message'=>['Phiên đăng nhập đã hết hạn. Vui lòng tải lại trang.']];$template->assign('error',$error);}}
+}
 $site = $request->element("site");
 if(!$site) $site = '';
-if($_POST) {
+if($_POST && $pmLoginCsrfValid) {
 	# Validate the data input
 	$validate = validateData($request);
 	if($validate['invalid']) {	# data input is not in valid form
 		$_SESSION['userId'] = 0;
 		$template->assign('error',$validate);	
 	} else {
-		$username = Filter($request->element('username'));
-		$password = Filter($request->element('password'));
+		$username = trim((string) $request->element('username'));
+		$password = (string) $request->element('password');
 		$users = new Users($storeId);
 		$checkLogin = new CheckLogin();
-		$preUserId = $users->getUserId("username='$username'");
+		$preUserId = $users->findUserIdByIdentity($username);
 		$failLoginInfo = $checkLogin->getFailLoginInfo($preUserId);
 		if($failLoginInfo && $failLoginInfo['fail_times'] >= MAX_FAIL_TIMES && $failLoginInfo['last_try'] >= date("Y-m-d H:i:s", time() - MAX_GRACE_TIME*60)) { # Vuot qua so lan login sai cho phep
 			$_SESSION['userId'] = 0;
@@ -38,7 +46,9 @@ if($_POST) {
 		} else { # Chua vuot qua so lan login sai cho phep
 			$userId = $users->authenticateUser($username,$password);
 			if($userId > 0) { # Kiem tra username va password so voi du lieu trong DB
+				session_regenerate_id(true);
 				$_SESSION['userId'] = $userId;
+				if($pmLoginMode){$_SESSION['storeId']=(int)$storeId;$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));unset($_SESSION['pm_login_csrf']);}
 				$trackings = new Trackings($storeId);
 
 				# Operation tracking
@@ -56,7 +66,7 @@ if($_POST) {
 					$validate['message'] = $amessages['your_account_has_been_disabled'];
 				} else {
 					$fail = 0;
-					$userId = $users->getUserId("username='$username'");
+					$userId = $users->findUserIdByIdentity($username);
 					if($userId) { # Lay ra userId tu username
 						$failLoginInfo = $checkLogin->getFailLoginInfo($userId);
 						if($failLoginInfo) { # Da ton tai thong tin login, tang so lan login sai len 1

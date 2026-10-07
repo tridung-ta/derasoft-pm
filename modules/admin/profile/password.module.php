@@ -19,14 +19,14 @@ if($_POST) { # if form is submitted
 	if($validate['invalid']) {	# data input is not in valid form
 		$template->assign('error',$validate);
 	} else { # Valid data input
-		$current_password = $request->element('current_password');
+		$current_password = (string)$request->element('current_password');
 		$userId = $users->authenticateUser($userInfo->getUsername(),$current_password);
-		if($userId) { # Check if the current password is same as in DB
-			$new_password = md5($request->element('new_password'));
-			$confirm_password = md5($request->element('confirm_password'));
-			if($new_password == $confirm_password) { # New password is same as confirm password
-				if($new_password != md5($current_password)) { # Every thing is ok, update the DB
-					$return = $users->updateData(array('password' => $new_password), $userId, 'id');
+		if($userId > 0 && $userId == $userInfo->getId()) { # Only the authenticated account may change its password
+			$new_password = (string)$request->element('new_password');
+			$confirm_password = (string)$request->element('confirm_password');
+			if(hash_equals($new_password, $confirm_password)) { # Exact password confirmation
+				if(!hash_equals($new_password, $current_password)) { # Use the same credential as username/email login
+					$return = $users->changePasswordSecure($userId, $new_password);
 					if($return) { # update DB successfully
 						$success = $amessages['change_password_ok'];
 						$template->assign('success',$success);
