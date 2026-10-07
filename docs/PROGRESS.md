@@ -1,5 +1,14 @@
 # DeraSoft PM — Progress
 
+## User confirmed login issue resolved — 2026-10-07
+
+User confirmed login UI issue fixed. Recorded only login visual acceptance in
+UAT_PHASE11.md; no inferred whole-app or production-ready status. Operator's
+phpMyAdmin evidence verifies four expected nullable metadata columns in dung_pm;
+no repeat ALTER required. Full 86-file upload vs isolated two-file login patch
+still needs operator clarification before selecting next rollout step. No new
+runtime changes/tests in this documentation update; no push/production access.
+
 ## Login legibility and cache follow-up — 2026-10-07
 
 User reported login still faint. Made intro description foreground #09090b at

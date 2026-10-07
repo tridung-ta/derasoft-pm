@@ -1,5 +1,15 @@
 # Phase 11 — nghiệm thu local
 
+## Xác nhận mới nhất — 07/10/2026
+
+- Người dùng xác nhận lỗi giao diện login đã xử lý xong sau bản vá 2 file
+  `e6f164f`. Chỉ ghi nhận mục giao diện đăng nhập, không suy ra toàn bộ app đạt UAT.
+- Ảnh phpMyAdmin đã xác nhận bốn cột của migration 009 trong `dung_pm` đúng kiểu
+  và nullable; không cần chạy lại ALTER trên cơ sở bằng chứng này. Đây là bằng
+  chứng schema hiện có, không xác nhận agent đã chạy migration hoặc có backup.
+- Đang xác nhận operator đã upload gói đầy đủ 86 file hay chỉ bản vá login để
+  chọn bước triển khai/nghiệm thu tiếp theo. Agent chưa push/upload production.
+
 **Quy trình cập nhật 06/10/2026:** người dùng dừng kiểm thử tay local, yêu cầu
 agent kiểm thử lại toàn bộ phạm vi PM trước và sẽ kiểm thử tay sau triển khai.
 Các mục chưa xác nhận bên dưới chuyển sang chờ kiểm thử thủ công sau triển khai,
@@ -39,6 +49,7 @@ Bootstrap form controls và cải tiến nút/form), schema 009 chỉ chạy loc
 
 | Hạng mục | Kết quả người dùng | Ghi chú/lỗi |
 | --- | --- | --- |
+| Giao diện đăng nhập | Đạt — người dùng xác nhận 07/10/2026 | Lỗi chữ mờ đã xử lý; không bao gồm nghiệm thu các module khác |
 | Giao diện/Bootstrap/sidebar/logout | Chưa nghiệm thu | |
 | Nhân sự: tìm kiếm/sửa/khóa/mở khóa | Chờ người dùng thực hiện | Dùng nhân sự thử trên local; không thao tác tài khoản đang đăng nhập |
 | Email/username/đổi mật khẩu | Đạt — người dùng xác nhận 06/10/2026 | Cả hai dùng mật khẩu mới; mật khẩu cũ bị từ chối |
