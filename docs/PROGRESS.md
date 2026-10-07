@@ -1787,3 +1787,19 @@ explicit compact spacing; retains a 44px breadcrumb target. No table/body change
 pm_phase9b_final_browser PASS including audit keyboard/no-JS, responsive/text
 scaling and action contrast. git diff --check PASS; no new full regression for
 this header-only CSS edit (preceding change passed 47). Local only, no deployment.
+# Named cost project selector - 2026-10-07
+
+User requested replacing numeric Project # input with project names. Used
+feature-development and existing Impeccable UI convention. Native select shows
+name/code plus all-projects option; browser keyboard typing selects by label.
+Numeric ID remains internal GET/polling key. Added prepared DAO choices using
+existing tenant/nondeleted/manager scope and service ADMIN/PM permission gate;
+controller assigns choices. No schema, totals or polling JS change.
+
+Verification: PHP lint DAO/service/controller PASS; pm_regression.ps1 PASS 47.
+After adding tests reran pm_costs_smoke and smoke_pm_costs --preview PASS,
+covering visible project inclusion, scoped ordering/manager restriction, PM
+own versus other manager, selected option and escaped names. Costs browser suite
+PASS empty/mixed/zero/recovery, tabs, polling errors/auth and responsive/no-JS.
+Reviewed prepared query and escaped outputs; no permission widening. Native
+selection rather than an AJAX/autocomplete text search. Local only; no rollout.

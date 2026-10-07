@@ -35,6 +35,12 @@ try{
     $entry=['task_id'=>$task,'work_date'=>'2026-10-01','shift_label'=>'Day','hours'=>'6','description'=>'Cost QA'];
     $first=$timesheets->save($entry);$entry['hours']='4';$second=$timesheets->save($entry);$entry['work_date']='2026-10-02';$entry['hours']='2';$third=$timesheets->save($entry);
     $costs=new PmCostService($db,$store,$actor);$filter=['project_id'=>$project,'from'=>'2026-10-01','to'=>'2026-10-01'];
+    $choices=$costs->projectChoices();
+    checkCost(in_array($project,array_map('intval',array_column($choices,'id')),true),'Project-name filter omitted visible project.');
+    $choiceDao=new PmCosts($db);
+    $expected=$query->fetchAll('SELECT id FROM dc_pm_projects WHERE store_id=? AND deleted_at IS NULL AND manager_id=? ORDER BY name,id','ii',[$store,$owner]);
+    $scoped=$choiceDao->projectChoices(['store_id'=>$store,'manager_id'=>$owner]);
+    checkCost(array_column($scoped,'id')===array_column($expected,'id'),'Project choices leaked manager scope or changed ordering.');
     $data=$costs->dashboard($filter);
     checkCost($data['summary']['cost']==='1102.75'&&$data['summary']['hours']==='10.00'&&$data['summary']['ot_hours']==='2.00','Group 1: actual decimal/OT failed.');
     checkCost($data['projects'][0]['lifetime']['cost']==='1303.25'&&$data['estimate_total']==='1002.50','Group 1: lifetime/estimate/date label failed.');
@@ -55,6 +61,8 @@ try{
     try{$pm->dashboard(['project_id'=>$project]);throw new RuntimeException('Group 3: PM read another manager project.');}catch(DomainException $expected){}
     $pmProject=$projects->saveProject(['code'=>$code.'_PM','name'=>'PM project','manager_id'=>$owner,'status'=>'active','budget'=>'100','start_date'=>'','end_date'=>'']);
     checkCost(count($pm->dashboard(['project_id'=>$pmProject])['projects'])===1,'PM managed-project access failed.');
+    $pmChoices=array_map('intval',array_column($pm->projectChoices(),'id'));
+    checkCost(in_array($pmProject,$pmChoices,true)&&!in_array($project,$pmChoices,true),'PM project selector ownership failed.');
     foreach($pm->dashboard()['projects'] as $p)checkCost((int)$p['id']!==$project,'PM list leaked other project.');
     try{(new PmCostService($db,$store+99999,$actor))->dashboard();throw new RuntimeException('Cross-tenant cost access accepted.');}catch(DomainException $expected){}
     // Multiple memberships and roles must never duplicate timesheet sums.

@@ -12,6 +12,10 @@ class PmCostService {
         if(!$date||$date->format('Y-m-d')!==$value)throw new InvalidArgumentException('Ngày không hợp lệ.');
         return $value;
     }
+    public function projectChoices(): array {
+        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new DomainException('Forbidden');
+        return $this->costs->projectChoices(['store_id'=>$this->storeId,'manager_id'=>$this->access->hasRole('ADMIN')?null:$this->actorId]);
+    }
     private function actual(array $f,string $group,array &$warnings): array {
         $currencies=[];
         foreach($this->costs->actualCurrencies($f,$group) as $r)$currencies[(string)$r['bucket']][]=$r['currency'];

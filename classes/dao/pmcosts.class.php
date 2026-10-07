@@ -6,6 +6,11 @@ class PmCosts {
     private PmDb $db;
     public function __construct($database) { $this->db=new PmDb($database); }
     public function db(): PmDb { return $this->db; }
+    public function projectChoices(array $f): array {
+        $f['project_id']=0;
+        [$where,$types,$params]=$this->scope($f);
+        return $this->db->fetchAll("SELECT p.id,p.name,p.code FROM dc_pm_projects p WHERE $where ORDER BY p.name,p.id",$types,$params);
+    }
 
     private function scope(array $f,string $alias='p'): array {
         $where="$alias.store_id=? AND $alias.deleted_at IS NULL";$types='i';$params=[$f['store_id']];
