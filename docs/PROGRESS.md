@@ -1,5 +1,23 @@
 # DeraSoft PM — Progress
 
+## Phase 11 personnel HTTP false-success fix - 2026-10-07
+
+Added 13 personnel HTTP cases (73 combined cases). Reproduced a real defect:
+HR save to missing/cross-tenant target returned success and appended tracking
+although no row changed. PmUsers.updateSafe previously accepted affected_rows>=0;
+controller ignored the result. Now zero changed rows succeeds only if a visible
+same-tenant target exists; controller reports missing target and skips tracking
+when false. Unchanged valid saves remain successful. Hidden targets also rejected.
+Added DAO and controller regression; HR edit/lock/unlock/soft-delete, CSRF/email/
+self-lock rejection and PM write denial verified. Temporary dc_users uses actual
+local schema/engine, actor copied in memory; observer exposes public fields only.
+Full pm_regression.ps1: 47 scripts PASS with 73 HTTP cases; five PHP lint checks
+PASS; git diff --check PASS. Code/security review checked prepared tenant queries,
+status exclusion, no permission widening and no credential exposure in observer.
+Persistent business rows, actual dc_users and engine unchanged in test.
+Prepared isolated two-runtime-file ZIP under .local/releases, verified inventory,
+CRC and source bytes. Not deployed/pushed/merged; no migration or UI change.
+
 ## Phase 11 allocation HTTP write coverage - 2026-10-07
 
 Continued approved local verification with eight allocation POST cases (60 total

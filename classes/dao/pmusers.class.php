@@ -43,8 +43,11 @@ class PmUsers {
         return (int)$row['id'];
     }
     public function updateSafe(int $storeId,int $id,array $data): bool {
-        return $this->db->execute('UPDATE dc_users SET fullname=?,email=?,tel=?,department_id=?,weekly_limit_hours=? WHERE store_id=? AND id=? AND status<>2',
-            'sssidii',[(string)$data['fullname'],(string)$data['email'],(string)$data['tel'],$data['department_id'],(float)$data['weekly_limit_hours'],$storeId,$id])>=0;
+        $affected=$this->db->execute('UPDATE dc_users SET fullname=?,email=?,tel=?,department_id=?,weekly_limit_hours=? WHERE store_id=? AND id=? AND status<>2',
+            'sssidii',[(string)$data['fullname'],(string)$data['email'],(string)$data['tel'],$data['department_id'],(float)$data['weekly_limit_hours'],$storeId,$id]);
+        // Zero changed rows is valid for an unchanged form, but not a missing,
+        // hidden or cross-tenant target. Keep both cases distinct.
+        return $affected>0||($affected===0&&$this->get($storeId,$id)!==null);
     }
     public function setStatus(int $storeId,int $id,int $status): bool {
         return $this->db->execute('UPDATE dc_users SET status=? WHERE store_id=? AND id=?','iii',[$status,$storeId,$id])===1;

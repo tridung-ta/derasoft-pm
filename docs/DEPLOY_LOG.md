@@ -1,5 +1,16 @@
 # Deployment preparation log — FileZilla
 
+## Personnel save-result patch prepared locally - 07/10/2026 (NOT DEPLOYED)
+
+ZIP: .local/releases/derasoft-pm-personnel-target-fix.zip, exactly two runtime files:
+classes/dao/pmusers.class.php and modules/admin/pmusers.module.php.
+Fix rejects missing/hidden/cross-tenant personnel saves without false success
+notice/tracking; unchanged existing forms still save successfully. No SQL/config/
+font or permission change. Inventory/CRC/source-byte checks PASS. Regression
+47 scripts PASS and combined HTTP 73 cases PASS. User has not uploaded this patch.
+Full candidate manifest/ZIP below predates this new fix; do not use its old hashes
+as evidence for these new runtime bytes. Tests/docs are not production payload.
+
 ## Latest operator report - 2026-10-07
 
 Operator confirmed the complete Phase 11 package was uploaded to production

@@ -1,5 +1,24 @@
 # Kiểm thử lại Phase 11 local — 06/10/2026
 
+## Personnel controller verification and fix - 2026-10-07
+
+Extended combined HTTP fixture suite from 60 to 73 cases. Temporary dc_users
+preserves real local schema/engine; only an in-memory actor copy and synthetic
+members are inserted. State observer returns public fields, never password/hash.
+
+Reproduced false success: HR personnel save to cross-tenant/missing target
+reported saved and wrote tracking despite zero affected rows. Fix distinguishes
+unchanged existing form from missing/hidden/cross-tenant target; controller checks
+the DAO return before notice/tracking. DAO tests cover all four zero-row cases.
+
+HTTP verifies edit/contact, unchanged valid save, lock/unlock/soft-delete; rejects
+CSRF, duplicate/invalid email, self-lock, PM write and invalid target IDs (including
+hidden). Invalid-target tests failed before fix and passed afterward.
+Full pm_regression.ps1: 47 scripts PASS, including 73 combined HTTP cases.
+PHP lint on DAO/controller and three touched test files PASS; diff check PASS.
+Persistent business tables and actual dc_users rows/engine unchanged. No runtime
+UI/permission/schema changes beyond save-result handling; not browser/login UAT.
+
 ## Allocation HTTP verification - 2026-10-07
 
 Extended combined role HTTP suite from 52 to 60 cases. Requests run unchanged

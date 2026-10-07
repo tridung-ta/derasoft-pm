@@ -22,6 +22,7 @@ function rolePersistentState(PmDb $q): string {
         $q->fetchAll('SELECT * FROM dc_pm_allocations ORDER BY id'),
         $q->fetchAll('SELECT * FROM dc_pm_allocation_locks ORDER BY store_id,user_id,work_date'),
         $q->fetchAll('SELECT * FROM dc_pm_capacity_overrides ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_users ORDER BY id'),
         $q->fetchOne("SELECT engine FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='dc_users'")
     ]));
 }
@@ -87,6 +88,18 @@ function roleAllocationWrite(array $changes,int $expected=200): array {
     $html=roleHttp('PM','op=pmallocations',$expected,$post);
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing allocation write state.');
     return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+}
+function roleUserWrite(array $changes,string $role='HR',int $expected=200): ?array {
+    $post=array_replace(['op'=>'pmusers','action'=>'save','id'=>'900000041','csrf_token'=>'role-http-csrf','fullname'=>'HTTP Updated','email'=>'http-updated@example.test','tel'=>'0900000000','weekly_limit_hours'=>'32','department_id'=>''],$changes);
+    $html=roleHttp($role,'op=pmusers',$expected,$post);
+    if ($expected!==200) return null;
+    if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing personnel write state.');
+    $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    $state['_html']=$html; return $state;
+}
+function roleUser(array $state,int $id): array {
+    foreach($state['users'] as $row) if ((int)$row['id']===$id) return $row;
+    throw new RuntimeException('Missing fixture personnel.');
 }
 try {
     $ready=false;
@@ -171,6 +184,26 @@ try {
         roleAssert($state['dc_pm_capacity_overrides'][0]['daily_limit_hours']==='8.00'&&$state['dc_pm_capacity_overrides'][0]['weekly_limit_hours']==='8.00','PM changed capacity override.');
     }
     roleHttp('HR','op=pmallocations',403,['op'=>'pmallocations','action'=>'save','csrf_token'=>'role-http-csrf']);
+    $state=roleUserWrite([]);
+    roleAssert(roleUser($state,900000041)['fullname']==='HTTP Updated'&&roleUser($state,900000041)['tel']==='0900000000'&&$state['tracking_count']===1,'HTTP personnel edit/tracking failed.');
+    $state=roleUserWrite(['fullname'=>'HTTP Member','email'=>'http-member@example.test','weekly_limit_hours'=>'40']);
+    roleAssert(str_contains($state['_html'],'Đã lưu thông tin nhân sự.')&&$state['tracking_count']===1,'Unchanged valid personnel form rejected.');
+    $state=roleUserWrite(['action'=>'status','status'=>'0']);
+    roleAssert((int)roleUser($state,900000041)['status']===0&&$state['tracking_count']===1,'HR lock failed.');
+    $state=roleUserWrite(['action'=>'status','status'=>'1','id'=>'900000042']);
+    roleAssert((int)roleUser($state,900000042)['status']===1,'HR unlock failed.');
+    $state=roleUserWrite(['action'=>'status','status'=>'2']);
+    roleAssert((int)roleUser($state,900000041)['status']===2,'HR soft delete failed.');
+    foreach([['csrf_token'=>'wrong'],['email'=>'http-locked@example.test'],['email'=>'invalid'],['action'=>'status','status'=>'0','id'=>(string)$actor['id']]] as $bad) {
+        $state=roleUserWrite($bad);
+        roleAssert(roleUser($state,900000041)['fullname']==='HTTP Member'&&$state['tracking_count']===0,'Rejected personnel write changed data/tracking.');
+        roleAssert((int)roleUser($state,(int)$actor['id'])['status']===1,'Actor locked itself.');
+    }
+    roleUserWrite(['action'=>'status','status'=>'0'],'PM',403);
+    foreach(['900000043','900000044','999999999'] as $invalidTarget) {
+        $state=roleUserWrite(['id'=>$invalidTarget]);
+        roleAssert(!str_contains($state['_html'],'Đã lưu thông tin nhân sự.')&&$state['tracking_count']===0,'Invalid personnel target reported successful save.');
+    }
 } finally {
     proc_terminate($server); proc_close($server);
     putenv('PM_ROLE_HTTP_TOKEN'); putenv('PM_ROLE_HTTP_ACTOR'); putenv('PM_ROLE_HTTP_STORE');

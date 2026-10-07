@@ -27,14 +27,17 @@ checkPersonnel($users->usernameExists(1,$data['username'])&&$users->emailExists(
 checkPersonnel(!$users->emailExists(2,$data['email'])&&!$users->get(2,$id),'Tenant read boundary');
 checkPersonnel($users->count(1,['q'=>'CRUD'])===1&&count($users->list(1,['q'=>'CRUD'],1,20))===1,'Search/count/page');
 $update=['fullname'=>'CRUD Updated','email'=>'updated@example.test','tel'=>'0911111111','department_id'=>null,'weekly_limit_hours'=>'32.00'];
-$users->updateSafe(2,$id,$update);
+checkPersonnel(!$users->updateSafe(2,$id,$update),'Cross-tenant update reported success');
 checkPersonnel($users->get(1,$id)['fullname']==='CRUD Sample','Cross-tenant update changed data');
 checkPersonnel($users->updateSafe(1,$id,$update),'Update failed');
+checkPersonnel($users->updateSafe(1,$id,$update),'Unchanged valid form rejected');
+checkPersonnel(!$users->updateSafe(1,999999999,$update),'Missing target reported success');
 $row=$users->get(1,$id);checkPersonnel($row['tel']==='0911111111'&&$row['fullname']==='CRUD Updated','Contact edit not persisted');
 checkPersonnel($users->count(1,['q'=>'updated@example.test'])===1&&!$users->emailExists(1,$data['email']),'Email/search not updated');
 checkPersonnel($users->setStatus(1,$id,0)&&(int)$users->get(1,$id)['status']===0,'Lock failed');
 checkPersonnel($users->setStatus(1,$id,1)&&(int)$users->get(1,$id)['status']===1,'Unlock failed');
 checkPersonnel(!$users->setStatus(2,$id,2),'Cross-tenant status update accepted');
 checkPersonnel($users->setStatus(1,$id,2)&&$users->get(1,$id)===null&&$users->count(1)===0,'Soft delete still listed');
+checkPersonnel(!$users->updateSafe(1,$id,$update),'Hidden target reported success');
 checkPersonnel((int)$q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total']===1,'Soft delete removed data');
 echo "PASS: personnel DAO create/hash/search/page/contact edit/duplicate/lock/unlock/soft-delete and tenant boundaries; temporary MyISAM mirror only.\n";

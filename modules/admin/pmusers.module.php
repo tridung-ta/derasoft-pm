@@ -59,7 +59,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if($departmentId&&!$departments->exists((int)$storeId,$departmentId))throw new DomainException('Phòng ban không thuộc tenant hiện tại.');
             $data=['fullname'=>$fullname,'email'=>$email,'tel'=>trim((string)$request->element('tel')),'department_id'=>$departmentId,'weekly_limit_hours'=>(float)$request->element('weekly_limit_hours')];
             if($data['weekly_limit_hours']<=0||$data['weekly_limit_hours']>168)throw new InvalidArgumentException('Giới hạn giờ/tuần không hợp lệ.');
-            if($targetId){$pmUsers->updateSafe((int)$storeId,$targetId,$data);}
+            if($targetId){if(!$pmUsers->updateSafe((int)$storeId,$targetId,$data))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');}
             else{$username=trim((string)$request->element('username'));$password=(string)$request->element('password');if($username===''||strlen($password)<8||$pmUsers->usernameExists((int)$storeId,$username))throw new InvalidArgumentException('Username hoặc mật khẩu không hợp lệ/trùng.');$data+=['username'=>$username,'password'=>$password];$targetId=$pmUsers->create((int)$storeId,$data);}
             $notice='Đã lưu thông tin nhân sự.';
         }

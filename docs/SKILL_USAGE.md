@@ -77,3 +77,12 @@ fixture tables to the route under test; other controllers may issue queries
 that temporary-table limitations cannot support. Verified 52 HTTP cases with
 persistent business state unchanged. This is test harness behavior, not a
 production middleware change or an application defect claim.
+
+## Zero-row UPDATE result - 2026-10-07
+
+Personnel HTTP test reproduced false saved notice/tracking for invalid targets.
+Zero affected rows may mean unchanged form or no matching target. DAO now checks
+visible same-tenant existence when UPDATE changes zero rows; controller checks
+return before success/tracking. Verify unchanged, missing, hidden and cross-tenant
+cases together. 73 combined HTTP cases and 47 regression scripts PASS; actual
+users unchanged. Applied existing development/review/commit workflow skills.

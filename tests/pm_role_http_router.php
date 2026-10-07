@@ -16,6 +16,7 @@ if (!in_array($fixtureRole, ['PM', 'HR'], true)
         || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','task_save','task_delete'], true))
         || (($_POST['op'] ?? '') === 'pmtimesheets' && in_array($_POST['action'] ?? '', ['save','delete','settings'], true))
         || (($_POST['op'] ?? '') === 'pmallocations' && in_array($_POST['action'] ?? '', ['save','delete','capacity'], true))
+        || (($_POST['op'] ?? '') === 'pmusers' && in_array($_POST['action'] ?? '', ['save','status'], true))
     ))) {
     http_response_code(400); exit;
 }
@@ -45,10 +46,31 @@ class DB extends PmRoleHttpBaseDb {
         $tables=['dc_pm_user_roles','dc_pm_projects','dc_pm_project_members','dc_pm_tasks','dc_pm_audit_logs','dc_trackings'];
         if (($_GET['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings','dc_pm_hourly_rates'];
         if (($_GET['op']??'')==='pmallocations') $tables=[...$tables,'dc_pm_allocations','dc_pm_allocation_locks','dc_pm_capacity_overrides'];
+        $actorRow=null;
+        if (($_GET['op']??'')==='pmusers') {
+            $stmt=$c->prepare('SELECT * FROM dc_users WHERE store_id=? AND id=?');
+            $stmt->bind_param('ii',$store,$actor); $stmt->execute();
+            $actorRow=$stmt->get_result()->fetch_assoc();
+            if (!$actorRow) throw new RuntimeException('Missing local actor row.');
+            $tables[]='dc_users';
+        }
         foreach ($tables as $table) {
             $ddl=$c->query('SHOW CREATE TABLE '.$table)->fetch_row()[1];
             $ddl=preg_replace('/,\n\s*CONSTRAINT[^\n]+/', '', $ddl);
             $c->query(str_replace('CREATE TABLE', 'CREATE TEMPORARY TABLE', $ddl));
+        }
+        if ($actorRow) {
+            // Keep the real actor only in memory; never expose copied credentials.
+            $columns=array_keys($actorRow);
+            $stmt=$c->prepare('INSERT INTO dc_users (`'.implode('`,`',$columns).'`) VALUES ('.implode(',',array_fill(0,count($columns),'?')).')');
+            foreach ([$actorRow,
+                array_replace($actorRow,['id'=>900000041,'username'=>'http-member','email'=>'http-member@example.test','fullname'=>'HTTP Member','code'=>'HTTP41','status'=>1,'tel'=>'0900000000','weekly_limit_hours'=>'40.00','department_id'=>null]),
+                array_replace($actorRow,['id'=>900000042,'username'=>'http-locked','email'=>'http-locked@example.test','fullname'=>'HTTP Locked','code'=>'HTTP42','status'=>0]),
+                array_replace($actorRow,['id'=>900000043,'store_id'=>$store+1,'username'=>'http-other','email'=>'http-other@example.test','fullname'=>'HTTP Other Tenant','code'=>'HTTP43','status'=>1]),
+                array_replace($actorRow,['id'=>900000044,'username'=>'http-hidden','email'=>'http-hidden@example.test','fullname'=>'HTTP Hidden','code'=>'HTTP44','status'=>2])
+            ] as $row) {
+                $values=array_values($row); $stmt->bind_param(str_repeat('s',count($values)),...$values); $stmt->execute();
+            }
         }
         $stmt = $c->prepare('INSERT INTO dc_pm_user_roles (store_id,user_id,role_id,is_primary) SELECT ?,?,id,1 FROM dc_pm_roles WHERE store_id=? AND code=? AND status=1');
         $stmt->bind_param('iiis', $store, $actor, $store, $role); $stmt->execute();
@@ -85,7 +107,7 @@ $entry = file_get_contents(ROOT_PATH.'admin.php');
 $entry = str_replace("include_once(ROOT_PATH.'classes/database/mysql.class.php');", '', $entry, $count);
 if ($count !== 1) throw new RuntimeException('Admin fixture entry no longer matches.');
 eval('?>'.$entry);
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets','pmallocations'],true)) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets','pmallocations','pmusers'],true)) {
     // Observe request-local committed state before DB teardown; never a production endpoint.
     $fixtureState=[];
     $tables=['dc_pm_projects','dc_pm_tasks','dc_pm_audit_logs'];
@@ -95,5 +117,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? ''
         $fixtureState[$table]=$db->connection->query('SELECT * FROM '.$table.' ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     }
     if (($_POST['op']??'')==='pmallocations') $fixtureState['warnings']=$warnings??[];
+    if (($_POST['op']??'')==='pmusers') {
+        $fixtureState['users']=$db->connection->query('SELECT id,store_id,fullname,email,tel,status,weekly_limit_hours FROM dc_users ORDER BY id')->fetch_all(MYSQLI_ASSOC);
+        $fixtureState['tracking_count']=(int)$db->connection->query('SELECT COUNT(*) FROM dc_trackings')->fetch_row()[0];
+    }
     echo '\n<!-- PM_FIXTURE_STATE '.base64_encode(json_encode($fixtureState,JSON_THROW_ON_ERROR)).' -->';
 }
