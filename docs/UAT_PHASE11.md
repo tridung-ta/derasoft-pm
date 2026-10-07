@@ -1,5 +1,13 @@
 # Phase 11 — nghiệm thu local
 
+## Production update from operator - 2026-10-07
+
+User confirmed the full Phase 11 package was uploaded, is running stably and
+has shown no errors so far. The earlier question about full upload versus the
+login patch is resolved. This is an operator report, not agent production
+verification or a per-case UAT result. Pending role/Excel/zoom cases below are
+not automatically marked PASS. No new runtime changes or tests in this update.
+
 ## Xác nhận mới nhất — 07/10/2026
 
 - Người dùng xác nhận lỗi giao diện login đã xử lý xong sau bản vá 2 file

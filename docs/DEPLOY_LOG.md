@@ -1,5 +1,15 @@
 # Deployment preparation log — FileZilla
 
+## Latest operator report - 2026-10-07
+
+Operator confirmed the complete Phase 11 package was uploaded to production
+and reported no errors observed so far. Login issue is resolved by user report.
+Agent did not perform upload or independently inspect live-host file hashes.
+The supplied dung_pm schema screenshot confirms all four expected nullable
+metadata columns; no repeat migration 009 is required on that evidence.
+Earlier NOT DEPLOYED statements below describe preparation-time status.
+This report does not establish every role/Excel/zoom acceptance case as PASS.
+
 ## Phase 11 local candidate — 06/10/2026 (NOT DEPLOYED)
 
 Current preparation: 0.11.0-phase11-local-rc1, branch
