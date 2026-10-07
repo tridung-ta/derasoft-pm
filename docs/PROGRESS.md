@@ -1820,3 +1820,6 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - Giữ bố cục theo yêu cầu; sửa css/pmui.css scoped pm-reports-page: viền section rõ hơn, đầu bảng nền zinc, khoảng cách bộ lọc/ô bảng, dải tổng giờ đóng khung và phân cách; tiêu đề gọn, số liệu tabular nổi bật. Không thay route, filter, export hay permission.
 - VERIFY: playwright-cli -s=pmlogin run-code --filename=../tests/pm_phase11_reports_browser.js PASS cho fixture task/hour/users/projects, responsive và text scaling 200%, không pageerror; tests/pm_reports_browser.js PASS desktop/mobile, escape, giữ bộ lọc và download XLSX fixture với route/CSRF. Chạy từ .local; đã xem ảnh báo cáo giờ desktop. Không coi export mock là xác nhận production hoặc chạy lại toàn bộ regression.
 - Impeccable detect giữ các cảnh báo có sẵn về Inter/viền nghiệp vụ theo theme đã duyệt. Review diff chỉ CSS, git diff --check đạt. Chỉ local, chưa push/merge/deploy.
+
+### 07/10/2026 — Rà soát ràng buộc, dừng giao diện
+- Xem docs/CONSTRAINT_REVIEW_20261007.md: 47 regression scripts và hai browser suites local PASS; đọc schema local phát hiện validation tên/email/username/tel chưa thống nhất, import vượt chiều dài schema, collision chéo định danh và test mirror quá rộng. Không sửa runtime/database, không truy cập production; không suy ra toàn bộ ràng buộc đạt từ PASS.
