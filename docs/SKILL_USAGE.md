@@ -130,3 +130,14 @@ the GET landing and flash consumption. Request-local fixture capture belongs in
 shutdown when controller exits after redirect. Verified 90 HTTP cases and 49
 regression scripts, no persistent changes; fixture GET does not prove cross-request
 data persistence or manual UAT.
+
+## Project versus task date boundaries - 2026-10-07
+
+Used feature-development and existing review/commit workflow for the explicit
+business constraint: project end must be strictly after start, while tasks may
+finish the same day. Use a typed validation exception for the specific project
+rule so its redirect/error flash cannot change task or unrelated validation flows.
+Verify create/edit, equality, reversed dates and the next-day boundary; assert
+invalid writes leave both row data and row counts unchanged. Service, 103 HTTP
+cases and 49 regression scripts PASS. Preserve existing rows and optional-date
+behavior; do not infer global data stability from checksums across user activity.

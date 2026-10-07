@@ -84,6 +84,7 @@ Test theo vai trò và nghiệp vụ, UAT trên staging/local copy, lập releas
 - Nếu user có nhiều role và không có rate riêng thì dùng role chính, không dùng role có giá cao nhất.
 - OT: giờ thường tối đa theo `standard_hours_per_day` (mặc định 8); phần vượt là OT; thay đổi một dòng phải tính lại toàn bộ ngày của user.
 - Overbooking: tổng allocation vượt giới hạn tuần hoặc giới hạn ngày sẽ cảnh báo; ngưỡng phải cấu hình được.
+- Ngày dự án (chốt 07/10/2026): khi nhập cả hai ngày, end_date phải sau start_date, không được trùng ngày; vi phạm thì không lưu, báo lỗi và quay về danh sách Dự án & công việc. Task vẫn được start_date bằng due_date để hỗ trợ công việc trong ngày. Không sửa dữ liệu cũ hàng loạt.
 - Xóa nghiệp vụ dùng soft delete và audit.
 - Import validate toàn bộ trước staging, báo lỗi theo dòng. Transaction chỉ cho bảng PM
   InnoDB; Apply dc_users MyISAM dùng INSERT/1062, durable intent và mutex, không đổi ENGINE.

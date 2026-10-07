@@ -2,6 +2,10 @@
 include_once(ROOT_PATH.'classes/database/pmdb.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 
+class PmProjectDateRangeException extends InvalidArgumentException {
+    public const MESSAGE='Ngày kết thúc dự án phải sau ngày bắt đầu, không được trùng ngày.';
+}
+
 class PmProjectService {
     private PmDb $db;
     private PmAccess $access;
@@ -70,7 +74,7 @@ class PmProjectService {
         $name=trim((string)($data['name']??''));$code=strtoupper(trim((string)($data['code']??'')));$description=(string)($data['description']??'');
         if($name===''||mb_strlen($name)>150||!preg_match('/^[A-Z0-9_-]{2,50}$/D',$code)||mb_strlen($description)>10000)throw new InvalidArgumentException('Tên, mã hoặc mô tả dự án không hợp lệ.');
         $status=(string)($data['status']??'planned');if(!in_array($status,['planned','active','paused','completed'],true))throw new InvalidArgumentException('Trạng thái dự án không hợp lệ.');
-        $start=$this->date($data['start_date']??null);$end=$this->date($data['end_date']??null);if($start&&$end&&$end<$start)throw new InvalidArgumentException('Ngày kết thúc phải sau ngày bắt đầu.');
+        $start=$this->date($data['start_date']??null);$end=$this->date($data['end_date']??null);if($start&&$end&&$end<=$start)throw new PmProjectDateRangeException(PmProjectDateRangeException::MESSAGE);
         $budget=$this->number($data['budget']??'0',13);
         $client=trim((string)($data['client_name']??''));if(mb_strlen($client)>150)throw new InvalidArgumentException('Tên khách hàng quá dài.');
         $manager=$this->access->hasRole('ADMIN')?(int)($data['manager_id']??0):$this->actorId;

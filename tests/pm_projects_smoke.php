@@ -38,11 +38,24 @@ try{
     if($service->getProject($id)['name']!=='Project smoke')throw new RuntimeException('Project creation failed.');
     $data['name']='Project updated';$service->saveProject($data,$id);
     if($service->getProject($id)['name']!=='Project updated')throw new RuntimeException('Project update failed.');
+    $dateBefore=$service->getProject($id);
+    $dateRowCount=$connection->query('SELECT COUNT(*) n FROM dc_pm_projects')->fetch_assoc()['n'];
+    foreach([null,$id] as $dateId)foreach(['2026-10-02','2026-10-01'] as $dateEnd){
+        $dateData=$data;$dateData['code']='DATE_'.bin2hex(random_bytes(4));$dateData['start_date']='2026-10-02';$dateData['end_date']=$dateEnd;
+        try{$service->saveProject($dateData,$dateId);throw new LogicException('Same-day/reversed project accepted.');}catch(PmProjectDateRangeException $expected){}
+        if($service->getProject($id)!==$dateBefore)throw new RuntimeException('Invalid project dates overwrote data.');
+        if($connection->query('SELECT COUNT(*) n FROM dc_pm_projects')->fetch_assoc()['n']!==$dateRowCount)throw new RuntimeException('Invalid dates created a project.');
+    }
+    $dayData=$data;$dayData['code']='DAY_'.bin2hex(random_bytes(4));$dayData['start_date']='2026-10-02';$dayData['end_date']='2026-10-03';
+    $dayId=$service->saveProject($dayData);$dayData['name']='One-day interval updated';$service->saveProject($dayData,$dayId);
+    $dayProject=$service->getProject($dayId);if($dayProject['start_date']!=='2026-10-02'||$dayProject['end_date']!=='2026-10-03')throw new RuntimeException('Next-day project dates rejected.');
     $data['client_name']='Client <script>fixture</script>';$service->saveProject($data,$id);
     if($service->getProject($id)['client_name']!==$data['client_name'])throw new RuntimeException('Client metadata missing.');
     try{(new PmProjectService($db,$store+999999,$actor))->getProject($id);throw new RuntimeException('Cross tenant read accepted.');}catch(DomainException|OutOfBoundsException $expected){}
     $task=['name'=>'Smoke task','assignee_id'=>$actor,'status'=>'todo','priority'=>'normal','estimated_hours'=>'4','due_date'=>'2026-02-01'];
+    $task['start_date']=$task['due_date'];
     $taskId=$service->saveTask($id,$task);$task['status']='done';$service->saveTask($id,$task,$taskId);
+    $sameDayTask=$service->tasks($id)[0];if($sameDayTask['start_date']!==$sameDayTask['due_date'])throw new RuntimeException('Same-day task dates rejected.');
     if($service->tasks($id)[0]['status']!=='done')throw new RuntimeException('Kanban update failed.');
     $completed=$service->tasks($id)[0]['completed_at'];if(!$completed)throw new RuntimeException('Completion timestamp missing.');
     $task['start_date']='2026-01-01';$service->saveTask($id,$task,$taskId);

@@ -162,7 +162,7 @@ try {
     $landing=roleHttp('PM','op=pmprojects',200);
     roleAssert(str_contains($landing,'Đã lưu dự án.')&&str_contains($landing,'pm-project-list')&&!str_contains($landing,'data-pm-kanban'),'Project save did not land on list with notice.');
     roleAssert(!str_contains(roleHttp('PM','op=pmprojects',200),'Đã lưu dự án.'),'Save notice repeated on refresh.');
-    $state=roleWrite(['action'=>'project_save','project_id'=>'0','code'=>'HTTP-NEW','name'=>'HTTP new project','status'=>'active','budget'=>'0']);
+    $state=roleWrite(['action'=>'project_save','project_id'=>'0','code'=>'HTTP-NEW','name'=>'HTTP new project','status'=>'active','budget'=>'0','start_date'=>'2026-10-02','end_date'=>'2026-10-03']);
     roleAssert(count($state['dc_pm_projects'])===3&&$state['dc_pm_projects'][2]['name']==='HTTP new project','Project create/redirect failed.');
     roleAssert(str_contains(roleHttp('PM','op=pmprojects',200),'Đã lưu dự án.'),'Create notice lost across redirect.');
     $state=roleWrite(['action'=>'project_delete']);
@@ -174,6 +174,15 @@ try {
         $state=roleWrite($bad,'PM',200);
         roleAssert($state['dc_pm_projects'][0]['name']==='HTTP own project'&&$state['dc_pm_projects'][0]['deleted_at']===null&&!$state['tracking'],'Failed project action changed data/redirected.');
     }
+    foreach(['0','900000001'] as $dateProject)foreach(['2026-10-02','2026-10-01'] as $dateEnd){
+        $state=roleWrite(['action'=>'project_save','project_id'=>$dateProject,'code'=>'HTTP-DATE','name'=>'Invalid project dates','status'=>'active','budget'=>'0','start_date'=>'2026-10-02','end_date'=>$dateEnd]);
+        roleAssert(count($state['dc_pm_projects'])===2&&$state['dc_pm_projects'][0]['name']==='HTTP own project'&&!$state['tracking'],'Invalid project dates created/changed data.');
+        $landing=roleHttp('PM','op=pmprojects',200);
+        roleAssert(str_contains($landing,'Ngày kết thúc dự án phải sau ngày bắt đầu, không được trùng ngày.')&&str_contains($landing,'pm-project-list')&&!str_contains($landing,'data-pm-kanban'),'Invalid date error/landing missing.');
+        roleAssert(!str_contains(roleHttp('PM','op=pmprojects',200),'không được trùng ngày'),'Invalid date error repeated.');
+    }
+    $state=roleWrite(['task_id'=>'900000011','start_date'=>'2026-10-02','due_date'=>'2026-10-02']);
+    roleAssert(roleTask($state,900000011)['start_date']==='2026-10-02'&&roleTask($state,900000011)['due_date']==='2026-10-02'&&count($state['dc_pm_audit_logs'])===1,'Same-day task save rejected.');
     $state=roleTimeWrite([]);
     $created=array_values(array_filter($state['dc_pm_timesheets'],fn($s)=>$s['shift_label']==='HTTP new'));
     roleAssert(count($created)===1&&$created[0]['regular_hours']==='0.00'&&$created[0]['ot_hours']==='2.00'&&$created[0]['cost']==='300.00'&&$created[0]['rate_snapshot']==='100.00','HTTP timesheet create OT/rate/cost failed.');

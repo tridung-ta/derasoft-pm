@@ -7,7 +7,8 @@ $templateFile='pm-projects.tpl.html';$notice='';$error='';
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
 $projectId=max(0,(int)$request->element('project_id'));
 if($_SERVER['REQUEST_METHOD']==='GET'&&$projectId===0&&isset($_SESSION['pm_project_result'])){
-    $notice=['saved'=>'Đã lưu dự án.','hidden'=>'Đã ẩn dự án.'][$_SESSION['pm_project_result']]??'';
+    if($_SESSION['pm_project_result']==='invalid_dates')$error=PmProjectDateRangeException::MESSAGE;
+    else $notice=['saved'=>'Đã lưu dự án.','hidden'=>'Đã ẩn dự án.'][$_SESSION['pm_project_result']]??'';
     unset($_SESSION['pm_project_result']);
 }
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -31,6 +32,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $_SESSION['pm_project_result']=$action==='project_save'?'saved':'hidden';
             header('Location: '.ADMIN_SCRIPT.'?op=pmprojects',true,303);exit;
         }
+    }catch(PmProjectDateRangeException $e){
+        $_SESSION['pm_project_result']='invalid_dates';header('Location: '.ADMIN_SCRIPT.'?op=pmprojects',true,303);exit;
     }catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
     catch(Throwable $e){error_log('PM project operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng thử lại.';}
 }

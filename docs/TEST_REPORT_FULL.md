@@ -344,3 +344,29 @@ và confirmation ẩn không đổi. Không sửa schema/DAO/template/CSS, khôn
 Review không thấy defect mới trong diff: đích redirect cố định, notice server-only,
 service/tracking thực thi trước redirect, CSRF/ownership và legacy functionality
 giữ nguyên. Tổng 80 mục không thay trạng thái; giữ 19 CHƯA CHẠY. Không merge/push/deploy.
+
+## Ràng buộc ngày dự án/task — 07/10/2026
+
+Theo quyết định người dùng: dự án nhập cả hai ngày phải end_date > start_date.
+Ngày trùng hoặc đảo ngược bị từ chối trước ghi; controller dùng exception riêng
+để trả 303 về danh sách, GET hiện lỗi cố định một lần. Task vẫn cho phép start_date
+= due_date; không đổi rule task. Không migration hoặc sửa dữ liệu cũ hàng loạt.
+
+- `.tools/php83/php.exe tests/pm_projects_smoke.php`: **PASS**, create/edit dự án
+  02/10 → 02/10 và 02/10 → 01/10 bị từ chối, hàng cũ và số project không đổi;
+  02/10 → 03/10 được tạo/sửa; task cùng ngày được tạo/sửa. Outer rollback fixture.
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php`: **PASS 103 HTTP case**;
+  project create/edit same-day/reversed → 303 đúng danh sách, error GET một lần,
+  không project/tracking write; task same-day POST → saved/audit. Persistent
+  state/engine trước-sau của suite giữ nguyên. Không browser persistence E2E/UAT.
+- PHP `-l` classes/services/pmprojectservice.class.php,
+  modules/admin/pmprojects.module.php, tests/pm_projects_smoke.php,
+  tests/pm_role_http_smoke.php: **PASS**; `git diff --check`: **PASS**.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+  **PASS 49 script**, gồm 103 role HTTP. Bổ sung boundary ngày kế tiếp sau đó,
+  chạy lại service smoke và role HTTP **PASS**. Không đổi runtime sau regression.
+
+Review không thấy defect mới trong diff: service check server-side trước ghi,
+exception riêng không đổi luồng lỗi task, flash server-only/escaped và redirect
+cố định, CSRF/permission/ownership không thay. PLAN_FINAL ghi quyết định mới;
+80 mục không tự nâng trạng thái, giữ 19 CHƯA CHẠY. Không merge/push/deploy.
