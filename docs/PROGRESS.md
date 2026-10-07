@@ -1669,3 +1669,19 @@ specificity and rechecked. Detector ran once; pinned Inter and existing warning
 styles retained; template-relative CSS lookup makes hierarchy report incomplete.
 Focused code/security review found no backend or permission changes. No actual
 browser zoom, manual UAT or production claim. Not pushed/merged/deployed.
+# Password form refinement - 2026-10-07
+
+Continued user-requested local UI review with Impeccable. Password section now
+uses a scoped form class, clearer neutral frame, labels/spacing, separated update
+area and full-width mobile action. Replaced stale OTP/Gmail development text with
+current-password/new-password instructions. Form names/action, autocomplete,
+password types, minlength and CSRF unchanged; no auth/controller/DAO changes.
+
+Verified smoke_pm_admin.php --preview PASS; pm_regression.ps1 PASS (47 scripts).
+Playwright password-review.js PASS: computed border, three password inputs/CSRF,
+input focus, visible submit, 1440/390 viewports and 720 at 200% text scaling, no
+overflow or JS page exceptions. Inspected desktop/mobile screenshots. No password
+mutation sent during visual checks; not actual zoom or manual production UAT.
+Detector run once: pinned Inter/shared warning retained; template-relative CSS
+lookup has incomplete hierarchy output. Focused review found no security behavior
+change. Local commit only; awaiting combined review, no push/merge/deploy.
