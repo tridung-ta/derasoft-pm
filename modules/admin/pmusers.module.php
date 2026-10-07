@@ -63,7 +63,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             else{$username=trim((string)$request->element('username'));$password=(string)$request->element('password');if($username===''||strlen($password)<8||$pmUsers->usernameExists((int)$storeId,$username))throw new InvalidArgumentException('Username hoặc mật khẩu không hợp lệ/trùng.');$data+=['username'=>$username,'password'=>$password];$targetId=$pmUsers->create((int)$storeId,$data);}
             $notice='Đã lưu thông tin nhân sự.';
         }
-        if($notice!=='')$trackings->addData(['store_id'=>$storeId,'username'=>$userInfo->getUsername(),'action'=>'PM users: '.$action.' user #'.$targetId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>$_SERVER['REMOTE_ADDR']??'']);
+        if($notice!=='')$trackings->addData(['store_id'=>$storeId,'username'=>(string)(int)$userInfo->getId(),'action'=>'PM users: '.$action.' user #'.$targetId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>'']);
     }catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
     catch(Throwable $e){error_log('PM user management operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng kiểm tra dữ liệu và thử lại.';}
 }

@@ -1841,3 +1841,8 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 ### 2026-10-07 - Step B complete
 - Corrected report 8.4 to PASS: original design validates/rejects entire file at Stage with row errors. 10.6 PASS matches approved light warning background and #d97706 border.
 - Documentation only; prior execution evidence retained, no rerun claimed. 57 PASS / 4 FAIL / 19 NOT RUN; Step E will reconcile targeted audit fix. PII policy pending Step C, no redaction. No merge/push/deploy.
+
+### 07/10/2026 — Bước C: log mới dùng ID tài khoản
+- Chính sách người dùng đã chốt; giữ toàn bộ log cũ. PM login/lock/logout/users/projects tracking dùng ID số/IP rỗng; login_times mới không thu IP, UPDATE counter giữ IP lịch sử. Legacy ngoài PM giữ nguyên; không migration.
+- VERIFY: 10 auth-module fixtures, 73 role HTTP case, 20 identity case, session guard và PHP lint 7 file PASS. Regression đầu FAIL import abandoned lock; test riêng PASS, rerun toàn runner 48 script PASS. Nguyên nhân lỗi lock chưa xác định chắc.
+- Persistent user checksum 129141672, missing department=0, fixture high-ID=0. Review không thấy lỗi mới; 11.4 chưa PASS toàn phạm vi và 19 CHƯA CHẠY giữ nguyên. D1 chờ duyệt PLAN; không merge/push/deploy.

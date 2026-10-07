@@ -116,6 +116,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? ''
     foreach ($tables as $table) {
         $fixtureState[$table]=$db->connection->query('SELECT * FROM '.$table.' ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     }
+    $fixtureState['tracking']=$db->connection->query('SELECT username,ip FROM dc_trackings ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     if (($_POST['op']??'')==='pmallocations') $fixtureState['warnings']=$warnings??[];
     if (($_POST['op']??'')==='pmusers') {
         $fixtureState['users']=$db->connection->query('SELECT id,store_id,fullname,email,tel,status,weekly_limit_hours FROM dc_users ORDER BY id')->fetch_all(MYSQLI_ASSOC);

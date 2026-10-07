@@ -95,3 +95,15 @@ visible same-tenant existence when UPDATE changes zero rows; controller checks
 return before success/tracking. Verify unchanged, missing, hidden and cross-tenant
 cases together. 73 combined HTTP cases and 47 regression scripts PASS; actual
 users unchanged. Applied existing development/review/commit workflow skills.
+
+## New log identity policy - 2026-10-07
+
+Applied feature-development, code-review and git-feature-commit to the approved
+ID-only policy for new PM logs. Preserve historical records and legacy behavior;
+avoid rewriting existing last_ip while incrementing failed-login counters. Actual
+auth module execution with recording collaborators verifies emitted fields without
+DB access; HTTP fixtures verify project/personnel logs and persistent-state safety.
+Ten module fixtures, 73 HTTP cases and final 48-script regression PASS. First
+regression failed an abandoned import-lock assertion, then standalone and full
+rerun passed; root cause remains unconfirmed. These results do not certify all
+audit payloads or constitute real-account login UAT.

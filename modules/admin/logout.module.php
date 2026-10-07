@@ -15,10 +15,10 @@ if(defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY){
 if (isset($trackings, $userInfo) && $userInfo) {
 	$trackings->addData(array(
 		'store_id' => $storeId,
-		'username' => $userInfo->getUsername(),
+		'username' => defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? (string)(int)$userInfo->getId() : $userInfo->getUsername(),
 		'action' => $amessages['tracking']['logout_ok'],
 		'date_created' => date('Y-m-d H:i:s'),
-		'ip' => $_SERVER['REMOTE_ADDR'],
+		'ip' => defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? '' : $_SERVER['REMOTE_ADDR'],
 	));
 }
 

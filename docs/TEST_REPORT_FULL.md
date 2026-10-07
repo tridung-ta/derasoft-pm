@@ -186,7 +186,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 11.1 | **PASS** | Runner pm_regression.ps1 exit 0: 47 scripts PASS, 73 HTTP và 101 EXPLAIN. Đây chỉ là PASS lệnh; không đồng nghĩa checklist tổng PASS, đặc biệt test audit gây lỗi fixture 11.5. |
 | 11.2 | **PASS** | PHP 8.3 lint 103 file .php đổi từ 3df3349..HEAD: không syntax error; log G11-lint. Không chỉ lint bốn runtime mới. |
 | 11.3 | **PASS** | Tracked inventory + scoped diff không có config thật/.env/dump/cache/upload trong phần chuẩn bị commit; chỉ docs mới. includes/config.inc.php.example và templates_c/.gitkeep là placeholders. Không quét lịch sử secret toàn repository. |
-| 11.4 | **FAIL** | Legacy tracking lưu raw username; read-only count 5332 dòng username non-empty. pmusers.module.php:66 ghi username thật, chưa đáp ứng “không PII thô” theo checklist mới. Chưa kiểm tra mọi log sample cho secret; không in PII/secret ra report. Quay Phase 3/5/9, chốt PII policy rồi redact/pseudonymize đúng phạm vi. |
+| 11.4 | **FAIL** | Chính sách C đã chốt: log mới chỉ lưu ID tài khoản, lịch sử giữ nguyên. Các điểm tracking PM login/lock/logout/users/projects đã sửa và kiểm thử ID-only, không thu IP mới; log cũ không sửa. Test 10 auth-module fixtures và 73 HTTP PASS; chưa kiểm tra đầy đủ mọi loại log/audit theo mục này, nên chưa nâng toàn mục thành PASS. Xem bằng chứng Bước C cuối báo cáo; đối chiếu toàn phạm vi ở E. |
 | 11.5 | **FAIL** | dc_users checksum 879749036 -> 951768798; 2 users tham chiếu department đã mất. pm_audit_smoke.php:56,67,71,74 UPDATE bảng thật MyISAM, finally chỉ rollback; PM department fixture rollback nhưng user reference không rollback. 19 bảng PM checksum/engine giữ nguyên, user engine vẫn MyISAM, high-id fixtures=0. Quay Phase 5/9/10 test isolation; dừng chạy test này/runner trước khi sửa. Chưa khôi phục giá trị gốc vì không có baseline field values. |
 
 ## Thứ tự sửa / kiểm tra lại
@@ -229,4 +229,37 @@ Executed `.tools/php83/php.exe -l tests/pm_audit_smoke.php`: PASS. Executed `.to
 
 ## Step B complete - 2026-10-07
 
-8.4 corrected FAIL to PASS by reconciliation with original approved all-file Stage validation (not partial staging). 10.6 remains PASS; removed solid-fill caveat according to explicit approval of light background plus #d97706 border. Existing executed evidence retained, no new execution claimed. Total now 57 PASS / 4 FAIL / 19 NOT RUN; targeted 11.5 reconciliation deferred to Step E. No runtime changes. Step C PII policy still pending; no username redaction or status change.
+8.4 corrected FAIL to PASS by reconciliation with original approved all-file Stage validation (not partial staging). 10.6 remains PASS; removed solid-fill caveat according to explicit approval of light background plus #d97706 border. Existing executed evidence retained, no new execution claimed. Total now 57 PASS / 4 FAIL / 19 NOT RUN; targeted 11.5 reconciliation deferred to Step E. No runtime changes. Step C PII policy still pending at this point in history.
+
+## Bước C — Chính sách chốt và sửa tracking mới (07/10/2026)
+
+Người dùng chọn nhật ký mới chỉ lưu ID tài khoản. Giữ toàn bộ lịch sử; không
+UPDATE/xóa log cũ, không migration. Trường username của tracking legacy ghi
+chuỗi ID số cho bản ghi PM mới, không đổi tên cột. Legacy ngoài PM giữ hành vi cũ.
+
+- Sửa login (success/lock), logout, pmusers và pmprojects. Tracking PM mới không
+  ghi username/email/IP thô. Login thất bại: login_times mới ghi uid và last_ip
+  rỗng; UPDATE counter cũ không chạm last_ip lịch sử. Không đổi quy tắc xác thực.
+- `.tools/php83/php.exe tests/pm_tracking_identity_smoke.php`: **PASS 10 case**
+  chạy module login/logout bằng recording collaborators, không truy cập DB.
+  Bao gồm PM/legacy, success/lock/logout/failure-new/failure-existing. Không phải
+  bằng chứng HTTP đăng nhập hay UAT tài khoản thật.
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php`: **PASS 73 HTTP case**;
+  assert tracking mới projects/users có ID actor và IP rỗng. Persistent state
+  và user engine không đổi.
+- `.tools/php83/php.exe tests/pm_auth_identity_smoke.php`: **PASS 20 case**.
+  `.tools/php83/php.exe tests/pm_session_guard_smoke.php`: **PASS**.
+- PHP `-l` cả 7 file PHP sửa/mới: **PASS**; `git diff --check`: **PASS**.
+- Regression đầu **FAIL** tại pm_import_apply_smoke:
+  `Connection close did not release lock`. Test này chạy riêng **PASS**.
+  Sau khi hoàn tất login-failure code/test, chạy lại
+  `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+  **PASS 48 script**. Không xác định chắc nguyên nhân lỗi lock ban đầu; không
+  xóa kết quả FAIL hoặc tự kết luận không còn tính không ổn định. Không sửa import.
+- `.tools/php83/php.exe .local/checksum_diagnostic.php`: dc_users EXTENDED=129141672,
+  high-ID fixture=0, department thiếu=0, tracking lịch sử non-empty=5332 giữ nguyên.
+
+Review code/security: ID chỉ lấy từ server; không đổi CSRF/permission/ownership;
+không thấy lỗi mới trong diff. Chưa rà đầy đủ mọi payload audit/log, nên 11.4
+chưa PASS toàn phạm vi, chờ đối chiếu ở E. Giữ 19 CHƯA CHẠY. Không merge/push/deploy.
+D1 mới có PLAN, chưa BUILD.

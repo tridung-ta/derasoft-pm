@@ -54,12 +54,20 @@ function roleHttp(string $role,string $query,int $expected,?array $post=null,boo
     if (str_contains($body,'Fatal error:')||str_contains($body,'mysqli_sql_exception')) throw new RuntimeException('HTTP runtime error.');
     $cases++; return $body;
 }
+function roleTrackingIdentity(array $state): void {
+    global $actor;
+    roleAssert(isset($state['tracking'])&&is_array($state['tracking']), 'Missing tracking fixture observation.');
+    foreach($state['tracking'] as $row){
+        roleAssert($row['username']===(string)$actor['id']&&$row['ip']==='', 'New PM tracking contains raw identity/IP.');
+    }
+}
 function roleWrite(array $changes, string $role='PM', int $expected=200): ?array {
     $post=array_replace(['op'=>'pmprojects','project_id'=>'900000001','action'=>'task_save','csrf_token'=>'role-http-csrf','name'=>'HTTP created task','description'=>'HTTP fixture','status'=>'todo','priority'=>'normal','estimated_hours'=>'2','start_date'=>'2026-01-01','due_date'=>'2026-12-31','assignee_id'=>''],$changes);
     $html=roleHttp($role,'op=pmprojects',$expected,$post);
     if ($expected!==200) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing request-local write state.');
-    return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    roleTrackingIdentity($state);return $state;
 }
 function roleAssert(bool $ok,string $message): void { if (!$ok) throw new RuntimeException($message); }
 function roleTask(array $state,int $id): array {
@@ -95,7 +103,7 @@ function roleUserWrite(array $changes,string $role='HR',int $expected=200): ?arr
     if ($expected!==200) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing personnel write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
-    $state['_html']=$html; return $state;
+    roleTrackingIdentity($state);$state['_html']=$html; return $state;
 }
 function roleUser(array $state,int $id): array {
     foreach($state['users'] as $row) if ((int)$row['id']===$id) return $row;

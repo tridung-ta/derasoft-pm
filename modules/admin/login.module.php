@@ -42,7 +42,7 @@ if($_POST && $pmLoginCsrfValid) {
 			
 			# Operation tracking
 			$trackings = new Trackings($storeId);
-			$trackings->addData(array('store_id'=>$storeId,'username'=>$username,'action'=>$amessages['tracking']['lock_too_many_fail_logins'],'date_created'=>date("Y-m-d H:i:s"),'ip'=>$_SERVER['REMOTE_ADDR']));
+			$trackings->addData(array('store_id'=>$storeId,'username'=>$pmLoginMode?(string)(int)$preUserId:$username,'action'=>$amessages['tracking']['lock_too_many_fail_logins'],'date_created'=>date("Y-m-d H:i:s"),'ip'=>$pmLoginMode?'':$_SERVER['REMOTE_ADDR']));
 		} else { # Chua vuot qua so lan login sai cho phep
 			$userId = $users->authenticateUser($username,$password);
 			if($userId > 0) { # Kiem tra username va password so voi du lieu trong DB
@@ -52,7 +52,7 @@ if($_POST && $pmLoginCsrfValid) {
 				$trackings = new Trackings($storeId);
 
 				# Operation tracking
-				$trackings->addData(array('store_id'=>$storeId,'username'=>$username,'action'=>$amessages['tracking']['login_ok'],'date_created'=>date("Y-m-d H:i:s"),'ip'=>$_SERVER['REMOTE_ADDR']));
+				$trackings->addData(array('store_id'=>$storeId,'username'=>$pmLoginMode?(string)(int)$userId:$username,'action'=>$amessages['tracking']['login_ok'],'date_created'=>date("Y-m-d H:i:s"),'ip'=>$pmLoginMode?'':$_SERVER['REMOTE_ADDR']));
 				if($site == 'admin') {
 					header('location: '.ADMIN_SCRIPT.'?op='.(defined('PM_HIDE_LEGACY') && PM_HIDE_LEGACY ? 'pm' : 'manage'));
 					exit;
@@ -74,10 +74,13 @@ if($_POST && $pmLoginCsrfValid) {
 								$fail = 1;
 							else # Nam trong khoang theo doi, tang so lan len 1
 								$fail = $failLoginInfo['fail_times'] +1 ;	
-							$checkLogin->updateData(array('uid' => $userId, 'fail_times' => $fail, 'last_try' => date('Y-m-d H:i:s'), 'last_ip' => $_SERVER['REMOTE_ADDR']),$failLoginInfo['id']);
+							$failureFields=array('uid'=>$userId,'fail_times'=>$fail,'last_try'=>date('Y-m-d H:i:s'));
+							// Retain historical IP, but do not collect another IP in PM mode.
+							if(!$pmLoginMode)$failureFields['last_ip']=$_SERVER['REMOTE_ADDR'];
+							$checkLogin->updateData($failureFields,$failLoginInfo['id']);
 						} else { # Chua ton tai thong tin login, them vao database
 							$fail = 1;
-							$checkLogin->addData(array('uid' => $userId, 'fail_times' => $fail, 'last_try' => date('Y-m-d H:i:s'), 'last_ip' => $_SERVER['REMOTE_ADDR']));
+							$checkLogin->addData(array('uid' => $userId, 'fail_times' => $fail, 'last_try' => date('Y-m-d H:i:s'), 'last_ip' => $pmLoginMode?'':$_SERVER['REMOTE_ADDR']));
 						}
 					}
 					$_SESSION['userId'] = 0;
