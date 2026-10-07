@@ -5,6 +5,7 @@ include_once(ROOT_PATH.'classes/dao/pmdepartments.class.php');
 include_once(ROOT_PATH.'classes/dao/pmroles.class.php');
 include_once(ROOT_PATH.'classes/services/pmrateservice.class.php');
 include_once(ROOT_PATH.'classes/services/pmuiservice.class.php');
+include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
 $pmAccess=new PmAccess($db,(int)$storeId,(int)$userInfo->getId());
 requirePermission('pm.team.view');
 $templateFile='pm-users-v2.tpl.html';$pmUsers=new PmUsers($db);$departments=new PmDepartments($db);$rolesDao=new PmRoles($db);
@@ -53,6 +54,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $rateService=new PmRateService($db);$rateService->saveRate((int)$storeId,['user_id'=>$targetId,'role_id'=>null,'rate'=>$request->element('rate'),'currency'=>'VND','effective_from'=>$request->element('effective_from'),'effective_to'=>$request->element('effective_to')],(int)$userInfo->getId());$notice='Đã thêm đơn giá.';
         }elseif($action==='save'){
             $email=trim((string)$request->element('email'));$fullname=trim((string)$request->element('fullname'));
+            if(!$targetId){
+                foreach(['email','password','tel'] as $field){
+                    if(isset($_POST[$field])&&!is_string($_POST[$field]))throw new InvalidArgumentException('Dữ liệu thêm nhân sự không hợp lệ.');
+                }
+                PmUserInputService::validateCreate($email,(string)$request->element('password'),$_POST['tel']??'');
+            }
             if($fullname===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Họ tên hoặc email không hợp lệ.');
             if($pmUsers->emailExists((int)$storeId,$email,$targetId?:null))throw new DomainException('Email đã được sử dụng.');
             $departmentId=(int)$request->element('department_id');$departmentId=$departmentId?:null;

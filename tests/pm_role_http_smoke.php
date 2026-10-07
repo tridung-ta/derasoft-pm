@@ -228,6 +228,17 @@ try {
     roleAssert(roleUser($state,900000041)['fullname']==='HTTP Updated'&&roleUser($state,900000041)['tel']==='0900000000'&&$state['tracking_count']===1,'HTTP personnel edit/tracking failed.');
     $state=roleUserWrite(['fullname'=>'HTTP Member','email'=>'http-member@example.test','weekly_limit_hours'=>'40']);
     roleAssert(str_contains($state['_html'],'Đã lưu thông tin nhân sự.')&&$state['tracking_count']===1,'Unchanged valid personnel form rejected.');
+    $personnelCount=count($state['users']);
+    $newPerson=['id'=>'0','username'=>'http-new-person','password'=>'password123','email'=>'http-new@example.test'];
+    foreach(['','0901234567'] as $phone){
+        $state=roleUserWrite(array_replace($newPerson,['tel'=>$phone]));
+        roleAssert(count($state['users'])===$personnelCount+1&&$state['tracking_count']===1,'Valid create/optional phone rejected.');
+    }
+    foreach([['password'=>''],['password'=>'1234567'],['password'=>'        '],['email'=>'invalid'],['tel'=>'090abc1234'],['tel'=>'09012345678'],['tel'=>'+84901234567'],['tel'=>'090 123456'],['tel'=>"0901234567\n"],['csrf_token'=>'wrong']] as $bad){
+        $state=roleUserWrite(array_replace($newPerson,$bad));
+        roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0&&!str_contains($state['_html'],'Đã lưu thông tin nhân sự.'),'Rejected create wrote personnel/tracking or reported success.');
+    }
+    roleUserWrite(array_replace($newPerson,['tel'=>['0901234567']]),'HR',400);
     $state=roleUserWrite(['action'=>'status','status'=>'0']);
     roleAssert((int)roleUser($state,900000041)['status']===0&&$state['tracking_count']===1,'HR lock failed.');
     $state=roleUserWrite(['action'=>'status','status'=>'1','id'=>'900000042']);

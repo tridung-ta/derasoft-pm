@@ -141,3 +141,16 @@ Verify create/edit, equality, reversed dates and the next-day boundary; assert
 invalid writes leave both row data and row counts unchanged. Service, 103 HTTP
 cases and 49 regression scripts PASS. Preserve existing rows and optional-date
 behavior; do not infer global data stability from checksums across user activity.
+
+## Personnel create validation — 2026-10-07
+
+Used feature-development for server rules, impeccable for the existing form's
+input affordances, playwright-cli for rendered validity/viewport checks and
+code-review/git-feature-commit for completion. Request::element trims strings;
+validate the raw phone before normalization so illegal whitespace cannot vanish.
+Escape regex quantifier braces for Smarty with ldelim/rdelim. Do not run two HTTP
+suites sharing port 18770 concurrently. Render fresh preview fixtures before
+browser checks; an old fixture is not evidence about the current template.
+Final evidence: 13 input cases, 116 HTTP cases, 50 regression scripts and browser
+phone/password/desktop/mobile checks PASS. Email syntax does not prove mailbox
+existence; no OTP, external lookup, or false verified label.

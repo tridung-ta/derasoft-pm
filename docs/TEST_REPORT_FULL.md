@@ -370,3 +370,29 @@ Review không thấy defect mới trong diff: service check server-side trước
 exception riêng không đổi luồng lỗi task, flash server-only/escaped và redirect
 cố định, CSRF/permission/ownership không thay. PLAN_FINAL ghi quyết định mới;
 80 mục không tự nâng trạng thái, giữ 19 CHƯA CHẠY. Không merge/push/deploy.
+
+## Bổ sung 07/10/2026 — Thêm nhân sự không OTP
+
+Phạm vi: tạo mới qua pmusers, không đổi phòng ban, sửa nhân sự cũ hay vòng đời tài khoản.
+Email chỉ kiểm tra định dạng/độ dài, không xác nhận hộp thư tồn tại. Điện thoại tùy chọn,
+nếu nhập chỉ chấp nhận 1–10 chữ số; không kiểm tra nhà mạng/thuê bao đang hoạt động.
+
+- `.tools/php83/php.exe tests/pm_user_input_smoke.php` → `PASS: 13 create input boundaries`.
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php` → `PASS: 116 PM/HR HTTP controller cases`;
+  tạo hợp lệ, mật khẩu rỗng/ngắn/chỉ khoảng trắng, email sai, điện thoại chữ/dài/space/newline,
+  CSRF và array rejection. Các lỗi không ghi nhân sự/tracking; bảng thật và MyISAM giữ nguyên.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1` →
+  `PASS: 50 regression scripts. No migrations applied by this runner.`
+- `.tools/php83/php.exe tests/smoke_pm_users.php --preview`, rồi từ `.local`
+  `playwright-cli -s=personnel run-code --filename=../tests/pm_user_input_browser.js` →
+  PASS password required/minlength, phone digits/optional/10-digit boundary, 1440/390 không overflow.
+  Template render hiện hành, dữ liệu giả; không submit hoặc chứng nhận UAT.
+
+Lượt đầu FAIL do pattern có ngoặc Smarty; sửa bằng ldelim/rdelim. HTTP test phát hiện
+Request trim bỏ newline: chuyển kiểm tra điện thoại sang giá trị POST gốc. Array trả
+400 từ middleware đúng hành vi, sửa expected của test. Một lượt regression trùng cổng
+18770 với suite HTTP chạy đồng thời nên FAIL; chạy tuần tự cuối cùng PASS 50 script.
+Browser ban đầu trỏ preview cũ thiếu form nên timeout; đổi sang phase9-users-two.html
+vừa render rồi PASS. Console chỉ ghi favicon 404 của preview; không lỗi runtime form.
+Review: validation trước INSERT; giữ CSRF, permission, tenant, hash và SQL prepared.
+Giữ trạng thái 80 mục/19 CHƯA CHẠY; không dùng các test này suy ra email tồn tại.
