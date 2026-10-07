@@ -46,11 +46,12 @@ function roleHttp(string $role,string $query,int $expected,?array $post=null,boo
     global $sid,$token,$cases;
     $headers="Cookie: PHPSESSID=$sid\r\nX-PM-Test-Token: $token\r\nX-PM-Test-Role: $role\r\n";
     if ($post!==null) $headers.="Content-Type: application/x-www-form-urlencoded\r\n";
-    $ctx=stream_context_create(['http'=>['method'=>$post===null?'GET':'POST','header'=>$headers,'content'=>$post===null?'':http_build_query($post),'ignore_errors'=>true,'timeout'=>15]]);
+    $ctx=stream_context_create(['http'=>['method'=>$post===null?'GET':'POST','header'=>$headers,'content'=>$post===null?'':http_build_query($post),'ignore_errors'=>true,'follow_location'=>0,'timeout'=>15]]);
     $body=file_get_contents('http://127.0.0.1:18770/admin.php?'.$query,false,$ctx);
     preg_match('/\s(\d{3})\s/',$http_response_header[0]??'',$m);
     if ((int)($m[1]??0)!==$expected) throw new RuntimeException("$role/$query expected $expected got ".($m[1]??'none'));
     if ($controllerHeaders&&!in_array('Cache-Control: no-store',$http_response_header,true)) throw new RuntimeException('Missing no-store.');
+    if($expected===303&&!in_array('Location: admin.php?op=pmprojects',$http_response_header,true))throw new RuntimeException('Project success redirected to wrong page.');
     if (str_contains($body,'Fatal error:')||str_contains($body,'mysqli_sql_exception')) throw new RuntimeException('HTTP runtime error.');
     $cases++; return $body;
 }
@@ -61,10 +62,11 @@ function roleTrackingIdentity(array $state): void {
         roleAssert($row['username']===(string)$actor['id']&&$row['ip']==='', 'New PM tracking contains raw identity/IP.');
     }
 }
-function roleWrite(array $changes, string $role='PM', int $expected=200): ?array {
+function roleWrite(array $changes, string $role='PM', ?int $expected=null): ?array {
     $post=array_replace(['op'=>'pmprojects','project_id'=>'900000001','action'=>'task_save','csrf_token'=>'role-http-csrf','name'=>'HTTP created task','description'=>'HTTP fixture','status'=>'todo','priority'=>'normal','estimated_hours'=>'2','start_date'=>'2026-01-01','due_date'=>'2026-12-31','assignee_id'=>''],$changes);
+    $expected??=in_array($post['action'],['project_save','project_delete'],true)?303:200;
     $html=roleHttp($role,'op=pmprojects',$expected,$post);
-    if ($expected!==200) return null;
+    if (!in_array($expected,[200,303],true)) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing request-local write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
     roleTrackingIdentity($state);return $state;
@@ -157,8 +159,21 @@ try {
     roleWrite([], 'HR',403);
     $state=roleWrite(['action'=>'project_save','code'=>'HTTP-EDIT','name'=>'HTTP edited project','client_name'=>'HTTP client','budget'=>'100','status'=>'active','start_date'=>'2026-01-01','end_date'=>'2026-12-31']);
     roleAssert($state['dc_pm_projects'][0]['client_name']==='HTTP client'&&$state['dc_pm_projects'][0]['name']==='HTTP edited project','HTTP project metadata update failed.');
+    $landing=roleHttp('PM','op=pmprojects',200);
+    roleAssert(str_contains($landing,'Đã lưu dự án.')&&str_contains($landing,'pm-project-list')&&!str_contains($landing,'data-pm-kanban'),'Project save did not land on list with notice.');
+    roleAssert(!str_contains(roleHttp('PM','op=pmprojects',200),'Đã lưu dự án.'),'Save notice repeated on refresh.');
+    $state=roleWrite(['action'=>'project_save','project_id'=>'0','code'=>'HTTP-NEW','name'=>'HTTP new project','status'=>'active','budget'=>'0']);
+    roleAssert(count($state['dc_pm_projects'])===3&&$state['dc_pm_projects'][2]['name']==='HTTP new project','Project create/redirect failed.');
+    roleAssert(str_contains(roleHttp('PM','op=pmprojects',200),'Đã lưu dự án.'),'Create notice lost across redirect.');
     $state=roleWrite(['action'=>'project_delete']);
     roleAssert($state['dc_pm_projects'][0]['deleted_at']!==null,'HTTP project soft delete failed.');
+    $landing=roleHttp('PM','op=pmprojects',200);
+    roleAssert(str_contains($landing,'Đã ẩn dự án.')&&str_contains($landing,'pm-project-list')&&!str_contains($landing,'data-pm-kanban'),'Hidden project did not redirect to list.');
+    roleAssert(!str_contains(roleHttp('PM','op=pmprojects',200),'Đã ẩn dự án.'),'Hide notice repeated on refresh.');
+    foreach([['action'=>'project_save','name'=>''],['action'=>'project_save','csrf_token'=>'wrong'],['action'=>'project_delete','csrf_token'=>'wrong']] as $bad){
+        $state=roleWrite($bad,'PM',200);
+        roleAssert($state['dc_pm_projects'][0]['name']==='HTTP own project'&&$state['dc_pm_projects'][0]['deleted_at']===null&&!$state['tracking'],'Failed project action changed data/redirected.');
+    }
     $state=roleTimeWrite([]);
     $created=array_values(array_filter($state['dc_pm_timesheets'],fn($s)=>$s['shift_label']==='HTTP new'));
     roleAssert(count($created)===1&&$created[0]['regular_hours']==='0.00'&&$created[0]['ot_hours']==='2.00'&&$created[0]['cost']==='300.00'&&$created[0]['rate_snapshot']==='100.00','HTTP timesheet create OT/rate/cost failed.');

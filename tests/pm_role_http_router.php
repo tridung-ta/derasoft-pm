@@ -106,7 +106,8 @@ class DB extends PmRoleHttpBaseDb {
 $entry = file_get_contents(ROOT_PATH.'admin.php');
 $entry = str_replace("include_once(ROOT_PATH.'classes/database/mysql.class.php');", '', $entry, $count);
 if ($count !== 1) throw new RuntimeException('Admin fixture entry no longer matches.');
-eval('?>'.$entry);
+register_shutdown_function(function(){
+global $db,$warnings;
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets','pmallocations','pmusers'],true)) {
     // Observe request-local committed state before DB teardown; never a production endpoint.
     $fixtureState=[];
@@ -124,3 +125,5 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? ''
     }
     echo '\n<!-- PM_FIXTURE_STATE '.base64_encode(json_encode($fixtureState,JSON_THROW_ON_ERROR)).' -->';
 }
+});
+eval('?>'.$entry);

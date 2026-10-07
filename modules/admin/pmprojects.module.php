@@ -6,6 +6,10 @@ $service=new PmProjectService($db,(int)$storeId,(int)$userInfo->getId());
 $templateFile='pm-projects.tpl.html';$notice='';$error='';
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
 $projectId=max(0,(int)$request->element('project_id'));
+if($_SERVER['REQUEST_METHOD']==='GET'&&$projectId===0&&isset($_SESSION['pm_project_result'])){
+    $notice=['saved'=>'Đã lưu dự án.','hidden'=>'Đã ẩn dự án.'][$_SESSION['pm_project_result']]??'';
+    unset($_SESSION['pm_project_result']);
+}
 if($_SERVER['REQUEST_METHOD']==='POST'){
     if(!hash_equals($_SESSION['pm_csrf_token'],(string)$request->element('csrf_token'))){$error='Phiên làm việc đã hết hạn. Vui lòng tải lại trang.';}
     else try{
@@ -23,6 +27,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         elseif($action==='task_delete'){$service->deleteTask($projectId,(int)$request->element('task_id'));$notice='Đã ẩn công việc.';}
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
         try{$trackings->addData(['store_id'=>$storeId,'username'=>(string)(int)$userInfo->getId(),'action'=>'PM projects: '.$action.' project #'.$projectId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>'']);}catch(Throwable $logError){error_log('PM project tracking failed.');}
+        if(in_array($action,['project_save','project_delete'],true)){
+            $_SESSION['pm_project_result']=$action==='project_save'?'saved':'hidden';
+            header('Location: '.ADMIN_SCRIPT.'?op=pmprojects',true,303);exit;
+        }
     }catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
     catch(Throwable $e){error_log('PM project operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng thử lại.';}
 }

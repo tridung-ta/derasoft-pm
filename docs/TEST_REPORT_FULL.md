@@ -318,3 +318,29 @@ ghi user thật, service fail closed theo tenant/ownership, JSON lỗi không l�
 exception, module chỉ chạy qua entry đã kiểm tra CSRF. Không thấy defect mới
 trong diff đã chốt. Mục 4.4 PASS; tổng 58 PASS / 3 FAIL / 19 CHƯA CHẠY. D2 chưa
 BUILD; 11.4/11.5 chờ đối chiếu E. Không merge/push/deploy.
+
+## Điều chỉnh điều hướng sau Lưu/Ẩn dự án — 07/10/2026
+
+Người dùng yêu cầu thành công thì về danh sách Dự án & công việc. Controller
+pmprojects trả 303 Location `admin.php?op=pmprojects` sau project_save hoặc
+project_delete thành công. Flash notice chỉ nhận mã saved/hidden do server ghi,
+được consume một lần trên GET danh sách. Lỗi không redirect, quyền/CSRF/service
+và confirmation ẩn không đổi. Không sửa schema/DAO/template/CSS, không migration.
+
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php`: **PASS 90 HTTP case**;
+  kiểm tra create/edit/hide 303 đúng Location, state ghi trong request trước khi
+  exit, GET landing danh sách có notice đúng và GET tiếp không lặp notice.
+  Validation và CSRF sai giữ 200 với lỗi, không ghi project/tracking hoặc redirect.
+  Fixture router quan sát qua shutdown để redirect exit không làm mất bằng chứng;
+  HTTP client không tự follow redirect khi kiểm tra response POST.
+- `.tools/php83/php.exe -l` trên modules/admin/pmprojects.module.php,
+  tests/pm_role_http_router.php, tests/pm_role_http_smoke.php: **PASS**.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+  **PASS 49 script**, gồm 90 role HTTP case và 33 task status HTTP case.
+- `git diff --check`: **PASS**. Role HTTP finally xác nhận persistent user/business
+  state và engine không đổi. Các GET dùng fixture request mới; đây là bằng chứng
+  redirect/flash, không phải full browser-to-DB persistence E2E hay UAT.
+
+Review không thấy defect mới trong diff: đích redirect cố định, notice server-only,
+service/tracking thực thi trước redirect, CSRF/ownership và legacy functionality
+giữ nguyên. Tổng 80 mục không thay trạng thái; giữ 19 CHƯA CHẠY. Không merge/push/deploy.

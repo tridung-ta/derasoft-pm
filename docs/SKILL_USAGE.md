@@ -119,3 +119,14 @@ Verified 33 endpoint HTTP and 81 role HTTP cases, service rollback/no-op, browse
 pending/duplicate/timeout/focus/responsive/no-JS and 49-script regression. Test HR
 must expect the actual permission denial; script elements are attached, not visible.
 Synthetic browser responses plus isolated backend HTTP are not persistence E2E/UAT.
+
+## Project save/hide navigation - 2026-10-07
+
+Used feature-development for the controller interaction and existing review/commit
+workflow; preserved UI appearance and native confirmation. Use a fixed 303 target
+after successful POST, server-only one-shot flash, and keep errors on the current
+form. Test redirect status/Location without automatically following, then assert
+the GET landing and flash consumption. Request-local fixture capture belongs in
+shutdown when controller exits after redirect. Verified 90 HTTP cases and 49
+regression scripts, no persistent changes; fixture GET does not prove cross-request
+data persistence or manual UAT.
