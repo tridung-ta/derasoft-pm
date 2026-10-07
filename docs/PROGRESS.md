@@ -1,5 +1,21 @@
 # DeraSoft PM — Progress
 
+## Phase 11 timesheet HTTP writes after approved push - 2026-10-07
+
+User authorized GitHub push. Pushed feature/pm-phase11-requirements through
+8c78801, set upstream; local and remote tip matched. No merge/default-branch or
+production change. Then continued local controller verification for timesheets.
+Extended isolated fixtures: timesheets/day ledger/settings/rates; deterministic
+100 VND rate, 8-hour day, 1.50 OT multiplier. Create/edit/date move/soft-delete
+verify daily recalculation and audit; invalid CSRF, total >24h, unassigned task,
+future date, other-user record and non-Admin settings attempts cannot write.
+Router requires matching GET/POST routes before selecting temporary tables;
+explicit mismatch rejection test added. No runtime defect found.
+Full regression: 47 scripts PASS (51 HTTP cases at that run). Final targeted
+rerun after router guard/test: 52 HTTP cases PASS; PHP lint and diff check PASS.
+Persistent business tables/settings/rates and core user engine unchanged.
+New verification stays local until separately pushed; no login/browser UAT claim.
+
 ## Phase 11 project/task HTTP writes - 2026-10-07
 
 Extended existing PM/HR HTTP fixtures with 10 mutation cases (40 total).

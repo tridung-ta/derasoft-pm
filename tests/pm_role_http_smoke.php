@@ -15,6 +15,10 @@ function rolePersistentState(PmDb $q): string {
         $q->fetchAll('SELECT * FROM dc_pm_tasks ORDER BY id'),
         $q->fetchAll('SELECT * FROM dc_pm_audit_logs ORDER BY id'),
         $q->fetchAll('SELECT * FROM dc_trackings ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_timesheets ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_timesheet_days ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_system_settings ORDER BY id'),
+        $q->fetchAll('SELECT * FROM dc_pm_hourly_rates ORDER BY id'),
         $q->fetchOne("SELECT engine FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='dc_users'")
     ]));
 }
@@ -34,7 +38,7 @@ $server=proc_open([PHP_BINARY,'-d','session.save_path='.$dir,'-S','127.0.0.1:187
 if (!is_resource($server)) throw new RuntimeException('Cannot start HTTP fixture.');
 fclose($pipes[0]);
 $cases=0;
-function roleHttp(string $role,string $query,int $expected,?array $post=null): string {
+function roleHttp(string $role,string $query,int $expected,?array $post=null,bool $controllerHeaders=true): string {
     global $sid,$token,$cases;
     $headers="Cookie: PHPSESSID=$sid\r\nX-PM-Test-Token: $token\r\nX-PM-Test-Role: $role\r\n";
     if ($post!==null) $headers.="Content-Type: application/x-www-form-urlencoded\r\n";
@@ -42,7 +46,7 @@ function roleHttp(string $role,string $query,int $expected,?array $post=null): s
     $body=file_get_contents('http://127.0.0.1:18770/admin.php?'.$query,false,$ctx);
     preg_match('/\s(\d{3})\s/',$http_response_header[0]??'',$m);
     if ((int)($m[1]??0)!==$expected) throw new RuntimeException("$role/$query expected $expected got ".($m[1]??'none'));
-    if (!in_array('Cache-Control: no-store',$http_response_header,true)) throw new RuntimeException('Missing no-store.');
+    if ($controllerHeaders&&!in_array('Cache-Control: no-store',$http_response_header,true)) throw new RuntimeException('Missing no-store.');
     if (str_contains($body,'Fatal error:')||str_contains($body,'mysqli_sql_exception')) throw new RuntimeException('HTTP runtime error.');
     $cases++; return $body;
 }
@@ -58,10 +62,27 @@ function roleTask(array $state,int $id): array {
     foreach($state['dc_pm_tasks'] as $task) if ((int)$task['id']===$id) return $task;
     throw new RuntimeException('Missing fixture task.');
 }
+function roleTimeWrite(array $changes,string $role='PM',int $expected=200): array {
+    $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
+    $post=array_replace(['op'=>'pmtimesheets','action'=>'save','csrf_token'=>'role-http-csrf','task_id'=>'900000011','work_date'=>$today,'shift_label'=>'HTTP new','hours'=>'2','description'=>'HTTP fixture'],$changes);
+    $html=roleHttp($role,'op=pmtimesheets',$expected,$post);
+    if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing timesheet write state.');
+    return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+}
+function roleTime(array $state,int $id): array {
+    foreach($state['dc_pm_timesheets'] as $row) if ((int)$row['id']===$id) return $row;
+    throw new RuntimeException('Missing fixture timesheet.');
+}
+function roleTimeUnchanged(array $state): void {
+    roleAssert(count($state['dc_pm_timesheets'])===3&&!$state['dc_pm_audit_logs'],'Rejected timesheet action inserted data/audit.');
+    roleAssert(roleTime($state,900000021)['hours']==='4.00'&&roleTime($state,900000022)['cost']==='1150.00','Rejected action altered timesheet values.');
+}
 try {
     $ready=false;
     for($i=0;$i<50;$i++) { $socket=@fsockopen('127.0.0.1',18770,$errno,$error,.1); if($socket){fclose($socket);$ready=true;break;} usleep(100000); }
     if (!$ready) throw new RuntimeException('HTTP fixture did not start.');
+    // Routing and temporary-table selection must agree before any controller runs.
+    roleHttp('PM','op=pmprojects',400,['op'=>'pmtimesheets','action'=>'save'],false);
     foreach(['PM','HR'] as $role) {
         foreach(['pm','pmusers','pmprojects','pmtimesheets','pmaudit','pmcosts','pmallocations','pmreports','pmimports'] as $route) {
             $denied=$route==='pmimports'||($role==='HR'&&in_array($route,['pmprojects','pmcosts','pmallocations'],true));
@@ -106,10 +127,29 @@ try {
     roleAssert($state['dc_pm_projects'][0]['client_name']==='HTTP client'&&$state['dc_pm_projects'][0]['name']==='HTTP edited project','HTTP project metadata update failed.');
     $state=roleWrite(['action'=>'project_delete']);
     roleAssert($state['dc_pm_projects'][0]['deleted_at']!==null,'HTTP project soft delete failed.');
+    $state=roleTimeWrite([]);
+    $created=array_values(array_filter($state['dc_pm_timesheets'],fn($s)=>$s['shift_label']==='HTTP new'));
+    roleAssert(count($created)===1&&$created[0]['regular_hours']==='0.00'&&$created[0]['ot_hours']==='2.00'&&$created[0]['cost']==='300.00'&&$created[0]['rate_snapshot']==='100.00','HTTP timesheet create OT/rate/cost failed.');
+    roleAssert(($state['dc_pm_audit_logs'][0]['action']??'')==='create','Timesheet create audit missing.');
+    $state=roleTimeWrite(['id'=>'900000021']);
+    roleAssert(roleTime($state,900000021)['hours']==='2.00'&&roleTime($state,900000022)['regular_hours']==='6.00'&&roleTime($state,900000022)['ot_hours']==='3.00'&&roleTime($state,900000022)['cost']==='1050.00','HTTP edit did not recalculate other daily record.');
+    roleAssert(array_column($state['dc_pm_audit_logs'],'action')===['recalculate','update'],'Timesheet edit/recalculate audit missing.');
+    $yesterday=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->modify('-1 day')->format('Y-m-d');
+    $state=roleTimeWrite(['id'=>'900000021','work_date'=>$yesterday]);
+    roleAssert(roleTime($state,900000021)['cost']==='200.00'&&roleTime($state,900000022)['regular_hours']==='8.00'&&roleTime($state,900000022)['ot_hours']==='1.00'&&roleTime($state,900000022)['cost']==='950.00','HTTP date move did not recalculate both days.');
+    $state=roleTimeWrite(['id'=>'900000021','action'=>'delete']);
+    roleAssert(roleTime($state,900000021)['deleted_at']!==null&&roleTime($state,900000022)['cost']==='950.00','HTTP timesheet hide did not recalculate day.');
+    foreach ([['csrf_token'=>'wrong'],['hours'=>'24'],['task_id'=>'900000013'],['work_date'=>'2099-01-01']] as $bad) roleTimeUnchanged(roleTimeWrite($bad));
+    roleTimeUnchanged(roleTimeWrite(['id'=>'900000023'], 'PM',403));
+    foreach (['PM','HR'] as $role) {
+        $state=roleTimeWrite(['action'=>'settings','standard_hours_per_day'=>'7','ot_multiplier'=>'2'],$role);
+        roleTimeUnchanged($state);
+        roleAssert(array_column($state['dc_pm_system_settings'],'setting_value','setting_key')===['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.50'],'Non-Admin changed OT settings.');
+    }
 } finally {
     proc_terminate($server); proc_close($server);
     putenv('PM_ROLE_HTTP_TOKEN'); putenv('PM_ROLE_HTTP_ACTOR'); putenv('PM_ROLE_HTTP_STORE');
     session_id($sid); session_start(); session_destroy();
     if (rolePersistentState($q)!==$before) throw new RuntimeException('Persistent role/project state or user engine changed.');
 }
-echo "PASS: $cases PM/HR HTTP controller cases with temporary fixtures; page/report gates, XLSX, task create/done/reopen/soft-delete/audit, project metadata/soft-delete, CSRF/date/ownership denial. Persistent roles/projects/members/tasks/audit/tracking and user engine unchanged. Not real-account login/browser UAT.\n";
+echo "PASS: $cases PM/HR HTTP controller cases with temporary fixtures; page/report gates, XLSX, project/task writes/audit, timesheet create/edit/move/hide daily OT/rate/cost/audit and rejection boundaries. Persistent business tables/settings/rates and user engine unchanged. Not real-account login/browser UAT.\n";

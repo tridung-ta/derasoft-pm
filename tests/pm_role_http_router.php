@@ -8,10 +8,13 @@ if (PHP_SAPI !== 'cli-server' || ($_SERVER['REMOTE_ADDR'] ?? '') !== '127.0.0.1'
 }
 $fixtureRole = $_SERVER['HTTP_X_PM_TEST_ROLE'] ?? '';
 if (!in_array($fixtureRole, ['PM', 'HR'], true)
+    || !in_array($_SERVER['REQUEST_METHOD']??'', ['GET','POST'], true)
     || !in_array($_GET['op'] ?? '', ['pm','pmusers','pmprojects','pmtimesheets','pmaudit','pmcosts','pmallocations','pmreports','pmimports'], true)
+    || (($_SERVER['REQUEST_METHOD']??'')==='POST' && ($_POST['op']??'')!==($_GET['op']??''))
     || ($_SERVER['REQUEST_METHOD'] === 'POST' && !(
         (($_POST['op'] ?? '') === 'pmreports' && ($_POST['action'] ?? '') === 'export')
         || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','task_save','task_delete'], true))
+        || (($_POST['op'] ?? '') === 'pmtimesheets' && in_array($_POST['action'] ?? '', ['save','delete','settings'], true))
     ))) {
     http_response_code(400); exit;
 }
@@ -38,7 +41,9 @@ class DB extends PmRoleHttpBaseDb {
         $role = $_SERVER['HTTP_X_PM_TEST_ROLE'];
         // Shadow every table that the allowed project mutations can write.
         // MySQL temporary tables cannot carry FK constraints; retain columns/indexes.
-        foreach (['dc_pm_user_roles','dc_pm_projects','dc_pm_project_members','dc_pm_tasks','dc_pm_audit_logs','dc_trackings'] as $table) {
+        $tables=['dc_pm_user_roles','dc_pm_projects','dc_pm_project_members','dc_pm_tasks','dc_pm_audit_logs','dc_trackings'];
+        if (($_GET['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings','dc_pm_hourly_rates'];
+        foreach ($tables as $table) {
             $ddl=$c->query('SHOW CREATE TABLE '.$table)->fetch_row()[1];
             $ddl=preg_replace('/,\n\s*CONSTRAINT[^\n]+/', '', $ddl);
             $c->query(str_replace('CREATE TABLE', 'CREATE TEMPORARY TABLE', $ddl));
@@ -52,6 +57,18 @@ class DB extends PmRoleHttpBaseDb {
         $stmt->bind_param('ii',$store,$actor); $stmt->execute();
         $stmt=$c->prepare("INSERT INTO dc_pm_tasks (id,store_id,project_id,name,status,created_by,completed_at) VALUES (900000011,?,900000001,'HTTP todo task','todo',?,NULL), (900000012,?,900000001,'HTTP done task','done',?,'2026-01-01 09:00:00'), (900000013,?,900000002,'HTTP foreign task','todo',?,NULL)");
         $stmt->bind_param('iiiiii',$store,$actor,$store,$actor,$store,$actor); $stmt->execute();
+        $stmt=$c->prepare('UPDATE dc_pm_tasks SET assignee_id=? WHERE id=900000011');
+        $stmt->bind_param('i',$actor); $stmt->execute();
+        if (($_GET['op']??'')!=='pmtimesheets') return $result;
+        $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
+        $stmt=$c->prepare("INSERT INTO dc_pm_system_settings (store_id,setting_key,setting_value) VALUES (?,'standard_hours_per_day','8.00'), (?,'ot_multiplier','1.50')");
+        $stmt->bind_param('ii',$store,$store); $stmt->execute();
+        $stmt=$c->prepare("INSERT INTO dc_pm_hourly_rates (store_id,user_id,rate,currency,effective_from,status,created_by) VALUES (?,?,'100.00','VND','2000-01-01',1,?)");
+        $stmt->bind_param('iii',$store,$actor,$actor); $stmt->execute();
+        $stmt=$c->prepare("INSERT INTO dc_pm_timesheet_days (store_id,user_id,work_date,standard_hours,ot_multiplier) VALUES (?, ?, ?, '8.00', '1.50')");
+        $stmt->bind_param('iis',$store,$actor,$today); $stmt->execute();
+        $stmt=$c->prepare("INSERT INTO dc_pm_timesheets (id,store_id,user_id,project_id,task_id,work_date,shift_label,hours,rate_snapshot,rate_source,currency,regular_hours,ot_hours,ot_multiplier_snapshot,cost) VALUES (900000021,?,?,900000001,900000011,?,'HTTP first',4,'100.00','user','VND',4,0,1.50,400), (900000022,?,?,900000001,900000011,?,'HTTP second',9,'100.00','user','VND',4,5,1.50,1150), (900000023,?,999999999,900000002,900000013,?,'HTTP other user',1,'100.00','user','VND',1,0,1.50,100)");
+        $stmt->bind_param('iisiisis',$store,$actor,$today,$store,$actor,$today,$store,$today); $stmt->execute();
         return $result;
     }
 }
@@ -59,10 +76,12 @@ $entry = file_get_contents(ROOT_PATH.'admin.php');
 $entry = str_replace("include_once(ROOT_PATH.'classes/database/mysql.class.php');", '', $entry, $count);
 if ($count !== 1) throw new RuntimeException('Admin fixture entry no longer matches.');
 eval('?>'.$entry);
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['op'] ?? '') === 'pmprojects') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? '',['pmprojects','pmtimesheets'],true)) {
     // Observe request-local committed state before DB teardown; never a production endpoint.
     $fixtureState=[];
-    foreach (['dc_pm_projects','dc_pm_tasks','dc_pm_audit_logs'] as $table) {
+    $tables=['dc_pm_projects','dc_pm_tasks','dc_pm_audit_logs'];
+    if (($_POST['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings'];
+    foreach ($tables as $table) {
         $fixtureState[$table]=$db->connection->query('SELECT * FROM '.$table.' ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     }
     echo '\n<!-- PM_FIXTURE_STATE '.base64_encode(json_encode($fixtureState,JSON_THROW_ON_ERROR)).' -->';

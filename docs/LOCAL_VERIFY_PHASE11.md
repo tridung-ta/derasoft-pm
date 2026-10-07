@@ -1,5 +1,26 @@
 # Kiểm thử lại Phase 11 local — 06/10/2026
 
+## Timesheet HTTP verification - 2026-10-07
+
+Added 11 controller POST cases for timesheets and one test-router routing guard,
+bringing the combined role HTTP suite to 52 cases. Temporary fixture: two own
+records (4h and 9h), 100 VND/h snapshot, standard 8h, OT 1.50; another-user row.
+
+- New 2h entry after existing 13h: 0 regular/2 OT, cost 300, create audit.
+- Edit first record to 2h: second becomes 6 regular/3 OT, cost 1050; recalculation
+  and update audit recorded. Date move recalculates both days (200 and 950 costs).
+- Soft-delete first record recalculates second to 8 regular/1 OT, cost 950.
+- Bad CSRF, total beyond 24h, unassigned task, future date and other-user ID denied
+  with unchanged fixture data/audit; PM and HR cannot alter OT settings.
+- Router permits only GET/POST, fixed actions, matching GET/POST op; mismatch
+  returns 400 before controller execution or database setup.
+
+Full pm_regression.ps1: 47 scripts PASS at 51-case version. Final targeted
+pm_role_http_smoke.php: 52 cases PASS after guard/test addition. PHP lint both
+files and git diff --check PASS. Persistent roles/projects/members/tasks/audit/
+tracking/timesheets/day ledger/settings/rates and dc_users engine unchanged.
+No runtime changes, production access or account-password/browser UAT.
+
 ## Project/task controller write coverage - 2026-10-07
 
 Expanded pm_role_http_smoke.php from 30 to 40 cases, with real POST requests

@@ -68,3 +68,12 @@ request-local state before connection teardown, and compare persistent state
 before/after. Verified project/task POST through unchanged controllers with
 40 HTTP cases and 47 regression scripts PASS. This verifies isolated request
 writes; it does not establish cross-request persistence or browser form E2E.
+
+## Fixture route and write isolation - 2026-10-07
+
+Test routers must require GET/POST route agreement before selecting shadow
+write tables. Route mismatch is rejected before controller/DB execution. Scope
+fixture tables to the route under test; other controllers may issue queries
+that temporary-table limitations cannot support. Verified 52 HTTP cases with
+persistent business state unchanged. This is test harness behavior, not a
+production middleware change or an application defect claim.
