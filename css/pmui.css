@@ -1,4 +1,19 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-app.pm-users-page main>section.card{border:1px solid #a1a1aa;padding:24px}
+.pm-users-page .card h2{font-size:1.25rem;font-weight:650;margin-bottom:16px}
+.pm-users-page .card label{font-size:.875rem;font-weight:600}
+.pm-users-page .card .pm-table-hint{color:#52525b;margin:12px 0 20px}
+.pm-users-page .pm-people-list table{margin-bottom:0}
+.pm-app.pm-users-page .card th{background:#f4f4f5;color:#09090b;border-bottom-color:#a1a1aa;padding:16px}
+.pm-app.pm-users-page .card td{border-bottom-color:#d4d4d8;padding:16px;vertical-align:middle}
+.pm-users-page .pm-people-list tbody tr:hover>td{background:#fafafa}
+.pm-users-page .pm-people-list td:first-child{font-weight:600}
+.pm-users-page .pm-people-list td small{font-weight:400;color:#52525b}
+.pm-users-page .pager{border-top:1px solid #a1a1aa;padding-top:20px;margin-top:20px;color:#52525b;font-variant-numeric:tabular-nums}
+.pm-app .pm-person-dialog{border-color:#a1a1aa}
+.pm-app .pm-person-dialog section+section{border-top-color:#a1a1aa}
+.pm-users-page .pm-table-region:focus-visible{outline:3px solid #71717a;outline-offset:-3px}
+@media(max-width:640px){.pm-app.pm-users-page main>section.card{padding:20px}}
 .pm-app.pm-page .pm-team-table{border:1px solid #a1a1aa;border-radius:8px;overflow:hidden}
 .pm-team-table>.pm-table-hint{margin:0;padding:16px 20px;color:#52525b;border-bottom:1px solid #a1a1aa;font-size:.875rem}
 .pm-app .pm-team-table table{margin-bottom:0}

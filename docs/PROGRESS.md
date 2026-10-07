@@ -1701,3 +1701,17 @@ verified behavior without runtime changes. Synthetic fixture, not real UAT/zoom.
 Detector ran once: pinned Inter and existing warning rules retained; template
 relative CSS lookup limits hierarchy output. Scoped diff/security review found
 no data or behavior changes. Local only, pending combined user review/rollout.
+# Personnel UI refinement - 2026-10-07
+
+Used Impeccable for requested local personnel polish. Scoped pm-users-page CSS
+strengthens section frames, table headers/dividers, filter labels, pager and
+editor borders. Preserves destructive/restore color distinctions, forms, CSRF,
+permission, controllers and data. Detector run once: pinned Inter and existing
+business-warning border retained; no added palette or dependency.
+
+Verified smoke_pm_users.php --preview PASS; pm_regression.ps1 PASS (47 scripts).
+Playwright pm_phase9b_users_browser.js PASS: two distinct editors, focus trapping/
+close/restore, independent CSRF forms, collapsed add, cancelled confirmation,
+no-JS fallback, four viewport/text-scaling configurations. Synthetic fixtures,
+not real-user UAT/actual browser zoom. No production access or push/merge/deploy.
+Reviewed CSS scope/security; prepared local screenshots for user review.
