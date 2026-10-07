@@ -1,5 +1,16 @@
 # DeraSoft PM — Progress
 
+## GitHub contribution workflow recorded — 2026-10-07
+
+Recorded user's profile/contribution priority in AGENTS.md for future repository
+work. Genuine completed changes, correct author identity, verified push hashes,
+release review/merge tracking and current portfolio evidence are required.
+No empty/artificial/backdated commits or merges solely for contribution counts.
+Existing push/merge/deploy approval gates remain. Confirmed origin default branch
+is main, while approved Phase 11 push reached 8c78801 on the feature branch;
+later f39fa6f remains local. Documentation only; git diff --check verification.
+GitHub reference: https://docs.github.com/en/account-and-profile/how-tos/contribution-settings/troubleshooting-missing-contributions
+
 ## Phase 11 timesheet HTTP writes after approved push - 2026-10-07
 
 User authorized GitHub push. Pushed feature/pm-phase11-requirements through

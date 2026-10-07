@@ -63,6 +63,21 @@ Auth/RBAC; người dùng, vai trò và đơn giá; dự án và task/Kanban; ch
 
 ## GitHub & portfolio — yêu cầu người dùng
 
+### Contribution và tính chuyên nghiệp — yêu cầu ngày 07/10/2026
+
+- Áp dụng cho mọi lần chuẩn bị commit/push của dự án: ưu tiên lịch sử công việc thật,
+  đều đặn, có thay đổi hoàn chỉnh và bằng chứng kiểm tra. Không tạo commit rỗng,
+  sửa ngày tác giả, chia nhỏ giả tạo hoặc rewrite lịch sử để tô contribution graph.
+- Giữ đúng email tác giả đã chốt. Khi push, xác nhận hash local/remote và báo nhánh
+  nhận commit; không gọi push feature branch là đã cập nhật contribution trên main.
+- Khi phase đã đủ điều kiện phát hành, chuẩn bị review/PR và đưa về develop/main
+  theo nghiệm thu, phê duyệt hiện hành; không bỏ quên merge, nhưng không merge chỉ
+  để làm đẹp biểu đồ. Yêu cầu này không tự cấp quyền push/merge/deploy mọi lần sau.
+- Tài liệu portfolio/README phải theo kịp chức năng đã kiểm chứng, có hướng dẫn chạy,
+  kiểm thử và ảnh dữ liệu giả. Chấm xanh là kết quả công việc, không thay chất lượng.
+- GitHub có thể cập nhật chậm và ghi contribution theo ngày commit; không hứa số
+  chấm xanh hoặc ngày hiển thị. Đối chiếu quy định GitHub khi cần giải thích.
+
 - Repository chính: `https://github.com/tridung-ta/derasoft-pm`. Kiểm tra remote và danh tính trước mỗi commit/push.
 - Commit mới dùng Git config local: `Tạ Trí Dũng`, `213818008+tridung-ta@users.noreply.github.com`. Không dùng danh tính QUANLYTHUVIEN của dự án cũ; không sửa global config hoặc rewrite lịch sử đã push.
 - Mỗi commit là một thay đổi hoàn chỉnh, dễ review; message theo `feat`, `fix`, `test`, `docs` với scope PM cụ thể, mô tả chức năng thực tế. Không tạo commit rỗng để tăng contribution.
