@@ -1730,3 +1730,20 @@ four viewport sizes and 200% text scaling. Inspected project desktop screenshot.
 Detector run once: pinned Inter and existing shared warning styles retained.
 Scoped code/security review found no behavior changes. Synthetic verification
 is not manual UAT or actual browser zoom. Local only; no push/merge/deploy.
+# Timesheet UI refinement - 2026-10-07
+
+User requested especially careful local timesheet refinement. Applied Impeccable
+scoped CSS across weekly ledger, entry form, history and collapsed Admin OT
+settings: clearer neutral borders/headings, numeric summaries, action separation,
+outlined edit link and amber rate-warning container. Preserved readable today
+text on dark surface; corrected shared-section specificity after screenshot review.
+No fields/routes/permissions, rate snapshots, daily OT or edit-lock logic changed.
+
+Verification: smoke_pm_timesheets.php --preview PASS; pm_regression.ps1 PASS (47
+scripts, including daily OT/cost/recalculation HTTP fixtures). Timesheet browser
+suite PASS for seven days, today/OT, native keyboard/no-JS settings, Admin/Employee
+visibility, unavailable weekly totals, CSRF, tabular Inter numbers, four viewports
+and 200% text scaling. Inspected desktop screenshot; corrected frame/form spacing
+and reran browser suite PASS. Automated synthetic evidence is not manual UAT or
+actual browser zoom. Detector run once; pinned Inter/shared warning retained.
+Scoped security review found no behavior changes. Local only, no push/merge/deploy.
