@@ -1,4 +1,16 @@
 /* Shared PM accessibility/layout refinements; legacy templates remain untouched. */
+.pm-costs-page main>header{align-items:flex-start;gap:24px;margin-bottom:24px}
+.pm-costs-page main>header>div{min-width:0}
+.pm-costs-page main>header a{display:inline-flex;align-items:center;min-height:44px;font-size:.875rem;color:#52525b;text-underline-offset:4px}
+.pm-app.pm-costs-page main>header h1{font-size:clamp(1.75rem,3vw,2.25rem);line-height:1.25;letter-spacing:-.025em;margin:4px 0 10px;font-weight:650}
+.pm-costs-page main>header>div>p{font-size:.9375rem;line-height:1.6;color:#52525b;max-width:65ch;margin:0}
+.pm-costs-page #refresh-status{flex:0 1 240px;align-self:flex-start;border:1px solid #a1a1aa;border-radius:6px;background:#fafafa;color:#52525b;padding:10px 14px;margin:0;font-size:.8125rem;line-height:1.6;font-variant-numeric:tabular-nums}
+.pm-costs-page .pm-cost-tables h2{font-size:1.2rem;font-weight:650;line-height:1.4;margin:0 0 16px}
+.pm-costs-page .pm-cost-table-part h2,.pm-costs-page .pm-cost-table-part h3{font-size:1rem;font-weight:600;line-height:1.6;margin:0 0 12px}
+.pm-costs-page .pm-cost-tabs{gap:8px;padding:0 0 20px}
+.pm-app.pm-costs-page .pm-cost-tab{font-size:.875rem;font-weight:600;padding:10px 16px;min-height:44px}
+.pm-costs-page .pm-cost-table-part .pm-table-hint{font-size:.8125rem;line-height:1.6;margin:8px 0 16px}
+@media(max-width:760px){.pm-costs-page main>header{flex-direction:column;gap:16px}.pm-costs-page #refresh-status{flex:none;align-self:flex-end;max-width:100%}}
 .pm-audit-page main>a:first-child{display:inline-flex;align-items:center;min-height:44px;font-size:.875rem;color:#52525b;text-underline-offset:4px}
 .pm-app.pm-audit-page main>h1{font-size:clamp(1.75rem,3vw,2.25rem);line-height:1.25;letter-spacing:-.025em;margin:4px 0 10px;font-weight:650}
 .pm-audit-page main>h1+p{font-size:.9375rem;line-height:1.6;color:#52525b;max-width:70ch;margin:0 0 24px}

@@ -1803,3 +1803,9 @@ own versus other manager, selected option and escaped names. Costs browser suite
 PASS empty/mixed/zero/recovery, tabs, polling errors/auth and responsive/no-JS.
 Reviewed prepared query and escaped outputs; no permission widening. Native
 selection rather than an AJAX/autocomplete text search. Local only; no rollout.
+
+### 07/10/2026 — Thu gọn phân cấp trang Chi phí
+- Yêu cầu: đầu trang quá dày, trạng thái cập nhật thiếu khung/vị trí rõ, tiêu đề và tab Chi tiết chi phí quá lớn.
+- Sửa riêng css/pmui.css: giảm cỡ chữ và khoảng cách tiêu đề; đóng khung refresh-status ở góc phải desktop, xuống hàng mobile; cân lại tiêu đề phụ/tab, giữ vùng bấm tối thiểu 44px và role/status hiện có. Không đổi xử lý dữ liệu, polling, route hoặc quyền.
+- VERIFY: playwright-cli -s=pmlogin run-code --filename=../tests/pm_phase9b_costs_browser.js (chạy từ .local) PASS: Chart.js empty/mixed/zero/recovery, tab bàn phím, polling lỗi/quyền, responsive 360/390/768/1440, text scaling 200%, CSP và fallback không JS/thiếu chart. Đã xem ảnh fixture desktop/mobile; không coi fixture là UAT production. Regression 47 script thuộc lần sửa bộ lọc trước, không chạy lại cho thay đổi CSS này.
+- Impeccable detect: cảnh báo Inter và viền cảnh báo nghiệp vụ có sẵn; giữ theo theme đã duyệt. Review diff chỉ CSS, git diff --check đạt. Giữ local, chưa push/merge/deploy.
