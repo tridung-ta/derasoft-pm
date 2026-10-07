@@ -1,5 +1,18 @@
 # DeraSoft PM — Progress
 
+## Phase 11 PM/HR HTTP coverage - 2026-10-07
+
+Added pm_role_http_smoke.php and its loopback-only token-guarded test router.
+Real admin controllers/middleware/DAO/Smarty run with an in-memory DB decorator;
+role assignments and own/foreign projects are connection-local temporary tables.
+No runtime, permission, schema or production change. Added runner integration.
+30 HTTP cases PASS: nine page gates per role, costs and user/project report scope,
+export CSRF/XLSX, PM own project rendering and foreign project denial/no leakage.
+Full pm_regression.ps1: 47 scripts PASS. Both new PHP files lint PASS; diff check
+PASS. Final targeted rerun additionally verifies persistent role/project rows and
+core user engine unchanged. Review found no actionable defects in final scope.
+Still not real-account password login, browser write E2E or production UAT.
+
 ## Operator confirmed full production upload - 2026-10-07
 
 User confirmed the complete Phase 11 package was uploaded to production and

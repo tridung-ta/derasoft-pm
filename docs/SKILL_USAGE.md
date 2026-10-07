@@ -48,3 +48,14 @@ Ghi ngắn gọn: yêu cầu → skill đã dùng và lý do → nguyên nhân x
 → kiểm tra thực tế → giới hạn còn lại. Không lưu mật khẩu, secret hoặc dữ liệu
 người dùng. Chỉ tái sử dụng cách sửa sau khi kiểm tra bối cảnh tương đương;
 không cần hỏi lại những lựa chọn thường lệ đã được chốt.
+
+## HTTP role fixture coverage - 2026-10-07
+
+Used feature-development for controller verification, code-review for test safety
+and git-feature-commit for the completed local change. Missing real PM/HR actors
+must not become silent coverage skips: supplement with explicitly labeled HTTP
+fixtures, without changing persistent account roles. MySQL temporary tables
+cannot carry foreign keys; fixture copies retain columns/indexes and omit FK
+constraints only in the connection-local role table. Verified 30 HTTP cases,
+47 regression scripts, unchanged persistent roles/projects/user engine. These
+fixtures do not constitute password-login or production UAT evidence.

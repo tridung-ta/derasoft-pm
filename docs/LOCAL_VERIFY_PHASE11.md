@@ -1,5 +1,24 @@
 # Kiểm thử lại Phase 11 local — 06/10/2026
 
+## Additional PM/HR HTTP verification - 2026-10-07
+
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php`: 30 cases PASS.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`:
+  47 scripts PASS; no migrations applied by runner.
+- PHP lint on pm_role_http_router.php and pm_role_http_smoke.php: PASS.
+- Final targeted rerun with persistent-state comparison: PASS. Role/project rows
+  and dc_users engine unchanged; temporary role/project tables close per request.
+- Real controllers handle requests using seeded permissions and synthetic PM/HR
+  assignments on a valid local session actor. Own/foreign project fixtures enforce
+  ownership checks. HR cannot access project/cost/allocation/import pages or another
+  user's reports; PM cannot access imports or foreign project/report data. Both
+  roles export own empty hours XLSX and reject invalid export CSRF.
+- Test router requires cli-server, loopback, a random environment token and fixed
+  allowed routes; POST limited to report export. No request input enters eval.
+  Eval decorates trusted repository source in memory only; runtime files unchanged.
+- This fills controller HTTP fixture coverage, not real PM/HR account login UAT
+  or form write E2E. Earlier 18 real-role cases and other coverage limits remain.
+
 Runtime: `2bb9665`, nhánh `feature/pm-phase11-requirements`. Bổ sung kiểm thử
 trong lượt này; không sửa runtime, không áp migration mới, không truy cập production.
 Người dùng yêu cầu agent kiểm thử local, chuyển kiểm thử thủ công sang sau triển khai.
