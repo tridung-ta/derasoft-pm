@@ -154,3 +154,14 @@ browser checks; an old fixture is not evidence about the current template.
 Final evidence: 13 input cases, 116 HTTP cases, 50 regression scripts and browser
 phone/password/desktop/mobile checks PASS. Email syntax does not prove mailbox
 existence; no OTP, external lookup, or false verified label.
+
+## Personnel field errors — 2026-10-07
+
+Used feature-development/impeccable for explicit field-level feedback and
+playwright-cli to verify the existing create form. Return a typed exception with
+field errors, escape server messages, reopen the details form and never echo
+passwords. JS validates input/blur/invalid, uses textContent and clears error and
+aria-invalid when corrected. Match Unicode character counts rather than UTF-8
+byte lengths; reject all non-digit phone characters, including final newline.
+Verified 21 input cases, 119 HTTP cases, 50 regression scripts and browser exact
+messages/correction/blocked submit/desktop/mobile. No external verification claim.

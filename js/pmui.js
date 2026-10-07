@@ -5,6 +5,36 @@ document.addEventListener('submit', event => {
 });
 
 /* Enhance existing, usable details editors; no network or business mutations. */
+document.querySelectorAll('[data-pm-new-person]').forEach(form => {
+    const fields = [form.querySelector('[name="password"]'), form.querySelector('[name="tel"]')];
+    function validate(field) {
+        let message = '';
+        const value = field.value;
+        if (field.name === 'password') {
+            if (!value) message = 'Vui lòng nhập mật khẩu.';
+            else if (!value.trim()) message = 'Mật khẩu không được chỉ gồm khoảng trắng.';
+            else if (Array.from(value.trim()).length < 8) message = 'Mật khẩu phải có ít nhất 8 ký tự.';
+        } else if (value && /[^0-9]/.test(value)) {
+            message = 'Điện thoại chỉ được chứa chữ số từ 0 đến 9, không có chữ, khoảng trắng hoặc ký tự đặc biệt.';
+        } else if (value.length > 10) message = 'Điện thoại không được vượt quá 10 số.';
+        const error = form.querySelector('[data-pm-field-error="' + field.name + '"]');
+        field.setCustomValidity(message);
+        field.setAttribute('aria-invalid', message ? 'true' : 'false');
+        error.textContent = message;
+        error.hidden = !message;
+        return !message;
+    }
+    fields.forEach(field => {
+        field.addEventListener('input', () => validate(field));
+        field.addEventListener('blur', () => validate(field));
+        field.addEventListener('invalid', () => validate(field));
+    });
+    form.addEventListener('submit', event => {
+        const invalid = fields.filter(field => !validate(field));
+        if (invalid.length) { event.preventDefault(); invalid[0].focus(); }
+    });
+});
+
 if (typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function') {
     document.querySelectorAll('[data-pm-editor]').forEach(editor => {
         const opener = editor.querySelector('summary');

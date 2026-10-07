@@ -345,6 +345,9 @@ body.pm-app .pm-module-nav button.pm-logout:hover,body.pm-app .sidebar button.pm
 .pm-app .pm-person-editor>summary:hover{background:var(--muted)}
 .pm-app :is(.pm-add-person,.pm-project-create,.pm-timesheet-settings)>summary{padding:12px 16px;border:1px solid var(--border);border-radius:6px;background:var(--muted);font-weight:600;min-height:44px;cursor:pointer}
 .pm-app :is(.pm-add-person,.pm-project-create,.pm-timesheet-settings)[open]>summary{margin-bottom:20px}
+.pm-app .pm-field-error{display:block;color:#b91c1c;font-size:.875rem;margin-top:6px;line-height:1.5}
+.pm-app .pm-field-error[hidden]{display:none}
+.pm-app [data-pm-new-person] [aria-invalid="true"]{border-color:#dc2626}
 .pm-app .pm-person-dialog section+section{margin-top:24px;padding-top:24px;border-top:1px solid var(--border)}
 .pm-app .pm-table-region th{padding:12px 14px;font-weight:600;white-space:nowrap}
 .pm-app .pm-table-region td{padding:14px;vertical-align:top}

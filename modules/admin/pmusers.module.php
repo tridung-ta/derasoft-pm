@@ -11,7 +11,7 @@ requirePermission('pm.team.view');
 $templateFile='pm-users-v2.tpl.html';$pmUsers=new PmUsers($db);$departments=new PmDepartments($db);$rolesDao=new PmRoles($db);
 $canManageUsers=$pmAccess->hasPermission('pm.users.manage');$canManageRoles=$pmAccess->hasPermission('pm.rbac.manage');$canManageRates=$pmAccess->hasPermission('pm.rates.manage');
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
-$notice='';$error='';$action=(string)$request->element('action');
+$notice='';$error='';$newPersonErrors=[];$action=(string)$request->element('action');
 if($_SERVER['REQUEST_METHOD']==='POST'){
     if(!hash_equals($_SESSION['pm_csrf_token'],(string)$request->element('csrf_token')))$error='Phiên làm việc đã hết hạn.';
     else try{
@@ -58,7 +58,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 foreach(['email','password','tel'] as $field){
                     if(isset($_POST[$field])&&!is_string($_POST[$field]))throw new InvalidArgumentException('Dữ liệu thêm nhân sự không hợp lệ.');
                 }
-                PmUserInputService::validateCreate($email,(string)$request->element('password'),$_POST['tel']??'');
+                PmUserInputService::validateCreate($email,$_POST['password']??'',$_POST['tel']??'');
             }
             if($fullname===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Họ tên hoặc email không hợp lệ.');
             if($pmUsers->emailExists((int)$storeId,$email,$targetId?:null))throw new DomainException('Email đã được sử dụng.');
@@ -71,7 +71,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $notice='Đã lưu thông tin nhân sự.';
         }
         if($notice!=='')$trackings->addData(['store_id'=>$storeId,'username'=>(string)(int)$userInfo->getId(),'action'=>'PM users: '.$action.' user #'.$targetId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>'']);
-    }catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
+    }catch(PmUserInputException $e){$newPersonErrors=$e->getFieldErrors();$error=$e->getMessage();}
+    catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){$error=$e->getMessage();}
     catch(Throwable $e){error_log('PM user management operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng kiểm tra dữ liệu và thử lại.';}
 }
 $page=max(1,(int)$request->element('page',1));$q=trim((string)$request->element('q'));$departmentFilter=(int)$request->element('department_id');$roleFilter=(int)$request->element('role_id');
@@ -86,3 +87,4 @@ $template->assign('hourlyRates',$canViewRates?(new PmRateService($db))->listRate
 $template->assign('pageTitle','Nhân sự — DeraSoft PM');$template->assign('users',$rows);$template->assign('userRoles',$userRoles);$template->assign('userRoleState',$userRoleState);$template->assign('userPrimaryRoles',$userPrimaryRoles);$template->assign('departments',$departments->getActive((int)$storeId));$template->assign('departmentRows',$departments->list((int)$storeId));$template->assign('roles',$rolesDao->getActive((int)$storeId));$template->assign('canManageUsers',$canManageUsers);$template->assign('canManageRoles',$canManageRoles);$template->assign('canManageRates',$canManageRates);$template->assign('csrfToken',$_SESSION['pm_csrf_token']);$template->assign('notice',$notice);$template->assign('error',$error);$template->assign('q',$q);$template->assign('departmentFilter',$departmentFilter);$template->assign('roleFilter',$roleFilter);$template->assign('page',$page);$template->assign('totalPages',max(1,(int)ceil($total/20)));
 
 $template->assign('hiddenDepartments',$canManageUsers?$departments->listHidden((int)$storeId):[]);
+$template->assign('newPersonErrors',$newPersonErrors);

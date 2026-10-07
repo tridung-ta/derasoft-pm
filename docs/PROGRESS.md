@@ -1867,3 +1867,9 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - Server kiểm tra mật khẩu ít nhất 8 ký tự, không chỉ khoảng trắng; email đúng định dạng và không vượt cột 50 ký tự; điện thoại rỗng hoặc 1–10 chữ số ASCII. Đọc điện thoại gốc trước Request trim để chặn khoảng trắng/ký tự xuống dòng. Form thêm có inputmode numeric, pattern, maxlength và hướng dẫn tùy chọn.
 - VERIFY: input smoke PASS 13 case; role HTTP PASS 116 case, tạo hợp lệ/rỗng điện thoại và các lỗi không ghi/không tracking, bảng users thật/engine không đổi. Regression PASS 50 script. Playwright PASS form thực render, HTML validation và desktop 1440/mobile 390 không tràn ngang, dữ liệu giả không submit.
 - Giới hạn: kiểm tra định dạng không chứng minh hộp thư tồn tại hoặc số điện thoại đang hoạt động. Không gửi email/SMS, không tuyên bố xác minh; yêu cầu xác nhận tồn tại email chưa thể hoàn tất với phương án không xác minh. Chưa merge/push/deploy, không migration.
+
+### 07/10/2026 — Thông báo lỗi theo ô khi thêm nhân sự
+- Mật khẩu báo riêng: chưa nhập, chỉ khoảng trắng, dưới 8 ký tự. Số điện thoại báo riêng: chứa ký tự khác chữ số, vượt 10 số. Đếm ký tự Unicode cho mật khẩu; không ghi/hiển thị lại mật khẩu đã nhập.
+- Lỗi hiển thị dưới ô, có aria-invalid/aria-describedby/live region; sửa hợp lệ tự xóa lỗi. Server trả đồng thời lỗi mật khẩu và điện thoại, tự mở phần thêm nhân sự; validation không phụ thuộc JavaScript. Không thay phần phòng ban hay tài khoản cũ.
+- VERIFY: input smoke PASS 21 case; role HTTP PASS 119 case, có lỗi server render khi không dùng JS, không ghi dữ liệu/tracking và không echo mật khẩu. Regression PASS 50 script. Browser PASS thông báo đúng nguyên nhân, sửa lỗi, chặn submit, desktop/mobile không tràn. PHP lint và node --check cho code sửa PASS, diff check PASS.
+- Review: output escape, JS dùng textContent; không network/migration, giữ CSRF/quyền/hash/tenant và dữ liệu thật. Email vẫn chỉ kiểm tra định dạng. Chưa merge/push/deploy.

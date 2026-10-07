@@ -396,3 +396,24 @@ Browser ban đầu trỏ preview cũ thiếu form nên timeout; đổi sang phas
 vừa render rồi PASS. Console chỉ ghi favicon 404 của preview; không lỗi runtime form.
 Review: validation trước INSERT; giữ CSRF, permission, tenant, hash và SQL prepared.
 Giữ trạng thái 80 mục/19 CHƯA CHẠY; không dùng các test này suy ra email tồn tại.
+
+## Bổ sung 07/10/2026 — Lỗi mật khẩu/điện thoại dưới từng ô
+
+- `.tools/php83/php.exe tests/pm_user_input_smoke.php` → PASS 21 case, bao gồm
+  thông báo đúng theo mật khẩu rỗng/ngắn/chỉ khoảng trắng, 4/8 ký tự Unicode,
+  điện thoại chữ/quá 10 số và hai lỗi cùng lúc.
+- `.tools/php83/php.exe tests/pm_role_http_smoke.php` → PASS 119 HTTP case;
+  lỗi dưới ô render từ server, phần thêm tự mở, không echo mật khẩu,
+  không INSERT/tracking khi lỗi, persistent state/engine không đổi.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`
+  → `PASS: 50 regression scripts. No migrations applied by this runner.`
+- `.tools/php83/php.exe tests/smoke_pm_users.php --preview`, từ `.local` chạy
+  `playwright-cli -s=personnel run-code --filename=../tests/pm_user_input_browser.js`
+  → PASS exact inline errors, correction clears errors, invalid submit blocked,
+  optional phone, desktop/mobile overflow. Fake-data rendered fixture, no POST.
+- PHP lint service/controller PASS; `node --check js/pmui.js` và
+  `node --check tests/pm_user_input_browser.js` PASS; `git diff --check` PASS.
+
+Review: lỗi escaped trên server, JS chỉ textContent, aria liên kết ô và lỗi,
+không in lại mật khẩu, CSRF/quyền/hash/tenant giữ nguyên. Không mở rộng kết quả
+thành UAT hay xác minh email; giữ 19 CHƯA CHẠY và các gap D2/E hiện có.

@@ -239,6 +239,17 @@ try {
         roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0&&!str_contains($state['_html'],'Đã lưu thông tin nhân sự.'),'Rejected create wrote personnel/tracking or reported success.');
     }
     roleUserWrite(array_replace($newPerson,['tel'=>['0901234567']]),'HR',400);
+    foreach([
+        ['password'=>'','tel'=>'090abc1234'],
+        ['password'=>'1234567','tel'=>'09012345678'],
+        ['password'=>'        ','tel'=>''],
+    ] as $bad){
+        $state=roleUserWrite(array_replace($newPerson,$bad));
+        roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0,'Field error response wrote data.');
+        roleAssert(str_contains($state['_html'],'class="pm-add-person" open')&&str_contains($state['_html'],'data-pm-field-error="password" aria-live="polite">'),'Server password error not visible with JS off.');
+        if($bad['tel']!=='')roleAssert(str_contains($state['_html'],'data-pm-field-error="tel" aria-live="polite">'),'Server phone error not visible with JS off.');
+        roleAssert(!str_contains($state['_html'],'value="1234567"'),'Password echoed in form.');
+    }
     $state=roleUserWrite(['action'=>'status','status'=>'0']);
     roleAssert((int)roleUser($state,900000041)['status']===0&&$state['tracking_count']===1,'HR lock failed.');
     $state=roleUserWrite(['action'=>'status','status'=>'1','id'=>'900000042']);
