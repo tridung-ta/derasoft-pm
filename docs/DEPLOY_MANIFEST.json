@@ -1,8 +1,8 @@
 {
-  "version": "0.11.0-phase11-local-rc1",
-  "date": "2026-10-06",
+  "version": "0.11.0-phase11-local-rc2",
+  "date": "2026-10-07",
   "baseline": "3df33493da81f53e2fdc67d826998850812dbd2f",
-  "application_base_commit": "1cad212",
+  "application_base_commit": "1f1ef1c",
   "release_ref": "feature/pm-phase11-requirements",
   "source": "git diff --name-only --no-renames BASELINE (tracked working tree, including Phase 10 fixes, Phase 9b UI and Phase 11 requirements)",
   "required_migrations": [
@@ -123,7 +123,7 @@
       "status": "A",
       "path": "classes/dao/pmusers.class.php",
       "action": "upload_runtime",
-      "sha256": "050e1c951dde39bc38183d729dc4ba48e182d1bc41a34d7a48a51e8e5566efdd"
+      "sha256": "e3ebe552eca8977b7e5808e32babe466197e2f78d599dade70e0452897eea1f5"
     },
     {
       "status": "M",
@@ -407,6 +407,11 @@
     },
     {
       "status": "A",
+      "path": "docs/PHASE11_RELEASE_HANDOFF.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
       "path": "docs/PHASE11_REQUIREMENTS.md",
       "action": "exclude_nonruntime"
     },
@@ -518,6 +523,11 @@
     {
       "status": "A",
       "path": "docs/PROGRESS.md",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "docs/SKILL_USAGE.md",
       "action": "exclude_nonruntime"
     },
     {
@@ -865,7 +875,7 @@
       "status": "A",
       "path": "modules/admin/pmusers.module.php",
       "action": "upload_runtime",
-      "sha256": "08dd3a4ec5e9a5f96be37b1e2a908ebe9722ab1f048826bdacd10b492ce9be7d"
+      "sha256": "434561e57923e79b1887bd6f80e7179875f2b174ae09c4e5bb642996cea52eab"
     },
     {
       "status": "M",
@@ -1293,6 +1303,16 @@
     {
       "status": "A",
       "path": "tests/pm_reports_smoke.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_role_http_router.php",
+      "action": "exclude_nonruntime"
+    },
+    {
+      "status": "A",
+      "path": "tests/pm_role_http_smoke.php",
       "action": "exclude_nonruntime"
     },
     {

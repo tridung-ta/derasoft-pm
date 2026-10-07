@@ -69,6 +69,7 @@ docs/DEPLOY_MANIFEST.json
 docs/LOCAL_VERIFY_PHASE11.md
 docs/PHASE10_PLAN.md
 docs/PHASE10_VERIFY.md
+docs/PHASE11_RELEASE_HANDOFF.md
 docs/PHASE11_REQUIREMENTS.md
 docs/PHASE4_PLAN.md
 docs/PHASE5_PLAN.md
@@ -92,6 +93,7 @@ docs/PHASE9_VERIFY.md
 docs/PLAN_FINAL.md
 docs/PORTFOLIO.md
 docs/PROGRESS.md
+docs/SKILL_USAGE.md
 docs/UAT_FINAL_LOCAL.md
 docs/UAT_PHASE11.md
 docs/UAT_PHASE5_6.md
@@ -238,6 +240,8 @@ tests/pm_regression.ps1
 tests/pm_reports_browser.js
 tests/pm_reports_http_smoke.php
 tests/pm_reports_smoke.php
+tests/pm_role_http_router.php
+tests/pm_role_http_smoke.php
 tests/pm_roles_batch_smoke.php
 tests/pm_session_guard_smoke.php
 tests/pm_sidebar_overview_browser.js

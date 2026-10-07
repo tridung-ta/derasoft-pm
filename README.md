@@ -11,12 +11,16 @@
 
 # DeraSoft PM
 
-**Local update — 06 Oct 2026:** Phase 11 adds scoped task audits, customer/member
+**Update — 07 Oct 2026:** Phase 11 adds scoped task audits, customer/member
 roles/task dates, weekly/task statistics, directory XLSX exports and self-hosted
-Bootstrap CSS with the existing Inter theme. 44 regression scripts and nine
-Phase 9b UI suites passed locally; Phase 11 UAT/deployment remain pending.
-See [requirements matrix](docs/PHASE11_REQUIREMENTS.md). Branch
-`feature/pm-phase11-requirements` is local and has not been pushed.
+Bootstrap CSS with the existing Inter theme. Latest local verification: 47 regression
+scripts, including 73 HTTP fixture cases; earlier UI verification: 14 browser suites.
+See [requirements matrix](docs/PHASE11_REQUIREMENTS.md) and
+[coverage limits](docs/LOCAL_VERIFY_PHASE11.md). The
+[Phase 11 branch](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase11-requirements)
+was pushed through `8c78801`; later personnel fix `1f1ef1c` remains local.
+Operator reports the prior full package runs on production without observed errors;
+the new personnel fix is not deployed. Specific role/Excel/zoom UAT cases remain open.
 
 **Project & timesheet management built by extending an existing PHP application.**
 
@@ -24,11 +28,11 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 
 **Author:** [Tạ Trí Dũng](https://github.com/tridung-ta) · **Focus:** backend development, business rules and legacy integration.
 
-> **Development status — 04 Oct 2026:** Phases 6–9 are built and automated-verified locally on `feature/pm-phase9-ui-security`; local commits are prepared per phase. These changes are not pushed. The latest published implementation remains [Phase 5](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase5-timesheet-ot). Final user UAT and production acceptance remain pending.
+> **Delivery status — 07 Oct 2026:** All ten requested functional areas are built locally. Phase 11 release follow-up is prepared for review; pending changes have not been merged to the default branch. Automated verification is not full manual UAT or a production load benchmark.
 
 ## What the application does
 
-| Area | Implemented on the Phase 5 branch |
+| Area | Implemented in Phase 11 |
 | --- | --- |
 | Authentication & access | Legacy password upgrade, secure sessions, four roles and tenant-scoped permissions |
 | Workforce | User and department management, multiple roles and effective hourly rates |
@@ -37,12 +41,15 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 | Overtime & costing | Daily OT across projects, stored rate snapshots and MySQL DECIMAL cost calculation |
 | Automatic locking | Three calendar days to edit; Admin corrections after locking receive separate audit actions |
 | Audit viewer | Tenant/project/department access scopes, financial-field redaction, filters and pagination |
+| Cost dashboard | Actual/estimated/budget comparisons, mixed-currency guards, charts and polling |
+| Resource allocation | Weekly grid, capacity overrides, overbooking/overlap warnings and suggestions |
+| Reports & Excel | Weekly hours/OT/task statistics, scoped cost groups, XLSX exports and resumable personnel import |
 
 Timesheet approval is intentionally deferred. Phase 5 has no Submitted/Approved/Rejected workflow. Reports/XLSX and personnel import are locally implemented.
 
 **Locally verified Phase 6:** cost dashboard with stored actual costs, DECIMAL estimates, mixed-currency warnings (no invalid totals), Admin/PM project scopes, pinned local Chart.js and polling every 60 seconds while the tab is visible. Service, HTTP, template and synthetic-browser acceptance passed.
 
-**Locally verified Phase 7:** weekly allocations, time-bound daily/weekly capacity overrides, half-open interval overlap warnings, scoped workload totals and capacity suggestions. Allocation/audit writes are transactional; sorted user/day mutexes were exercised with two MySQL connections. Suggestions never change assignments automatically. Service, HTTP, template and synthetic-browser checks passed; user UAT and publication remain pending.
+**Locally verified Phase 7:** weekly allocations, time-bound daily/weekly capacity overrides, half-open interval overlap warnings, scoped workload totals and capacity suggestions. Allocation/audit writes are transactional; sorted user/day mutexes were exercised with two MySQL connections. Suggestions never change assignments automatically. Service, HTTP, template and synthetic-browser checks passed; detailed manual acceptance remains separately recorded.
 
 ## Engineering highlights
 
@@ -99,17 +106,18 @@ These checks passed on the documented local environment. Database smoke fixtures
 | --- | --- |
 | 0–2 · Audit, local baseline, auth & RBAC | Documented and verified |
 | 3–5 · Workforce, projects, timesheets & audit | BUILD / automated verification completed; UAT pending |
-| 6 · Cost aggregation & charts | Locally built / automated verified; not yet published, UAT pending |
-| 7 · Resource allocation & overbooking | Locally built / automated verification completed; unpublished, UAT pending |
-| 8 · Reports & Excel | Reports/XLSX and resumable personnel import locally built / automated verified; unpublished, UAT pending |
+| 6 · Cost aggregation & charts | Built / automated verified; published on Phase 11 branch |
+| 7 · Resource allocation & overbooking | Built / automated verified; published on Phase 11 branch |
+| 8 · Reports & Excel | Built / automated verified; published on Phase 11 branch |
 | 9 · UI/accessibility, query and security hardening | Locally built / automated verified; coverage limits documented, UAT pending |
-| Release acceptance | Pending UAT and explicit deployment approval |
+| 9b–11 · Theme and requirements completion | Built; latest personnel correction and release follow-up local |
+| Release acceptance | Prior package reported deployed; latest patch/default-branch merge and specific UAT pending |
 
 ## Tiếng Việt
 
 Hệ thống quản lý dự án và chấm công phát triển trên nền DeraSoft hiện có, không viết lại framework. Điểm chính gồm phân quyền theo tenant, quản lý nhân sự/dự án/task, tính OT theo tổng giờ ngày, snapshot đơn giá và audit log trong transaction. Chấm công được sửa/xóa trong ba ngày lịch tính từ ngày làm việc; Admin sửa sau khóa có audit riêng.
 
-Mã đã công bố mới nhất nằm trên nhánh Phase 5 được dẫn ở trên. Phase 6–9 đã BUILD và kiểm thử local, có checkpoint commit local theo phase, chưa push/merge; UAT và production chưa xác nhận. Các file cấu hình bảo mật, license riêng của ứng dụng, dữ liệu upload, database dump, cache và log không được đưa vào Git.
+Mã đã công bố nằm trên nhánh Phase 11 đến commit 8c78801. Bản sửa nhân sự mới và hồ sơ phát hành tiếp theo còn local. Người dùng xác nhận gói production trước đó chạy ổn; chưa suy ra toàn bộ ca UAT đã đạt. Cấu hình riêng, license riêng của ứng dụng, dữ liệu upload, database dump, cache và log không được đưa vào Git.
 
 Local Phase 8 import supports Admin-only XLSX preview/staging, per-row Apply results,
 duplicate-key handling and resume with a connection-owned batch lock. The approved tenant
@@ -118,19 +126,20 @@ Admin provisions a password and explicitly activates them. MyISAM writes and PM 
 writes are not one atomic transaction. Successful Apply/crash scenarios use a temporary
 transactional user mirror; native duplicate rejection is checked on the actual local table.
 
-Run the current local regression suite with `./tests/pm_regression.ps1` (41 scripts;
+Run the current local regression suite with `./tests/pm_regression.ps1` (47 scripts;
 requires the documented local DB and PHP setup). This runner does not apply migrations.
 
-Local Phase 9 adds shared accessible navigation/forms/table regions, exact tenant-scoped
+Historical Phase 9 verification adds shared accessible navigation/forms/table regions, exact tenant-scoped
 batch role lookup (20 role queries → 1), active-session checks, PM login/logout CSRF and
 local-only CSP-compatible assets. The 41-script regression suite and synthetic browser
 matrix passed. Authenticated HTTP UI coverage is Admin/Employee; PM/HR service fixtures
 are distinct from authenticated UI sessions. See [verification and remaining coverage](docs/PHASE9_VERIFY.md).
 EXPLAIN of 62 local query shapes is evidence of query/index selection, not a production benchmark.
 
-Phase 10 local BUILD / automated VERIFY is complete: 41 regression scripts, authenticated
+Historical Phase 10 local BUILD / automated VERIFY: 41 regression scripts, authenticated
 four-role browser checks and native MyISAM PHP-worker crash/resume passed on an isolated DB.
 Synthetic accounts were disabled and business fixtures soft deleted; source personnel stayed unchanged.
 See [verification and remaining coverage](docs/PHASE10_VERIFY.md),
 [manual FileZilla deployment preparation](docs/DEPLOY_LOG.md) and
-[final local UAT checklist](docs/UAT_FINAL_LOCAL.md). User UAT is pending; no deployment occurred.
+[final local UAT checklist](docs/UAT_FINAL_LOCAL.md). These are phase-specific historical
+results; current delivery/acceptance status is at the top of this README.

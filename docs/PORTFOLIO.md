@@ -1,13 +1,16 @@
 # Portfolio notes — DeraSoft PM
 
-## Verified local extension — 06/10/2026
+## Verified extension and delivery status — 07/10/2026
 
 Added atomic task audits, project customer/member-role/task date metadata,
 weekly/task/late-work statistics, scoped cost filters and XLSX personnel/project
 exports. Integrated self-hosted Bootstrap CSS without replacing the legacy MVC
-or shared Inter theme. 44 regression scripts, 101 prepared EXPLAIN query shapes
-and nine UI suites passed locally. Phase 11 has not been manually accepted or
-deployed; do not describe these results as production readiness.
+or shared Inter theme. Latest local verification: 47 regression scripts with
+73 HTTP fixture cases and 101 prepared EXPLAIN query shapes. Earlier 14 browser
+suites passed; remaining real-account/Excel/zoom acceptance limits are documented.
+Phase 11 pushed through 8c78801. Operator reported full prior package deployed
+and running without observed errors; personnel fix 1f1ef1c remains local.
+Do not describe these results as complete UAT or production readiness.
 
 ## CV summary
 
@@ -17,7 +20,7 @@ Extended an existing DeraSoft application with tenant-scoped RBAC, workforce and
 
 **Tiếng Việt:** Phát triển hệ thống quản lý dự án và chấm công trên nền PHP/Smarty/MySQL có sẵn; bổ sung RBAC theo tenant, nhân sự, dự án/task, tính OT theo ngày, snapshot đơn giá, khóa chấm công sau 3 ngày và audit log trong transaction.
 
-Không ghi production-ready, UAT hoàn tất, kết quả hiệu năng hoặc số người dùng khi chưa có bằng chứng. Chi phí dashboard, allocation và reporting vẫn nằm trong roadmap.
+Không ghi production-ready, UAT hoàn tất, kết quả hiệu năng hoặc số người dùng khi chưa có bằng chứng. Dashboard chi phí, phân bổ và báo cáo đã triển khai; các giới hạn kiểm thử được ghi trong LOCAL_VERIFY_PHASE11.md.
 
 ## Trình bày trên GitHub
 

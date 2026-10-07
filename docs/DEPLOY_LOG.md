@@ -1,5 +1,17 @@
 # Deployment preparation log — FileZilla
 
+## Phase 11 rc2 preparation - 07/10/2026 (NOT DEPLOYED)
+
+Runtime 1f1ef1c. Updated manifest/package to 0.11.0-phase11-local-rc2, 86 runtime
+files with current SHA256; inventory/CRC/per-file checks PASS. ZIP SHA256:
+5103b629a1f254e1c3262b4bc7a116f08a83735f37230299d7a972b4319b6583.
+Five manifest allowlist tests and manifest --check PASS. Separate two-file personnel
+patch still matches source. Previous rc1 entries below are historical; operator
+reported its full prior installation stable, not deployment of this new fix.
+No upload/SQL or push/merge in preparation. develop ancestor check PASS; exact
+approval gate and review scope in PHASE11_RELEASE_HANDOFF.md. No repeat 009 ALTER
+required on supplied schema evidence. Outstanding real-role/Excel/zoom UAT stays open.
+
 ## Personnel save-result patch prepared locally - 07/10/2026 (NOT DEPLOYED)
 
 ZIP: .local/releases/derasoft-pm-personnel-target-fix.zip, exactly two runtime files:

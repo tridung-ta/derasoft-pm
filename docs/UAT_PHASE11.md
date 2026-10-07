@@ -1,5 +1,14 @@
 # Phase 11 — nghiệm thu local
 
+## Current release follow-up — 07/10/2026
+
+Runtime 1f1ef1c, candidate rc2. Latest local regression: 47 scripts PASS with
+73 HTTP fixture cases; earlier 14 browser suites retain their dated scope.
+Full prior package upload was confirmed by operator; login resolved. New personnel
+save-result fix is not uploaded. Schema screenshots confirm four expected columns;
+no repeat 009 ALTER required on that evidence. Manual per-case results below
+remain pending where no specific result was supplied. See PHASE11_RELEASE_HANDOFF.md.
+
 ## Production update from operator - 2026-10-07
 
 User confirmed the full Phase 11 package was uploaded, is running stably and
@@ -15,19 +24,20 @@ not automatically marked PASS. No new runtime changes or tests in this update.
 - Ảnh phpMyAdmin đã xác nhận bốn cột của migration 009 trong `dung_pm` đúng kiểu
   và nullable; không cần chạy lại ALTER trên cơ sở bằng chứng này. Đây là bằng
   chứng schema hiện có, không xác nhận agent đã chạy migration hoặc có backup.
-- Đang xác nhận operator đã upload gói đầy đủ 86 file hay chỉ bản vá login để
-  chọn bước triển khai/nghiệm thu tiếp theo. Agent chưa push/upload production.
+- Operator đã xác nhận upload đầy đủ gói Phase 11 và chưa thấy lỗi; agent không
+  trực tiếp upload/kiểm tra production. Bản sửa nhân sự mới vẫn chưa triển khai.
 
 **Quy trình cập nhật 06/10/2026:** người dùng dừng kiểm thử tay local, yêu cầu
 agent kiểm thử lại toàn bộ phạm vi PM trước và sẽ kiểm thử tay sau triển khai.
 Các mục chưa xác nhận bên dưới chuyển sang chờ kiểm thử thủ công sau triển khai,
 không chặn agent hoàn tất VERIFY local và không tự đổi thành UAT PASS.
 Kết quả agent: [LOCAL_VERIFY_PHASE11.md](LOCAL_VERIFY_PHASE11.md), 46 regression
-scripts và 14 browser suites PASS. Chưa merge/push/deploy; migration 009 cần duyệt riêng.
+scripts và 14 browser suites PASS ở lượt 06/10; kết quả mới nhất ở đầu tài liệu.
+Nhánh đã push đến 8c78801; các thay đổi sau đó chưa push/merge/deploy.
 
 BUILD đã kiểm tra tự động; chưa tick UAT thay người dùng. Nhánh local
-feature/pm-phase11-requirements, runtime 1cad212 (gồm sửa mật khẩu 7227906,
-Bootstrap form controls và cải tiến nút/form), schema 009 chỉ chạy local.
+feature/pm-phase11-requirements, runtime hiện tại 1f1ef1c (gồm sửa mật khẩu,
+Bootstrap và lỗi báo lưu nhân sự sai); schema production được xác nhận bằng ảnh.
 
 1. Đăng nhập Admin: Nhân sự, Dự án, Chấm công, Báo cáo, Import, sidebar D và
    đăng xuất giữ giao diện Inter; desktop/mobile, zoom trình duyệt 200%.

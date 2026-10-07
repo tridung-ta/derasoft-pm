@@ -1,5 +1,17 @@
 # DeraSoft PM — Progress
 
+## Phase 11 release follow-up prepared - 2026-10-07
+
+Aligned rc2 manifest with runtime 1f1ef1c and refreshed README/portfolio/UAT to
+actual publication and operator-reported deployment scope. Prepared review handoff
+and regenerated 86-file ZIP; no application changes since last full regression
+47 scripts / 73 HTTP cases PASS. Release checks: five manifest tests PASS,
+manifest --check PASS, ZIP inventory/CRC/per-file SHA256 PASS, two-file personnel
+patch source comparison PASS and git diff --check PASS. develop is ancestor of
+phase branch (11 committed follow-up changes before this preparation commit).
+No merge/push/production action. Stop at approval gate for reviewed Phase 11 push
+and local develop --ff-only merge; main and production remain separate gates.
+
 ## Phase 11 personnel HTTP false-success fix - 2026-10-07
 
 Added 13 personnel HTTP cases (73 combined cases). Reproduced a real defect:
