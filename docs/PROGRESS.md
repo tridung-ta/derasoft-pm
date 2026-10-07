@@ -1823,3 +1823,9 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 
 ### 07/10/2026 — Rà soát ràng buộc, dừng giao diện
 - Xem docs/CONSTRAINT_REVIEW_20261007.md: 47 regression scripts và hai browser suites local PASS; đọc schema local phát hiện validation tên/email/username/tel chưa thống nhất, import vượt chiều dài schema, collision chéo định danh và test mirror quá rộng. Không sửa runtime/database, không truy cập production; không suy ra toàn bộ ràng buộc đạt từ PASS.
+
+### 07/10/2026 — Kiểm thử tổng theo 80 mã
+- Lưu nguyên checklist người dùng tại docs/QUY_TRINH_KIEM_THU_TONG.md, đầy đủ PASS/FAIL/CHƯA CHẠY và evidence trong docs/TEST_REPORT_FULL.md. Người dùng duyệt department tùy chọn và tên/email validate format/độ dài/control, không đánh giá tên vô nghĩa hoặc xác minh hộp thư.
+- Đã chạy theo nhóm, tenant schema 19 PM tables/12 business unique keys đạt; phạm vi all-endpoint tenant còn CHƯA CHẠY. Regression 47 process PASS, lint 103 PHP files PASS; không suy checklist tổng đạt. Ghi rõ ba browser tests lỗi thời và các diagnostic harness lỗi đã chạy lại.
+- Phát hiện pm_audit_smoke UPDATE department_id user thật MyISAM rồi chỉ rollback: checksum dc_users đổi, 2 user tham chiếu department fixture đã rollback. Kết luận fixture sạch ở báo cáo trước bị phủ định bởi kiểm tra bổ sung này. Dừng rerun test này/runner tới khi có isolation; chưa khôi phục giá trị gốc, không gán NULL hoặc đổi engine. Các bảng PM checksum/engine giữ nguyên. Đây là ảnh hưởng LOCAL, không production.
+- FAIL theo checklist: Kanban AJAX chưa có, task overload riêng chưa có, partial-valid import khác all-file staging hiện tại, tracking raw username và fixture cleanup MyISAM. Không sửa runtime/giao diện/database, không merge/push/deploy; chưa sẵn sàng kết luận UAT đầy đủ.
