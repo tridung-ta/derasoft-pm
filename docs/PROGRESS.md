@@ -1779,3 +1779,11 @@ responsive/200% text scaling. Inspected audit and empty-cost desktop screenshots
 Detector run once: pinned Inter/existing warnings retained. Scoped security review
 found no behavior changes. Synthetic evidence not manual UAT or actual zoom;
 local only, no push/merge/deploy; combined rollout remains pending user review.
+# Audit header density follow-up - 2026-10-07
+
+User found the audit heading block visually heavy. Impeccable scoped refinement
+reduces heading size to 28-36px, description to 15px and breadcrumb to 14px, with
+explicit compact spacing; retains a 44px breadcrumb target. No table/body changes.
+pm_phase9b_final_browser PASS including audit keyboard/no-JS, responsive/text
+scaling and action contrast. git diff --check PASS; no new full regression for
+this header-only CSS edit (preceding change passed 47). Local only, no deployment.
