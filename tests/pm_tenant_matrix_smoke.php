@@ -147,6 +147,32 @@ try {
  $contracts[]=['label'=>$label,'pass'=>$ok,'response'=>$r];echo ($ok?'PASS':'FAIL').' behavior '.$label.' HTTP'.$r['status'].PHP_EOL;
  }
  }
+ if(in_array($group,['c','all'],true)){
+ $behavior=[
+ ['local unassigned task','pmtimesheets','task_id',900000012,['action'=>'save']+array_replace($sheet,['id'=>'']),true,'PM','/admin.php',403,true],
+ ['malformed sheet ID','pmtimesheets','id','abc',['action'=>'save']+$sheet,true,'PM','/admin.php',200,true],
+ ['malformed task ID','pmtimesheets','task_id','abc',['action'=>'save']+$sheet,true,'PM','/admin.php',200,true],
+ ['invalid hours','pmtimesheets','hours','25',['action'=>'save']+$sheet,true,'PM','/admin.php',200,true],
+ ['locked day business','pmtimesheets','work_date','2000-01-01',['action'=>'save']+array_replace($sheet,['id'=>'']),true,'PM','/admin.php',200,true],
+ ['settings nonadmin','pmtimesheets','standard_hours_per_day','8',['action'=>'settings','ot_multiplier'=>'1.5'],true,'PM','/admin.php',403,true],
+ ['allocation local other project','pmallocations','project_id',900000002,[],false,'PM','/admin.php',403,true],
+ ['allocation local other project polling','pmallocations','project_id',900000002,[],false,'PM','/pm_ajax.php',403,true],
+ ['allocation malformed user','pmallocations','user_id','abc',[],false,'ADMIN','/admin.php',400,true],
+ ['allocation polling malformed user','pmallocations','user_id','abc',[],false,'ADMIN','/pm_ajax.php',400,true],
+ ['allocation local empty user','pmallocations','user_id',900000042,[],false,'ADMIN','/admin.php',200,true],
+ ['report local other project','pmreports','project_id',900000002,['mode'=>'hours'],false,'PM','/admin.php',403,true],
+ ['report directory local other project','pmreports','project_id',900000002,['mode'=>'projects'],false,'PM','/admin.php',403,true],
+ ['report malformed project','pmreports','project_id','abc',[],false,'ADMIN','/admin.php',400,true],
+ ['report local empty user','pmreports','user_id',900000042,['mode'=>'hours'],false,'ADMIN','/admin.php',200,true]
+ ];
+ foreach($behavior as [$label,$op,$key,$id,$base,$post,$role,$path,$status,$unchanged]){
+ $case=['op'=>$op,'key'=>$key,'type'=>'user','base'=>$base,'post'=>$post,'role'=>$role,'path'=>$path,'get'=>[]];$r=safeMatrixRequest($case,$id);
+ $ok=$r['status']===$status&&$r['unchanged']===$unchanged&&$r['audit_count']===0&&$r['tracking_count']===0&&!$r['observer_error']&&!$r['leak'];
+ if($status===403)$ok=$ok&&$r['message']==='Không thể truy cập dữ liệu.'&&$r['message_visible'];
+ if($status===400||($status===200&&!str_contains($label,'empty user')))$ok=$ok&&!empty($r['message'])&&$r['message_visible'];
+ $contracts[]=['label'=>$label,'pass'=>$ok,'response'=>$r];echo ($ok?'PASS':'FAIL').' behavior '.$label.' HTTP'.$r['status'].PHP_EOL;
+ }
+ }
 } catch(Throwable $e){$runError=get_class($e).': '.$e->getMessage();echo 'FAIL harness: '.$runError."\n";}
 finally {
  if(is_resource($server)){proc_terminate($server);proc_close($server);}

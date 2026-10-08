@@ -1,4 +1,5 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 include_once(ROOT_PATH.'classes/dao/pmimports.class.php');
 include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
@@ -8,7 +9,7 @@ class PmImportService {
     private PmDb $db;private PmAccess $access;private mysqli $connection;
     public function __construct($database,private int $storeId,private int $actorId){$this->db=new PmDb($database);$this->connection=$database->connection;$this->access=new PmAccess($database,$storeId,$actorId);}
     private function permission(): void {
-        if(!$this->access->hasRole('ADMIN')||!$this->access->hasPermission('pm.imports.manage')||!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId]))throw new DomainException('Chỉ Admin được kiểm tra import.');
+        if(!$this->access->hasRole('ADMIN')||!$this->access->hasPermission('pm.imports.manage')||!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId]))throw new PmScopeDeniedException('Chỉ Admin được kiểm tra import.');
     }
     private function inspect(string $path,string $name): void {
         if(strtolower(pathinfo($name,PATHINFO_EXTENSION))!=='xlsx'||!is_file($path)||filesize($path)>2097152||filesize($path)===0)throw new InvalidArgumentException('Chỉ nhận XLSX tối đa 2MB.');
@@ -80,7 +81,7 @@ class PmImportService {
         return $this->batchDetail($dao,$id);
     }
     private function batchDetail(PmImports $dao,int $id): array {
-        $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new DomainException('Không tìm thấy batch trong tenant.');
+        $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new PmScopeDeniedException('Không tìm thấy batch trong tenant.');
         $batch['results']=$dao->results($this->storeId,$id);$batch['counts']=['applied'=>0,'skipped_duplicate'=>0,'failed'=>0,'pending'=>0];
         foreach($batch['results'] as $row)$batch['counts'][$row['status']]++;
         $batch['counts']['pending']+=(int)$batch['row_count']-count($batch['results']);return $batch;
@@ -92,7 +93,7 @@ class PmImportService {
         $identity=new PmUserIdentityService((object)['connection'=>$this->connection]);$identityLock=null;
         try{
             $identityLock=$identity->acquire($this->storeId);
-            $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new DomainException('Không tìm thấy batch trong tenant.');
+            $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new PmScopeDeniedException('Không tìm thấy batch trong tenant.');
             if($batch['status']==='completed')return $this->batchDetail($dao,$id);
             if(!in_array($batch['status'],['staged','partial','in_progress'],true))throw new InvalidArgumentException('Trạng thái batch không hợp lệ.');
             if($batch['status']!=='staged'&&!$resume)throw new InvalidArgumentException('Chọn tiếp tục batch để xử lý các dòng chưa hoàn tất.');
@@ -136,6 +137,7 @@ class PmImportService {
         $identity=new PmUserIdentityService((object)['connection'=>$this->connection]);$identityLock=null;
         try{
             $identityLock=$identity->acquire($this->storeId);
+            if(!$dao->batch($this->storeId,$id))throw new PmScopeDeniedException('Dữ liệu ngoài phạm vi.');
             $u=$dao->ownedUser($this->storeId,$id,$row);$p=$u?@unserialize($u['properties'],['allowed_classes'=>false]):null;
             $marker=['store_id'=>$this->storeId,'import_id'=>$id,'source_row'=>$row,'token'=>$u['provenance_token']??''];
             if(!$u||(int)$u['status']!==0||!is_array($p)||($p['pm_import']??null)!==$marker)throw new DomainException('Chỉ cấp mật khẩu cho tài khoản import của dòng này đang chưa kích hoạt.');

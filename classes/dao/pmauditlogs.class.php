@@ -1,4 +1,5 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/database/pmdb.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 
@@ -13,7 +14,7 @@ class PmAuditLogs {
 
     public function list(array $filters = [], int $page = 1): array {
         if (!$this->access->hasPermission('pm.audit.view') || !($this->access->hasRole('ADMIN') || $this->access->hasRole('PM') || $this->access->hasRole('HR'))) {
-            throw new DomainException('Bạn không có quyền xem nhật ký kiểm toán.');
+            throw new PmScopeDeniedException('Bạn không có quyền xem nhật ký kiểm toán.');
         }
         $where = 'a.store_id=?'; $types = 'i'; $params = [$this->storeId];
         if (!$this->access->hasRole('ADMIN')) {

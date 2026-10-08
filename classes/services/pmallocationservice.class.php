@@ -1,4 +1,5 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/dao/pmallocations.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 
@@ -13,9 +14,9 @@ class PmAllocationService {
     private function permission(bool $write=false): void {
         if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId])
             ||!$this->access->hasPermission($write?'pm.allocations.manage':'pm.allocations.view')
-            ||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')||(!$write&&$this->access->hasRole('EMPLOYEE'))))throw new DomainException('Bạn không có quyền phân bổ nguồn lực.');
+            ||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')||(!$write&&$this->access->hasRole('EMPLOYEE'))))throw new PmScopeDeniedException('Bạn không có quyền phân bổ nguồn lực.');
     }
-    private function admin(): void {$this->permission(true);if(!$this->access->hasRole('ADMIN'))throw new DomainException('Chỉ Admin quản lý ngưỡng phân bổ.');}
+    private function admin(): void {$this->permission(true);if(!$this->access->hasRole('ADMIN'))throw new PmScopeDeniedException('Chỉ Admin quản lý ngưỡng phân bổ.');}
     public static function date(string $value): string {
         $d=DateTimeImmutable::createFromFormat('!Y-m-d',$value,new DateTimeZone('Asia/Ho_Chi_Minh'));
         if(!$d||$d->format('Y-m-d')!==$value||$value<'1000-01-02')throw new InvalidArgumentException('Ngày không hợp lệ.');return $value;
@@ -30,12 +31,13 @@ class PmAllocationService {
     private function week(string $day): array {$d=new DateTimeImmutable(self::date($day));$m=$d->modify('-'.((int)$d->format('N')-1).' days');$from=$m->format('Y-m-d');$to=$m->modify('+6 days')->format('Y-m-d');if($from<'1000-01-02'||strlen($to)!==10||$to>'9999-12-31')throw new InvalidArgumentException('Tuần ngoài phạm vi ngày hỗ trợ.');return [$from,$to];}
     private function project(int $id,bool $write=false,bool $lock=false): array {
         $p=$this->db->fetchOne('SELECT * FROM dc_pm_projects WHERE store_id=? AND id=?'.($lock?' FOR UPDATE':''),'ii',[$this->storeId,$id]);
-        if(!$p||(!$this->access->hasRole('ADMIN')&&(!$this->access->hasRole('PM')||(int)$p['manager_id']!==$this->actorId))||($write&&$p['deleted_at']!==null))throw new DomainException('Dự án ngoài phạm vi hoặc đã ẩn.');return $p;
+        if(!$p||(!$this->access->hasRole('ADMIN')&&(!$this->access->hasRole('PM')||(int)$p['manager_id']!==$this->actorId)) )throw new PmScopeDeniedException('Dự án ngoài phạm vi.');
+        if($write&&$p['deleted_at']!==null)throw new DomainException('Dự án đã ẩn.');return $p;
     }
     public function get(int $id): array {
         $this->permission();$row=$this->dao->find($id);if(!$row)throw new OutOfBoundsException('Không tìm thấy phân bổ.');
         if($this->access->hasRole('ADMIN')||$this->access->hasRole('PM'))$this->project((int)$row['project_id']);
-        elseif((int)$row['user_id']!==$this->actorId)throw new DomainException('Phân bổ ngoài phạm vi.');return $row;
+        elseif((int)$row['user_id']!==$this->actorId)throw new PmScopeDeniedException('Phân bổ ngoài phạm vi.');return $row;
     }
     private function audit(string $entity,int $id,string $action,?array $old,?array $new): void {
         $this->db->execute('INSERT INTO dc_pm_audit_logs(store_id,actor_id,entity_type,entity_id,action,old_values,new_values) VALUES(?,?,?,?,?,?,?)','iisisss',[$this->storeId,$this->actorId,$entity,$id,$action,$old?json_encode($old,JSON_THROW_ON_ERROR):null,$new?json_encode($new,JSON_THROW_ON_ERROR):null]);
@@ -60,7 +62,8 @@ class PmAllocationService {
             $projectIds=[(int)$t['project_id']];if($old)$projectIds[]=(int)$old['project_id'];$projectIds=array_unique($projectIds);sort($projectIds,SORT_NUMERIC);
             foreach($projectIds as $projectId)$this->project($projectId,$projectId===(int)$t['project_id'],true);
             $t=$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND id=? FOR UPDATE','ii',[$this->storeId,$task]);
-            if($t['deleted_at']!==null||(int)$t['assignee_id']!==$user
+            if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=?','ii',[$this->storeId,$user])||(int)$t['assignee_id']!==$user)throw new PmScopeDeniedException('Nhân sự ngoài phạm vi phân công.');
+            if($t['deleted_at']!==null
                 ||!$this->db->fetchOne('SELECT m.user_id FROM dc_pm_project_members m JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id WHERE m.store_id=? AND m.user_id=? AND m.project_id=? AND m.status=1 AND u.status=1 FOR UPDATE','iii',[$this->storeId,$user,(int)$t['project_id']]))throw new DomainException('Task, nhân viên hoặc membership không active/không phù hợp.');
             $overlap=$this->dao->overlapping($user,$day,$start,$end,$id);
             $new=['project_id'=>(int)$t['project_id'],'task_id'=>$task,'user_id'=>$user,'work_date'=>$day,'hours'=>self::decimal($hours),'start_time'=>$start,'end_time'=>$end];
@@ -89,9 +92,12 @@ class PmAllocationService {
         $daily=self::decimal(self::hundredths($data['daily_limit_hours']??''));$weekly=self::decimal(self::hundredths($data['weekly_limit_hours']??'',16800));
         $this->db->beginTransaction();try{
             $this->dao->lockUsers([[$user,$from]]);
-            if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$user]))throw new DomainException('Nhân viên không active trong tenant.');
+            $u=$this->db->fetchOne('SELECT id,status FROM dc_users WHERE store_id=? AND id=?','ii',[$this->storeId,$user]);
+            if(!$u)throw new PmScopeDeniedException('Nhân sự ngoài phạm vi.');
+            if((int)$u['status']!==1)throw new DomainException('Nhân viên không active trong tenant.');
             $old=$id?$this->db->fetchOne('SELECT * FROM dc_pm_capacity_overrides WHERE store_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','ii',[$this->storeId,$id]):null;
-            if($id&&(!$old||(int)$old['user_id']!==$user))throw new DomainException('Không thể đổi chủ sở hữu capacity.');
+            if($id&&!$old)throw new PmScopeDeniedException('Dữ liệu ngoài phạm vi.');
+            if($old&&(int)$old['user_id']!==$user)throw new DomainException('Không thể đổi chủ sở hữu capacity.');
             if($this->hasOverlappingCapacity($user,$from,$to,$id))throw new DomainException('Khoảng capacity chồng lấn.');
             $new=['user_id'=>$user,'daily_limit_hours'=>$daily,'weekly_limit_hours'=>$weekly,'effective_from'=>$from,'effective_to'=>$to];
             if($id)$this->db->execute('UPDATE dc_pm_capacity_overrides SET daily_limit_hours=?,weekly_limit_hours=?,effective_from=?,effective_to=?,updated_by=? WHERE store_id=? AND id=?','ssssiii',[$daily,$weekly,$from,$to,$this->actorId,$this->storeId,$id]);
@@ -134,9 +140,10 @@ class PmAllocationService {
         $this->permission();foreach(['week','project_id','user_id'] as $key)if(isset($filters[$key])&&!is_scalar($filters[$key]))throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
         [$from,$to]=$this->week((string)($filters['week']??(new DateTimeImmutable('now',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d')));
         $project=empty($filters['project_id'])?null:$this->id($filters['project_id']);$user=empty($filters['user_id'])?null:$this->id($filters['user_id']);
+        if($user&&!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=?','ii',[$this->storeId,$user]))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');
         $where='a.store_id=? AND a.deleted_at IS NULL AND a.work_date BETWEEN ? AND ?';$types='iss';$params=[$this->storeId,$from,$to];
-        if(!$this->access->hasRole('ADMIN')){if($this->access->hasRole('PM')){$where.=' AND p.manager_id=?';$types.='i';$params[]=$this->actorId;}else{$where.=' AND a.user_id=?';$types.='i';$params[]=$this->actorId;if($user&&$user!==$this->actorId)throw new DomainException('Nhân viên chỉ đọc lịch của mình.');}}
-        if($project){if($this->access->hasRole('ADMIN')||$this->access->hasRole('PM'))$this->project($project);elseif(!$this->db->fetchOne('SELECT id FROM dc_pm_allocations WHERE store_id=? AND project_id=? AND user_id=? AND deleted_at IS NULL LIMIT 1','iii',[$this->storeId,$project,$this->actorId]))throw new DomainException('Dự án ngoài phạm vi.');$where.=' AND a.project_id=?';$types.='i';$params[]=$project;}
+        if(!$this->access->hasRole('ADMIN')){if($this->access->hasRole('PM')){$where.=' AND p.manager_id=?';$types.='i';$params[]=$this->actorId;}else{$where.=' AND a.user_id=?';$types.='i';$params[]=$this->actorId;if($user&&$user!==$this->actorId)throw new PmScopeDeniedException('Nhân viên chỉ đọc lịch của mình.');}}
+        if($project){if($this->access->hasRole('ADMIN')||$this->access->hasRole('PM'))$this->project($project);elseif(!$this->db->fetchOne('SELECT id FROM dc_pm_allocations WHERE store_id=? AND project_id=? AND user_id=? AND deleted_at IS NULL LIMIT 1','iii',[$this->storeId,$project,$this->actorId]))throw new PmScopeDeniedException('Dự án ngoài phạm vi.');$where.=' AND a.project_id=?';$types.='i';$params[]=$project;}
         if($user){$where.=' AND a.user_id=?';$types.='i';$params[]=$user;}
         $rows=$this->db->fetchAll('SELECT a.*,p.name project_name,t.name task_name,u.fullname user_name,(p.deleted_at IS NOT NULL OR t.deleted_at IS NOT NULL) historical FROM dc_pm_allocations a JOIN dc_pm_projects p ON p.store_id=a.store_id AND p.id=a.project_id JOIN dc_pm_tasks t ON t.store_id=a.store_id AND t.id=a.task_id JOIN dc_users u ON u.store_id=a.store_id AND u.id=a.user_id WHERE '.$where.' ORDER BY a.work_date,a.user_id,a.id LIMIT 1001',$types,$params);
         $truncated=count($rows)>1000;$rows=array_slice($rows,0,1000);

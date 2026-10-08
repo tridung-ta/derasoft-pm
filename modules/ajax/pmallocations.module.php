@@ -12,4 +12,6 @@ try{
     }
     echo json_encode($result,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE);
 }catch(InvalidArgumentException $e){http_response_code(400);echo json_encode(['error'=>$e->getMessage()]);}
-catch(DomainException|OutOfBoundsException $e){http_response_code(403);echo json_encode(['error'=>$e->getMessage()]);}
+catch(OutOfBoundsException $e){http_response_code(404);echo json_encode(['error'=>PmScopeDeniedException::MESSAGE]);}
+catch(PmScopeDeniedException $e){http_response_code(403);echo json_encode(['error'=>PmScopeDeniedException::MESSAGE]);}
+catch(DomainException $e){http_response_code(403);echo json_encode(['error'=>$e->getMessage()]);}

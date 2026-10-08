@@ -1,18 +1,19 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/database/pmdb.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 include_once(ROOT_PATH.'classes/services/pmrateservice.class.php');
 class PmTimesheetService {
     private PmDb $db;private PmAccess $access;private PmRateService $rates;
     public function __construct($database,private int $storeId,private int $actorId){$this->db=new PmDb($database);$this->access=new PmAccess($database,$storeId,$actorId);$this->rates=new PmRateService($database);}
-    private function ownPermission(): void {if(!$this->access->hasPermission('pm.timesheets.own'))throw new DomainException('Bạn không có quyền chấm công.');}
+    private function ownPermission(): void {if(!$this->access->hasPermission('pm.timesheets.own'))throw new PmScopeDeniedException('Bạn không có quyền chấm công.');}
     public function settings(): array {
         $values=['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.00'];
         foreach($this->db->fetchAll('SELECT setting_key,setting_value FROM dc_pm_system_settings WHERE store_id=?','i',[$this->storeId]) as $row)if(array_key_exists($row['setting_key'],$values))$values[$row['setting_key']]=$row['setting_value'];
         return $values;
     }
     public function saveSettings(array $data): void {
-        if(!$this->access->hasRole('ADMIN'))throw new DomainException('Chỉ Admin được thay đổi quy tắc OT.');
+        if(!$this->access->hasRole('ADMIN'))throw new PmScopeDeniedException('Chỉ Admin được thay đổi quy tắc OT.');
         $standard=$this->quantity($data['standard_hours_per_day']??'',24);$multiplier=$this->quantity($data['ot_multiplier']??'',10);
         $this->db->beginTransaction();try{
             $old=$this->settings();foreach(['standard_hours_per_day'=>$standard,'ot_multiplier'=>$multiplier] as $key=>$value)$this->db->execute('INSERT INTO dc_pm_system_settings(store_id,setting_key,setting_value) VALUES(?,?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)','iss',[$this->storeId,$key,$value]);
@@ -41,7 +42,7 @@ class PmTimesheetService {
     public function assignedTasks(?int $userId=null): array {
         $this->ownPermission();
         $userId=$userId??$this->actorId;
-        if($userId!==$this->actorId&&!$this->access->hasRole('ADMIN'))throw new DomainException('Không có quyền truy cập nhân sự này.');
+        if($userId!==$this->actorId&&!$this->access->hasRole('ADMIN'))throw new PmScopeDeniedException('Không có quyền truy cập nhân sự này.');
         return $this->db->fetchAll('SELECT t.id,t.name,p.name project_name FROM dc_pm_tasks t JOIN dc_pm_projects p ON p.store_id=t.store_id AND p.id=t.project_id JOIN dc_pm_project_members m ON m.store_id=t.store_id AND m.project_id=t.project_id AND m.user_id=t.assignee_id AND m.status=1 WHERE t.store_id=? AND t.assignee_id=? AND t.deleted_at IS NULL AND p.deleted_at IS NULL ORDER BY p.name,t.name','ii',[$this->storeId,$userId]);
     }
     public function listOwn(int $page=1): array {
@@ -70,7 +71,7 @@ class PmTimesheetService {
     }
     public function weeklySummary(string $date,?int $userId=null): array {
         $this->ownPermission();$this->validDate($date);$userId=$userId??$this->actorId;
-        if($userId!==$this->actorId&&!$this->access->hasRole('ADMIN'))throw new DomainException('Không có quyền truy cập nhân sự này.');
+        if($userId!==$this->actorId&&!$this->access->hasRole('ADMIN'))throw new PmScopeDeniedException('Không có quyền truy cập nhân sự này.');
         $selected=new DateTimeImmutable($date,new DateTimeZone('Asia/Ho_Chi_Minh'));
         $start=$selected->modify('-'.((int)$selected->format('N')-1).' days');$end=$start->modify('+6 days');
         $rows=$this->db->fetchAll('SELECT work_date,SUM(hours) hours,SUM(regular_hours) regular_hours,SUM(ot_hours) ot_hours FROM dc_pm_timesheets WHERE store_id=? AND user_id=? AND work_date BETWEEN ? AND ? AND deleted_at IS NULL GROUP BY work_date','iiss',[$this->storeId,$userId,$start->format('Y-m-d'),$end->format('Y-m-d')]);
@@ -98,7 +99,7 @@ class PmTimesheetService {
             if($old&&$old['work_date']!==$before['work_date'])throw new DomainException('Bản ghi vừa thay đổi. Vui lòng tải lại trang.');
             $task=$this->db->fetchOne('SELECT t.project_id FROM dc_pm_tasks t JOIN dc_pm_projects p ON p.store_id=t.store_id AND p.id=t.project_id JOIN dc_pm_project_members m ON m.store_id=t.store_id AND m.project_id=t.project_id AND m.user_id=t.assignee_id AND m.status=1 WHERE t.store_id=? AND t.id=? AND t.assignee_id=? AND t.deleted_at IS NULL AND p.deleted_at IS NULL FOR UPDATE','iii',[$this->storeId,$taskId,$userId]);
             if(!$task && $old && $this->access->hasRole('ADMIN') && $taskId===(int)$old['task_id'])$task=['project_id'=>$old['project_id']];
-            if(!$task)throw new DomainException('Chỉ có thể ghi công cho task được giao cho bạn trong dự án đang hoạt động.');
+            if(!$task)throw new PmScopeDeniedException('Chỉ có thể ghi công cho task được giao cho bạn trong dự án đang hoạt động.');
             $rate=(!$old||$old['work_date']!==$date)?$this->rates->resolveRate($this->storeId,$userId,$date):['rate_decimal'=>$old['rate_snapshot'],'source'=>$old['rate_source'],'currency'=>$old['currency'],'warning'=>$old['rate_warning']];
             if($rate['currency']!=='VND')throw new DomainException('Chấm công hiện chỉ hỗ trợ đơn giá VND.');
             if($id)$this->db->execute('UPDATE dc_pm_timesheets SET project_id=?,task_id=?,work_date=?,shift_label=?,hours=?,description=?,rate_snapshot=?,rate_source=?,currency=?,rate_warning=? WHERE store_id=? AND user_id=? AND id=?','iissssssssiii',[(int)$task['project_id'],$taskId,$date,$shift,$hours,$description,$rate['rate_decimal'],$rate['source'],$rate['currency'],$rate['warning'],$this->storeId,$userId,$id]);

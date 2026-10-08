@@ -68,7 +68,7 @@ function roleWrite(array $changes, string $role='PM', ?int $expected=null): ?arr
     $post=array_replace(['op'=>'pmprojects','project_id'=>'900000001','action'=>'task_save','csrf_token'=>'role-http-csrf','name'=>'HTTP created task','description'=>'HTTP fixture','status'=>'todo','priority'=>'normal','estimated_hours'=>'2','start_date'=>'2026-01-01','due_date'=>'2026-12-31','assignee_id'=>''],$changes);
     $expected??=in_array($post['action'],['project_save','project_delete'],true)?303:200;
     $html=roleHttp($role,'op=pmprojects',$expected,$post);
-    if (!in_array($expected,[200,303],true)) return null;
+    if ($expected===403) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing request-local write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
     roleTrackingIdentity($state);if($state['tracking'])roleAssert(count($state['tracking'])===1&&(bool)preg_match('/^PM projects: '.preg_quote($post['action'],'/').' project #[0-9]+$/D',$state['tracking'][0]['action']),'Project tracking action metadata leaked.');return $state;
@@ -108,7 +108,7 @@ function roleAllocationWrite(array $changes,int $expected=200): array {
 function roleUserWrite(array $changes,string $role='HR',int $expected=200): ?array {
     $post=array_replace(['op'=>'pmusers','action'=>'save','id'=>'900000041','csrf_token'=>'role-http-csrf','fullname'=>'HTTP Updated','email'=>'http-updated@example.test','tel'=>'0900000000','weekly_limit_hours'=>'32','department_id'=>''],$changes);
     $html=roleHttp($role,'op=pmusers',$expected,$post);
-    if ($expected!==200) return null;
+    if (in_array($expected,[400,403],true)) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing personnel write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
     roleTrackingIdentity($state);if($state['tracking']){roleAssert(count($state['tracking'])===1&&(bool)preg_match('/^PM users: '.preg_quote($post['action'],'/').' user #[0-9]+$/D',$state['tracking'][0]['action']),'Personnel tracking action metadata leaked.');} $state['_html']=$html; return $state;
@@ -136,7 +136,7 @@ try {
             if (!$denied&&!str_contains($html,'id="pm-main"')) throw new RuntimeException('Missing actual page landmark '.$role.'/'.$route.': '.substr(strip_tags($html),0,500));
         }
         roleHttp($role,'op=pmreports&mode=costs',$role==='PM'?200:403);
-        roleHttp($role,'op=pmreports&user_id=999999999',$role==='HR'?403:200);
+        roleHttp($role,'op=pmreports&user_id=999999999',404);
         roleHttp($role,'op=pmreports&project_id=900000002',403);
         roleHttp($role,'op=pmreports',400,['op'=>'pmreports','action'=>'export','csrf_token'=>'wrong']);
         $bytes=roleHttp($role,'op=pmreports',200,['op'=>'pmreports','action'=>'export','csrf_token'=>'role-http-csrf','mode'=>'hours','from'=>'2000-01-01','to'=>'2000-01-01']);
@@ -208,10 +208,10 @@ try {
     roleAssert(roleTime($state,900000021)['cost']==='200.00'&&roleTime($state,900000022)['regular_hours']==='8.00'&&roleTime($state,900000022)['ot_hours']==='1.00'&&roleTime($state,900000022)['cost']==='950.00','HTTP date move did not recalculate both days.');
     $state=roleTimeWrite(['id'=>'900000021','action'=>'delete']);
     roleAssert(roleTime($state,900000021)['deleted_at']!==null&&roleTime($state,900000022)['cost']==='950.00','HTTP timesheet hide did not recalculate day.');
-    foreach ([['csrf_token'=>'wrong'],['hours'=>'24'],['task_id'=>'900000013'],['work_date'=>'2099-01-01']] as $bad) roleTimeUnchanged(roleTimeWrite($bad));
+    foreach ([[['csrf_token'=>'wrong'],200],[['hours'=>'24'],200],[['task_id'=>'900000013'],403],[['work_date'=>'2099-01-01'],200]] as [$bad,$expected]) roleTimeUnchanged(roleTimeWrite($bad,'PM',$expected));
     roleTimeUnchanged(roleTimeWrite(['id'=>'900000023'], 'PM',403));
     foreach (['PM','HR'] as $role) {
-        $state=roleTimeWrite(['action'=>'settings','standard_hours_per_day'=>'7','ot_multiplier'=>'2'],$role);
+        $state=roleTimeWrite(['action'=>'settings','standard_hours_per_day'=>'7','ot_multiplier'=>'2'],$role,403);
         roleTimeUnchanged($state);
         roleAssert(array_column($state['dc_pm_system_settings'],'setting_value','setting_key')===['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.50'],'Non-Admin changed OT settings.');
     }
@@ -232,8 +232,8 @@ try {
     $state=roleWrite(['action'=>'task_status','task_id'=>'900000011','status'=>'done']);
     roleAssert(roleTask($state,900000011)['status']==='done'&&roleTask($state,900000011)['completed_at']!==null&&count($state['dc_pm_audit_logs'])===1&&count($state['tracking'])===1,'Status POST fallback/audit/tracking failed.');
     roleAssert(roleTask($state,900000011)['name']==='HTTP todo task','Status POST overwrote task name.');
-    foreach([['csrf_token'=>'wrong'],['task_id'=>'900000013'],['task_id'=>'999999999'],['status'=>'invalid'],['task_id'=>'900000011junk'],['project_id'=>'900000001junk']] as $bad){
-        $state=roleWrite(array_replace(['action'=>'task_status','task_id'=>'900000011','status'=>'done'],$bad));
+    foreach([[['csrf_token'=>'wrong'],200],[['task_id'=>'900000013'],404],[['task_id'=>'999999999'],404],[['status'=>'invalid'],200],[['task_id'=>'900000011junk'],200],[['project_id'=>'900000001junk'],200]] as [$bad,$expected]){
+        $state=roleWrite(array_replace(['action'=>'task_status','task_id'=>'900000011','status'=>'done'],$bad),'PM',$expected);
         roleAssert(roleTask($state,900000011)['status']==='todo'&&!$state['dc_pm_audit_logs']&&!$state['tracking'],'Rejected fallback wrote status/audit/tracking.');
     }
     roleWrite(['action'=>'task_status','task_id'=>'900000011','status'=>'done'],'HR',403);
@@ -327,7 +327,7 @@ try {
     }
     roleUserWrite(['action'=>'status','status'=>'0'],'PM',403);
     foreach(['900000043','900000044','999999999'] as $invalidTarget) {
-        $state=roleUserWrite(['id'=>$invalidTarget]);
+        $state=roleUserWrite(['id'=>$invalidTarget],'HR',404);
         roleAssert(!str_contains($state['_html'],'Đã lưu thông tin nhân sự.')&&$state['tracking_count']===0,'Invalid personnel target reported successful save.');
     }
 } finally {

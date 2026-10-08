@@ -7,7 +7,7 @@ $ajaxOps=['pmcosts','pmallocations','pmtaskstatus'];
 $actions=[
  'pmprojects'=>['project_save','project_delete','member_save','task_save','task_status','task_delete'],
  'pmusers'=>['save','status','roles','rate','rate_save','rate_deactivate','department_save','department_status','department_delete','department_restore'],
- 'pmtimesheets'=>['save','delete'], 'pmallocations'=>['save','delete','capacity','capacity_delete'],
+ 'pmtimesheets'=>['save','delete','settings'], 'pmallocations'=>['save','delete','capacity','capacity_delete'],
  'pmreports'=>['export'], 'pmimports'=>['detail','apply','resume','provision_password']
 ];
 if(PHP_SAPI!=='cli-server'||($_SERVER['REMOTE_ADDR']??'')!=='127.0.0.1'||!getenv('PM_ROLE_HTTP_TOKEN')

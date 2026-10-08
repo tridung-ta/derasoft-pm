@@ -1,4 +1,5 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/dao/pmreports.class.php');
 include_once(ROOT_PATH.'classes/services/pmcostservice.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
@@ -6,7 +7,7 @@ class PmReportService {
     private PmAccess $access;private PmDb $db;private PmReports $reports;
     public function __construct(private $database,private int $storeId,private int $actorId){$this->access=new PmAccess($database,$storeId,$actorId);$this->db=new PmDb($database);$this->reports=new PmReports($database);}
     private function permission(bool $export): void {
-        if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId])||!$this->access->hasPermission('pm.reports.view')||($export&&!$this->access->hasPermission('pm.reports.export'))||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')||$this->access->hasRole('EMPLOYEE')||$this->access->hasRole('HR')))throw new DomainException('Bạn không có quyền báo cáo.');
+        if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId])||!$this->access->hasPermission('pm.reports.view')||($export&&!$this->access->hasPermission('pm.reports.export'))||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')||$this->access->hasRole('EMPLOYEE')||$this->access->hasRole('HR')))throw new PmScopeDeniedException('Bạn không có quyền báo cáo.');
     }
     private function filter(array $input): array {
         foreach(['from','to','project_id','user_id','page','mode','role_code'] as $key)if(isset($input[$key])&&!is_scalar($input[$key]))throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
@@ -20,8 +21,15 @@ class PmReportService {
     }
     public function report(array $input=[],bool $export=false): array {
         $this->permission($export);$f=$this->filter($input);$scope=$this->access->hasRole('ADMIN')?'admin':($this->access->hasRole('PM')?'pm':'own');
+        if($f['user_id']!==null&&!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=?','ii',[$this->storeId,$f['user_id']]))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');
+        if($f['project_id']!==null&&!$this->db->fetchOne('SELECT id FROM dc_pm_projects WHERE store_id=? AND id=?','ii',[$this->storeId,$f['project_id']]))throw new OutOfBoundsException('Không tìm thấy dự án.');
+        if($scope==='own'&&$f['user_id']!==null&&$f['user_id']!==$this->actorId)throw new PmScopeDeniedException('Chỉ xem báo cáo cá nhân.');
+        if($f['mode']==='projects'&&$f['project_id']!==null&&$scope!=='admin'){
+            $p=$this->db->fetchOne('SELECT manager_id FROM dc_pm_projects WHERE store_id=? AND id=?','ii',[$this->storeId,$f['project_id']]);
+            if(($scope==='pm'&&(int)$p['manager_id']!==$this->actorId)||($scope==='own'&&!$this->db->fetchOne('SELECT id FROM dc_pm_project_members WHERE store_id=? AND project_id=? AND user_id=? AND status=1','iii',[$this->storeId,$f['project_id'],$this->actorId])))throw new PmScopeDeniedException('Dự án ngoài phạm vi.');
+        }
         if(in_array($f['mode'],['users','projects'],true)){
-            if(!$this->access->hasPermission($f['mode']==='users'?'pm.team.view':'pm.projects.view'))throw new DomainException('Không có quyền xuất danh sách.');
+            if(!$this->access->hasPermission($f['mode']==='users'?'pm.team.view':'pm.projects.view'))throw new PmScopeDeniedException('Không có quyền xuất danh sách.');
             if($f['mode']==='users'&&$f['project_id']!==null)throw new InvalidArgumentException('Danh sách nhân sự không lọc dự án.');
             if($f['mode']==='projects'&&($f['user_id']!==null||$f['role_code']!==''))throw new InvalidArgumentException('Danh sách dự án lọc ngày và ID dự án.');
             $f['store_id']=$this->storeId;$f['actor_id']=$this->actorId;$f['scope']=$scope;
@@ -34,11 +42,11 @@ class PmReportService {
             if($export){if($costs['total_pages']*20>5000)throw new InvalidArgumentException('Export tối đa 5000 dự án. Vui lòng thu hẹp bộ lọc.');$all=[];for($page=1;$page<=$costs['total_pages'];$page++){$part=$page===$costs['page']?$costs:(new PmCostService($this->database,$this->storeId,$this->actorId))->dashboard(array_replace($costInput,['page'=>$page]));$all=array_merge($all,$part['projects']);}$costs['projects']=$all;}
             return ['mode'=>'costs','filters'=>$f,'data'=>$costs];
         }
-        if($scope==='own'&&$f['user_id']!==null&&$f['user_id']!==$this->actorId)throw new DomainException('Chỉ xem báo cáo cá nhân.');
+        if($scope==='own'&&$f['user_id']!==null&&$f['user_id']!==$this->actorId)throw new PmScopeDeniedException('Chỉ xem báo cáo cá nhân.');
         if($f['project_id']!==null){
             $p=$this->db->fetchOne('SELECT manager_id FROM dc_pm_projects WHERE store_id=? AND id=?','ii',[$this->storeId,$f['project_id']]);
             $ownedSql=$f['mode']==='tasks'?'SELECT id FROM dc_pm_tasks WHERE store_id=? AND assignee_id=? AND project_id=? AND deleted_at IS NULL LIMIT 1':'SELECT id FROM dc_pm_timesheets WHERE store_id=? AND user_id=? AND project_id=? AND deleted_at IS NULL LIMIT 1';
-            if(!$p||($scope==='pm'&&(int)$p['manager_id']!==$this->actorId)||($scope==='own'&&!$this->db->fetchOne($ownedSql,'iii',[$this->storeId,$this->actorId,$f['project_id']])))throw new DomainException('Dự án ngoài phạm vi.');
+            if(!$p||($scope==='pm'&&(int)$p['manager_id']!==$this->actorId)||($scope==='own'&&!$this->db->fetchOne($ownedSql,'iii',[$this->storeId,$this->actorId,$f['project_id']])))throw new PmScopeDeniedException('Dự án ngoài phạm vi.');
         }
         $f['store_id']=$this->storeId;$f['actor_id']=$this->actorId;$f['scope']=$scope;
         $this->db->beginTransaction();try{$data=$f['mode']==='tasks'?$this->reports->tasks($f,$export):$this->reports->hours($f,$export);$this->db->commit();}catch(Throwable $e){$this->db->rollBack();throw $e;}

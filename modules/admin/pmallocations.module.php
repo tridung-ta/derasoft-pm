@@ -21,9 +21,12 @@ try{
         foreach(['start_time','end_time'] as $key)if($edit[$key]!==null)$edit[$key]=substr($edit[$key],0,5);
     }
 }catch(InvalidArgumentException $e){http_response_code(400);$error=$e->getMessage();}
-catch(DomainException|OutOfBoundsException $e){http_response_code(403);$error=$e->getMessage();}
+catch(PmScopeDeniedException|OutOfBoundsException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;}
+catch(DomainException $e){http_response_code(403);$error=$e->getMessage();}
 catch(Throwable $e){http_response_code(500);error_log('PM allocation operation failed.');$error='Không thể hoàn tất phân bổ.';}
 try{$allocationData=$service->dashboard($filters);}catch(InvalidArgumentException $e){http_response_code(400);$error=$e->getMessage();$allocationData=null;}
+catch(OutOfBoundsException $e){http_response_code(404);$error=PmScopeDeniedException::MESSAGE;$allocationData=null;}
+catch(PmScopeDeniedException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;$allocationData=null;}
 catch(DomainException $e){http_response_code(403);$error=$e->getMessage();$allocationData=null;}
 catch(Throwable $e){http_response_code(500);error_log('PM allocation read failed.');$error='Không thể tải lịch phân bổ.';$allocationData=null;}
 $template->assign(['pageTitle'=>'Phân bổ nguồn lực — DeraSoft PM','allocationData'=>$allocationData,'editAllocation'=>$edit,'csrfToken'=>$_SESSION['pm_csrf_token'],'notice'=>$notice,'error'=>$error,'allocationWarnings'=>$warnings]);

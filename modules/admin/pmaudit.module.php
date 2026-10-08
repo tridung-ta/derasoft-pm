@@ -10,6 +10,8 @@ try {
     $result = (new PmAuditLogs($db, (int)$storeId, (int)$userInfo->getId()))->list($filters, max(1, (int)$request->element('page', 1)));
 } catch (InvalidArgumentException $e) {
     http_response_code(400); $error = $e->getMessage();
+} catch (PmScopeDeniedException $e) {
+    http_response_code(403); $error=PmScopeDeniedException::MESSAGE;
 } catch (Throwable $e) {
     error_log('PM audit read failed.'); $error = 'Không thể tải nhật ký. Vui lòng thử lại.';
 }

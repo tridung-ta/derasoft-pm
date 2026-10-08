@@ -24,6 +24,7 @@ try{
         }
     }
 }catch(InvalidArgumentException $e){http_response_code(400);$error=$e->getMessage();}
+catch(PmScopeDeniedException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;}
 catch(DomainException $e){http_response_code(403);$error=$e->getMessage();}
 catch(OverflowException $e){http_response_code(409);$error=$e->getMessage();}
 catch(Throwable $e){http_response_code(500);error_log('PM import operation failed.');$error='Không thể kiểm tra import.';}

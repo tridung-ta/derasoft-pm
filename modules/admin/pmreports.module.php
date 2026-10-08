@@ -12,7 +12,8 @@ try{
     }
     $report=$service->report($input);
 }catch(InvalidArgumentException $e){http_response_code(400);$error=$e->getMessage();}
-catch(DomainException $e){http_response_code(403);$error=$e->getMessage();}
+catch(OutOfBoundsException $e){http_response_code(404);$error=PmScopeDeniedException::MESSAGE;}
+catch(PmScopeDeniedException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;}
 catch(Throwable $e){http_response_code(500);error_log('PM report operation failed.');$error='Không thể tạo báo cáo.';}
 header('Cache-Control: no-store');
 $template->assign(['pageTitle'=>'Báo cáo — DeraSoft PM','report'=>$report,'error'=>$error,'csrfToken'=>$_SESSION['pm_csrf_token'],'canExportReports'=>$pmAccess->hasPermission('pm.reports.export'),'canReportCosts'=>$pmAccess->hasPermission('pm.costs.view')&&($pmAccess->hasRole('ADMIN')||$pmAccess->hasRole('PM')),'canReportUsers'=>$pmAccess->hasPermission('pm.team.view'),'canReportProjects'=>$pmAccess->hasPermission('pm.projects.view')]);

@@ -1,4 +1,5 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/dao/pmcosts.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 
@@ -13,7 +14,7 @@ class PmCostService {
         return $value;
     }
     public function projectChoices(): array {
-        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new DomainException('Forbidden');
+        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new PmScopeDeniedException('Forbidden');
         return $this->costs->projectChoices(['store_id'=>$this->storeId,'manager_id'=>$this->access->hasRole('ADMIN')?null:$this->actorId]);
     }
     private function actual(array $f,string $group,array &$warnings): array {
@@ -34,7 +35,7 @@ class PmCostService {
         return $rows;
     }
     public function dashboard(array $input=[]): array {
-        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new DomainException('Bạn không có quyền xem chi phí.');
+        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new PmScopeDeniedException('Bạn không có quyền xem chi phí.');
         foreach(['page','project_id','user_id'] as $key)if(isset($input[$key])&&(!is_scalar($input[$key])||!preg_match('/^\d{1,9}$/D',(string)$input[$key])))throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
         $role=$input['role_code']??'';if(!is_string($role)||($role!==''&&!in_array($role,['ADMIN','PM','HR','EMPLOYEE'],true)))throw new InvalidArgumentException('Role không hợp lệ.');
         $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
@@ -47,7 +48,7 @@ class PmCostService {
         if(!in_array($isolation,['REPEATABLE-READ','SERIALIZABLE'],true))throw new RuntimeException('Cost snapshot requires repeatable-read isolation.');
         $db->beginTransaction();
         try{
-            if($f['project_id']&&!$this->costs->projectExists($f))throw new DomainException('Dự án không tồn tại hoặc ngoài phạm vi của bạn.');
+            if($f['project_id']&&!$this->costs->projectExists($f))throw new PmScopeDeniedException('Dự án không tồn tại hoặc ngoài phạm vi của bạn.');
             $warnings=['Phòng ban/role dùng phân loại hiện tại; timesheet chưa có snapshot phòng ban/role lịch sử.'];
             $groups=[];foreach(['total','project','task','user','department','role','date'] as $group)$groups[$group]=$this->actual($f,$group,$warnings);
             $lifetime=$f;$lifetime['from']=null;$lifetime['to']=null;
