@@ -182,3 +182,14 @@ Cùng token với Admin, chỉ đơn giản hóa bố cục: 1 card trắng vi�
 - Đổi mã hex cụ thể nếu không hợp bộ nhận diện công ty — giữ nguyên **nguyên tắc** (1 hệ thống thống nhất, 1 màu cảnh báo dùng đúng chỗ, primary/destructive khác biệt rõ, số liệu tabular căn phải) quan trọng hơn giữ đúng mã hex.
 - Bỏ bớt điểm nhấn (dải tuần, con dấu, chuỗi ngày) nếu không đủ thời gian.
 - Đổi bố cục nếu Derasoft đã có sẵn layout admin dùng tốt — ưu tiên tái sử dụng hơn làm mới hoàn toàn.
+
+
+## D2 BUILD/VERIFY — 08/10/2026
+
+Người dùng duyệt BUILD sau khi chốt estimate 0 là Chưa có ước tính. Đã triển khai cảnh báo riêng task_estimate_warnings, chỉ cho Admin/PM và task đang được phân bổ trong tuần đang xem; tổng hours toàn thời gian, không cộng ot_hours. So sánh và phép trừ bằng MySQL DECIMAL; task/dự án ẩn có nhãn lịch sử. Không migration/index mới, không thay đổi OT/cost/overbooking.
+
+VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regression scripts PASS (exit 0), 103 prepared query shapes EXPLAIN PASS, Smarty/zero-estimate PASS, PHP lint 8 file PASS, browser desktop/mobile/200% text/no-JS/error/authorization-loss PASS. Fixtures temporary exact-schema; hash persistent và engine trước/sau không đổi. Bằng chứng đầy đủ: docs/D2_VERIFY_20261008.md.
+
+Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.
+
+Estimate 0 là Chưa có ước tính, không cảnh báo. Schema NOT NULL không phân biệt chưa ước tính và cố tình 0; thay đổi schema cần duyệt riêng.

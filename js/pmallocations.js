@@ -11,11 +11,25 @@
     async function request(params, signal) {
         const response = await fetch('pm_ajax.php?' + params, {credentials:'same-origin', cache:'no-store', signal});
         const data = await response.json();
-        if(response.status===401||response.status===403){authorizationLost=true;clearTimeout(timer);throw new Error('Phiên hoặc quyền truy cập đã thay đổi. Vui lòng đăng nhập lại hoặc tải lại trang.');}
+        if(response.status===401||response.status===403){authorizationLost=true;clearTimeout(timer);renderTaskEstimateWarnings([]);throw new Error('Phiên hoặc quyền truy cập đã thay đổi. Vui lòng đăng nhập lại hoặc tải lại trang.');}
         if (!response.ok) throw new Error(data.error || 'Không thể tải dữ liệu.');
         return data;
     }
+    function renderTaskEstimateWarnings(warnings) {
+        const panel=document.getElementById('task-estimate-warning-panel');
+        const list=document.getElementById('task-estimate-warning-list');
+        if(!panel||!list)return;
+        const items=(Array.isArray(warnings)?warnings:[]).map(w=>{
+            const item=document.createElement('li');
+            item.append(text('strong',w.task_name),text('span',w.project_name+(w.historical?' · Đã ẩn / Lịch sử':'')),
+                text('p','Thực tế '+w.actual_hours+' giờ · Ước tính '+w.estimated_hours+' giờ · Vượt '+w.excess_hours+' giờ'));
+            return item;
+        });
+        list.replaceChildren(...items);panel.hidden=items.length===0;
+    }
     function render(data) {
+        renderTaskEstimateWarnings(data.task_estimate_warnings);
+
         const body = document.getElementById('allocation-rows');
         const fragment = document.createDocumentFragment();
         data.rows.forEach(row => {

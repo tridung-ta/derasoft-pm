@@ -148,7 +148,10 @@ class PmAllocationService {
         $tasks=$manager?$this->db->fetchAll('SELECT t.id,t.name,t.project_id,t.assignee_id,u.fullname user_name FROM dc_pm_tasks t JOIN dc_pm_projects p ON p.store_id=t.store_id AND p.id=t.project_id JOIN dc_users u ON u.store_id=t.store_id AND u.id=t.assignee_id WHERE t.store_id=? AND t.deleted_at IS NULL AND p.deleted_at IS NULL AND u.status=1 AND EXISTS(SELECT 1 FROM dc_pm_project_members m WHERE m.store_id=t.store_id AND m.project_id=t.project_id AND m.user_id=t.assignee_id AND m.status=1)'.($this->access->hasRole('ADMIN')?'':' AND p.manager_id=?').' ORDER BY t.id LIMIT 1000','i'.($this->access->hasRole('ADMIN')?'':'i'),$this->access->hasRole('ADMIN')?[$this->storeId]:[$this->storeId,$this->actorId]):[];
         $capacities=$this->access->hasRole('ADMIN')?$this->db->fetchAll('SELECT c.*,u.fullname user_name FROM dc_pm_capacity_overrides c JOIN dc_users u ON u.store_id=c.store_id AND u.id=c.user_id WHERE c.store_id=? AND c.deleted_at IS NULL ORDER BY c.id DESC LIMIT 200','i',[$this->storeId]):[];
         $users=$this->access->hasRole('ADMIN')?$this->db->fetchAll('SELECT id,fullname FROM dc_users WHERE store_id=? AND status=1 ORDER BY id','i',[$this->storeId]):[];
-        return ['from'=>$from,'to'=>$to,'project_id'=>$project,'user_id'=>$user,'rows'=>$rows,'projects'=>$projects,'tasks'=>$tasks,'users'=>$users,'capacities'=>$capacities,'can_manage'=>$manager&&$this->access->hasPermission('pm.allocations.manage'),'is_admin'=>$this->access->hasRole('ADMIN'),'truncated'=>$truncated];
+        $result=['from'=>$from,'to'=>$to,'project_id'=>$project,'user_id'=>$user,'rows'=>$rows,'projects'=>$projects,'tasks'=>$tasks,'users'=>$users,'capacities'=>$capacities,'can_manage'=>$manager&&$this->access->hasPermission('pm.allocations.manage'),'is_admin'=>$this->access->hasRole('ADMIN'),'truncated'=>$truncated];
+        // Only managers may see whole-task hours; candidate IDs come from authorized visible rows.
+        if($manager)$result['task_estimate_warnings']=$this->dao->taskEstimateWarnings(array_column($rows,'task_id'),$this->access->hasRole('ADMIN')?null:$this->actorId);
+        return $result;
     }
     public function suggestions(int $projectId,string $day,$hours): array {
         $this->permission(true);$this->project($projectId,true);$day=self::date($day);$required=self::hundredths($hours);

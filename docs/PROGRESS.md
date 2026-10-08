@@ -1886,3 +1886,12 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - Collision theo collation DB, cùng tenant/khác user, gồm user khóa/ẩn; namespace named lock database+store_id dùng chung các đường PM ghi identity, batch trước identity. Hai tenant khác nhau không bị cùng khóa; không bao gồm legacy/SQL ngoài PM.
 - VERIFY: identity smoke 43 case PASS, import Stage/Apply và 137 role HTTP PASS; regression 51 script PASS, PHP lint 14 file PASS. Positive fixture scan assert hai chiều chéo; read-only scan toàn bộ 10 user local trả 0 cặp collision, user rows không đổi. Chi tiết lệnh/output và giới hạn ở TEST_REPORT_FULL.md.
 - Lượt đầu profile HTTP harness thiếu observation marker, đã sửa observer test-only và chạy lại đạt; không lỗi runtime. Security/code review trong phạm vi không còn finding mở. Giữ checklist 59 PASS/2 FAIL/19 CHƯA CHẠY, không tự nâng case. Commit local theo workflow; không push/merge/deploy. Dừng trước BƯỚC 3, không sửa OT/Audit Log UI/D2.
+
+
+## D2 BUILD/VERIFY — 08/10/2026
+
+Người dùng duyệt BUILD sau khi chốt estimate 0 là Chưa có ước tính. Đã triển khai cảnh báo riêng task_estimate_warnings, chỉ cho Admin/PM và task đang được phân bổ trong tuần đang xem; tổng hours toàn thời gian, không cộng ot_hours. So sánh và phép trừ bằng MySQL DECIMAL; task/dự án ẩn có nhãn lịch sử. Không migration/index mới, không thay đổi OT/cost/overbooking.
+
+VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regression scripts PASS (exit 0), 103 prepared query shapes EXPLAIN PASS, Smarty/zero-estimate PASS, PHP lint 8 file PASS, browser desktop/mobile/200% text/no-JS/error/authorization-loss PASS. Fixtures temporary exact-schema; hash persistent và engine trước/sau không đổi. Bằng chứng đầy đủ: docs/D2_VERIFY_20261008.md.
+
+Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.

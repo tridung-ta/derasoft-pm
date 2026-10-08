@@ -23,11 +23,12 @@ try{
     $c->captured=[];$c->family='users';$users=new PmUsers($db);$users->list($store,['q'=>'Explain','role_id'=>null,'department_id'=>null]);$users->rolesForUsers($store,[$actor]);
     $c->family='audit';(new PmAuditLogs($db,$store,$actor))->list(['entity_type'=>'timesheet']);
     $c->family='costs';(new PmCostService($db,$store,$actor))->dashboard(['project_id'=>$project,'from'=>'2026-10-01','to'=>'2026-10-04']);
-    $c->family='allocations';(new PmAllocationService($db,$store,$actor))->dashboard(['week'=>'2026-10-04','project_id'=>$project]);
+    $c->family='allocations';(new PmAllocationService($db,$store,$actor))->dashboard(['week'=>'2026-10-04','project_id'=>$project]);(new PmAllocations($db,$store))->taskEstimateWarnings([$task],$actor);
     $c->family='reports';(new PmReportService($db,$store,$actor))->report(['from'=>'2026-10-01','to'=>'2026-10-04','project_id'=>$project],true);
     foreach(['tasks','users','projects','costs'] as $mode){$input=['mode'=>$mode,'from'=>'2026-10-01','to'=>'2026-10-04'];if($mode!=='users')$input['project_id']=$project;if(in_array($mode,['tasks','users','costs'],true))$input['role_code']='ADMIN';(new PmReportService($db,$store,$actor))->report($input,true);}
     $c->family='imports';$imports=new PmImportService($db,$store,$actor);$imports->history();$imports->detail($import);
     $captured=$c->captured;$report=[];$seen=[];
+    if(!array_filter($captured,fn($entry)=>str_contains($entry[0],'SUM(s.hours) actual_hours')))throw new RuntimeException('Missing D2 actual prepared aggregate query for EXPLAIN.');
     foreach($captured as [$sql,$types,$params,$family]){
         $key=$family.'|'.$sql;if(isset($seen[$key]))continue;$seen[$key]=true;
         $plan=$q->fetchAll('EXPLAIN '.$sql,$types,$params);

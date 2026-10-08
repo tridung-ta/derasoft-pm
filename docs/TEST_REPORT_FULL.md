@@ -137,7 +137,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 7.1 | **PASS** | Exact weekly limit không cảnh báo. G7 pm_allocations_smoke:87–89. |
 | 7.2 | **PASS** | Vượt weekly limit 0.01 có cảnh báo tuần. G7. |
 | 7.3 | **PASS** | Exact daily không cảnh báo, vượt daily có cảnh báo riêng; HTTP also daily/weekly. G7/E0. |
-| 7.4 | **FAIL** | Probe actual 5h > estimated 4h: dashboard allocation warnings=[]; không cảnh báo task overload riêng. .local/full_task_overload_probe.php; pmallocationservice warnings chỉ xét allocation usage. Quay Phase 7. |
+| 7.4 | **PASS** | `.tools/php83/php.exe tests/pm_task_estimate_smoke.php`: exit 0, actual 5h/estimate 4h đúng 1 task_estimate_warnings, allocation warnings=[]; DECIMAL 0/0.01/equal, nhiều allocation, lịch sử, tenant/PM và cleanup đạt. `tests/pm_task_estimate_http_smoke.php`: exit 0, 7 HTTP fixtures; Employee/HR/no-role không có tổng task. Chi tiết: docs/D2_VERIFY_20261008.md. |
 | 7.5 | **PASS** | Half-open adjacent intervals không overlap. G7 pm_allocations_smoke. |
 | 7.6 | **PASS** | Overlap một phần, symmetric cases và warnings. G7/E0. |
 | 7.7 | **PASS** | Service suggestions/capacity scope và no-write semantics; render gợi ý/assignee không tự Apply. G7; browser cũ timeout ở panel đóng, không dùng kết quả đó làm PASS browser. |
@@ -491,3 +491,12 @@ Lệnh `.tools/php83/php.exe tests/pm_identity_collision_audit.php`, exit 0; ch�
 Quét không lọc trạng thái, cùng store_id và khác ID, cả username=username, email=email, username=email, email=username bằng phép so cột MySQL. Nếu có kết quả script xuất store_id/user_a/user_b/cờ loại collision, không xuất email/username hoặc sửa/khóa. **Danh sách cặp collision local hiện có: rỗng (0 cặp trên 10 user)**. Đây chỉ là kết quả local tại thời điểm chạy, không suy ra production.
 
 Review bảo mật: input limits trước ghi; prepared parameters; tên collation lấy metadata và whitelist identifier; permission/CSRF/tenant giữ nguyên; collision không bỏ user khóa/ẩn; credential không in hoặc đưa vào audit; batch/identity lock thứ tự thống nhất và nhả khi lỗi; fixture không ghi bảng users thật. Không phát hiện defect còn mở trong phạm vi BƯỚC 2 đã review. Giữ **59 PASS / 2 FAIL / 19 CHƯA CHẠY**; không tự nâng checklist từ regression. Không sửa OT, Audit Log UI hay D2; dừng trước BƯỚC 3. Không push/merge/deploy mới.
+
+
+## D2 BUILD/VERIFY — 08/10/2026
+
+Người dùng duyệt BUILD sau khi chốt estimate 0 là Chưa có ước tính. Đã triển khai cảnh báo riêng task_estimate_warnings, chỉ cho Admin/PM và task đang được phân bổ trong tuần đang xem; tổng hours toàn thời gian, không cộng ot_hours. So sánh và phép trừ bằng MySQL DECIMAL; task/dự án ẩn có nhãn lịch sử. Không migration/index mới, không thay đổi OT/cost/overbooking.
+
+VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regression scripts PASS (exit 0), 103 prepared query shapes EXPLAIN PASS, Smarty/zero-estimate PASS, PHP lint 8 file PASS, browser desktop/mobile/200% text/no-JS/error/authorization-loss PASS. Fixtures temporary exact-schema; hash persistent và engine trước/sau không đổi. Bằng chứng đầy đủ: docs/D2_VERIFY_20261008.md.
+
+Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.

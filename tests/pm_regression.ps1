@@ -10,7 +10,7 @@ try {
         'smoke_pm_audit', 'smoke_pm_admin', 'smoke_pm_users', 'smoke_pm_projects',
         'smoke_pm_dependencies', 'pm_phase6_permissions', 'pm_costs_smoke',
         'pm_costs_http_smoke', 'smoke_pm_costs', 'pm_phase7_migration',
-        'pm_allocations_smoke', 'pm_allocations_concurrency', 'pm_allocations_http_smoke',
+        'pm_allocations_smoke', 'pm_task_estimate_smoke', 'pm_task_estimate_http_smoke', 'pm_allocations_concurrency', 'pm_allocations_http_smoke',
         'smoke_pm_allocations', 'pm_phase8_permissions', 'pm_reports_smoke',
         'pm_reports_http_smoke', 'smoke_pm_reports', 'pm_import_migration',
         'pm_import_smoke', 'pm_import_http_smoke', 'smoke_pm_imports',

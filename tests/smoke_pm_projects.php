@@ -23,3 +23,5 @@ $html=$s->fetch('admin/pm-projects.tpl.html');if(in_array('--preview',$argv,true
 $s->assign(['canCreate'=>false,'canEditProject'=>false,'canEditMembers'=>false,'canEditTasks'=>false]);
 $html=$s->fetch('admin/pm-projects.tpl.html');if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-projects-2.html',str_replace('<head>','<head><base href="/">',$html));foreach(['value="task_save"','value="project_delete"','value="member_save"'] as $needle)if(strpos($html,$needle)!==false)throw new RuntimeException('Unauthorized mutation form visible.');
 echo "PASS: project/task Smarty rendering, escaping and read-only forms.\n";
+
+$zeroTasks=$s->getTemplateVars('tasks');$zeroTasks[0]['estimated_hours']='0.00';$s->assign('tasks',$zeroTasks);$zeroHtml=$s->fetch('admin/pm-projects.tpl.html');if(!str_contains($zeroHtml,'Chưa có ước tính')||str_contains($zeroHtml,'· 0.00 giờ'))throw new RuntimeException('Zero task estimate label failed.');echo "PASS: zero task estimate shown as Chưa có ước tính.\n";
