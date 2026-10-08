@@ -80,7 +80,7 @@ try{
     $connection->progressQueries=[];$none=$service->listProjects('NONEXISTENT_'.bin2hex(random_bytes(6)));
     if($none['rows']||$connection->progressQueries)throw new RuntimeException('Empty page queried task aggregation.');
     $task['assignee_id']=2147483647;
-    try{$service->saveTask($id,$task);throw new RuntimeException('Non-member assignee accepted.');}catch(InvalidArgumentException $expected){}
+    try{$service->saveTask($id,$task);throw new RuntimeException('Missing assignee accepted.');}catch(OutOfBoundsException $expected){}
     $s=$connection->prepare("SELECT u.id FROM dc_users u WHERE u.store_id=? AND u.status=1 AND NOT EXISTS(SELECT 1 FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=u.store_id AND ur.user_id=u.id AND r.code='ADMIN' AND r.status=1) ORDER BY u.id LIMIT 1");$s->bind_param('i',$store);$s->execute();$outsider=$s->get_result()->fetch_assoc();$s->close();
     if(!$outsider)throw new RuntimeException('No non-admin user available to verify PM boundaries.');
     $other=(int)$outsider['id'];

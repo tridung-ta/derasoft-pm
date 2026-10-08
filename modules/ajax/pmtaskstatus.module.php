@@ -14,5 +14,5 @@ try{
     $result=(new PmProjectService($db,$storeId,$actorId))->changeTaskStatus($ids['project_id'],$ids['task_id'],(string)($_POST['status']??''));
     echo json_encode(['task'=>$result],JSON_THROW_ON_ERROR);
 }catch(InvalidArgumentException $e){http_response_code(422);echo json_encode(['error'=>'Dữ liệu trạng thái không hợp lệ.']);}
-catch(DomainException $e){http_response_code(403);echo json_encode(['error'=>'Bạn không có quyền đổi trạng thái công việc này.']);}
-catch(OutOfBoundsException $e){http_response_code(404);echo json_encode(['error'=>'Không tìm thấy công việc trong phạm vi truy cập.']);}
+catch(PmScopeDeniedException $e){http_response_code(403);echo json_encode(['error'=>PmScopeDeniedException::MESSAGE]);}
+catch(OutOfBoundsException $e){http_response_code(404);echo json_encode(['error'=>PmScopeDeniedException::MESSAGE]);}
