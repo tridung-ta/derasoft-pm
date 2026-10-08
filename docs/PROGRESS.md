@@ -1895,3 +1895,10 @@ Người dùng duyệt BUILD sau khi chốt estimate 0 là Chưa có ước tín
 VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regression scripts PASS (exit 0), 103 prepared query shapes EXPLAIN PASS, Smarty/zero-estimate PASS, PHP lint 8 file PASS, browser desktop/mobile/200% text/no-JS/error/authorization-loss PASS. Fixtures temporary exact-schema; hash persistent và engine trước/sau không đổi. Bằng chứng đầy đủ: docs/D2_VERIFY_20261008.md.
 
 Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.
+
+
+## P4 BUILD/VERIFY hoàn tất local — 08/10/2026
+
+Audit hồ sơ chỉ actor ID + action + tên trường đã đổi; audit mật khẩu actor ID + action, không giá trị liên hệ/credential/hash/IP. PM_HIDE_LEGACY mặc định/dự kiến triển khai true, legacy AJAX count 4 request HTTP404. Assertions riêng từng writer PM đã chạy; 55 regression scripts, 156 role HTTP cases, PHP lint14 file PASS, diff --check exit0. Fixture rollback/temporary exact-schema và persistent unchanged theo từng suite. Chi tiết docs/P4_VERIFY_20261008.md.
+
+Chỉ11.4 đổi FAIL→PASS trong phạm vi đã chốt; tổng **61 PASS / 0 FAIL / 19 CHƯA CHẠY**. Không tự nâng19mục hoặc tuyên bố UAT/production-ready. P3 chờA/B/C, chưaPLAN/chưaBUILD; P0 timeout lịch sử chưa tái hiện/chưa xác định nguyên nhân. Không migration/push/merge/deploy.

@@ -2,6 +2,7 @@
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
 include_once(ROOT_PATH.'classes/services/pmuseridentityservice.class.php');
+include_once(ROOT_PATH.'classes/services/pmaccountauditservice.class.php');
 
 $pmAccess = new PmAccess($db, (int) $storeId, (int) $userInfo->getId());
 $templateFile = 'pm.tpl.html';
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		$identity = new PmUserIdentityService($db);
 		$identityLock = null;
+		$profileSaved = false;
 		try {
 			foreach (['fullname','email','telephone','address'] as $field) {
 				if (isset($_POST[$field]) && !is_string($_POST[$field])) throw new InvalidArgumentException('Thông tin hồ sơ không hợp lệ.');
@@ -45,10 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			PmUserInputService::validateFields('', $fullname, $email, $telephone, false, false);
 			$identityLock = $identity->acquire((int)$storeId);
 			$profileDb = new PmDb($db);
-			$current = $profileDb->fetchOne('SELECT username FROM dc_users WHERE store_id=? AND id=? AND status=1', 'ii', [(int)$storeId,(int)$userInfo->getId()]);
+			$current = $profileDb->fetchOne('SELECT username,fullname,email,address,tel FROM dc_users WHERE store_id=? AND id=? AND status=1', 'ii', [(int)$storeId,(int)$userInfo->getId()]);
 			if (!$current) throw new DomainException('Không tìm thấy tài khoản trong đơn vị.');
 			$identity->assertAvailable((int)$storeId, $current['username'], $email, (int)$userInfo->getId());
 			$profileDb->execute('UPDATE dc_users SET fullname=?,email=?,address=?,tel=? WHERE store_id=? AND id=? AND status=1', 'ssssii', [$fullname,$email,$address,$telephone,(int)$storeId,(int)$userInfo->getId()]);
+			$profileSaved = true;
+			$changedFields=[];
+			foreach(['fullname'=>$fullname,'email'=>$email,'address'=>$address,'tel'=>$telephone] as $field=>$value)if((string)($current[$field]??'')!==$value)$changedFields[]=$field;
+			(new PmAccountAuditService($db,(int)$storeId,(int)$userInfo->getId()))->profileChanged($changedFields);
 			$notice = 'Thông tin cá nhân đã được cập nhật.';
 			$userInfo = $users->getObject($userInfo->getId(), 'id');
 			$template->assign('authUser', $userInfo);
@@ -56,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$error = $e->getMessage();
 		} catch (Throwable $e) {
 			error_log('PM profile update failed.');
-			$error = 'Không thể cập nhật thông tin. Vui lòng thử lại.';
+			$error = $profileSaved ? 'Thông tin đã được cập nhật nhưng không thể hoàn tất ghi nhật ký. Vui lòng liên hệ quản trị viên.' : 'Không thể cập nhật thông tin. Vui lòng thử lại.';
 		} finally {
 			if ($identityLock !== null) $identity->release($identityLock);
 		}
@@ -76,7 +82,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		} elseif (hash_equals($currentPassword, $newPassword)) {
 			$error = 'Mật khẩu mới phải khác mật khẩu hiện tại.';
 		} elseif ($users->changePasswordSecure($userInfo->getId(), $newPassword)) {
-			$notice = 'Mật khẩu đã được thay đổi.';
+			try {
+				(new PmAccountAuditService($db,(int)$storeId,(int)$userInfo->getId()))->passwordChanged();
+				$notice = 'Mật khẩu đã được thay đổi.';
+			} catch(Throwable $e) {
+				error_log('PM password audit failed.');
+				$error = 'Mật khẩu đã thay đổi nhưng không thể ghi nhật ký. Vui lòng liên hệ quản trị viên.';
+			}
 		} else {
 			$error = 'Không thể đổi mật khẩu. Vui lòng thử lại.';
 		}

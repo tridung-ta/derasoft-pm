@@ -193,3 +193,8 @@ VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regre
 Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.
 
 Estimate 0 là Chưa có ước tính, không cảnh báo. Schema NOT NULL không phân biệt chưa ước tính và cố tình 0; thay đổi schema cần duyệt riêng.
+
+
+## Audit tài khoản tối thiểu — P4 duyệt 08/10/2026
+
+Log PM mới dùng actor ID, giữ nguyên lịch sử. profile_update chỉ tên trường đã đổi (fullname/email/address/tel), không giá trị; password_change chỉ action và actor ID, không credential/hash/contact/IP. Giữ engine/schema cũ; audit sau cập nhật không atomic xuyên engine, UI báo rõ khi dữ liệu đã đổi nhưng ghi audit lỗi. PM_HIDE_LEGACY mặc định/dự kiến triển khai true; count AJAX bị chặn404. P3 chờ A/B/C, chưa PLAN/chưa BUILD.

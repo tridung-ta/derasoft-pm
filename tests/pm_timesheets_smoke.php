@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'includes/config.inc.php';
+require ROOT_PATH.'tests/pm_audit_identity_assertions.php';
 require ROOT_PATH.'classes/services/pmprojectservice.class.php';
 require ROOT_PATH.'classes/services/pmtimesheetservice.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local')throw new RuntimeException('Refusing non-local database.');
@@ -18,6 +19,7 @@ $db=(object)['connection'=>$connection];
 $admin=$connection->query("SELECT u.id,u.store_id FROM dc_users u JOIN dc_pm_user_roles ur ON ur.store_id=u.store_id AND ur.user_id=u.id JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE u.status=1 AND r.code='ADMIN' AND r.status=1 ORDER BY u.id LIMIT 1")->fetch_assoc();
 if(!$admin)throw new RuntimeException('No local admin fixture available.');
 $store=(int)$admin['store_id'];$actor=(int)$admin['id'];$service=new PmProjectService($db,$store,$actor);
+$auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
 $connection->beginFixture();
 try{
     $code='TS_'.bin2hex(random_bytes(4));
@@ -74,6 +76,8 @@ try{
     try{$ts->save($input);throw new RuntimeException('Unassigned task accepted.');}catch(DomainException $expected){}
     $query=new PmDb($db);
     if(!$query->fetchOne("SELECT id FROM dc_pm_audit_logs WHERE store_id=? AND entity_id=? AND action='recalculate'",'ii',[$store,$second]))throw new RuntimeException('Recalculation audit missing.');
+    assertPmAuditIdentity($query,$store,[$actor],'settings',['update']);
+    assertPmAuditIdentity($query,$store,[$actor],'timesheet',['admin_create_locked','admin_update_locked','admin_delete_locked','recalculate']);
 }finally{$connection->endFixture();}
 $check=$connection->prepare('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=?');$check->bind_param('is',$store,$code);$check->execute();
 if($check->get_result()->num_rows)throw new RuntimeException('Fixture rollback failed.');

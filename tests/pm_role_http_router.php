@@ -7,17 +7,17 @@ if (PHP_SAPI !== 'cli-server' || ($_SERVER['REMOTE_ADDR'] ?? '') !== '127.0.0.1'
     http_response_code(404); exit;
 }
 $fixtureRole = $_SERVER['HTTP_X_PM_TEST_ROLE'] ?? '';
-if (!in_array($fixtureRole, ['PM', 'HR'], true)
+if (!in_array($fixtureRole, ['ADMIN','PM', 'HR'], true)
     || !in_array($_SERVER['REQUEST_METHOD']??'', ['GET','POST'], true)
     || !in_array($_GET['op'] ?? '', ['pm','pmusers','pmprojects','pmtimesheets','pmaudit','pmcosts','pmallocations','pmreports','pmimports'], true)
     || (($_SERVER['REQUEST_METHOD']??'')==='POST' && ($_POST['op']??'')!==($_GET['op']??''))
     || ($_SERVER['REQUEST_METHOD'] === 'POST' && !(
         (($_POST['op'] ?? '') === 'pmreports' && ($_POST['action'] ?? '') === 'export')
-        || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','task_save','task_status','task_delete'], true))
+        || (($_POST['op'] ?? '') === 'pmprojects' && in_array($_POST['action'] ?? '', ['project_save','project_delete','member_save','task_save','task_status','task_delete'], true))
         || (($_POST['op'] ?? '') === 'pmtimesheets' && in_array($_POST['action'] ?? '', ['save','delete','settings'], true))
         || (($_POST['op'] ?? '') === 'pmallocations' && in_array($_POST['action'] ?? '', ['save','delete','capacity'], true))
-        || (($_POST['op'] ?? '') === 'pmusers' && in_array($_POST['action'] ?? '', ['save','status'], true))
-        || (($_POST['op'] ?? '') === 'pm' && ($_GET['act']??'')==='profile' && ($_POST['act']??'')==='profile')
+        || (($_POST['op'] ?? '') === 'pmusers' && in_array($_POST['action'] ?? '', ['save','status','roles','rate','rate_save','rate_deactivate','department_save','department_status','department_delete','department_restore'], true))
+        || (($_POST['op'] ?? '') === 'pm' && in_array($_GET['act']??'', ['profile','password'],true) && in_array($_POST['act']??'', ['profile','password'],true))
     ))) {
     http_response_code(400); exit;
 }
@@ -45,10 +45,11 @@ class DB extends PmRoleHttpBaseDb {
         // Shadow every table that the allowed project mutations can write.
         // MySQL temporary tables cannot carry FK constraints; retain columns/indexes.
         $tables=['dc_pm_user_roles','dc_pm_projects','dc_pm_project_members','dc_pm_tasks','dc_pm_audit_logs','dc_trackings'];
+        if (($_GET['op']??'')==='pmusers')$tables=[...$tables,'dc_pm_departments','dc_pm_hourly_rates'];
         if (($_GET['op']??'')==='pmtimesheets') $tables=[...$tables,'dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings','dc_pm_hourly_rates'];
         if (($_GET['op']??'')==='pmallocations') $tables=[...$tables,'dc_pm_allocations','dc_pm_allocation_locks','dc_pm_capacity_overrides'];
         $actorRow=null;
-        if (($_GET['op']??'')==='pmusers' || (($_GET['op']??'')==='pm' && ($_GET['act']??'')==='profile')) {
+        if (($_GET['op']??'')==='pmusers' || (($_GET['op']??'')==='pm' && in_array($_GET['act']??'', ['profile','password'],true))) {
             $stmt=$c->prepare('SELECT * FROM dc_users WHERE store_id=? AND id=?');
             $stmt->bind_param('ii',$store,$actor); $stmt->execute();
             $actorRow=$stmt->get_result()->fetch_assoc();
@@ -62,6 +63,7 @@ class DB extends PmRoleHttpBaseDb {
         }
         if ($actorRow) {
             // Keep the real actor only in memory; never expose copied credentials.
+            if(($_GET['act']??'')==='password'){$actorRow['password_hash']=password_hash('Fixture current password',PASSWORD_DEFAULT);$actorRow['password']=null;}
             $columns=array_keys($actorRow);
             $stmt=$c->prepare('INSERT INTO dc_users (`'.implode('`,`',$columns).'`) VALUES ('.implode(',',array_fill(0,count($columns),'?')).')');
             foreach ([$actorRow,
@@ -92,6 +94,10 @@ class DB extends PmRoleHttpBaseDb {
             $stmt=$c->prepare("INSERT INTO dc_pm_capacity_overrides (store_id,user_id,daily_limit_hours,weekly_limit_hours,effective_from,created_by,updated_by) VALUES (?,?,'8.00','8.00','2000-01-02',?,?)");
             $stmt->bind_param('iiii',$store,$actor,$actor,$actor); $stmt->execute();
         }
+        if (($_GET['op']??'')==='pmusers') {
+            $stmt=$c->prepare("INSERT INTO dc_pm_departments(id,store_id,code,name,status,deleted_at) VALUES(900000061,?,'FIX-AUDIT','Fixture department',1,NULL),(900000062,?,'FIX-HIDDEN','Fixture hidden',0,NOW())");$stmt->bind_param('ii',$store,$store);$stmt->execute();
+            $stmt=$c->prepare("INSERT INTO dc_pm_hourly_rates(id,store_id,user_id,rate,currency,effective_from,effective_to,status,created_by) VALUES(900000071,?,900000041,'100.00','VND','2000-01-01','2000-01-02',1,?)");$stmt->bind_param('ii',$store,$actor);$stmt->execute();
+        }
         if (($_GET['op']??'')!=='pmtimesheets') return $result;
         $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
         $stmt=$c->prepare("INSERT INTO dc_pm_system_settings (store_id,setting_key,setting_value) VALUES (?,'standard_hours_per_day','8.00'), (?,'ot_multiplier','1.50')");
@@ -119,9 +125,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? ''
     foreach ($tables as $table) {
         $fixtureState[$table]=$db->connection->query('SELECT * FROM '.$table.' ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     }
-    $fixtureState['tracking']=$db->connection->query('SELECT username,ip FROM dc_trackings ORDER BY id')->fetch_all(MYSQLI_ASSOC);
+    $fixtureState['tracking']=$db->connection->query('SELECT username,ip,action FROM dc_trackings ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     if (($_POST['op']??'')==='pmallocations') $fixtureState['warnings']=$warnings??[];
-    if (($_POST['op']??'')==='pmusers' || (($_POST['op']??'')==='pm' && ($_GET['act']??'')==='profile')) {
+    if (($_POST['op']??'')==='pmusers' || (($_POST['op']??'')==='pm' && in_array($_GET['act']??'', ['profile','password'],true))) {
         $fixtureState['users']=$db->connection->query('SELECT id,store_id,fullname,email,tel,status,weekly_limit_hours FROM dc_users ORDER BY id')->fetch_all(MYSQLI_ASSOC);
         $fixtureState['tracking_count']=(int)$db->connection->query('SELECT COUNT(*) FROM dc_trackings')->fetch_row()[0];
     }

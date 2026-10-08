@@ -8,7 +8,7 @@ Checklist: [QUY_TRINH_KIEM_THU_TONG.md](QUY_TRINH_KIEM_THU_TONG.md). Baseline lo
 
 Quyết định người dùng: department tùy chọn, tên/email kiểm tra format/độ dài/control characters; không đánh giá tên vô nghĩa hoặc xác minh hộp thư. Validator hiện chưa đầy đủ: fullname/email 50, username 30, tel 15; import cho fullname 100/username 50. Xem [CONSTRAINT_REVIEW_20261007.md](CONSTRAINT_REVIEW_20261007.md). Giữ dc_users MyISAM.
 
-**80 mục: 59 PASS, 2 FAIL, 19 CHƯA CHẠY.** Đối chiếu BƯỚC 1 ngày 07/10/2026: giữ 4.4 PASS, đổi 11.5 sang PASS theo test thực chạy và kiểm tra dữ liệu thật trước/sau. Hai mục chưa PASS là 7.4 (D2) và 11.4 (audit/log toàn phạm vi). PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
+**80 mục: 61 PASS, 0 FAIL, 19 CHƯA CHẠY.** Cập nhật P4 ngày 08/10/2026: 11.4 PASS trong phạm vi writer PM đã chốt, theo assertions riêng từng writer; 7.4 giữ PASS. PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
 
 ## Lệnh và output được sử dụng
 
@@ -186,7 +186,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 11.1 | **PASS** | Runner pm_regression.ps1 exit 0: 47 scripts PASS, 73 HTTP và 101 EXPLAIN. Đây chỉ là PASS lệnh; không đồng nghĩa checklist tổng PASS, đặc biệt test audit gây lỗi fixture 11.5. |
 | 11.2 | **PASS** | PHP 8.3 lint 103 file .php đổi từ 3df3349..HEAD: không syntax error; log G11-lint. Không chỉ lint bốn runtime mới. |
 | 11.3 | **PASS** | Tracked inventory + scoped diff không có config thật/.env/dump/cache/upload trong phần chuẩn bị commit; chỉ docs mới. includes/config.inc.php.example và templates_c/.gitkeep là placeholders. Không quét lịch sử secret toàn repository. |
-| 11.4 | **FAIL** | Chính sách C đã chốt: log mới chỉ lưu ID tài khoản, lịch sử giữ nguyên. Các điểm tracking PM login/lock/logout/users/projects đã sửa và kiểm thử ID-only, không thu IP mới; log cũ không sửa. Test 10 auth-module fixtures và 73 HTTP PASS; chưa kiểm tra đầy đủ mọi loại log/audit theo mục này, nên chưa nâng toàn mục thành PASS. Xem bằng chứng Bước C cuối báo cáo; đối chiếu toàn phạm vi ở E. |
+| 11.4 | **PASS** | Phạm vi writer PM khi PM_HIDE_LEGACY=true, lịch sử giữ nguyên; actor ID-only, không identity/contact/credential/IP mới trong metadata. Assertions riêng từng writer ở pm_tracking_identity_smoke, pm_role_http_smoke (156 case), pm_projects_smoke, pm_timesheets_smoke, pm_timesheet_window_smoke, pm_allocations_smoke, pm_import_smoke/apply, pm_account_audit_smoke. Legacy count 4 HTTP404. Regression55 exit0. Scope và giới hạn: docs/P4_VERIFY_20261008.md; không test render legacy hỗn hợp theo duyệt. |
 | 11.5 | **PASS** | Lỗi fixture cũ đã xử lý ở A: người dùng xác nhận department_id gốc NULL, đã khôi phục. BƯỚC 1 chạy lại `.tools/php83/php.exe tests/pm_audit_smoke.php` exit 0, output exact-schema temporary users / persistent user rows and engine unchanged. Test đối chiếu toàn bộ user thật qua connection độc lập và engine MyISAM; checksum helper trước/sau đều EXTENDED=3533612692, high-id fixture=0, missing-department=0. Lịch sử lỗi và khôi phục giữ ở phần A; không dùng checksum hiện tại suy ra giá trị gốc. |
 
 ## Thứ tự sửa / kiểm tra lại — lịch sử đề xuất trước A/B/C/D1
@@ -500,3 +500,17 @@ Người dùng duyệt BUILD sau khi chốt estimate 0 là Chưa có ước tín
 VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regression scripts PASS (exit 0), 103 prepared query shapes EXPLAIN PASS, Smarty/zero-estimate PASS, PHP lint 8 file PASS, browser desktop/mobile/200% text/no-JS/error/authorization-loss PASS. Fixtures temporary exact-schema; hash persistent và engine trước/sau không đổi. Bằng chứng đầy đủ: docs/D2_VERIFY_20261008.md.
 
 Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.
+
+
+## Phạm vi 11.4 đã chốt — P4, 08/10/2026
+
+Áp dụng writer PM qua admin.php/pm_ajax.php khi PM_HIDE_LEGACY=true: actor chỉ ID; metadata định danh không username/fullname/email/điện thoại/password/hash/IP mới. Profile event chỉ changed_fields (tên trường), password event không payload. Giữ snapshots nghiệp vụ và mọi lịch sử; không áp như cam kết toàn bộ logger hạ tầng/legacy. Bỏ test render tracking legacy hỗn hợp theo duyệt mới. Legacy count GET/POST HTTP thật trong PM mode đều404; mặc định và dự kiến triển khai PM_HIDE_LEGACY=true, chưa kiểm tra production. Assertions riêng từng writer/lệnh/output/giới hạn: docs/P4_VERIFY_20261008.md.
+
+P3 chờ A/B/C, chưa PLAN/chưa BUILD và không sửa OT. P0:20/20 lượt hợp lệ,2780 request,client15s/identity2s/batch0s; maxHTTP2108.098ms. Từng request trong .local/p0_http_request_timings_20261008.csv và docs/P0_VERIFY_20261008.md. Timeout lịch sử **chưa tái hiện**, không kết luận nguyên nhân hoặc chỉ harness.
+
+
+## P4 BUILD/VERIFY hoàn tất local — 08/10/2026
+
+Audit hồ sơ chỉ actor ID + action + tên trường đã đổi; audit mật khẩu actor ID + action, không giá trị liên hệ/credential/hash/IP. PM_HIDE_LEGACY mặc định/dự kiến triển khai true, legacy AJAX count 4 request HTTP404. Assertions riêng từng writer PM đã chạy; 55 regression scripts, 156 role HTTP cases, PHP lint14 file PASS, diff --check exit0. Fixture rollback/temporary exact-schema và persistent unchanged theo từng suite. Chi tiết docs/P4_VERIFY_20261008.md.
+
+Chỉ11.4 đổi FAIL→PASS trong phạm vi đã chốt; tổng **61 PASS / 0 FAIL / 19 CHƯA CHẠY**. Không tự nâng19mục hoặc tuyên bố UAT/production-ready. P3 chờA/B/C, chưaPLAN/chưaBUILD; P0 timeout lịch sử chưa tái hiện/chưa xác định nguyên nhân. Không migration/push/merge/deploy.

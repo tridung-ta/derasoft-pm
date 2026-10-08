@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'includes/config.inc.php';
+require ROOT_PATH.'tests/pm_audit_identity_assertions.php';
 require ROOT_PATH.'classes/services/pmprojectservice.class.php';
 require ROOT_PATH.'classes/services/pmallocationservice.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true))throw new RuntimeException('Refusing non-local database.');
@@ -17,6 +18,7 @@ if(!$admin)throw new RuntimeException('No Admin.');$store=(int)$admin['store_id'
 $other=$q->fetchOne("SELECT u.id FROM dc_users u WHERE u.store_id=? AND u.status=1 AND NOT EXISTS(SELECT 1 FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=u.store_id AND ur.user_id=u.id AND r.code='ADMIN' AND r.status=1) LIMIT 1",'i',[$store]);if(!$other)throw new RuntimeException('No non-Admin.');$owner=(int)$other['id'];
 function allocationCheck(bool $ok,string $message): void {if(!$ok)throw new RuntimeException($message);}
 function allocationDenied(callable $fn): void {try{$fn();}catch(InvalidArgumentException|DomainException|OutOfBoundsException $e){return;}throw new RuntimeException('Expected rejection.');}
+$auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
 $connection->beginFixture();
 try{
     $q->execute("UPDATE dc_pm_roles SET status=1 WHERE store_id=? AND code='PM'",'i',[$store]);
@@ -102,4 +104,6 @@ try{
     $projects->deleteProject($p1);$view=$service->dashboard(['week'=>'2027-01-01','project_id'=>$p1]);allocationCheck(count($view['rows'])>0,'Historical project load disappeared.');
     allocationCheck((int)$q->fetchOne("SELECT COUNT(*) total FROM dc_pm_audit_logs WHERE store_id=? AND entity_type IN ('allocation','capacity')",'i',[$store])['total']>0,'Missing audit.');
     echo "PASS groups 1–4: allocation CRUD/audit, exact and exceeded capacity, time-bound symmetric overlap, all half-open interval cases, year boundary, role/tenant scopes, outside-project load, suggestions and soft-delete history. Fixtures rolled back.\n";
+    assertPmAuditIdentity($q,$store,[$actor,$owner],'capacity',['create','update','soft_delete']);
+    assertPmAuditIdentity($q,$store,[$actor,$owner],'allocation',['create','update','soft_delete']);
 }finally{$connection->endFixture();}

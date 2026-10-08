@@ -1,5 +1,6 @@
 <?php
-define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';require ROOT_PATH.'classes/services/pmimportservice.class.php';require ROOT_PATH.'classes/dao/pmauditlogs.class.php';
+define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';
+require ROOT_PATH.'tests/pm_audit_identity_assertions.php';require ROOT_PATH.'classes/services/pmimportservice.class.php';require ROOT_PATH.'classes/dao/pmauditlogs.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true))throw new RuntimeException('Non-local refused.');
 // Isolated temporary transactional mirror: never create test personnel in MyISAM dc_users.
 class ApplyFixtureConnection extends mysqli {
@@ -34,6 +35,7 @@ function applyBatch(PmDb $q,int $store,int $actor,array $rows): int {
     foreach($rows as $i=>$row)$q->execute('INSERT INTO dc_pm_import_staging(store_id,import_id,source_row,payload) VALUES(?,?,?,?)','iiis',[$store,$id,$i+2,json_encode($row,JSON_THROW_ON_ERROR)]);return $id;
 }
 $r=['username'=>'apply_'.bin2hex(random_bytes(4)),'fullname'=>'Nhân viên thử','email'=>'apply_'.bin2hex(random_bytes(4)).'@example.test','department_code'=>'','department_id'=>null,'weekly_limit_hours'=>'40.25','role_code'=>'EMPLOYEE'];
+$auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
 $c->beginFixture();
 try{
     $id=applyBatch($q,$store,$actor,[$r]);$result=$s->apply($id);applyCheck($result['status']==='completed'&&$result['counts']['applied']===1,'Apply failed.');
@@ -72,5 +74,6 @@ try{
     $c->missingUnique=true;try{$s->apply($id);throw new LogicException('Missing UNIQUE accepted.');}catch(RuntimeException $e){applyCheck($e->getMessage()==='Apply requires full DB email UNIQUE.','Wrong constraint guard.');}$c->missingUnique=false;
     $second=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$second->set_charset('utf8mb4');$otherDao=new PmImports((object)['connection'=>$second]);$name=$dao->lockName($store,$id);applyCheck($otherDao->acquire($name),'Second worker lock failed.');applyDenied(fn()=>$s->apply($id));$second->close();applyCheck($dao->acquire($name),'Connection close did not release lock.');$dao->release($name);
     applyCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total']===$count,'Core users changed.');
+    assertPmAuditIdentity($q,$store,[$actor],'import',['apply','provision_password']);
     echo "PASS: Apply mirror INSERT/1062, inactive accounts, DECIMAL, provenance crash recovery, retry, role/tenant/IDOR/UNIQUE gates, username collision, two real connections and abandoned lock release; all fixtures rolled back, core dc_users unchanged.\n";
 }finally{$c->endFixture();$c->close();$verify=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$verify->set_charset('utf8mb4');$vq=new PmDb((object)['connection'=>$verify]);try{applyCheck($vq->fetchAll('SELECT * FROM dc_users ORDER BY id')===$persistentUsers,'Persistent users changed.');applyCheck($vq->fetchOne("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_users'")['ENGINE']==='MyISAM','Core engine changed.');}finally{$verify->close();}}

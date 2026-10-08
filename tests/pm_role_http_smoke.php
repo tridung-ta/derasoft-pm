@@ -70,7 +70,7 @@ function roleWrite(array $changes, string $role='PM', ?int $expected=null): ?arr
     if (!in_array($expected,[200,303],true)) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing request-local write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
-    roleTrackingIdentity($state);return $state;
+    roleTrackingIdentity($state);if($state['tracking'])roleAssert(count($state['tracking'])===1&&(bool)preg_match('/^PM projects: '.preg_quote($post['action'],'/').' project #[0-9]+$/D',$state['tracking'][0]['action']),'Project tracking action metadata leaked.');return $state;
 }
 function roleAssert(bool $ok,string $message): void { if (!$ok) throw new RuntimeException($message); }
 function roleTask(array $state,int $id): array {
@@ -82,7 +82,9 @@ function roleTimeWrite(array $changes,string $role='PM',int $expected=200): arra
     $post=array_replace(['op'=>'pmtimesheets','action'=>'save','csrf_token'=>'role-http-csrf','task_id'=>'900000011','work_date'=>$today,'shift_label'=>'HTTP new','hours'=>'2','description'=>'HTTP fixture'],$changes);
     $html=roleHttp($role,'op=pmtimesheets',$expected,$post);
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing timesheet write state.');
-    return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    foreach($state['dc_pm_audit_logs'] as $audit){roleAssert((int)$audit['actor_id']===(int)$GLOBALS['actor']['id'],'HTTP writer actor mismatch.');foreach(['old_values','new_values'] as $column){if($audit[$column]===null)continue;$values=json_decode($audit[$column],true);foreach(['username','fullname','email','tel','password','password_hash','ip','actor_name'] as $key)roleAssert(!array_key_exists($key,$values),'HTTP writer identity key leaked: '.$key);}}
+    return $state;
 }
 function roleTime(array $state,int $id): array {
     foreach($state['dc_pm_timesheets'] as $row) if ((int)$row['id']===$id) return $row;
@@ -98,7 +100,9 @@ function roleAllocationWrite(array $changes,int $expected=200): array {
     $post=array_replace(['op'=>'pmallocations','action'=>'save','csrf_token'=>'role-http-csrf','task_id'=>'900000011','user_id'=>(string)$actor['id'],'work_date'=>$today,'hours'=>'2','start_time'=>'14:00','end_time'=>'16:00'],$changes);
     $html=roleHttp('PM','op=pmallocations',$expected,$post);
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing allocation write state.');
-    return json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
+    foreach($state['dc_pm_audit_logs'] as $audit){roleAssert((int)$audit['actor_id']===(int)$GLOBALS['actor']['id'],'HTTP writer actor mismatch.');foreach(['old_values','new_values'] as $column){if($audit[$column]===null)continue;$values=json_decode($audit[$column],true);foreach(['username','fullname','email','tel','password','password_hash','ip','actor_name'] as $key)roleAssert(!array_key_exists($key,$values),'HTTP writer identity key leaked: '.$key);}}
+    return $state;
 }
 function roleUserWrite(array $changes,string $role='HR',int $expected=200): ?array {
     $post=array_replace(['op'=>'pmusers','action'=>'save','id'=>'900000041','csrf_token'=>'role-http-csrf','fullname'=>'HTTP Updated','email'=>'http-updated@example.test','tel'=>'0900000000','weekly_limit_hours'=>'32','department_id'=>''],$changes);
@@ -106,7 +110,7 @@ function roleUserWrite(array $changes,string $role='HR',int $expected=200): ?arr
     if ($expected!==200) return null;
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing personnel write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
-    roleTrackingIdentity($state);$state['_html']=$html; return $state;
+    roleTrackingIdentity($state);if($state['tracking']){roleAssert(count($state['tracking'])===1&&(bool)preg_match('/^PM users: '.preg_quote($post['action'],'/').' user #[0-9]+$/D',$state['tracking'][0]['action']),'Personnel tracking action metadata leaked.');} $state['_html']=$html; return $state;
 }
 function roleUser(array $state,int $id): array {
     foreach($state['users'] as $row) if ((int)$row['id']===$id) return $row;
@@ -152,6 +156,7 @@ try {
     roleAssert(json_decode($audit['old_values'],true)['name']==='HTTP done task'&&json_decode($audit['new_values'],true)['name']==='Edited completed task','Audit snapshots incorrect.');
     $state=roleWrite(['task_id'=>'900000012','status'=>'todo']);
     roleAssert(roleTask($state,900000012)['completed_at']===null,'HTTP reopen did not clear completion date.');
+    $memberState=roleWrite(['action'=>'member_save','member_id'=>(string)$actor['id'],'member_active'=>'1','project_role'=>'qa']);roleAssert(count($memberState['tracking'])===1,'Member tracking missing.');
     $state=roleWrite(['action'=>'task_delete','task_id'=>'900000011']);
     roleAssert(roleTask($state,900000011)['deleted_at']!==null&&($state['dc_pm_audit_logs'][0]['action']??'')==='soft_delete','HTTP soft delete/audit failed.');
     $state=roleWrite(['task_id'=>'900000011','csrf_token'=>'wrong']);
@@ -245,8 +250,39 @@ try {
     }
     foreach([['username'=>str_repeat('a',31)],['fullname'=>str_repeat('a',51)],['username'=>'http-locked@example.test'],['email'=>'http-legacy@example.test']] as $bad){$state=roleUserWrite(array_replace($newPerson,$bad));roleAssert(count($state['users'])===$personnelCount&&$state['tracking_count']===0,'Invalid or cross-identity create persisted.');}
     $state=roleProfileWrite(['fullname'=>str_repeat('á',50),'telephone'=>str_repeat('1',15)]);roleAssert(roleUser($state,(int)$actor['id'])['fullname']===str_repeat('á',50)&&roleUser($state,(int)$actor['id'])['tel']===str_repeat('1',15),'Profile boundary write failed.');
+    $adminRoleId=(int)$q->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[(int)$actor['store_id']])['id'];
+    foreach([
+        ['action'=>'roles','role_ids'=>[$adminRoleId],'primary_role_id'=>$adminRoleId],
+        ['action'=>'rate','effective_from'=>'2030-01-01','effective_to'=>'2030-01-02','rate'=>'123'],
+        ['action'=>'rate_save','rate_user_id'=>'900000041','rate_role_id'=>'','effective_from'=>'2030-01-01','effective_to'=>'2030-01-02','rate'=>'123'],
+        ['action'=>'rate_deactivate','id'=>'900000071'],
+        ['action'=>'department_save','id'=>'0','code'=>'FIX-NEW','name'=>'Sensitive department label'],
+        ['action'=>'department_save','id'=>'900000061','code'=>'FIX-EDIT','name'=>'Sensitive edited label'],
+        ['action'=>'department_status','id'=>'900000061','status'=>'0'],
+        ['action'=>'department_delete','id'=>'900000061'],
+        ['action'=>'department_restore','id'=>'900000062']
+    ] as $changes){
+        $state=roleUserWrite($changes,'ADMIN');
+        roleAssert(count($state['tracking'])===1,'Missing per-action tracking: '.$changes['action']);
+        roleAssert((bool)preg_match('/^PM users: '.preg_quote($changes['action'],'/').' user #[0-9]+$/D',$state['tracking'][0]['action']),'Tracking action contains name/value: '.$changes['action']);
+        echo 'PASS ID-only writer: pmusers/'.$changes['action']."\n";
+    }
+    $profileAudit=roleProfileWrite([])['dc_pm_audit_logs'];
+    roleAssert(count($profileAudit)===1&&(int)$profileAudit[0]['actor_id']===(int)$actor['id']&&$profileAudit[0]['action']==='profile_update'&&$profileAudit[0]['old_values']===null,'Profile audit actor/action invalid.');
+    roleAssert(json_decode($profileAudit[0]['new_values'],true)===['changed_fields'=>['address','email','fullname','tel']],'Profile audit contains values or wrong field names.');
+    foreach(['Fixture current password','profile-updated@example.test','0901234567','Local fixture'] as $private)roleAssert(!str_contains(json_encode($profileAudit),$private),'Private profile value leaked.');
+    $passwordPost=['op'=>'pm','act'=>'password','csrf_token'=>'role-http-csrf','current_password'=>'Fixture current password','new_password'=>'Fixture new password','confirm_password'=>'Fixture new password'];
+    foreach([[],['csrf_token'=>'wrong'],['current_password'=>'wrong'],['new_password'=>'short','confirm_password'=>'short'],['confirm_password'=>'mismatch'],['new_password'=>'Fixture current password','confirm_password'=>'Fixture current password']] as $index=>$changes){
+        $html=roleHttp('HR','op=pm&act=password',200,array_replace($passwordPost,$changes));
+        roleAssert((bool)preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m),'Password observation missing.');
+        $state=json_decode(base64_decode($m[1]),true,512,JSON_THROW_ON_ERROR);$logs=$state['dc_pm_audit_logs'];
+        if($index===0){roleAssert(count($logs)===1&&(int)$logs[0]['actor_id']===(int)$actor['id']&&$logs[0]['entity_type']==='account'&&$logs[0]['action']==='password_change'&&$logs[0]['old_values']===null&&$logs[0]['new_values']===null,'Password audit metadata not minimal.');roleAssert(str_contains($html,'Mật khẩu đã được thay đổi.'),'Password success missing.');}
+        else roleAssert(!$logs,'Rejected password request wrote audit.');
+        roleAssert(!$state['tracking'],'Password change used raw tracking.');
+    }
     $profileOriginal=roleUser(roleProfileWrite(['csrf_token'=>'wrong']),(int)$actor['id']);
-    foreach([['fullname'=>str_repeat('a',51)],['email'=>str_repeat('a',38).'@example.test'],['telephone'=>str_repeat('1',16)],['email'=>'HTTP-LEGACY@example.test'],['email'=>'http-locked@example.test'],['csrf_token'=>'wrong']] as $bad){$state=roleProfileWrite($bad);roleAssert(roleUser($state,(int)$actor['id'])===$profileOriginal&&!str_contains($state['_html'],'Thông tin cá nhân đã được cập nhật.'),'Rejected profile update persisted or reported saved.');}
+
+    foreach([['fullname'=>str_repeat('a',51)],['email'=>str_repeat('a',38).'@example.test'],['telephone'=>str_repeat('1',16)],['email'=>'HTTP-LEGACY@example.test'],['email'=>'http-locked@example.test'],['csrf_token'=>'wrong']] as $bad){$state=roleProfileWrite($bad);roleAssert(!$state['dc_pm_audit_logs']&&roleUser($state,(int)$actor['id'])===$profileOriginal&&!str_contains($state['_html'],'Thông tin cá nhân đã được cập nhật.'),'Rejected profile update persisted or reported saved.');}
     $state=roleProfileWrite(['email'=>'']);roleAssert(roleUser($state,(int)$actor['id'])['email']==='','Optional profile email rule changed.');
     $identityLockWorker=new PmUserIdentityService((object)['connection'=>$c]);$heldIdentity=$identityLockWorker->acquire((int)$actor['store_id'],0);
     try{

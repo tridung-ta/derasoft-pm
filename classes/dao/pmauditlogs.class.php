@@ -37,7 +37,7 @@ class PmAuditLogs {
         foreach (['entity_type', 'action'] as $key) {
             $value = (string)($filters[$key] ?? '');
             if ($value === '') continue;
-            $allowed = $key === 'entity_type' ? ['timesheet', 'task', 'settings', 'allocation', 'capacity', 'import'] : ['create', 'update', 'soft_delete', 'stage', 'apply', 'provision_password', 'recalculate', 'admin_update_locked', 'admin_delete_locked', 'admin_create_locked'];
+            $allowed = $key === 'entity_type' ? ['timesheet', 'task', 'settings', 'allocation', 'capacity', 'import', 'account'] : ['create', 'update', 'soft_delete', 'stage', 'apply', 'provision_password', 'recalculate', 'admin_update_locked', 'admin_delete_locked', 'admin_create_locked', 'profile_update', 'password_change'];
             if (!in_array($value, $allowed, true)) throw new InvalidArgumentException('Bộ lọc không hợp lệ.');
             $where .= ' AND a.'.$key.'=?'; $types .= 's'; $params[] = $value;
         }

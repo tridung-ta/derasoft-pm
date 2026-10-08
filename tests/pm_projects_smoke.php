@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'includes/config.inc.php';
+require ROOT_PATH.'tests/pm_audit_identity_assertions.php';
 require ROOT_PATH.'classes/services/pmprojectservice.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local')throw new RuntimeException('Refusing non-local database.');
 // Preserve one outer transaction; service transactions become savepoints.
@@ -24,6 +25,7 @@ $db=(object)['connection'=>$connection];
 $admin=$connection->query("SELECT u.id,u.store_id FROM dc_users u JOIN dc_pm_user_roles ur ON ur.store_id=u.store_id AND ur.user_id=u.id JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE u.status=1 AND r.code='ADMIN' AND r.status=1 ORDER BY u.id LIMIT 1")->fetch_assoc();
 if(!$admin)throw new RuntimeException('No local admin fixture available.');
 $store=(int)$admin['store_id'];$actor=(int)$admin['id'];$service=new PmProjectService($db,$store,$actor);
+$auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
 $connection->beginFixture();
 try{
     $data=['code'=>'QA_'.bin2hex(random_bytes(4)),'name'=>'Project smoke','manager_id'=>$actor,'status'=>'active','budget'=>'1000','start_date'=>'2026-01-01','end_date'=>'2026-12-31'];
@@ -136,6 +138,7 @@ try{
     $service->deleteProject($id);
     if($adminAccess->hasProjectAccess($id))throw new RuntimeException('Deleted project access accepted.');
     try{$service->getProject($id);throw new RuntimeException('Soft deleted project still visible.');}catch(OutOfBoundsException $expected){}
+    assertPmAuditIdentity($query,$store,[$actor],'task',['create','update','soft_delete']);
 }finally{$connection->endFixture();}
 $s=$connection->prepare('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=?');$s->bind_param('is',$store,$data['code']);$s->execute();
 if($s->get_result()->num_rows!==0)throw new RuntimeException('Fixture rollback did not remove project data.');$s->close();

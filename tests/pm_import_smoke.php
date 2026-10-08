@@ -1,5 +1,6 @@
 <?php
-define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';require ROOT_PATH.'classes/template/smarty.class.php';require ROOT_PATH.'classes/services/pmimportservice.class.php';require ROOT_PATH.'classes/PhpSpreadSheet/PhpOffice/autoload.php';
+define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';
+require ROOT_PATH.'tests/pm_audit_identity_assertions.php';require ROOT_PATH.'classes/template/smarty.class.php';require ROOT_PATH.'classes/services/pmimportservice.class.php';require ROOT_PATH.'classes/PhpSpreadSheet/PhpOffice/autoload.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true))throw new RuntimeException('Non-local refused.');
 class ImportFixtureConnection extends mysqli {
     public int $failAfter=0;
@@ -20,7 +21,8 @@ function importDenied(callable $fn): void{try{$fn();}catch(InvalidArgumentExcept
 function importWorkbook(string $path,array $rows,array $headers=PmImportService::HEADERS): void {
     $book=new \PhpOffice\PhpSpreadsheet\Spreadsheet();$sheet=$book->getActiveSheet();foreach([$headers,...$rows] as $i=>$row)foreach($row as $j=>$v)$sheet->setCellValueExplicit(\PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($j+1).($i+1),(string)$v,\PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);(new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($book))->save($path);$book->disconnectWorksheets();
 }
-$path=tempnam(sys_get_temp_dir(),'pm-import-test-');$code='imp_'.bin2hex(random_bytes(5));$row=[$code,'Người thử <script>',$code.'@example.test','','40','EMPLOYEE'];$connection->beginFixture();
+$path=tempnam(sys_get_temp_dir(),'pm-import-test-');$code='imp_'.bin2hex(random_bytes(5));$row=[$code,'Người thử <script>',$code.'@example.test','','40','EMPLOYEE'];$auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
+$connection->beginFixture();
 try{
     $users=$q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total'];$logs=$q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_logs')['total'];
     file_put_contents($path,$service->template());importCheck(!$service->preview($path,'sample.xlsx')['valid'],'Empty template considered valid.');
@@ -48,5 +50,6 @@ try{
     try{$service->stage($path,'sample.xlsx');throw new LogicException('Fault did not execute.');}catch(RuntimeException $e){importCheck($e->getMessage()==='Injected staging failure.','Unexpected staging error.');}
     importCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_logs')['total']===$before&&$q->fetchOne('SELECT COUNT(*) total FROM dc_pm_import_staging')['total']===$stagingBefore,'Partial staging survived failure.');
     importCheck($q->fetchOne('SELECT COUNT(*) total FROM dc_users')['total']===$users,'Import touched users.');
+    assertPmAuditIdentity($q,$store,[$actor],'import',['stage']);
     echo "PASS: import preview/staging, Admin/tenant gates, headers/duplicates/identities/row errors, macro/external/DTD/formula/ZIP/size/row limits, injected atomic rollback; dc_users unchanged. Fixtures rolled back.\n";
 }finally{if(is_file($path))unlink($path);$connection->endFixture();$verify=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$verify->set_charset('utf8mb4');$vq=new PmDb((object)['connection'=>$verify]);try{importCheck($vq->fetchAll('SELECT * FROM dc_users ORDER BY id')===$persistentUsers,'Persistent users changed.');importCheck($vq->fetchOne("SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_users'")['ENGINE']==='MyISAM','Core engine changed.');}finally{$verify->close();}}

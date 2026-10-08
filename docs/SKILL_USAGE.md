@@ -190,3 +190,8 @@ Một lượt regression có HTTP connection timeout sau case lock, chưa xác �
 ## D2 — 08/10/2026
 
 Áp dụng feature-development cho BUILD; impeccable cho cảnh báo trên UI hiện có; playwright-cli được đọc và thử nhưng cache ngoài workspace bị chặn, dùng Playwright API trực tiếp để kiểm tra browser; code-review cho query/quyền/escaping; git-feature-commit để chuẩn bị commit local riêng. Browser thật xác nhận Inter, viền rõ, văn bản cảnh báo, desktop/mobile, no-JS và polling. Detector chạy một lần nhưng không resolve đúng stylesheet tương đối nên warning typography chỉ là giới hạn detector; không coi đó là detector sạch. Temporary mirror ban đầu lỗi lọc nhiều foreign key và fixture hours=100 vượt schema; sửa harness, chạy lại PASS, không thay schema hay dữ liệu thật. Chi tiết docs/D2_VERIFY_20261008.md.
+
+
+## P4 audit — 08/10/2026
+
+feature-development cho account audit được duyệt, code-review cho actor scope/PII/metadata và git-feature-commit cho commit local hoàn tất. Không skill UI vì không đổi thiết kế. Assertions phải nằm trước rollback/close và chỉ quét event fixture mới, không áp lịch sử actor khác. Các suite DB cùng bảng không độc lập để chạy song song; VERIFY cuối chạy regression tuần tự. Invalid rate overlap/role QA là fixture sai, sửa fixture, giữ validator sản phẩm. Bằng chứng docs/P4_VERIFY_20261008.md.

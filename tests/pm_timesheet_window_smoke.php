@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'includes/config.inc.php';
+require ROOT_PATH.'tests/pm_audit_identity_assertions.php';
 require ROOT_PATH.'classes/services/pmprojectservice.class.php';
 require ROOT_PATH.'classes/services/pmtimesheetservice.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true))throw new RuntimeException('Refusing non-local database.');
@@ -22,6 +23,7 @@ if(!$admin)throw new RuntimeException('No local Admin.');
 $store=(int)$admin['store_id'];$actor=(int)$admin['id'];
 $employee=$query->fetchOne("SELECT u.id FROM dc_users u WHERE u.store_id=? AND u.status=1 AND NOT EXISTS(SELECT 1 FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=u.store_id AND ur.user_id=u.id AND r.code='ADMIN' AND r.status=1) LIMIT 1",'i',[$store]);
 if(!$employee)throw new RuntimeException('No non-admin local user.');$owner=(int)$employee['id'];
+$auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
 $connection->beginFixture();
 try{
     $query->execute("INSERT INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,0 FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1 ON DUPLICATE KEY UPDATE is_primary=is_primary",'iii',[$store,$owner,$store]);
@@ -33,6 +35,7 @@ try{
     $adminService->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50']);
     $data=['task_id'=>$task,'work_date'=>'2026-10-02','shift_label'=>'Day','hours'=>'6','description'=>'Window QA'];
     $id=$user->save($data);$data['hours']='4';$second=$user->save($data);
+    $deleteProbe=$user->save(array_replace($data,['hours'=>'1']));$user->delete($deleteProbe);
     $user->date='2026-10-04';$user->save($data,$second);
     if($user->isLocked('2026-10-02'))throw new RuntimeException('Locked before third day ended.');
     $user->date='2026-10-05';
@@ -55,6 +58,7 @@ try{
     if($user->getOwn($second)['regular_hours']!=='4.00'||$user->getOwn($second)['ot_hours']!=='0.00')throw new RuntimeException('Admin delete failed to recalculate owner day.');
     if(!$query->fetchOne("SELECT id FROM dc_pm_audit_logs WHERE store_id=? AND entity_id=? AND action='admin_delete_locked'",'ii',[$store,$id]))throw new RuntimeException('Admin locked-delete audit missing.');
     try{(new WindowSmokeService($db,$store+99999,$actor))->getTimesheet($second);throw new RuntimeException('Cross-tenant Admin read accepted.');}catch(DomainException|OutOfBoundsException $expected){}
+    assertPmAuditIdentity($query,$store,[$actor,$owner],'timesheet',['create','update','soft_delete']);
 }finally{$connection->endFixture();}
 if($query->fetchOne('SELECT id FROM dc_pm_projects WHERE store_id=? AND code=?','is',[$store,$code]))throw new RuntimeException('Fixture rollback failed.');
 echo "PASS: three-day boundaries, locked/future/backdate denial, Admin owner override, deleted-task correction, recalculation, special audit and fixture rollback.\n";
