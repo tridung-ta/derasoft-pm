@@ -43,9 +43,10 @@ $server=proc_open([PHP_BINARY,'-d','session.save_path='.$dir,'-S','127.0.0.1:187
 if (!is_resource($server)) throw new RuntimeException('Cannot start HTTP fixture.');
 fclose($pipes[0]);
 $cases=0;
-function roleHttp(string $role,string $query,int $expected,?array $post=null,bool $controllerHeaders=true): string {
+function roleHttp(string $role,string $query,int $expected,?array $post=null,bool $controllerHeaders=true,bool $auditFault=false): string {
     global $sid,$token,$cases;
     $headers="Cookie: PHPSESSID=$sid\r\nX-PM-Test-Token: $token\r\nX-PM-Test-Role: $role\r\n";
+    if($auditFault)$headers.="X-PM-Test-Audit-Fault: password\r\n";
     if ($post!==null) $headers.="Content-Type: application/x-www-form-urlencoded\r\n";
     $ctx=stream_context_create(['http'=>['method'=>$post===null?'GET':'POST','header'=>$headers,'content'=>$post===null?'':http_build_query($post),'ignore_errors'=>true,'follow_location'=>0,'timeout'=>15]]);
     $body=file_get_contents('http://127.0.0.1:18770/admin.php?'.$query,false,$ctx);
@@ -280,6 +281,14 @@ try {
         else roleAssert(!$logs,'Rejected password request wrote audit.');
         roleAssert(!$state['tracking'],'Password change used raw tracking.');
     }
+    $faultLog=ROOT_PATH.'.local/password-audit-fault-error.log';$logOffset=is_file($faultLog)?filesize($faultLog):0;
+    $html=roleHttp('HR','op=pm&act=password',200,$passwordPost,true,true);
+    roleAssert((bool)preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m),'Audit fault observation missing.');$faultState=json_decode(base64_decode($m[1]),true,512,JSON_THROW_ON_ERROR);
+    roleAssert($faultState['password_is_new']===true&&!$faultState['dc_pm_audit_logs'],'Fault did not happen after credential persisted.');
+    roleAssert(str_contains($html,'Mật khẩu đã thay đổi nhưng không thể ghi nhật ký. Vui lòng liên hệ quản trị viên.')&&!str_contains($html,'Mật khẩu đã được thay đổi.'),'Partial failure UI message wrong.');
+    $log=file_get_contents($faultLog,false,null,$logOffset);roleAssert(str_contains($log,'PM password audit failed.'),'Sanitized error_log absent.');
+    foreach(['private-sentinel@example.test','0909876543','fixture-hash-sensitive','Fixture new password','Injected audit fault'] as $private)roleAssert(!str_contains($log,$private)&&!str_contains($html,$private),'Sensitive exception leaked to UI/error_log.');
+    roleAssert(!preg_match('/\$2[aby]\$/',$log),'Password hash leaked to error_log.');echo "PASS: forced password audit INSERT failure after password persisted; truthful UI and sanitized error_log.\n";
     $profileOriginal=roleUser(roleProfileWrite(['csrf_token'=>'wrong']),(int)$actor['id']);
 
     foreach([['fullname'=>str_repeat('a',51)],['email'=>str_repeat('a',38).'@example.test'],['telephone'=>str_repeat('1',16)],['email'=>'HTTP-LEGACY@example.test'],['email'=>'http-locked@example.test'],['csrf_token'=>'wrong']] as $bad){$state=roleProfileWrite($bad);roleAssert(!$state['dc_pm_audit_logs']&&roleUser($state,(int)$actor['id'])===$profileOriginal&&!str_contains($state['_html'],'Thông tin cá nhân đã được cập nhật.'),'Rejected profile update persisted or reported saved.');}

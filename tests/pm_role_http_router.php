@@ -35,9 +35,21 @@ if ($count !== 1) throw new RuntimeException('DB fixture decorator no longer mat
 eval('?>'.$source);
 // The in-memory entry point below omits the original DB declaration only.
 // Controllers, middleware, DAO and Smarty rendering still execute unchanged.
+class PmAuditFaultConnection extends mysqli {
+    public function prepare(string $query): mysqli_stmt|false {
+        if(($_SERVER['HTTP_X_PM_TEST_AUDIT_FAULT']??'')==='password' && str_starts_with($query,'INSERT INTO dc_pm_audit_logs'))throw new RuntimeException('Injected audit fault private-sentinel@example.test 0909876543 fixture-hash-sensitive Fixture new password');
+        return parent::prepare($query);
+    }
+}
 class DB extends PmRoleHttpBaseDb {
     public function initialize($persistent = 0, $server = '', $user = '', $password = '', $name = '') {
         $result = parent::initialize($persistent, $server, $user, $password, $name);
+        if(($_SERVER['HTTP_X_PM_TEST_AUDIT_FAULT']??'')==='password'){
+            if(($_GET['op']??'')!=='pm'||($_GET['act']??'')!=='password'||($_SERVER['REQUEST_METHOD']??'')!=='POST')throw new RuntimeException('Fault request scope refused.');
+            global $config;$this->connection->close();
+            $this->connection=new PmAuditFaultConnection($config['db_server'],$config['db_user'],$config['db_pwd'],$config['db_name']);$this->connection->set_charset('utf8mb4');
+            ini_set('error_log',ROOT_PATH.'.local/password-audit-fault-error.log');
+        }
         $c = $this->connection;
         $actor = (int)getenv('PM_ROLE_HTTP_ACTOR');
         $store = (int)getenv('PM_ROLE_HTTP_STORE');
@@ -124,6 +136,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && in_array($_POST['op'] ?? ''
     if (($_POST['op']??'')==='pmallocations') $tables=[...$tables,'dc_pm_allocations','dc_pm_capacity_overrides'];
     foreach ($tables as $table) {
         $fixtureState[$table]=$db->connection->query('SELECT * FROM '.$table.' ORDER BY id')->fetch_all(MYSQLI_ASSOC);
+    }
+    if(($_POST['op']??'')==='pm'&&($_GET['act']??'')==='password'){
+        $row=$db->connection->query('SELECT password_hash FROM dc_users WHERE id='.(int)getenv('PM_ROLE_HTTP_ACTOR'))->fetch_assoc();
+        $fixtureState['password_is_new']=password_verify('Fixture new password',$row['password_hash']);
     }
     $fixtureState['tracking']=$db->connection->query('SELECT username,ip,action FROM dc_trackings ORDER BY id')->fetch_all(MYSQLI_ASSOC);
     if (($_POST['op']??'')==='pmallocations') $fixtureState['warnings']=$warnings??[];
