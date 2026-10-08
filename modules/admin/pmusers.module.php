@@ -1,4 +1,6 @@
 <?php
+include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
+include_once(ROOT_PATH.'classes/security/pmidinput.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 include_once(ROOT_PATH.'classes/dao/pmusers.class.php');
 include_once(ROOT_PATH.'classes/dao/pmdepartments.class.php');
@@ -19,7 +21,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         elseif($action==='roles')requirePermission('pm.rbac.manage');
         elseif(in_array($action,['department_save','department_status','department_delete','department_restore','status','save'],true))requirePermission('pm.users.manage');
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
-        $targetId=(int)$request->element('id');
+        $targetId=PmIdInput::parse($request->element('id'),in_array($action,['save','department_save','rate_save'],true));
+        if(in_array($action,['department_save','department_status','department_delete','department_restore'],true)&&($targetId||$action!=='department_save')&&!$departments->existsInStore((int)$storeId,$targetId,$action==='department_restore'))throw new OutOfBoundsException('Không tìm thấy phòng ban trong tenant hiện tại.');
+        if(in_array($action,['save','status','roles'],true)&&($targetId||$action!=='save')&&!$pmUsers->existsInStore((int)$storeId,$targetId))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');
         if($action==='department_save'){
             $code=strtoupper(trim((string)$request->element('code')));$name=trim((string)$request->element('name'));
             if(!preg_match('/^[A-Z0-9_-]{2,50}$/',$code)||$name===''||mb_strlen($name)>150)throw new InvalidArgumentException('Mã hoặc tên phòng ban không hợp lệ.');
@@ -42,12 +46,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if(!$pmUsers->setStatus((int)$storeId,$targetId,$status))throw new RuntimeException('Không thể cập nhật trạng thái.');
             $notice='Đã cập nhật trạng thái tài khoản.';
         }elseif($action==='roles'){
-            $roleIds=array_map('intval',(array)$request->element('role_ids',[]));$primary=(int)$request->element('primary_role_id');
+            $roleIds=array_map(fn($value)=>PmIdInput::parse($value),(array)$request->element('role_ids',[]));$primary=PmIdInput::parse($request->element('primary_role_id'));
             $pmUsers->assignRoles((int)$storeId,$targetId,$roleIds,$primary);$notice='Đã cập nhật vai trò.';
         }elseif($action==='rate_deactivate'){
             (new PmRateService($db))->deactivateRate((int)$storeId,$targetId);$notice='Đã ngừng áp dụng đơn giá.';
         }elseif($action==='rate_save'){
-            $rateId=(int)$request->element('rate_id');
+            $rateId=PmIdInput::parse($request->element('rate_id'),true);
+            foreach(['rate_user_id','rate_role_id'] as $key)PmIdInput::parse($request->element($key),true);
             $targetId=(new PmRateService($db))->saveRate((int)$storeId,['user_id'=>$request->element('rate_user_id'),'role_id'=>$request->element('rate_role_id'),'rate'=>$request->element('rate'),'currency'=>'VND','effective_from'=>$request->element('effective_from'),'effective_to'=>$request->element('effective_to')],(int)$userInfo->getId(),$rateId?:null);
             $notice='Đã lưu đơn giá.';
         }elseif($action==='rate'){
@@ -63,7 +68,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             }
             if($fullname===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Họ tên hoặc email không hợp lệ.');
             if($pmUsers->emailExists((int)$storeId,$email,$targetId?:null))throw new DomainException('Email đã được sử dụng.');
-            $departmentId=(int)$request->element('department_id');$departmentId=$departmentId?:null;
+            $departmentId=PmIdInput::parse($request->element('department_id'),true);$departmentId=$departmentId?:null;
+            if($departmentId&&!$departments->existsInStore((int)$storeId,$departmentId))throw new OutOfBoundsException('Không tìm thấy phòng ban trong tenant hiện tại.');
             if($departmentId&&!$departments->exists((int)$storeId,$departmentId))throw new DomainException('Phòng ban không thuộc tenant hiện tại.');
             $data=['fullname'=>$fullname,'email'=>$email,'tel'=>trim((string)$request->element('tel')),'department_id'=>$departmentId,'weekly_limit_hours'=>(float)$request->element('weekly_limit_hours')];
             if($data['weekly_limit_hours']<=0||$data['weekly_limit_hours']>168)throw new InvalidArgumentException('Giới hạn giờ/tuần không hợp lệ.');
@@ -73,10 +79,14 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }
         if($notice!=='')$trackings->addData(['store_id'=>$storeId,'username'=>(string)(int)$userInfo->getId(),'action'=>'PM users: '.$action.' user #'.$targetId,'date_created'=>date('Y-m-d H:i:s'),'ip'=>'']);
     }catch(PmUserInputException $e){$newPersonErrors=$targetId?[]:$e->getFieldErrors();$error=$e->getMessage();}
-    catch(InvalidArgumentException|DomainException|OutOfBoundsException|OverflowException $e){$error=$e->getMessage();}
+    catch(PmScopeDeniedException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;}
+    catch(OutOfBoundsException $e){http_response_code(404);$error=PmScopeDeniedException::MESSAGE;}
+    catch(InvalidArgumentException|DomainException|OverflowException $e){$error=$e->getMessage();}
     catch(Throwable $e){error_log('PM user management operation failed.');$error='Không thể hoàn tất thao tác. Vui lòng kiểm tra dữ liệu và thử lại.';}
 }
-$page=max(1,(int)$request->element('page',1));$q=trim((string)$request->element('q'));$departmentFilter=(int)$request->element('department_id');$roleFilter=(int)$request->element('role_id');
+$page=max(1,(int)$request->element('page',1));$q=trim((string)$request->element('q'));$departmentFilter=0;$roleFilter=0;
+try{$departmentFilter=PmIdInput::parse($request->element('department_id'),true);$roleFilter=PmIdInput::parse($request->element('role_id'),true);}catch(InvalidArgumentException $e){$error=$e->getMessage();}
+if(($departmentFilter&&!$departments->existsInStore((int)$storeId,$departmentFilter))||($roleFilter&&!$rolesDao->existsInStore((int)$storeId,$roleFilter))){http_response_code(404);$error=PmScopeDeniedException::MESSAGE;}
 $filters=['q'=>$q,'department_id'=>$departmentFilter,'role_id'=>$roleFilter];$rows=$pmUsers->list((int)$storeId,$filters,$page,20);
 $userRoles=$pmUsers->rolesForUsers((int)$storeId,array_map(fn($row)=>(int)$row['id'],$rows));
 $roleState=PmUiService::roleState($userRoles);$userRoleState=$roleState['state'];$userPrimaryRoles=$roleState['primary'];

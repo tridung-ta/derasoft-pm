@@ -32,6 +32,9 @@ class PmRoles {
         return $row ? $this->hydrate($row) : null;
     }
 
+    public function existsInStore(int $storeId,int $id): bool {
+        return $this->database->fetchOne('SELECT id FROM dc_pm_roles WHERE store_id=? AND id=?','ii',[$storeId,$id])!==null;
+    }
     public function getActive(int $storeId): array {
         return $this->database->fetchAll('SELECT id,code,name FROM dc_pm_roles WHERE store_id=? AND status=1 ORDER BY name','i',[$storeId]);
     }

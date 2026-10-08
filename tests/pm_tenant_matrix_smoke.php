@@ -128,6 +128,25 @@ try {
  $contracts[]=['label'=>$label,'pass'=>$ok,'response'=>$r];echo ($ok?'PASS':'FAIL').' behavior '.$label.' HTTP'.$r['status'].PHP_EOL;
  }
  }
+ if(in_array($group,['b','all'],true)){
+ $pmRole=$q->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='PM' AND status=1",'i',[(int)$actor['store_id']]);
+ $behavior=[
+ ['malformed user','id','abc',['action'=>'save']+$person,true,200],
+ ['malformed department filter','department_id','abc',[],false,200],
+ ['malformed role filter','role_id','abc',[],false,200],
+ ['malformed department ref','department_id','abc',['action'=>'save','id'=>900000041]+$person,true,200],
+ ['invalid password','id','',['action'=>'save','username'=>'matrix-new','password'=>'x']+$person,true,200],
+ ['invalid create phone','id','',['action'=>'save','username'=>'matrix-new','password'=>'Fixture password 123']+array_replace($person,['tel'=>'abc']),true,200],
+ ['inactive role','primary_role_id',900000064,['action'=>'roles','id'=>900000041,'role_ids'=>[900000064]],true,200],
+ ['primary local not selected','primary_role_id',(int)$pmRole['id'],['action'=>'roles','id'=>900000041,'role_ids'=>[(int)$employeeRole['id']]],true,200],
+ ['duplicate email business','id',900000041,['action'=>'save']+array_replace($person,['email'=>'matrix-inactive@example.test']),true,200]
+ ];
+ foreach($behavior as [$label,$key,$id,$base,$post,$status]){
+ $case=['op'=>'pmusers','key'=>$key,'type'=>'user','base'=>$base,'post'=>$post,'role'=>'ADMIN','path'=>'/admin.php','get'=>[]];$r=safeMatrixRequest($case,$id);
+ $ok=$r['status']===$status&&$r['unchanged']&&$r['audit_count']===0&&$r['tracking_count']===0&&!$r['observer_error']&&!$r['leak']&&!empty($r['message'])&&$r['message_visible'];
+ $contracts[]=['label'=>$label,'pass'=>$ok,'response'=>$r];echo ($ok?'PASS':'FAIL').' behavior '.$label.' HTTP'.$r['status'].PHP_EOL;
+ }
+ }
 } catch(Throwable $e){$runError=get_class($e).': '.$e->getMessage();echo 'FAIL harness: '.$runError."\n";}
 finally {
  if(is_resource($server)){proc_terminate($server);proc_close($server);}

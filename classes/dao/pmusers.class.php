@@ -1,5 +1,6 @@
 <?php
 include_once(ROOT_PATH.'classes/database/pmdb.class.php');
+include_once(ROOT_PATH.'classes/security/pmidinput.class.php');
 include_once(ROOT_PATH.'classes/services/pmuserinputservice.class.php');
 include_once(ROOT_PATH.'classes/services/pmuseridentityservice.class.php');
 class PmUsers {
@@ -64,11 +65,23 @@ class PmUsers {
         return $affected>0||($affected===0&&$this->get($storeId,$id)!==null);
         }finally{$this->identity->release($lock);}
     }
+    public function existsInStore(int $storeId,int $id): bool {
+        return $this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=?','ii',[$storeId,$id])!==null;
+    }
     public function setStatus(int $storeId,int $id,int $status): bool {
         return $this->db->execute('UPDATE dc_users SET status=? WHERE store_id=? AND id=?','iii',[$status,$storeId,$id])===1;
     }
     public function assignRoles(int $storeId,int $userId,array $roleIds,int $primaryRoleId): void {
+        PmIdInput::parse($userId);PmIdInput::parse($primaryRoleId);
+        foreach($roleIds as $roleId)PmIdInput::parse($roleId);
         if(!$this->get($storeId,$userId))throw new OutOfBoundsException('User was not found in this tenant.');
+        $roleIds=array_values(array_unique(array_map('intval',$roleIds)));
+        foreach(array_unique([...$roleIds,$primaryRoleId]) as $roleId){
+            $role=$this->db->fetchOne('SELECT id,status FROM dc_pm_roles WHERE store_id=? AND id=?','ii',[$storeId,$roleId]);
+            if(!$role)throw new OutOfBoundsException('Không tìm thấy vai trò trong đơn vị hiện tại.');
+            if((int)$role['status']!==1)throw new InvalidArgumentException('Invalid role for tenant.');
+        }
+        if(!in_array($primaryRoleId,$roleIds,true))throw new InvalidArgumentException('Primary role must be assigned.');
         $this->db->beginTransaction();
         try{
             $this->db->execute('DELETE FROM dc_pm_user_roles WHERE store_id=? AND user_id=?','ii',[$storeId,$userId]);

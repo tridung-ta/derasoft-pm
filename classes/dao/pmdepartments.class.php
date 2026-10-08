@@ -9,6 +9,9 @@ class PmDepartments {
     public function exists(int $storeId,int $id): bool {
         return $this->db->fetchOne('SELECT 1 FROM dc_pm_departments WHERE store_id=? AND id=? AND status=1 AND deleted_at IS NULL','ii',[$storeId,$id])!==null;
     }
+    public function existsInStore(int $storeId,int $id,bool $hiddenOnly=false): bool {
+        return $this->db->fetchOne('SELECT id FROM dc_pm_departments WHERE store_id=? AND id=?'.($hiddenOnly?' AND deleted_at IS NOT NULL':' AND deleted_at IS NULL'),'ii',[$storeId,$id])!==null;
+    }
     public function list(int $storeId): array {
         return $this->db->fetchAll('SELECT id,code,name,status FROM dc_pm_departments WHERE store_id=? AND deleted_at IS NULL ORDER BY name,id','i',[$storeId]);
     }

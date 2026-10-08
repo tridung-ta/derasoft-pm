@@ -42,6 +42,7 @@ class DB extends TenantMatrixBaseDb {
   $insert('dc_users',array_replace($actorRow,['id'=>900000041,'username'=>'matrix-member','email'=>'matrix-member@example.test','fullname'=>'Fixture member','code'=>'MATRIX41','status'=>1]));
   $insert('dc_users',array_replace($actorRow,['id'=>900000092,'store_id'=>$other,'username'=>'foreign-identity-sentinel','email'=>'foreign-sentinel@example.test','fullname'=>'Foreign tenant user sentinel','code'=>'MATRIX92','status'=>1]));
   foreach($roleRows as $row)$insert('dc_pm_roles',$row);
+  $insert('dc_pm_roles',['id'=>900000064,'store_id'=>$store,'code'=>'MATRIX-INACTIVE','name'=>'Fixture inactive role','status'=>0]);
   $insert('dc_pm_roles',['id'=>900000094,'store_id'=>$other,'code'=>'MATRIX-FOREIGN','name'=>'Foreign tenant role sentinel','status'=>1]);
   if(!$costRead){$s=$c->prepare('INSERT INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,1 FROM dc_pm_roles WHERE store_id=? AND code=? AND status=1');$role=$_SERVER['HTTP_X_PM_TEST_ROLE'];$s->bind_param('iiis',$store,$actor,$store,$role);$s->execute();if($s->affected_rows!==1)throw new RuntimeException('Missing fixture role.');}
   $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
