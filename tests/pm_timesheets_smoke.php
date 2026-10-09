@@ -20,6 +20,11 @@ $admin=$connection->query("SELECT u.id,u.store_id FROM dc_users u JOIN dc_pm_use
 if(!$admin)throw new RuntimeException('No local admin fixture available.');
 $store=(int)$admin['store_id'];$actor=(int)$admin['id'];$service=new PmProjectService($db,$store,$actor);
 $auditIdentityBaseline=(int)(new PmDb($db))->fetchOne('SELECT COALESCE(MAX(id),0) n FROM dc_pm_audit_logs')['n'];
+$query=new PmDb($db);
+$dayDdl=$query->fetchOne('SHOW CREATE TABLE dc_pm_timesheet_days')['Create Table'];
+$dayDdl=preg_replace('/,\n\s*CONSTRAINT[^\n]+/','',$dayDdl);
+$query->execute(str_replace('CREATE TABLE','CREATE TEMPORARY TABLE',$dayDdl));
+if(!$query->fetchOne("SHOW COLUMNS FROM dc_pm_timesheet_days LIKE 'max_total_hours'"))$query->execute('ALTER TABLE dc_pm_timesheet_days ADD COLUMN max_total_hours DECIMAL(4,2) NOT NULL DEFAULT 24.00');
 $connection->beginFixture();
 try{
     $code='TS_'.bin2hex(random_bytes(4));
@@ -65,6 +70,30 @@ try{
     if($ts->getOwn($second)['cost']!==$beforeRateChange['cost'])throw new RuntimeException('5.5 same-date resave changed historical cost');
     echo "PASS 5.5: stored cost and rate_snapshot unchanged after rate edit and same-date resave (exact DECIMAL strings).\n";
     if($ts->getOwn($second)['rate_snapshot']!=='1234567890123.45')throw new RuntimeException('Same-day rate snapshot changed.');
+    $ts->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50','max_total_hours_per_day'=>'12']);
+    $limitInput=$input;$limitInput['work_date']='2026-06-02';$limitInput['hours']='10';
+    $limitFirst=$ts->save($limitInput);
+    if($ts->getOwn($limitFirst)['regular_hours']!=='8.00'||$ts->getOwn($limitFirst)['ot_hours']!=='2.00')throw new RuntimeException('P3 10h regular/OT failed');
+    $limitInput['hours']='2';$limitSecond=$ts->save($limitInput);
+    $limitInput['hours']='0.01';try{$ts->save($limitInput);throw new RuntimeException('P3 12.01 accepted');}catch(DomainException $expected){}
+    $ts->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50','max_total_hours_per_day'=>'10']);
+    if($ts->dayRules('2026-06-02')['max_total_hours']!=='12.00')throw new RuntimeException('P3 existing snapshot altered');
+    $limitInput['work_date']='2026-06-03';$limitInput['hours']='10';$destination=$ts->save($limitInput);
+    $sourceBefore=$ts->getOwn($limitSecond);$destinationBefore=$ts->getOwn($destination);$auditBefore=$query->fetchOne('SELECT COUNT(*) n FROM dc_pm_audit_logs WHERE store_id=?','i',[$store])['n'];
+    $limitInput['hours']='2';try{$ts->save($limitInput,$limitSecond);throw new RuntimeException('P3 over-limit move accepted');}catch(DomainException $expected){}
+    if($ts->getOwn($limitSecond)['work_date']!=='2026-06-02'||$ts->getOwn($destination)['hours']!=='10.00')throw new RuntimeException('P3 move rollback failed');
+    if($ts->getOwn($limitSecond)!==$sourceBefore||$ts->getOwn($destination)!==$destinationBefore||$query->fetchOne('SELECT COUNT(*) n FROM dc_pm_audit_logs WHERE store_id=?','i',[$store])['n']!==$auditBefore)throw new RuntimeException('P3 rejected move changed cost/audit/data');
+    $ts->delete($limitFirst);$ts->delete($limitSecond);
+    if($ts->dayRules('2026-06-02')['max_total_hours']!=='12.00')throw new RuntimeException('P3 empty ledger snapshot lost');
+    try{$ts->saveSettings(['standard_hours_per_day'=>'12','ot_multiplier'=>'1','max_total_hours_per_day'=>'8']);throw new RuntimeException('P3 invalid settings accepted');}catch(InvalidArgumentException $expected){}
+    $ts->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50','max_total_hours_per_day'=>'12']);
+    $eightInput=$input;$eightInput['work_date']='2026-06-04';$eightInput['hours']='8';$eight=$ts->save($eightInput);
+    if($ts->getOwn($eight)['regular_hours']!=='8.00'||$ts->getOwn($eight)['ot_hours']!=='0.00')throw new RuntimeException('5.1 eight regular failed');
+    $eightInput['hours']='2';$extra=$ts->save($eightInput);
+    if($ts->getOwn($extra)['regular_hours']!=='0.00'||$ts->getOwn($extra)['ot_hours']!=='2.00')throw new RuntimeException('5.2 extra OT failed');
+    echo "PASS 5.1/5.2: first8 regular8/OT0; extra2 regular0/OT2 under daily maximum12.\n";
+    $ts->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50','max_total_hours_per_day'=>'24']);
+    echo "PASS P3: 8+2 OT; total12 allowed/12.01 rejected; old/new snapshots; over-limit move rollback; empty ledger retained; invalid settings rejected. Temporary ledger, fixtures rolled back.\n";
     $input['hours']='24';
     try{$ts->save($input);throw new RuntimeException('24 hour limit not enforced.');}catch(DomainException $expected){}
     if($ts->listOwn()['total']<2)throw new RuntimeException('Rollback damaged existing rows.');

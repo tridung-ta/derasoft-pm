@@ -16,7 +16,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'&&!$invalidId){
         $action=(string)$request->element('action');
         if($action==='save'){$data['task_id']=PmIdInput::parse($data['task_id']);$service->save($data,$id?:null);$notice='Đã lưu chấm công.';}
         elseif($action==='delete'){PmIdInput::parse($id);$service->delete($id);$notice='Đã ẩn chấm công và tính lại OT cả ngày.';}
-        elseif($action==='settings'){$service->saveSettings(['standard_hours_per_day'=>$request->element('standard_hours_per_day'),'ot_multiplier'=>$request->element('ot_multiplier')]);$notice='Đã lưu quy tắc cho ngày chấm công mới.';}
+        elseif($action==='settings'){$service->saveSettings(['standard_hours_per_day'=>$request->element('standard_hours_per_day'),'ot_multiplier'=>$request->element('ot_multiplier'),'max_total_hours_per_day'=>$request->element('max_total_hours_per_day',$service->settings()['max_total_hours_per_day'])]);$notice='Đã lưu quy tắc cho ngày chấm công mới.';}
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
         $id=0;$data=['task_id'=>'','work_date'=>$service->today(),'shift_label'=>'','hours'=>'','description'=>''];
     }catch(PmScopeDeniedException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;$id=0;}
@@ -29,9 +29,10 @@ $page=max(1,(int)$request->element('page',1));$result=$service->listTimesheets($
 foreach($result['rows'] as &$row){$row['is_locked']=$service->isLocked($row['work_date']);$row['can_edit']=$service->canEdit($row['work_date']);}unset($row);
 $tasks=$service->assignedTasks($edit?(int)$edit['user_id']:null);
 if($edit&&$pmAccess->hasRole('ADMIN')&&!in_array((int)$edit['task_id'],array_column($tasks,'id')))$tasks[]=['id'=>$edit['task_id'],'name'=>'Công việc #'.$edit['task_id'].' (lịch sử)','project_name'=>'Dự án #'.$edit['project_id']];
+$dayRules=null;try{$dayRules=$service->dayRules((string)$data['work_date'],$edit?(int)$edit['user_id']:null);}catch(InvalidArgumentException $e){}
 $weeklySummary=null;$weeklyError='';
 try{$weeklySummary=$service->weeklySummary((string)$data['work_date'],$edit?(int)$edit['user_id']:null);}
 catch(InvalidArgumentException $e){$weeklyError='Chọn ngày hợp lệ để xem tổng giờ trong tuần.';}
 catch(Throwable $e){error_log('PM timesheet weekly summary failed.');$weeklyError='Không thể tải tổng giờ trong tuần. Vui lòng tải lại trang.';}
-$template->assign(['weeklySummary'=>$weeklySummary,'weeklyError'=>$weeklyError]);
+$template->assign(['dayRules'=>$dayRules,'weeklySummary'=>$weeklySummary,'weeklyError'=>$weeklyError]);
 $template->assign(['pageTitle'=>'Chấm công — DeraSoft PM','notice'=>$notice,'error'=>$error,'csrfToken'=>$_SESSION['pm_csrf_token'],'timesheets'=>$result['rows'],'assignedTasks'=>$tasks,'formData'=>$data,'editId'=>$id,'canEdit'=>!$edit||$service->canEdit($edit['work_date']),'editingLocked'=>$edit&&$service->isLocked($edit['work_date']),'editingUserId'=>$edit?(int)$edit['user_id']:null,'page'=>$page,'totalPages'=>max(1,(int)ceil($result['total']/20)),'isAdmin'=>$pmAccess->hasRole('ADMIN'),'settings'=>$service->settings()]);

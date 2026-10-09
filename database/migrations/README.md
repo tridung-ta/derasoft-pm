@@ -31,3 +31,6 @@ Ví dụ: `001_create_pm_rbac_tables.sql`.
 6. Production chỉ được chạy sau UAT, backup và phê duyệt riêng.
 
 Phase 1 chưa có migration SQL và không thay đổi database.
+
+### 010 — daily total-hours snapshot
+Depends on004; apply schema before P3 runtime. ADD ONLY max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00 to dc_pm_timesheet_days; idempotent column guard. Retain existing snapshots/data and engines. Back up approvedtarget and maintain allwriters beforeDDL; no production execution authorized. Applicationrollback keepscolumn/data. Local09/10verified twice; detailed proof docs/P3_BUILD_VERIFY_20261009.md.

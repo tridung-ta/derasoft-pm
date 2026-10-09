@@ -8,17 +8,30 @@ class PmTimesheetService {
     public function __construct($database,private int $storeId,private int $actorId){$this->db=new PmDb($database);$this->access=new PmAccess($database,$storeId,$actorId);$this->rates=new PmRateService($database);}
     private function ownPermission(): void {if(!$this->access->hasPermission('pm.timesheets.own'))throw new PmScopeDeniedException('Bạn không có quyền chấm công.');}
     public function settings(): array {
-        $values=['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.00'];
+        $values=['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.00','max_total_hours_per_day'=>'24.00'];
         foreach($this->db->fetchAll('SELECT setting_key,setting_value FROM dc_pm_system_settings WHERE store_id=?','i',[$this->storeId]) as $row)if(array_key_exists($row['setting_key'],$values))$values[$row['setting_key']]=$row['setting_value'];
         return $values;
     }
     public function saveSettings(array $data): void {
         if(!$this->access->hasRole('ADMIN'))throw new PmScopeDeniedException('Chỉ Admin được thay đổi quy tắc OT.');
         $standard=$this->quantity($data['standard_hours_per_day']??'',24);$multiplier=$this->quantity($data['ot_multiplier']??'',10);
+        $maximum=$this->quantity($data['max_total_hours_per_day']??$this->settings()['max_total_hours_per_day'],24);
+        if($this->hundredths($standard)>$this->hundredths($maximum))throw new InvalidArgumentException('Giờ thường/ngày không được vượt tổng giờ tối đa/ngày.');
         $this->db->beginTransaction();try{
-            $old=$this->settings();foreach(['standard_hours_per_day'=>$standard,'ot_multiplier'=>$multiplier] as $key=>$value)$this->db->execute('INSERT INTO dc_pm_system_settings(store_id,setting_key,setting_value) VALUES(?,?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)','iss',[$this->storeId,$key,$value]);
+            $old=$this->settings();foreach(['standard_hours_per_day'=>$standard,'ot_multiplier'=>$multiplier,'max_total_hours_per_day'=>$maximum] as $key=>$value)$this->db->execute('INSERT INTO dc_pm_system_settings(store_id,setting_key,setting_value) VALUES(?,?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)','iss',[$this->storeId,$key,$value]);
             $this->audit('settings',0,'update',$old,$this->settings());$this->db->commit();
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
+    }
+    private function hundredths(string $value): int {
+        if(!preg_match('/^([0-9]+)(?:\.([0-9]{1,2}))?$/D',$value,$parts))throw new InvalidArgumentException('Giá trị giờ không hợp lệ.');
+        return (int)$parts[1]*100+(int)str_pad($parts[2]??'',2,'0');
+    }
+    public function dayRules(string $date,?int $userId=null): array {
+        $this->ownPermission();$this->validDate($date);$userId=$userId??$this->actorId;
+        if($userId!==$this->actorId&&!$this->access->hasRole('ADMIN'))throw new PmScopeDeniedException('Không có quyền truy cập nhân sự này.');
+        $day=$this->db->fetchOne('SELECT standard_hours,ot_multiplier,max_total_hours FROM dc_pm_timesheet_days WHERE store_id=? AND user_id=? AND work_date=?','iis',[$this->storeId,$userId,$date]);
+        if($day)return $day+['is_snapshot'=>true];
+        $settings=$this->settings();return ['standard_hours'=>$settings['standard_hours_per_day'],'ot_multiplier'=>$settings['ot_multiplier'],'max_total_hours'=>$settings['max_total_hours_per_day'],'is_snapshot'=>false];
     }
     private function quantity($value,int $max): string {
         $raw=(string)$value;if(!preg_match('/^\d{1,2}(?:\.\d{1,2})?$/D',$raw)||(float)$raw<=0||(float)$raw>$max)throw new InvalidArgumentException('Số giờ hoặc hệ số không hợp lệ.');
@@ -84,7 +97,7 @@ class PmTimesheetService {
     }
     private function lockDay(string $date,int $userId): array {
         $settings=$this->settings();
-        $this->db->execute('INSERT INTO dc_pm_timesheet_days(store_id,user_id,work_date,standard_hours,ot_multiplier) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE user_id=user_id','iisss',[$this->storeId,$userId,$date,$settings['standard_hours_per_day'],$settings['ot_multiplier']]);
+        $this->db->execute('INSERT INTO dc_pm_timesheet_days(store_id,user_id,work_date,standard_hours,ot_multiplier,max_total_hours) VALUES(?,?,?,?,?,?) ON DUPLICATE KEY UPDATE user_id=user_id','iissss',[$this->storeId,$userId,$date,$settings['standard_hours_per_day'],$settings['ot_multiplier'],$settings['max_total_hours_per_day']]);
         return $this->db->fetchOne('SELECT * FROM dc_pm_timesheet_days WHERE store_id=? AND user_id=? AND work_date=? FOR UPDATE','iis',[$this->storeId,$userId,$date]);
     }
     public function save(array $data,?int $id=null): int {
@@ -120,9 +133,9 @@ class PmTimesheetService {
     }
     private function recalculate(string $date,int $changedId,int $userId): void {
         $day=$this->lockDay($date,$userId);$rows=$this->db->fetchAll('SELECT * FROM dc_pm_timesheets WHERE store_id=? AND user_id=? AND work_date=? AND deleted_at IS NULL ORDER BY id FOR UPDATE','iis',[$this->storeId,$userId,$date]);
-        $total=array_sum(array_map(fn($r)=>(int)round((float)$r['hours']*100),$rows));if($total>2400)throw new DomainException('Tổng giờ trong một ngày không được vượt quá 24.');
-        $remaining=(int)round((float)$day['standard_hours']*100);
-        foreach($rows as $row){$quantity=(int)round((float)$row['hours']*100);$regular=min($remaining,$quantity);$remaining-=$regular;$ot=$quantity-$regular;
+        $total=array_sum(array_map(fn($r)=>$this->hundredths($r['hours']),$rows));if($total>$this->hundredths($day['max_total_hours']))throw new DomainException('Tổng giờ dự kiến '.number_format($total/100,2,'.','').' vượt giới hạn '.$day['max_total_hours'].' giờ của ngày này.');
+        $remaining=$this->hundredths($day['standard_hours']);
+        foreach($rows as $row){$quantity=$this->hundredths($row['hours']);$regular=min($remaining,$quantity);$remaining-=$regular;$ot=$quantity-$regular;
             $this->db->execute('UPDATE dc_pm_timesheets SET regular_hours=?,ot_hours=?,ot_multiplier_snapshot=?,cost=ROUND((CAST(? AS DECIMAL(4,2)) + CAST(? AS DECIMAL(4,2)) * CAST(? AS DECIMAL(4,2))) * rate_snapshot,2) WHERE store_id=? AND id=?','ssssssii',[number_format($regular/100,2,'.',''),number_format($ot/100,2,'.',''),$day['ot_multiplier'],number_format($regular/100,2,'.',''),number_format($ot/100,2,'.',''),$day['ot_multiplier'],$this->storeId,(int)$row['id']]);
             $new=$this->getTimesheet((int)$row['id']);if((int)$row['id']!==$changedId&&($new['regular_hours']!==$row['regular_hours']||$new['ot_hours']!==$row['ot_hours']||$new['cost']!==$row['cost']||$new['ot_multiplier_snapshot']!==$row['ot_multiplier_snapshot']))$this->audit('timesheet',(int)$row['id'],'recalculate',$row,$new);
         }
