@@ -70,10 +70,11 @@ matrixCase('pmusers','primary_role_id','role',['action'=>'roles','id'=>900000041
 matrixCase('pmusers','department_id','department',['action'=>'save','username'=>'matrix-new-person','password'=>'Fixture password 123']+$person,true,'ADMIN','/admin.php',[],'create personnel');
 
 function matrixRequest(array $case,$id): array {
- global $port,$sid,$token,$stateDir,$foreign;$nonce=bin2hex(random_bytes(12));$input=$case['base'];$input[$case['key']]=$case['key']==='role_ids'?[$id]:$id;if($case['key']==='role_ids')$input['primary_role_id']=$id;
+ global $port,$sid,$token,$stateDir,$foreign,$matrixCsrf,$extraHarnessHeaders;$nonce=bin2hex(random_bytes(12));$input=$case['base'];$input[$case['key']]=$case['key']==='role_ids'?[$id]:$id;if($case['key']==='role_ids')$input['primary_role_id']=$id;
  $query=['op'=>$case['op']]+$case['get'];$post=null;
- if($case['post']){$post=['op'=>$case['op'],'csrf_token'=>'matrix-csrf']+$input;}else{$query+=$input;}
+ if($case['post']){$post=['op'=>$case['op'],'csrf_token'=>($matrixCsrf??'matrix-csrf')]+$input;}else{$query+=$input;}
  $headers="Cookie: PHPSESSID=$sid\r\nX-PM-Test-Token: $token\r\nX-PM-Test-Role: ".$case['role']."\r\nX-PM-Test-Nonce: $nonce\r\n";
+ $headers.=$extraHarnessHeaders??'';
  if($post!==null)$headers.="Content-Type: application/x-www-form-urlencoded\r\n";
  $ctx=stream_context_create(['http'=>['method'=>$post===null?'GET':'POST','header'=>$headers,'content'=>$post===null?'':http_build_query($post),'ignore_errors'=>true,'follow_location'=>0,'timeout'=>15]]);
  $start=microtime(true);$body=@file_get_contents('http://127.0.0.1:'.$port.$case['path'].'?'.http_build_query($query),false,$ctx);$elapsed=round((microtime(true)-$start)*1000,3);
@@ -81,16 +82,21 @@ function matrixRequest(array $case,$id): array {
  $deadline=microtime(true)+2;while(!is_file($observation)&&microtime(true)<$deadline)usleep(10000);
  $state=is_file($observation)?json_decode(file_get_contents($observation),true,512,JSON_THROW_ON_ERROR):['observer_error'=>'Missing observation'];
  $message=$state['message']??null;$json=json_decode($body===false?'':$body,true);if(is_array($json)&&isset($json['error']))$message=$json['error'];
- $text=$body===false?'':$body;
- if(str_starts_with($text,'PK')){$tmp=tempnam(ROOT_PATH.'.local','matrix-xlsx-');try{file_put_contents($tmp,$text);$zip=new ZipArchive();if($zip->open($tmp)!==true)throw new RuntimeException('Cannot inspect response XLSX.');$text='';for($i=0;$i<$zip->numFiles;$i++)if(str_ends_with($zip->getNameIndex($i),'.xml'))$text.=$zip->getFromIndex($i);$zip->close();}finally{unlink($tmp);}}
+ $text=$body===false?'':$body;$comparisonText=$text;$xmlParts=[];$exportTimestamps=[];
+ if(str_starts_with($text,'PK')){$tmp=tempnam(ROOT_PATH.'.local','matrix-xlsx-');try{file_put_contents($tmp,$text);$zip=new ZipArchive();if($zip->open($tmp)!==true)throw new RuntimeException('Cannot inspect response XLSX.');$text='';$comparisonText='';for($i=0;$i<$zip->numFiles;$i++){
+ $part=$zip->getNameIndex($i);if(!str_ends_with($part,'.xml'))continue;$xml=$zip->getFromIndex($i);$text.=$xml;$xmlParts[$part]=hash('sha256',$xml);
+ if($part==='docProps/core.xml'){preg_match_all('/<dcterms:(created|modified)\b[^>]*>([^<]*)<\/dcterms:\1>/',$xml,$dates,PREG_SET_ORDER);foreach($dates as $date)$exportTimestamps[$date[1]]=$date[2];$xml=preg_replace('/(<dcterms:(created|modified)\b[^>]*>)[^<]*(<\/dcterms:\2>)/','$1EXPORT_TIME$3',$xml);}
+ $comparisonText.=$part."\n".$xml;
+ }$zip->close();}finally{unlink($tmp);}}
  $leak=false;foreach(['Foreign tenant','Foreign hidden','foreign-identity-sentinel','foreign-sentinel@example.test','Foreign import sentinel','foreign-import-sentinel','Foreign audit sentinel'] as $sentinel)if(str_contains(html_entity_decode($text,ENT_QUOTES|ENT_HTML5,'UTF-8'),$sentinel))$leak=true;
  if($case['control']??false)foreach($foreign as $foreignId)if(str_contains($text,(string)$foreignId))$leak=true;
  $visibleMessage=is_array($json)&&isset($json['error'])&&is_string($json['error'])&&$json['error']!=='';
  if(!$visibleMessage)$visibleMessage=$message!==null&&$message!==''&&str_contains(preg_replace('/\s+/u',' ',html_entity_decode(strip_tags($text),ENT_QUOTES|ENT_HTML5,'UTF-8')),trim(preg_replace('/\s+/u',' ',html_entity_decode($message,ENT_QUOTES|ENT_HTML5,'UTF-8'))));
- return ['location'=>array_values(array_filter($http_response_header??[],fn($h)=>str_starts_with($h,'Location: '))),'message_visible'=>$visibleMessage,'status'=>$status,'service_trace'=>$state['service_trace']??null,'message'=>$message===null?null:trim(preg_replace('/\s+/u',' ',html_entity_decode($message,ENT_QUOTES|ENT_HTML5,'UTF-8'))),'ms'=>$elapsed,'fixture'=>$state['fixture_verified'][$case['type']]??false,'missing_verified'=>$state['missing_verified'][$case['type']]??false,'temporary_reopen_probe_code'=>$state['temporary_reopen_probe_code']??null,'controller_sql_error_code'=>$state['controller_sql_error_code']??null,'controller_sql_error_alias'=>$state['controller_sql_error_alias']??null,'unchanged'=>$state['unchanged']??false,'audit_count'=>$state['audit_count']??null,'tracking_count'=>$state['tracking_count']??null,'leak'=>$leak,'observer_error'=>$state['observer_error']??null];
+ return ['body_sha256'=>hash('sha256',$comparisonText),'xml_parts_sha256'=>$xmlParts,'export_timestamps'=>$exportTimestamps,'location'=>array_values(array_filter($http_response_header??[],fn($h)=>str_starts_with($h,'Location: '))),'message_visible'=>$visibleMessage,'status'=>$status,'service_trace'=>$state['service_trace']??null,'message'=>$message===null?null:trim(preg_replace('/\s+/u',' ',html_entity_decode($message,ENT_QUOTES|ENT_HTML5,'UTF-8'))),'ms'=>$elapsed,'fixture'=>$state['fixture_verified'][$case['type']]??false,'missing_verified'=>$state['missing_verified'][$case['type']]??false,'temporary_reopen_probe_code'=>$state['temporary_reopen_probe_code']??null,'controller_sql_error_code'=>$state['controller_sql_error_code']??null,'controller_sql_error_alias'=>$state['controller_sql_error_alias']??null,'unchanged'=>$state['unchanged']??false,'audit_count'=>$state['audit_count']??null,'tracking_count'=>$state['tracking_count']??null,'leak'=>$leak,'observer_error'=>$state['observer_error']??null];
 }
 function safeMatrixRequest(array $case,$id): array {try{return matrixRequest($case,$id);}catch(Throwable $e){return ['status'=>0,'message'=>null,'fixture'=>false,'missing_verified'=>false,'unchanged'=>false,'audit_count'=>null,'tracking_count'=>null,'leak'=>false,'observer_error'=>get_class($e)];}}
 $cases=array_values(array_filter($cases,fn($case)=>in_array($case['op'],$groupOps[$group],true)));
+if(defined('PM_TENANT_FIXTURE_BOOTSTRAP_ONLY')&&PM_TENANT_FIXTURE_BOOTSTRAP_ONLY)return;
 $server=null;$rows=[];$controls=[];$contracts=[];$cleanup=false;$runError=null;
 try {
  $server=proc_open([PHP_BINARY,'-d','session.save_path='.$dir,'-S','127.0.0.1:'.$port,ROOT_PATH.'tests/pm_tenant_matrix_router.php'],[0=>['pipe','r'],1=>['file',ROOT_PATH.'.local/tenant-matrix.log','a'],2=>['file',ROOT_PATH.'.local/tenant-matrix.log','a']],$pipes,ROOT_PATH);if(!is_resource($server))throw new RuntimeException('No server.');fclose($pipes[0]);

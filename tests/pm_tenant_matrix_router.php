@@ -2,20 +2,20 @@
 /** Local-only collecting tenant matrix. Real entry points/controllers are unchanged. */
 $path=parse_url($_SERVER['REQUEST_URI']??'',PHP_URL_PATH);
 $role=$_SERVER['HTTP_X_PM_TEST_ROLE']??'';$nonce=$_SERVER['HTTP_X_PM_TEST_NONCE']??'';
-$adminOps=['pmusers','pmprojects','pmtimesheets','pmaudit','pmcosts','pmallocations','pmreports','pmimports'];
+$adminOps=['login','pm','pmusers','pmprojects','pmtimesheets','pmaudit','pmcosts','pmallocations','pmreports','pmimports'];
 $ajaxOps=['pmcosts','pmallocations','pmtaskstatus'];
 $actions=[
  'pmprojects'=>['project_save','project_delete','member_save','task_save','task_status','task_delete'],
  'pmusers'=>['save','status','roles','rate','rate_save','rate_deactivate','department_save','department_status','department_delete','department_restore'],
  'pmtimesheets'=>['save','delete','settings'], 'pmallocations'=>['save','delete','capacity','capacity_delete'],
- 'pmreports'=>['export'], 'pmimports'=>['detail','apply','resume','provision_password']
+ 'pmreports'=>['export'], 'pmimports'=>['detail','apply','resume','provision_password','template','preview','stage']
 ];
 if(PHP_SAPI!=='cli-server'||($_SERVER['REMOTE_ADDR']??'')!=='127.0.0.1'||!getenv('PM_ROLE_HTTP_TOKEN')
  ||!hash_equals(getenv('PM_ROLE_HTTP_TOKEN'),$_SERVER['HTTP_X_PM_TEST_TOKEN']??'')
- ||!in_array($role,['ADMIN','PM'],true)||!preg_match('/^[a-f0-9]{24}$/D',$nonce)
+ ||!in_array($role,['ADMIN','PM','NONE'],true)||!preg_match('/^[a-f0-9]{24}$/D',$nonce)
  ||!in_array($_SERVER['REQUEST_METHOD']??'',['GET','POST'],true)
  ||!(($path==='/admin.php'&&in_array($_GET['op']??'',$adminOps,true))||($path==='/pm_ajax.php'&&in_array($_GET['op']??'',$ajaxOps,true)))) {http_response_code(404);exit;}
-if($_SERVER['REQUEST_METHOD']==='POST'&&!(($path==='/admin.php'&&($_POST['op']??'')===($_GET['op']??'')&&in_array($_POST['action']??'',$actions[$_GET['op']]??[],true))||($path==='/pm_ajax.php'&&($_GET['op']??'')==='pmtaskstatus'))) {http_response_code(400);exit;}
+if($_SERVER['REQUEST_METHOD']==='POST'&&($_GET['op']??'')!=='login'&&!(($path==='/admin.php'&&($_POST['op']??'')===($_GET['op']??'')&&in_array($_POST['action']??'',$actions[$_GET['op']]??[],true))||($path==='/pm_ajax.php'&&($_GET['op']??'')==='pmtaskstatus'))) {http_response_code(400);exit;}
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true)) {http_response_code(503);exit;}
 $source=file_get_contents(ROOT_PATH.'classes/database/mysql.class.php');
@@ -31,20 +31,21 @@ class DB extends TenantMatrixBaseDb {
   $s=$c->prepare('SELECT * FROM dc_users WHERE store_id=? AND id=?');$s->bind_param('ii',$store,$actor);$s->execute();$actorRow=$s->get_result()->fetch_assoc();if(!$actorRow)throw new RuntimeException('Missing actor.');
   $roleRows=$c->query('SELECT * FROM dc_pm_roles ORDER BY id')->fetch_all(MYSQLI_ASSOC);
   $tables=['dc_users','dc_pm_roles','dc_pm_user_roles','dc_pm_departments','dc_pm_hourly_rates','dc_pm_projects','dc_pm_project_members','dc_pm_tasks','dc_pm_timesheets','dc_pm_timesheet_days','dc_pm_system_settings','dc_pm_audit_logs','dc_trackings','dc_pm_allocations','dc_pm_allocation_locks','dc_pm_capacity_overrides','dc_pm_import_logs','dc_pm_import_staging','dc_pm_import_results'];
-  $costRead=($_GET['op']??'')==='pmcosts'||(($_GET['op']??'')==='pmreports'&&($_POST['mode']??$_GET['mode']??'')==='costs');
+  $authFixture=($_SERVER['HTTP_X_PM_TEST_AUTH']??'')==='1';if($authFixture)$tables[]='dc_login_times';
+  $costRead=$_SERVER['HTTP_X_PM_TEST_ROLE']==='ADMIN'&&(($_GET['op']??'')==='pmcosts'||(($_GET['op']??'')==='pmreports'&&($_POST['mode']??$_GET['mode']??'')==='costs'));
   // These read-only handlers never write rates. Native temporary tables cannot be
   // reopened by the three aliases in the existing cost estimate query.
   if($costRead){if($_SERVER['HTTP_X_PM_TEST_ROLE']!=='ADMIN')throw new RuntimeException('Cost read fixture requires real local Admin.');$s=$c->prepare("SELECT ur.user_id FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=? AND ur.user_id=? AND r.code='ADMIN' AND r.status=1");$s->bind_param('ii',$store,$actor);$s->execute();if(!$s->get_result()->fetch_assoc())throw new RuntimeException('No real Admin for read-only cost control.');$tables=array_values(array_diff($tables,['dc_pm_hourly_rates','dc_pm_user_roles']));}
   foreach($tables as $table){$ddl=$c->query('SHOW CREATE TABLE '.$table)->fetch_row()[1];$ddl=preg_replace('/,\n\s*CONSTRAINT[^\n]+/','',$ddl);$c->query(str_replace('CREATE TABLE','CREATE TEMPORARY TABLE',$ddl));}
   $insert=function(string $table,array $row)use($c){$cols=array_map(fn($k)=>chr(96).$k.chr(96),array_keys($row));$s=$c->prepare('INSERT INTO '.$table.' ('.implode(',',$cols).') VALUES ('.implode(',',array_fill(0,count($cols),'?')).')');$values=array_values($row);$s->bind_param(str_repeat('s',count($values)),...$values);$s->execute();};
   // Exact-schema users mirror; credentials never serialized into observations.
-  $actorRow['fullname']='Fixture actor';$actorRow['department_id']=null;$insert('dc_users',$actorRow);
+  $actorRow['fullname']='Fixture actor';if($authFixture){$actorRow['username']='matrix-auth';$actorRow['email']='matrix-auth@example.test';$actorRow['password_hash']=password_hash('Fixture password 123',PASSWORD_DEFAULT);}$actorRow['department_id']=null;$insert('dc_users',$actorRow);
   $insert('dc_users',array_replace($actorRow,['id'=>900000041,'username'=>'matrix-member','email'=>'matrix-member@example.test','fullname'=>'Fixture member','code'=>'MATRIX41','status'=>1]));
   $insert('dc_users',array_replace($actorRow,['id'=>900000092,'store_id'=>$other,'username'=>'foreign-identity-sentinel','email'=>'foreign-sentinel@example.test','fullname'=>'Foreign tenant user sentinel','code'=>'MATRIX92','status'=>1]));
   foreach($roleRows as $row)$insert('dc_pm_roles',$row);
   $insert('dc_pm_roles',['id'=>900000064,'store_id'=>$store,'code'=>'MATRIX-INACTIVE','name'=>'Fixture inactive role','status'=>0]);
   $insert('dc_pm_roles',['id'=>900000094,'store_id'=>$other,'code'=>'MATRIX-FOREIGN','name'=>'Foreign tenant role sentinel','status'=>1]);
-  if(!$costRead){$s=$c->prepare('INSERT INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,1 FROM dc_pm_roles WHERE store_id=? AND code=? AND status=1');$role=$_SERVER['HTTP_X_PM_TEST_ROLE'];$s->bind_param('iiis',$store,$actor,$store,$role);$s->execute();if($s->affected_rows!==1)throw new RuntimeException('Missing fixture role.');}
+  if(!$costRead&&$_SERVER['HTTP_X_PM_TEST_ROLE']!=='NONE'){$s=$c->prepare('INSERT INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) SELECT ?,?,id,1 FROM dc_pm_roles WHERE store_id=? AND code=? AND status=1');$role=$_SERVER['HTTP_X_PM_TEST_ROLE'];$s->bind_param('iiis',$store,$actor,$store,$role);$s->execute();if($s->affected_rows!==1)throw new RuntimeException('Missing fixture role.');}
   $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
   $insert('dc_users',array_replace($actorRow,['id'=>900000042,'username'=>'matrix-inactive','email'=>'matrix-inactive@example.test','fullname'=>'Fixture inactive','code'=>'MATRIX42','status'=>0]));
   $insert('dc_pm_projects',['id'=>900000002,'store_id'=>$store,'code'=>'MATRIX-RESTRICTED','name'=>'Local restricted project','manager_id'=>900000041,'created_by'=>$actor]);
