@@ -77,10 +77,14 @@ class PmProjectService {
         $this->permission('pm.projects.manage');
         if(!$this->access->hasRole('ADMIN')&&!$this->access->hasRole('PM'))throw new PmScopeDeniedException('Chỉ Admin hoặc PM được tạo dự án.');
         $name=trim((string)($data['name']??''));$code=strtoupper(trim((string)($data['code']??'')));$description=(string)($data['description']??'');
-        if($name===''||mb_strlen($name)>150||!preg_match('/^[A-Z0-9_-]{2,50}$/D',$code)||mb_strlen($description)>10000)throw new InvalidArgumentException('Tên, mã hoặc mô tả dự án không hợp lệ.');
+        if($name==='')throw new InvalidArgumentException('Vui lòng nhập tên dự án.');
+        if($code==='')throw new InvalidArgumentException('Vui lòng nhập mã dự án.');
+        if(mb_strlen($name)>150||!preg_match('/^[A-Z0-9_-]{2,50}$/D',$code)||mb_strlen($description)>10000)throw new InvalidArgumentException('Tên, mã hoặc mô tả dự án không hợp lệ.');
         $status=(string)($data['status']??'planned');if(!in_array($status,['planned','active','paused','completed'],true))throw new InvalidArgumentException('Trạng thái dự án không hợp lệ.');
         $start=$this->date($data['start_date']??null);$end=$this->date($data['end_date']??null);if($start&&$end&&$end<=$start)throw new PmProjectDateRangeException(PmProjectDateRangeException::MESSAGE);
-        $budget=$this->number($data['budget']??'0',13);
+        $rawBudget=$data['budget']??'0';
+        if(trim((string)$rawBudget)==='')throw new InvalidArgumentException('Vui lòng nhập ngân sách dự án.');
+        $budget=$this->number($rawBudget,13);
         $client=trim((string)($data['client_name']??''));if(mb_strlen($client)>150)throw new InvalidArgumentException('Tên khách hàng quá dài.');
         $manager=$this->access->hasRole('ADMIN')?PmIdInput::parse($data['manager_id']??null,true):$this->actorId;
         if($manager>0)$this->requireScopedUser($manager);
@@ -120,8 +124,11 @@ class PmProjectService {
     }
     public function saveTask(int $projectId,array $data,?int $id=null): int {
         $name=trim((string)($data['name']??''));$description=(string)($data['description']??'');$status=(string)($data['status']??'todo');$priority=(string)($data['priority']??'normal');
-        if($name===''||mb_strlen($name)>150||mb_strlen($description)>10000||!in_array($status,['todo','in_progress','review','done'],true)||!in_array($priority,['low','normal','high'],true))throw new InvalidArgumentException('Thông tin task không hợp lệ.');
-        $hours=$this->number($data['estimated_hours']??'0',6);$due=$this->date($data['due_date']??null);$assignee=PmIdInput::parse($data['assignee_id']??null,true);$assignee=$assignee?:null;
+        if($name==='')throw new InvalidArgumentException('Vui lòng nhập tên công việc.');
+        if(mb_strlen($name)>150||mb_strlen($description)>10000||!in_array($status,['todo','in_progress','review','done'],true)||!in_array($priority,['low','normal','high'],true))throw new InvalidArgumentException('Thông tin task không hợp lệ.');
+        $rawHours=$data['estimated_hours']??'0';
+        if(trim((string)$rawHours)==='')throw new InvalidArgumentException('Vui lòng nhập giờ ước tính công việc.');
+        $hours=$this->number($rawHours,6);$due=$this->date($data['due_date']??null);$assignee=PmIdInput::parse($data['assignee_id']??null,true);$assignee=$assignee?:null;
         $this->db->beginTransaction();try{
             $project=$this->getProject($projectId,true);$this->requireManage($project,'pm.tasks.manage');
             if($assignee)$this->requireScopedUser($assignee);

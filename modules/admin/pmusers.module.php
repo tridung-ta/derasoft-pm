@@ -60,13 +60,19 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }elseif($action==='save'){
             foreach(['username','fullname','email','tel'] as $field)if(isset($_POST[$field])&&!is_string($_POST[$field]))throw new InvalidArgumentException('Thông tin nhân sự không hợp lệ.');
             $email=trim((string)$request->element('email'));$fullname=trim((string)$request->element('fullname'));
+            $requiredErrors=[];
             if(!$targetId){
                 foreach(['email','password','tel'] as $field){
                     if(isset($_POST[$field])&&!is_string($_POST[$field]))throw new InvalidArgumentException('Dữ liệu thêm nhân sự không hợp lệ.');
                 }
-                PmUserInputService::validateCreate($email,$_POST['password']??'',$_POST['tel']??'');
+                try{PmUserInputService::validateCreate($email,$_POST['password']??'',$_POST['tel']??'');}
+                catch(PmUserInputException $validation){$requiredErrors=$validation->getFieldErrors();}
+                if(trim((string)$request->element('username'))==='')$requiredErrors['username']='Vui lòng nhập tên đăng nhập.';
             }
-            if($fullname===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Họ tên hoặc email không hợp lệ.');
+            if($fullname==='')$requiredErrors['fullname']='Vui lòng nhập họ và tên.';
+            if($email==='')$requiredErrors['email']='Vui lòng nhập email.';
+            elseif(!filter_var($email,FILTER_VALIDATE_EMAIL))$requiredErrors['email']='Email không đúng định dạng.';
+            if($requiredErrors)throw new PmUserInputException($requiredErrors);
             if($pmUsers->emailExists((int)$storeId,$email,$targetId?:null))throw new DomainException('Email đã được sử dụng.');
             $departmentId=PmIdInput::parse($request->element('department_id'),true);$departmentId=$departmentId?:null;
             if($departmentId&&!$departments->existsInStore((int)$storeId,$departmentId))throw new OutOfBoundsException('Không tìm thấy phòng ban trong tenant hiện tại.');
