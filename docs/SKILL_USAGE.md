@@ -186,6 +186,12 @@ Fixture CRUD/Apply lấy schema thật, không dùng cột rộng giả tạo PA
 
 Một lượt regression có HTTP connection timeout sau case lock, chưa xác định nguyên nhân. Suite HTTP riêng và regression đầy đủ chạy lại đều đạt; giữ lần fail trong TEST_REPORT_FULL, không giấu bằng retry request tự động và không gán nguyên nhân chưa chứng minh. Runner trả session_id phải chờ exit code cuối trước chốt kết quả của lượt đó.
 
+## P0 điều tra flaky — 07/10/2026
+
+Code-review và ignored probes: 10 lần liên tiếp mỗi suite nguyên trạng đều PASS không đủ chứng minh nguyên nhân. Probe 300 close/acquire tái hiện 8 lần GET_LOCK timeout=0 chưa lấy được ngay sau mysqli close nhưng bounded wait lấy được dưới 0,4 ms; assertion timing của harness cần bounded deadline thay kỳ vọng đồng bộ phía server. Không đổi runtime lock từ kết luận test này. HTTP diagnostic chỉ log run/case/thread/timing, không credential/payload; 2 lượt đạt 139 case, lock waits 2 giây ở case cố tình tranh chấp và release nhanh. HTTP timeout lịch sử vẫn chưa có nguyên nhân, giữ P0 mở; không dùng sự vắng mặt lỗi thay evidence. metadata_locks denied phải ghi rõ chưa kiểm tra, không tự nâng quyền hoặc dùng fallback IS_USED_LOCK một số tên để suy ra toàn lock graph.
+
+- **P0 ngày 08/10/2026:** sửa test assertion với chờ GET_LOCK(1) có giới hạn, kiểm tra ownership và release; 10/10 test import PASS. Process CIM bị từ chối nên không coi danh sách rỗng là bằng chứng; dùng Get-Process/netstat, giữ server local 8088 và dừng khi thấy process chưa xác định. 20 lượt HTTP có preflight hợp lệ PASS nhưng timeout cũ vẫn chưa tái hiện, không kết luận nguyên nhân. Chi tiết docs/P0_VERIFY_20261008.md. Dùng feature-development để lập PLAN D2; không BUILD trước duyệt.
+
 
 ## D2 — 08/10/2026
 
@@ -195,3 +201,20 @@ Một lượt regression có HTTP connection timeout sau case lock, chưa xác �
 ## P4 audit — 08/10/2026
 
 feature-development cho account audit được duyệt, code-review cho actor scope/PII/metadata và git-feature-commit cho commit local hoàn tất. Không skill UI vì không đổi thiết kế. Assertions phải nằm trước rollback/close và chỉ quét event fixture mới, không áp lịch sử actor khác. Các suite DB cùng bảng không độc lập để chạy song song; VERIFY cuối chạy regression tuần tự. Invalid rate overlap/role QA là fixture sai, sửa fixture, giữ validator sản phẩm. Bằng chứng docs/P4_VERIFY_20261008.md.
+
+
+## Collecting Tenant matrix — 08/10/2026
+
+feature-development cho test/truy vết theo duyệt; code-review cho fixture và PLAN chung. Không skillUI vì không đổi giao diện. Mapping HTTP phải dựa loại lỗi phạm vi, không đổi validation200 hoặc dùng thông báo để đoán quyền. Probe service thật cho OutOfBoundsException; runtime giữ nguyên.
+
+Collect80cặp, không dừng tại caseFAIL nhưng giữ cổng nhóm1 trước nhóm sau. Temporary mirrors không hỗ trợ composite-id giả định hoặc reopen nhiều alias; hash sort rows theo serialization và dùng realAdmin/read-only rate+role assignments ở cost routes, vẫn hash bảng thật. JSON thông báo phải decode trước kiểm Unicode. Không gán PMmanager bị bỏ qua thành IDOR; dùng Admin cho tham chiếu đó. Một lượt checksum thật thay đổi trong lúc có login; giữFAIL và điều tra read-only, không tự restore hay giấu bằng retry. Lượt cuối39PASS/41FAIL/11controlsPASS,cleanup21bảngPASS; PLAN chờ duyệt, không sửa runtime. Bằng chứng TENANT_MATRIX_VERIFY_20261008.md.
+
+
+## HTTP lô1 — 09/10/2026
+
+Tái sử dụng feature-development để hoàn thiện test, code-review cho middleware denial/CSRF/exact-schema mirrors và git-feature-commit cho local commit đã verify. Không áp dụng skill UI vì không chỉnh thiết kế. Excel compare chỉ chuẩn hóa metadata created/modified; kiểm tra worksheet và leak trên XML gốc giữ nguyên. Auth fixture thêm login_times mirror, assertions không xuất password/hash/cookie/token. 98 HTTP checks và36 forged-store comparisons PASS; expiry/rate concurrency vẫn CHƯA CHẠY. Chi tiết BATCH1_HTTP_VERIFY_20261009.md.
+
+
+## Validation0.4 — 09/10/2026
+
+feature-development BUILD đúng PLAN được duyệt; code-review rà phạm vi thông báo/typed exception/status và git-feature-commit chuẩn bị commitlocal sau59suite PASS. Không sửa giao diện nên không áp skillUI; sử dụng UI error escaped đã có. Temp observer chỉ keys/booleans, prepared SQL. Giữ baseline14FAIL và harness redirect expectation lỗi riêng; không nớiassertion hay sửaproduct theo harness. 30cases PASS,21 bảng thật không đổi, regression59PASS.

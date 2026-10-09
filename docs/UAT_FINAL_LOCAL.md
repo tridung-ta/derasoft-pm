@@ -82,3 +82,15 @@ Post-deploy smoke trong DEPLOY_LOG.md là checklist khác và chỉ được tic
 User authorized synthetic illustrations: [nine-page before/after comparison](PHASE9B_UI_COMPARISON.md).
 Before is reconstructed from 1dc761f; after is 471950d. These do not replace user
 acceptance, missing original images or unrecorded per-case UAT results.
+
+
+## Chuyển từ checklist tổng — 08/10/2026 (CHƯA CHẠY)
+
+- [ ]2.3: đối chiếu menu/route hiển thị đúng vai trò bằng tài khoản Admin/PM/HR/Employee thực; thử URL trực tiếp và chức năng trong phạm vi dự án. Ghi role, bước thao tác, kết quả và ảnh đã ẩn dữ liệu cá nhân.
+- [ ]9.2: mở toàn bộ màn hình PM ở desktop/tablet/mobile, browser zoom thực; kiểm tra không mất nút, không chồng nội dung, bảng cuộn đúng.
+- [ ]9.3: bàn phím Tab/Shift+Tab/Enter/Space trên menu/form/dialog; focus rõ, nhãn đọc được và không mắc kẹt.
+
+Đây là kịch bản chờ UAT, không phải kết quả PASS. Đối chiếu tiêu chí gốc QUY_TRINH_KIEM_THU_TONG.md khi thực hiện.
+
+## P3 — người dùng nhận kiểm thử DB/concurrency,09/10/2026
+CHƯA CHẠY, không đánhPASSautomated. Chỉ dùngnhânsự/tasktestđượcphép: đặtregular8/max12; hai tab cùngngười/ngày chưa cóledger gửi8h đồngthời, mongđợimộtthànhcông/mộtbáovượt12,tổng8. Lặpvớingàyđãcóledger vàhai taskdựánkhácnhau; khôngnhânOT. Đổi maxsauledger:ngàycũgiữsnapshot/ngàymới dùngmới. Chuyển2h vào ngàyđã10/10 phải rollbacknguồn/đích/cost/audit. Không tạo database riêng.

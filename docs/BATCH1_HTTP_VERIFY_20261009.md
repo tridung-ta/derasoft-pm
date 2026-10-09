@@ -28,4 +28,4 @@ Lượt đầu 08/10:32 PASS/4 FAIL vì full XML hash khác. Lượt điều tra
 
 Preflight 09/10 không thấy process php.exe qua CIM; port 18776 phải trống. HTTP chỉ loopback, token/nonce và allowlist; auth fixture thêm exact-schema mirror dc_login_times. Credentials dùng literal fixture riêng, không đọc/in secret thật. Shutdown observer không ghi password/hash/session token. Trước/sau hash dc_users, dc_trackings, toàn bộ PM tables và dc_login_times; cleanup của mỗi suite bắt buộc để exit 0. Chỉ dừng server do suite tạo.
 
-Regression toàn bộ trên commit test mới sẽ ghi bổ sung sau khi lệnh kết thúc. Không suy luận PASS từ suite riêng.
+Regression trên commit 5533099963c6332047c0a912f148919147e6f8c0: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1`, exit0, `PASS:58 regression scripts. No migrations applied by this runner.` Log .local/committed-regression-20261009.txt. Probe0.4 xuất hiện sau lượt regression, chưa thuộc58scripts.

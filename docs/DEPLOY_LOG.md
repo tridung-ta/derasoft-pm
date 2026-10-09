@@ -193,7 +193,7 @@ not uploaded into the web document root. Keep production DB/domain/license value
 Do not use FileZilla directory synchronization, delete-remote actions, or “overwrite all”
 against a mixed directory containing production configuration or uploads.
 
-## Manual schema/seed order — Phase 2 through Phase 8
+## Manual schema/seed order — Phase 2 through Phase 11
 
 Backup production files + DB first; maintenance window, verified restore path, PHP 8.3 and
 supported MySQL/JSON/DECIMAL/InnoDB/GET_LOCK capabilities. This is preparation only: the
@@ -215,6 +215,7 @@ agent has not inspected production schema or approved execution there.
 | 12 | `database/seeds/006_seed_pm_import_permissions.sql` | 006 + tenant role/permission schema; Admin import grant. |
 | 13 | `database/migrations/007_add_pm_users_email_unique.sql` | Core users + tenant columns; required before Apply. Full UNIQUE(store_id,email), preserves MyISAM. Separate local approval exists; production execution requires the operator's schema/data review and approval. |
 | 14 | `database/migrations/008_create_pm_import_results.sql` | 006 staging and 007 uniqueness for safe Apply; per-row intent/outcome/provenance journal. |
+| 15 | `database/migrations/009_add_pm_project_task_metadata.sql` | Purpose: client_name on projects, project_role on members, start_date/completed_at on tasks. Depends on 003 project/member/task tables (001–002 prerequisites), before Phase11 runtime reads these columns. Schema DDL is **ADD COLUMN only**: four nullable columns, no CREATE/UPDATE/MODIFY/DROP/backfill/engine change; existence checks + SET/PREPARE/EXECUTE are supporting statements. Inspect actual column types/nullability first and skip already-present additions; approval/backup/maintenance remain separate. Rollback app code only, retain columns/data. |
 
 For an already-upgraded host, check each actual table/column/index/seed grant and skip steps
 already satisfied; record the evidence. Do not replay initial seed 001 against final tenant
@@ -376,3 +377,11 @@ Record rollback file version, whether writes occurred, outcome and unresolved da
 Completed the user-authorized [illustrative comparison](PHASE9B_UI_COMPARISON.md):
 36 local captures, reconstructed before and synthetic after, with source labels.
 No new runtime files or deployment action; original screenshots remain unavailable.
+
+
+## Local verification update — 09/10/2026
+
+Manifest documentation rebuilt from immutable Git commit5533099963c6332047c0a912f148919147e6f8c0:306 classified paths,95 runtime SHA256 verified; no SQL/package/upload. Regression58PASS on committed tests. Tenant1.3PASS; new0.4required-field-message probe FAIL pending approved PLAN. Three deployment preflights remain unverified: actualstore_id before002, continuous maintenance,007lock duration on representative DBcopy. No production evidence inferred from local.009runtime requires four columns (client_name,project_role,start_date,completed_at); missing columns can break writes/report queries. No migration executed.
+
+## 010 — P3 daily total limit (local09/10/2026)
+Phụ thuộc004, sau009 trong bảng triển khai; chỉ ADD dc_pm_timesheet_days.max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00, có kiểm tra tồn tại. Runtime P3 đọc/lưu snapshot nên cần010 trước ứng dụng; không fallback bỏ trần khi thiếu cột. Localbackup/apply2lầnPASS,0.039s/0.001s,95bảngdataunchanged; localledger0rows nên đã test2oldledgerrows trongtemporarytable riêng. Không cấp quyền triển khaiproduction. Rollbackcode giữcolumn/data, khôngDROP. Thời gianlocal không là benchmarkproduction.

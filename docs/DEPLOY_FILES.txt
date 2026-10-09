@@ -18,7 +18,10 @@ classes/dao/users.class.php
 classes/database/pmdb.class.php
 classes/security/pmaccess.class.php
 classes/security/pmauth.class.php
+classes/security/pmidinput.class.php
+classes/security/pmscopedeniedexception.class.php
 classes/security/pmsessionguard.class.php
+classes/services/pmaccountauditservice.class.php
 classes/services/pmallocationservice.class.php
 classes/services/pmcostservice.class.php
 classes/services/pmimportservice.class.php
@@ -27,6 +30,8 @@ classes/services/pmrateservice.class.php
 classes/services/pmreportservice.class.php
 classes/services/pmtimesheetservice.class.php
 classes/services/pmuiservice.class.php
+classes/services/pmuseridentityservice.class.php
+classes/services/pmuserinputservice.class.php
 css/pm-audit-base.css
 css/pm-dashboard-base.css
 css/pm-login-base.css
@@ -46,6 +51,7 @@ index.php
 js/pmallocations.js
 js/pmallocationweek.js
 js/pmcosts.js
+js/pmkanban.js
 js/pmui.js
 js/vendor/chartjs-4.5.1/LICENSE.md
 js/vendor/chartjs-4.5.1/README.md
@@ -64,9 +70,12 @@ modules/admin/pmusers.module.php
 modules/admin/profile/password.module.php
 modules/ajax/pmallocations.module.php
 modules/ajax/pmcosts.module.php
+modules/ajax/pmtaskstatus.module.php
+pm-launch.php
 pm_ajax.php
 templates/admin/pm-allocations.tpl.html
 templates/admin/pm-audit.tpl.html
+templates/admin/pm-cost-actual-amount.tpl.html
 templates/admin/pm-costs.tpl.html
 templates/admin/pm-imports.tpl.html
 templates/admin/pm-login.tpl.html

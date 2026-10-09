@@ -1887,6 +1887,33 @@ selection rather than an AJAX/autocomplete text search. Local only; no rollout.
 - VERIFY: identity smoke 43 case PASS, import Stage/Apply và 137 role HTTP PASS; regression 51 script PASS, PHP lint 14 file PASS. Positive fixture scan assert hai chiều chéo; read-only scan toàn bộ 10 user local trả 0 cặp collision, user rows không đổi. Chi tiết lệnh/output và giới hạn ở TEST_REPORT_FULL.md.
 - Lượt đầu profile HTTP harness thiếu observation marker, đã sửa observer test-only và chạy lại đạt; không lỗi runtime. Security/code review trong phạm vi không còn finding mở. Giữ checklist 59 PASS/2 FAIL/19 CHƯA CHẠY, không tự nâng case. Commit local theo workflow; không push/merge/deploy. Dừng trước BƯỚC 3, không sửa OT/Audit Log UI/D2.
 
+### 07/10/2026 — P0 điều tra flaky, P1 đối chiếu tài liệu
+- Apply/Role HTTP nguyên trạng mỗi suite chạy riêng 10 lần liên tiếp: 20/20 exit 0. Probe 300 close/acquire tái hiện 8 acquire timeout=0 thất bại tức thời; bounded wait đều thành công dưới 0,4 ms. Kết luận import release test có race timing harness, chưa sửa test source/runtime.
+- Diagnostic copies ignored chạy 2 lượt HTTP PASS 139 case/lượt; đo identity wait khoảng 2 giây đúng busy cases, release nhanh, invalid-password case sau đó không gọi named lock. Timeout HTTP cũ vẫn chưa xác định nguyên nhân gốc; không đóng từ PASS lặp lại. metadata_locks bị từ chối SELECT 1142, không cấp quyền hoặc suy ra không còn lock.
+- P0 chưa đóng đầy đủ, P2–P4 chưa thực hiện. P1 theo câu hỏi bổ sung: xác nhận rule ngày dự án ở PLAN_FINAL dòng 88 và thêm mục Điều hướng dự án đã chốt cho 303 Lưu/Ẩn/ngoại lệ lỗi ngày, tài liệu khớp code. Chi tiết lệnh/output ở P0_FLAKY_INVESTIGATION_20261007.md; không full regression mới, không push/merge/deploy hoặc commit hoàn tất điều tra còn mở.
+
+## P0 bổ sung và PLAN D2 — 08/10/2026
+
+- tests/pm_import_apply_smoke.php đã đổi assertion close/acquire sang GET_LOCK(name,1) hữu hạn, giữ ownership trước/sau và owner NULL sau release; không sleep hoặc bỏ assertion. Lệnh .tools/php83/php.exe tests/pm_import_apply_smoke.php chạy 10 lần liên tiếp: 10/10 exit 0/PASS, dc_users và MyISAM unchanged. PHP lint exit 0.
+- Timeout sản phẩm identity 2 giây, batch 0 giây giữ nguyên. Batch fail-fast có thể busy tạm thời tại cửa sổ session close; độ chờ probe 0,087–0,369 ms không phải trần thời gian close-to-release.
+- HTTP diagnostic suite giữ client timeout 15 giây: 20/20 lượt có preflight hợp lệ PASS, 2780 request, max HTTP 2108,098 ms, max TCP 34,165 ms. Kiểm tra process/cổng trước mỗi lượt bằng Get-Process/netstat; giữ server local 8088, không còn fixture 18770 sau kiểm thử. CIM denied/lượt bị dừng được giữ bằng chứng riêng.
+- Kết luận HTTP: **chưa tái hiện**, chưa xác định nguyên nhân timeout cũ; không kết luận chỉ harness hoặc production-safe.
+- Bằng chứng/lệnh từng lượt và thời gian từng request: docs/P0_VERIFY_20261008.md cùng các artifact .local được liệt kê trong đó. Checklist tổng vẫn 59 PASS / 2 FAIL / 19 CHƯA CHẠY.
+- docs/PLAN_D2_TASK_ESTIMATE_WARNING.md chỉ PLAN, chờ duyệt scope/quyền/historical/estimate 0/NULL. Chưa BUILD D2; không push/merge/deploy.
+
+## Điều kiện duyệt bổ sung — 08/10/2026
+
+CHƯA BUILD: schema local estimated_hours DECIMAL(8,2) UNSIGNED NOT NULL DEFAULT 0.00; form thêm mặc định 0 và required. Service từ chối chuỗi trống, nhưng missing/NULL input fallback 0. Dữ liệu persistent local: tổng 0 task, 0 task bằng 0, 0 task NULL. Cần người dùng quyết định ý nghĩa 0 trước BUILD; phương án lưu NULL không tương thích schema hiện tại và yêu cầu không migration. Không tự thay DDL hoặc chuyển dữ liệu cũ. Bằng chứng read-only .local/d2_estimate_schema_counts.json.
+
+VERIFY được bổ sung theo yêu cầu người dùng: chuyển .local/full_task_overload_probe.php thành test cố định trong tests (chỉ thực hiện sau mở cổng BUILD); 5 giờ actual/4 giờ estimate đúng 1 task_estimate_warnings, allocation warnings rỗng; PM không nhận task/tên dự án PM khác; polling Employee/HR/no-role không có tổng task; nhiều allocation không nhân SUM; DECIMAL không float; thêm query mới vào EXPLAIN, không thêm index; cảnh báo có nhãn/văn bản, không chỉ màu. Giao diện ghi rõ task đang được phân bổ trong tuần này. Chỉ sau test thực chạy PASS mới đổi 7.4 sang PASS, giữ các mục khác.
+
+## Quyết định D2 về giờ ước tính — 08/10/2026
+
+- Người dùng chọn (a): estimated_hours = 0 là “Chưa có ước tính”; không bao giờ cảnh báo vượt với estimate 0. Chỉ cảnh báo khi estimated_hours > 0 VÀ SUM(timesheets.hours chưa ẩn, đúng tenant/task/project) > estimated_hours, dùng DECIMAL chính xác, không float và không cộng thêm ot_hours. Bằng ngưỡng không cảnh báo.
+- Giao diện tại nơi hiển thị ước tính task: 0 hiện “Chưa có ước tính”, không hiện “0 giờ”.
+- Hạn chế đã chấp nhận: không phân biệt được “chưa ước tính” với “cố tình 0 giờ” do schema hiện tại. Muốn phân biệt phải thay đổi schema, cần duyệt riêng. D2 không migration, không chuyển đổi dữ liệu cũ.
+- PLAN D2 đã cập nhật nhưng dừng chờ duyệt lần cuối, chưa BUILD. VERIFY sẽ dùng fixture tạm vì local hiện không có task, assert dọn sạch và persistent data unchanged; estimate 0/actual lớn không cảnh báo, 0.01/0.02 có cảnh báo, 1.00/1.00 không cảnh báo. Các test này CHƯA CHẠY. Không push/merge/deploy.
+
 
 ## D2 BUILD/VERIFY — 08/10/2026
 
@@ -1897,8 +1924,74 @@ VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regre
 Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.
 
 
+## Sau D2 — P3/P4 review, 08/10/2026
+
+Đã inventory writer PM/legacy và xác nhận PM audit không đọc dc_trackings; chưa chứng minh cùng một màn hỗ trợ tracking cũ/mới. Ba suite tracking/audit/Smarty thực chạy exit0 PASS, không nâng11.4. Giới hạn giờ/ngày theo yêu cầu người dùng khác logic OT hiện tại (ngưỡng regular, trần24h); đã hỏi chính sách, chưa sửa service. PLAN kiểm chứng tiếp: docs/AUDIT_FOLLOWUP_PLAN_20261008.md. Giữ60PASS/1FAIL/19CHƯACHẠY, không push/merge/deploy.
+
+
 ## P4 BUILD/VERIFY hoàn tất local — 08/10/2026
 
 Audit hồ sơ chỉ actor ID + action + tên trường đã đổi; audit mật khẩu actor ID + action, không giá trị liên hệ/credential/hash/IP. PM_HIDE_LEGACY mặc định/dự kiến triển khai true, legacy AJAX count 4 request HTTP404. Assertions riêng từng writer PM đã chạy; 55 regression scripts, 156 role HTTP cases, PHP lint14 file PASS, diff --check exit0. Fixture rollback/temporary exact-schema và persistent unchanged theo từng suite. Chi tiết docs/P4_VERIFY_20261008.md.
 
 Chỉ11.4 đổi FAIL→PASS trong phạm vi đã chốt; tổng **61 PASS / 0 FAIL / 19 CHƯA CHẠY**. Không tự nâng19mục hoặc tuyên bố UAT/production-ready. P3 chờA/B/C, chưaPLAN/chưaBUILD; P0 timeout lịch sử chưa tái hiện/chưa xác định nguyên nhân. Không migration/push/merge/deploy.
+
+
+###08/10/2026 — commit P0/P4 và Tenant gate
+
+P0 test833a148; P4 fault test26ca279; regression trên committed26ca279 exit0/55scripts/157HTTP. Matrix fixture foreign mới:1.3 FAIL vì POST200 thay403/404, không đổi dữ liệu/no audit/no leak; persistent hashes unchanged. Dừng các lô ngay theo cổng Tenant. Tổng61PASS/1FAIL/18CHƯACHẠY. PLAN sửa HTTP status chờ duyệt trong VERIFY_BATCHES_20261008.md. P3 vẫn chờ A/B/C; không push/merge/deploy.
+
+
+### 08/10/2026 — collecting Tenant matrix trước BUILD
+
+Áp dụng duyệt mới: không invalid input400 cho pmprojects; giữ date-range/303/Lưu/Ẩn. Trace service thật xác nhận OutOfBoundsException tại saveTask:122 cho ca gốc. Collecting matrix80cặp:39PASS/41FAIL,11controlsPASS,exit1; foreign/missing có cùngstatus/message nhưng41cặp HTTP200. Lượt cuối hash21bảng thật unchanged; có một lượt cleanupFAIL và probe login đồng thời, giữ bằng chứng riêng, không khôi phục dữ liệu.
+
+PLAN chung chỉ mới viết trong TENANT_SCOPE_FIX_PLAN_20261008.md, chờ duyệt theo yêu cầu. Runtime diff rỗng; không thêm matrixFAIL vào regression/chưa commit fix. Thêm009 order15 trongDEPLOY_LOG, không chạySQL. Manifest chờ commit sửa1.3; tổng61PASS/1FAIL/18CHƯACHẠY, các lô sau vẫn dừng. P3 chờA/B/C; không push/merge/deploy.
+
+
+## 08/10/2026 — Gate bổ sung Tenant1.3, dừng BUILD
+
+Đã sửa local theo lượt duyệt trước và đo80/80 matrix+11controls,21persistenthashes không đổi. Sau đó người dùng yêu cầu duyệt bốn bảng trước BUILD nhóm; đã dừng runtime/commit. Regression working tree FAIL pm_projects_smoke do exception expectation; chưa sửa test. Bốn bảng static trong TENANT_SCOPE_REVIEW_GATE_20261008.md; còn message chứa loại tài nguyên, coverage localownership/malformed và nhánh mixedDomain cần chốt.1.3 vẫnFAIL; các lô chưa chạy tiếp. P3 chờ A/B/C. Không push/merge/deploy/migration.009runtime không an toàn nếu thiếu bất kỳ bốn cột dùng trực tiếp; không chạySQL.
+
+
+Nhóm A Tenant1.3:19/19 cặp,11behavioral controls,2positive controls PASS;4suite dự án PASS,33KanbanHTTPcases. Bằng chứng TENANT_GROUP_A_VERIFY_20261008.md. Commit local riêng nhóm A; chưa nâng1.3.
+
+
+Nhóm B Tenant1.3:18/18 cặp,9behavioral+1controlPASS;6suite nhân sựPASS. TENANT_GROUP_B_VERIFY_20261008.md giữ cả fixturephoneFAIL đầu. Không thay UPDATE phonepolicy/engine/schema;1.3 chờ nhómC/fullmatrix.
+
+
+Nhóm C Tenant1.3:37/37cặp+15behavioralPASS;full80/80+11controls+35behavioralPASS,checksum21bảngkhôngđổi. Regression56scripts/157HTTPcasesPASS exit0;104EXPLAINshapes. Review/bằngchứng TENANT_GROUP_C_VERIFY_20261008.md; commit local riêng trước chạy trạng thái đã commit. P3chờA/B/C, khôngpush/merge/deploy.
+
+
+## Cập nhật sau duyệt và BUILD — 08/10/2026
+
+Bốn bảng đã được người dùng duyệt. BUILD/VERIFY theo từng nhóm, commit A b70b441, B a3b17e3, C c850158. Matrix cuối trên commit C: 80/80 cặp, 11 control, 35 ca hành vi PASS; regression 56 script PASS; 21 bảng thật không đổi. Các phát hiện/lỗi baseline ở trên được giữ làm lịch sử, không phải trạng thái hiện tại. Xem TEST_REPORT_FULL.md và TENANT_GROUP_A_VERIFY_20261008.md, TENANT_GROUP_B_VERIFY_20261008.md, TENANT_GROUP_C_VERIFY_20261008.md. P3 vẫn chờ A/B/C. Không push/merge/deploy/migration.
+
+
+## 09/10/2026 — tiếp tục lô 1 HTTP
+
+Hoàn thiện fixed tests cho store_id giả, no-role login và role refresh cùng cookie. Test riêng đạt36/36 và98/98, matrix80/80 +11 controls +35 behaviors; bảng thật không đổi. Nâng1.4/0.2/2.7 trong TEST_REPORT_FULL. 2.6 chỉ kiểm tra regen/cookie, expiry chưa chạy;3.6 chưa có shared concurrency fixture an toàn. Commit local tests5533099; regression trên commit đang chạy. P3 chờA/B/C; không push/merge/deploy/migration.
+
+
+09/10 bổ sung: committed regression5533099 exit0:58scripts PASS. Bắt đầu lô2, probe0.3/0.4 exit1:7PASS/14FAIL/21case,21 bảng thật không đổi. 0.3PASS,0.4FAIL do thông báo gộp; sourcePhase3controller vàPhase4service. PLAN_REQUIRED_FIELDS_20261009.md chờ duyệt, chưa BUILD; dừng các mục sau. Tổng66PASS/1FAIL/13CHƯA CHẠY. Không push/merge/deploy.
+
+
+09/10 — BUILD0.4 sau người dùng duyệt: messages theo từng required field ở pmusers.controller/pmprojectservice. Targeted30/30 +regression59scripts PASS; matrix80/80/11controls/35behaviors giữ PASS,21 bảng thật không đổi. Không đổiHTTP/CSRF/ownership/audit/OT/schema. Báo cáo hiện67PASS/0FAIL/13CHƯA CHẠY, baselineFAIL giữ trong BATCH2_REQUIRED_FIELDS_VERIFY. Chuẩn bị commit local riêng0.4; không push/merge/deploy.
+
+## 09/10/2026 — Lô 2 dữ liệu
+2.2/3.10/5.5/8.3 PASS bằng assertions trực tiếp và fixture tạm/rollback; regression 59 scripts PASS. Tổng 71 PASS, 0 FAIL, 9 CHƯA CHẠY. Xem BATCH2_DATA_VERIFY_20261009.md. P3 vẫn chờ A/B/C; không push/merge/deploy.
+
+Lô3: Chart chạy dưới CSP thật; computed-color scan37fixture bad=[]. Giữ9.5/10.3 CHƯA CHẠY đầy đủ. Manifest nguồn05ca062:313 paths,95 runtime SHA256 verified; chỉ tài liệu, không gói triển khai.
+
+09/10/2026 — P3: người dùng chọn B (tách giờ thường/trần tổng). Đã đọc service và lập PLAN_P3_DAILY_TOTAL_LIMIT_20261009.md; đề xuất key/value setting + snapshot ADD COLUMN, mặc định24 giữ lịch sử. PLAN chờ duyệt; chưa BUILD/chạy SQL/push/merge/deploy.
+
+09/10 — P3 BUILD local: service/controller/form/migration010 đã viết. Test giới hạn/OT/snapshot/move rollback bằng temporary ledger và Smarty/browser đã PASS; full regression, migration thật và concurrency chưa chạy. Xem P3_BUILD_VERIFY_20261009.md. Chờ duyệt môi trường migration local sau backup; không commit phase hoàn tất/push/merge/deploy.
+
+P3local010: backup20MB/hashđãghi, applylặp2lầnPASS,95persistentfingerprintunchanged; regression59exit0; EXPLAIN108PASS;5.1/5.2PASS riêng. Tổng73PASS/0FAIL/7CHƯACHẠY trong80mục, P3concurrency riêng vẫnCHƯACHẠY. Không đónggói/commitphasehoàntất trướcVERIFYcònthiếu.
+
+09/10kếtquảP3: regressionrunner60exit0;95datafingerprintsunchanged; lintPASS. ConcurrencyP3DBriêngchờduyệt, phasechưachốt/commitcomplete. Khôngpush/merge/deploy, manifestcũchưachứaP3.
+
+09/10/2026 — người dùng yêu cầu xóa DB doagenttạo test: đối chiếu script/history xác định derasoft_pm_phase10_20261004 (95tables/6syntheticusers,email@example.test), backupignored.local rồiDROPđúngschema. Inventorycòn derasoft_pm_local + information_schema/performance_schema. derasoft_pm_p3_test chưa từngtạo. .local/p3_verify_data.php PASS95applicationdatafingerprintsunchanged. Khôngxóa backup/code/legacy, khôngproduction.
+
+09/10chốtscopeP3: người dùng bỏconcurrencyDBriêng, nhậnUATthủcông;60regressionexit0,108EXPLAIN/lint/browser/migration2lầnPASS,95dataunchanged. Chốtlocaltheophạmviđãduyệt,concurrencyCHƯACHẠY. Chuẩnbịcommitlocalvàgóireview,khôngproduction.
+
+09/10P3commitlocalfb67557 vàgóireview95runtime/112entries đãverifyCRC/SHA256;sourcefb67557 immutableblob, manifest319paths. ConcurrencyDBuserUAT, không tựPASS; khôngproduction/push/merge. Chi tiếtPHASE11_RELEASE_HANDOFF.md.

@@ -93,6 +93,12 @@ Test theo vai trò và nghiệp vụ, UAT trên staging/local copy, lập releas
 - Admin legacy chỉ mở khẩn cấp qua feature flag cục bộ, mặc định tắt.
 - Phạm vi HR, quy tắc OT đặc biệt và vòng đời duyệt timesheet còn chờ mentor xác nhận; dùng mặc định an toàn ghi trong `docs/AUDIT.md` nếu cần tiếp tục.
 
+## Điều hướng dự án đã chốt
+
+- Sau Lưu dự án (`project_save`) hoặc Ẩn dự án (`project_delete`) thành công: POST → HTTP 303 → GET `admin.php?op=pmprojects`, quay về danh sách Dự án & công việc. Thông báo thành công hiện một lần; refresh không lặp lại thông báo. Task/thành viên giữ điều hướng hiện có.
+- Ngoại lệ ngày dự án không hợp lệ (`end_date <= start_date` khi có cả hai ngày): không lưu, cũng trả 303 về danh sách với thông báo lỗi một lần. Các lỗi khác giữ luồng báo lỗi/phân quyền hiện có, không redirect như thao tác thành công.
+- Quyết định người dùng ngày 07/10/2026; code ở `modules/admin/pmprojects.module.php`. Bằng chứng HTTP được ghi tại phần “Điều chỉnh điều hướng sau Lưu/Ẩn dự án” và “Ràng buộc ngày dự án khác task” trong `docs/TEST_REPORT_FULL.md`; không dùng bằng chứng fixture để tuyên bố UAT production.
+
 ## Definition of Done chung
 
 - PHP lint và test liên quan đạt; có hướng dẫn test tay theo vai trò.
@@ -183,6 +189,13 @@ Cùng token với Admin, chỉ đơn giản hóa bố cục: 1 card trắng vi�
 - Bỏ bớt điểm nhấn (dải tuần, con dấu, chuỗi ngày) nếu không đủ thời gian.
 - Đổi bố cục nếu Derasoft đã có sẵn layout admin dùng tốt — ưu tiên tái sử dụng hơn làm mới hoàn toàn.
 
+## Quyết định D2 về giờ ước tính — 08/10/2026
+
+- Người dùng chọn (a): estimated_hours = 0 là “Chưa có ước tính”; không bao giờ cảnh báo vượt với estimate 0. Chỉ cảnh báo khi estimated_hours > 0 VÀ SUM(timesheets.hours chưa ẩn, đúng tenant/task/project) > estimated_hours, dùng DECIMAL chính xác, không float và không cộng thêm ot_hours. Bằng ngưỡng không cảnh báo.
+- Giao diện tại nơi hiển thị ước tính task: 0 hiện “Chưa có ước tính”, không hiện “0 giờ”.
+- Hạn chế đã chấp nhận: không phân biệt được “chưa ước tính” với “cố tình 0 giờ” do schema hiện tại. Muốn phân biệt phải thay đổi schema, cần duyệt riêng. D2 không migration, không chuyển đổi dữ liệu cũ.
+- PLAN D2 đã cập nhật nhưng dừng chờ duyệt lần cuối, chưa BUILD. VERIFY sẽ dùng fixture tạm vì local hiện không có task, assert dọn sạch và persistent data unchanged; estimate 0/actual lớn không cảnh báo, 0.01/0.02 có cảnh báo, 1.00/1.00 không cảnh báo. Các test này CHƯA CHẠY. Không push/merge/deploy.
+
 
 ## D2 BUILD/VERIFY — 08/10/2026
 
@@ -192,9 +205,10 @@ VERIFY thực chạy: service smoke PASS, 7 polling HTTP fixtures PASS, 53 regre
 
 Checklist hiện hành: **60 PASS / 1 FAIL / 19 CHƯA CHẠY**. Chỉ nâng 7.4; 11.4 và các mục còn lại giữ nguyên. HTTP timeout P0 lịch sử vẫn chưa xác định nguyên nhân; kết quả regression không tự đóng P0 hoặc thay UAT. Không push/merge/deploy.
 
-Estimate 0 là Chưa có ước tính, không cảnh báo. Schema NOT NULL không phân biệt chưa ước tính và cố tình 0; thay đổi schema cần duyệt riêng.
-
 
 ## Audit tài khoản tối thiểu — P4 duyệt 08/10/2026
 
 Log PM mới dùng actor ID, giữ nguyên lịch sử. profile_update chỉ tên trường đã đổi (fullname/email/address/tel), không giá trị; password_change chỉ action và actor ID, không credential/hash/contact/IP. Giữ engine/schema cũ; audit sau cập nhật không atomic xuyên engine, UI báo rõ khi dữ liệu đã đổi nhưng ghi audit lỗi. PM_HIDE_LEGACY mặc định/dự kiến triển khai true; count AJAX bị chặn404. P3 chờ A/B/C, chưa PLAN/chưa BUILD.
+
+## P3 — tổng giờ tối đa/ngày riêng, duyệt09/10/2026
+Người dùng chọnB và duyệt PLAN_P3_DAILY_TOTAL_LIMIT_20261009.md: standard_hours_per_day là ngưỡng regular/OT, max_total_hours_per_day là trần SUM(hours) trên mọi task/dự án của cùng tenant/user/date. Default24, Admin cũng không bypass. Ngày đã có ledger giữ snapshot; ledger rỗng không xóa. Migration010 ADD max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00; local được duyệt và đã backup/apply, production chưa duyệt. BUILD/VERIFY xem P3_BUILD_VERIFY_20261009.md.

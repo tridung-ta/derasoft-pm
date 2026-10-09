@@ -1,14 +1,14 @@
-# Báo cáo kiểm thử tổng — 07/10/2026
+# Báo cáo kiểm thử tổng — cập nhật 09/10/2026
 
 Checklist: [QUY_TRINH_KIEM_THU_TONG.md](QUY_TRINH_KIEM_THU_TONG.md). Baseline local b8e0774, nhánh feature/pm-phase11-launch-copy; các cập nhật A/B/C/D1 ghi cuối báo cáo. D1 đã sửa runtime theo PLAN duyệt. Không merge/push/deploy, không migration. Chỉ database derasoft_pm_local/loopback được guard.
 
-**Kết luận: CHƯA ĐẠT checklist tổng; chưa sẵn sàng tuyên bố UAT đầy đủ.** Có lỗi sản phẩm, thay đổi yêu cầu so với quyết định cũ, test lỗi thời và lỗi fixture MyISAM. Đã chạy nhóm 0 rồi kiểm tra cổng Tenant trước nhóm 2–8; 1.1/1.2 và scope suites không FAIL, nhưng 1.3/1.4 chưa đủ coverage toàn endpoint. Nhóm 9–10 browser; nhóm 11 regression/lint/checksum. Các probe bổ sung chỉ xác minh case còn thiếu, không thay trạng thái CHƯA CHẠY bằng suy luận.
+**Kết luận hiện tại: CHƯA ĐẠT checklist tổng do còn 7 mục CHƯA CHẠY.** 0.4 đã sửa theo PLAN được duyệt và VERIFY PASS; Tenant1.3/1.4, HTTP no-role/role refresh giữ PASS. Các lượt lỗi trước sửa bên dưới là lịch sử, không phải trạng thái hiện tại; không suy luận các mục chưa đủ bằng chứng thành PASS.
 
 **Sự cố kiểm thử đã xử lý ở A:** runner cũ báo 47 PASS nhưng pm_audit_smoke thay department_id user thật trên MyISAM. Người dùng đã xác nhận giá trị gốc NULL cho cả hai user; đã khôi phục và cô lập test bằng temporary exact-schema mirror, xác minh bảng thật không đổi khi chạy lại. Lịch sử điều tra giữ bên dưới; 11.5 đã đối chiếu PASS tại BƯỚC 1 bên dưới. Không có bằng chứng đã thay production.
 
 Quyết định người dùng: department tùy chọn, tên/email kiểm tra format/độ dài/control characters; không đánh giá tên vô nghĩa hoặc xác minh hộp thư. Validator hiện chưa đầy đủ: fullname/email 50, username 30, tel 15; import cho fullname 100/username 50. Xem [CONSTRAINT_REVIEW_20261007.md](CONSTRAINT_REVIEW_20261007.md). Giữ dc_users MyISAM.
 
-**80 mục: 61 PASS, 0 FAIL, 19 CHƯA CHẠY.** Cập nhật P4 ngày 08/10/2026: 11.4 PASS trong phạm vi writer PM đã chốt, theo assertions riêng từng writer; 7.4 giữ PASS. PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
+**80 mục: 73 PASS, 0 FAIL, 7 CHƯA CHẠY.** Cập nhật P4 ngày 08/10/2026: 11.4 PASS trong phạm vi writer PM đã chốt, theo assertions riêng từng writer; 7.4 giữ PASS. PASS chỉ trong phạm vi bằng chứng ghi ở dòng; CHƯA CHẠY có thể có kiểm tra một phần.
 
 ## Lệnh và output được sử dụng
 
@@ -54,9 +54,9 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | Mã | Kết quả | Bằng chứng, phạm vi / việc còn lại |
 |---|---|---|
 | 0.1 | **PASS** | Đã duyệt phòng ban tùy chọn; CRUD tạo department_id=NULL thành công, template có “Chưa có phòng ban”. G3 pm_users_crud_smoke, templates/admin/pm-users-v2.tpl.html:8. |
-| 0.2 | **CHƯA CHẠY** | Probe norole đăng nhập qua PmAuth thành công và từ chối 23 permission; chưa chạy phiên HTTP/browser no-role trên mọi action. .local/constraint_extra.php norole. |
-| 0.3 | **CHƯA CHẠY** | Đã duyệt không đánh giá tên vô nghĩa/hộp thư. FILTER_VALIDATE_EMAIL chấp nhận email mẫu; chưa kiểm thử end-to-end tên mẫu theo validator thống nhất vì validator độ dài/control chưa có. E0/E-V. |
-| 0.4 | **CHƯA CHẠY** | 73 HTTP cases có lỗi email/ngày/task và CSRF, chưa submit từng required field của mọi form user/project/task và kiểm tra thông báo từng field. E0. |
+| 0.2 | **PASS** | Login HTTP thật no-role qua admin.php; 80 protected endpoint/op + 4 settings/import actions + 8 protected reads bị chặn 403. Admin routes assert body Forbidden từ requirePermission, CSRF hợp lệ, dữ liệu không đổi. Suite pm_session_role_http_smoke exit 0, 98/98 gồm login/cookie/refresh controls; 22 bảng thật không đổi. Phạm vi permission-protected PM, không cấm personal account routes. |
+| 0.3 | **PASS** | pm_required_fields_http_smoke thực POST tạo nhân sự trong mirror: tên/email mẫu được lưu đúng, HTTP200, tracking1/audit0; 21 bảng thật không đổi. Không xác minh hộp thư. BATCH2_REQUIRED_FIELDS_VERIFY_20261009.md. |
+| 0.4 | **PASS** | Sau PLAN duyệt, pm_required_fields_http_smoke exit0:30/30 case tạo/sửa, multiple field errors, trim whitespace, zero budget/estimate hợp lệ và nonempty-invalid; thông báo đúng trường, không ghi/audit/tracking khi invalid. 21 bảng thật không đổi. Regression59scripts PASS, matrix80/80+11controls+35behaviors giữ nguyên. BATCH2_REQUIRED_FIELDS_VERIFY_20261009.md lưu trước/sau và lệnh/output. |
 | 0.5 | **PASS** | 13 fixture UI và template smoke render XSS thành text; HTTP search XSS không tạo script. E0, E9-ui; không gọi đây là pentest toàn framework. |
 | 0.6 | **PASS** | pm_ui_http_smoke chạy search SQLi, scope/response không lỗi SQL lộ ra. E0. |
 
@@ -66,20 +66,20 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 |---|---|---|
 | 1.1 | **PASS** | SHOW CREATE TABLE + information_schema cho 19 bảng dc_pm_*: tất cả có store_id. E1-schema. |
 | 1.2 | **PASS** | 12 unique key nghiệp vụ không phải PRIMARY đều chứa store_id; PK id toàn cục không được coi là tenant business key. E1-schema. |
-| 1.3 | **CHƯA CHẠY** | G1 service/HTTP scopes PASS project/task/timesheet/allocation/report/cost, nhưng chưa dựng đủ foreign resource có thật và đổi từng ID trên mọi endpoint. Chưa gọi nhóm 1 là hoàn toàn PASS. |
-| 1.4 | **CHƯA CHẠY** | HTTP kiểm tra session tenant/wrong store PASS; chưa gửi store_id giả riêng trong mọi request cost/report để so kết quả. Module lấy storeId từ session; code review không thay test. |
+| 1.3 | **PASS** | Trên commit c850158: `PHP tests/pm_tenant_matrix_smoke.php` trong regression thực chạy => 80 PASS / 0 FAIL cặp endpoint–ID (160 request), 11 control và 35 ca hành vi PASS; tenant khác/thiếu cùng status và thông báo chung, ba trường hợp task chấm công 403. 21 bảng thật hash trước/sau không đổi; fixture dọn sạch. Regression 56 script PASS. Xem TENANT_GROUP_A/B/C_VERIFY_20261008.md và bổ sung ngày 08/10 dưới đây. |
+| 1.4 | **PASS** | `.tools/php83/php.exe tests/pm_aggregate_store_input_smoke.php` => exit 0, 36 PASS / 0 FAIL: cost HTML/polling và 5 report modes GET/XLSX POST với 3 store_id giả, so dữ liệu baseline/forged như nhau, 21 bảng thật không đổi. Chỉ chuẩn hóa created/modified metadata Excel; xem BATCH1_HTTP_VERIFY_20261009.md. |
 
 ### Nhóm 2
 
 | Mã | Kết quả | Bằng chứng, phạm vi / việc còn lại |
 |---|---|---|
 | 2.1 | **PASS** | 20 auth identity checks: cả username/email dùng chung mật khẩu, đổi mới nhận cả hai, cũ bị từ chối. G2 pm_auth_identity_smoke; đây là DAO với temporary mirror, không browser login. |
-| 2.2 | **CHƯA CHẠY** | Pmauth authenticate đã chạy bằng MD5 và code có UPDATE password_hash; chưa assert trực tiếp hash mới sau login hoặc session login legacy. G2/auth code, không tự suy ra PASS hash persisted. |
+| 2.2 | **PASS** | Hash hiện đại và last_login được lưu sau đăng nhập MD5; password_verify trực tiếp; 25 checks, exact-schema mirror và bảng thật không đổi. Lệnh/output: [BATCH2_DATA_VERIFY_20261009.md](BATCH2_DATA_VERIFY_20261009.md). |
 | 2.3 | **CHƯA CHẠY** | 18 authenticated routes/menu Admin/Employee PASS; PM/HR có 73 controller fixture cases, chưa kiểm tra chính xác đủ menu bốn role qua login thật. E0. |
 | 2.4 | **PASS** | HTTP 18 + 73 cases gọi thẳng route và POST thiếu quyền bị từ chối, gồm PM foreign project và HR financial/import denial. E0. |
 | 2.5 | **PASS** | Auth mirror status 0/2 bị từ chối; session guard khóa/ẩn cũng bị từ chối. G2. |
-| 2.6 | **CHƯA CHẠY** | Code session_regenerate_id(true) có ở login.module.php:49; chưa so cookie/session ID trước-sau login hoặc time-expiry thật trong lượt này. |
-| 2.7 | **CHƯA CHẠY** | Session guard revoked status PASS; chưa đổi role/permission rồi reuse cookie HTTP của cùng phiên. Không coi thu hồi status là thu hồi role. G2. |
+| 2.6 | **CHƯA CHẠY** | pm_session_role_http_smoke thực chạy: session ID đổi sau login; cookie HttpOnly, SameSite=Lax, Max-Age=43200 PASS. Chưa kiểm tra thời gian hết hạn thật/server-side expiration nên không nâng mục tổng. BATCH1_HTTP_VERIFY_20261009.md. |
+| 2.7 | **PASS** | pm_session_role_http_smoke: cùng cookie từ login thật, pmusers GET khi DB fixture có ADMIN 200, gỡ role 403, phục hồi role 200; không thay session actor/cookie trong ba request. Roles thay ở exact-schema mirror, PmAccess đọc DB thật mỗi request; không tuyên bố UAT quản trị role. Exit 0, 22 bảng thật không đổi. |
 
 ### Nhóm 3
 
@@ -90,11 +90,11 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 3.3 | **PASS** | Không role chính, không user rate: rate_decimal=0.00, source=fallback, warning có giá trị. G3-extra. |
 | 3.4 | **PASS** | Sau effective_to: fallback, không chọn rate đã hết hạn. G3-extra. |
 | 3.5 | **PASS** | pm_rates_smoke: rate cũ 01–31/01, rate mới từ 15/01 đến NULL bị phát hiện overlap; từ 01/02 không overlap. G3. |
-| 3.6 | **CHƯA CHẠY** | lockOwnerRates có SELECT FOR UPDATE nhưng chưa chạy hai request rate thật đồng thời; test concurrency Phân bổ không chứng minh rate race. Phase 3 cần thêm test riêng, kể cả owner chưa có rate. |
+| 3.6 | **CHƯA CHẠY** | Chưa chạy hai request rate thật đồng thời. Temporary tables không chia sẻ giữa connections; chưa có shared fixture an toàn được duyệt. Không tạo bảng persistent hoặc ghi/xóa rate thật. SELECT FOR UPDATE/code review và allocation concurrency không chứng minh rate race; xem BATCH1_HTTP_VERIFY_20261009.md. |
 | 3.7 | **PASS** | validateRateOwner từ chối cùng NULL/cùng có giá trị; nhận đúng một owner. G3 pm_rates_smoke. |
 | 3.8 | **PASS** | CRUD mirror soft-delete status=2, không hiện danh sách mặc định và tenant boundary. G3 pm_users_crud_smoke. |
 | 3.9 | **PASS** | HTTP duplicate email từ chối và native INSERT trùng trả 1062; cùng store. E0/G8 pm_import_native_duplicate. Native test có thể gây gap auto_increment. |
-| 3.10 | **CHƯA CHẠY** | CRUD list/count/search/page tên/email PASS; template/controller có phòng ban/role filters nhưng chưa assert kết quả từng bộ lọc và tổ hợp. G3, G11 role batch không thay test lọc. |
+| 3.10 | **PASS** | 12 trường hợp tên/email/username/phòng ban/vai trò/tổ hợp; list/count đúng ID, 4 trang không trùng; bản ghi ẩn/khác tenant bị loại. Lệnh/output: [BATCH2_DATA_VERIFY_20261009.md](BATCH2_DATA_VERIFY_20261009.md). |
 
 ### Nhóm 4
 
@@ -110,11 +110,11 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 
 | Mã | Kết quả | Bằng chứng, phạm vi / việc còn lại |
 |---|---|---|
-| 5.1 | **CHƯA CHẠY** | Smoke thực tế dùng 6h+4h và HTTP fixture 4h+9h; chưa chạy đúng fixture một dòng 8h regular=8/OT=0 trong lượt này. Không suy từ case 10h. |
-| 5.2 | **CHƯA CHẠY** | HTTP đã kiểm tra thêm 2h sau tổng 13h => 0 regular/2 OT; chưa chạy đúng case trước đó đúng 8h rồi thêm 2h. E0, G5. |
+| 5.1 | **PASS** | tests/pm_timesheets_smoke.php: PASS 5.1/5.2: first8 regular8/OT0, max12; temporary ledger và rollback. Xem P3_BUILD_VERIFY_20261009.md. |
+| 5.2 | **PASS** | Cùng test: extra2 regular0/OT2 dưới trần12, assertions trực tiếp từng dòng; không cộng OT lần nữa. Xem P3_BUILD_VERIFY_20261009.md. |
 | 5.3 | **PASS** | Sửa/move tính lại ngày; HTTP 4h thành 2h khiến dòng 9h thành 6 regular/3 OT, cost 1050. E0/G5. |
 | 5.4 | **PASS** | Soft-delete recalculates dòng còn lại, HTTP 9h thành 8 regular/1 OT cost 950. E0/G5. |
-| 5.5 | **CHƯA CHẠY** | Smoke assert rate_snapshot giữ nguyên sau đổi rate; chưa assert riêng cost trước/sau đổi rate để hoàn tất đúng mục 5.5. G5. |
+| 5.5 | **PASS** | Cost và rate_snapshot giữ nguyên sau đổi đơn giá và lưu lại cùng ngày, so sánh chuỗi DECIMAL chính xác; fixture rollback. Lệnh/output: [BATCH2_DATA_VERIFY_20261009.md](BATCH2_DATA_VERIFY_20261009.md). |
 | 5.6 | **PASS** | pm_timesheet_window_smoke: mốc ba ngày, khóa, Admin override + special audit; role/ownership boundaries. G5. |
 | 5.7 | **PASS** | Create/update/soft-delete/recalculate có audit, actor và action được assert bằng fixture; fields nghiệp vụ không có password/token. E0/G5. PII/log toàn hệ thống xem 11.4. |
 
@@ -150,7 +150,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 |---|---|---|
 | 8.1 | **PASS** | Hours/report totals, own scope, XLSX round-trip/DECIMAL/role aggregates khớp fixture. G8. |
 | 8.2 | **PASS** | Report fixture nhân dòng vượt 5000: xlsx bị từ chối, không silently truncate. G8 pm_reports_smoke; limit guards trong pmreports DAO. |
-| 8.3 | **CHƯA CHẠY** | XLSX đã assert =HYPERLINK và @SUM là type string; tất cả cells export explicit string. Chưa tạo đủ mẫu + và - để round-trip từng prefix trong lượt này. G8. |
+| 8.3 | **PASS** | XLSX round-trip đủ =, +, -, @; type string, literal và calculated value đúng, fixture rollback. Lệnh/output: [BATCH2_DATA_VERIFY_20261009.md](BATCH2_DATA_VERIFY_20261009.md). |
 | 8.4 | **PASS** | Reconciled with approved Phase 8 design: Stage validates the entire file, reports row errors and rejects the whole file if any row is invalid. Existing pm_import_smoke execution covered rejection (Duplicate file staged assertion). Previous FAIL incorrectly assumed partial staging; no code changed or new test run in Step B. |
 | 8.5 | **PASS** | Macro/formula/external link/DTD/ZIP-size/file-size/row-limit fixtures bị từ chối. G8 pm_import_smoke/http. |
 | 8.6 | **PASS** | Apply mirror có injected crash/provenance/retry/UNIQUE gate và không duplicate; native email 1062 verified local. G8 pm_import_apply_smoke. Không dùng production. |
@@ -165,7 +165,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 | 9.2 | **CHƯA CHẠY** | PASS 13 fixtures 360/390/768/1440 + text scaling 200%; chưa chạy browser zoom thật 200%. E9-ui. Không đánh đồng scaling và zoom. |
 | 9.3 | **CHƯA CHẠY** | Skip/tab/modal/collapse/tablist/focus đã chạy trên fixture; chưa hoàn tất keyboard-only mọi hành động toàn ứng dụng. E9-ui/G10. |
 | 9.4 | **PASS** | Probe valid polling responses: Chi phí và Phân bổ dừng 120s khi hidden, tiếp tục sau visible. E9-visibility, đã chờ response chứ không chỉ kiểm tra đồng hồ. |
-| 9.5 | **CHƯA CHẠY** | HTTP CSP header self/no unsafe-inline PASS; preview Chart và UI no-pageerror PASS. Chưa áp cùng CSP header thật lên mọi fixture và thao tác form/Chart dưới header đó trong lượt này. E0/E6-browser. |
+| 9.5 | **CHƯA CHẠY** | Có kiểm tra Chart/chi phí dưới CSP header thật; chưa thao tác mọi form/module. Bằng chứng và giới hạn: BATCH3_UI_PARTIAL_VERIFY_20261009.md. |
 
 ### Nhóm 10
 
@@ -173,7 +173,7 @@ G8: pm_reports_smoke, pm_reports_http_smoke, pm_import_smoke, pm_import_http_smo
 |---|---|---|
 | 10.1 | **PASS** | Computed normal #18181b, danger #dc2626 qua 4 loại action và default/hover/active/focus/disabled. G10-buttons. |
 | 10.2 | **PASS** | Danger computed chữ #ffffff, nền #dc2626, contrast 4.83:1; normal 16.97:1. G10-buttons. |
-| 10.3 | **CHƯA CHẠY** | CSS warning foreground là #92400e, #d97706 dùng border; chưa computed-scan mọi small text trong mọi cảnh báo/state. Không coi grep CSS là kiểm thử toàn UI. |
+| 10.3 | **CHƯA CHẠY** | Computed-color scan 37 fixture: bad=[]; chưa bao phủ mọi cảnh báo động/state/pseudo-element. BATCH3_UI_PARTIAL_VERIFY_20261009.md. |
 | 10.4 | **PASS** | Lock/deactivate danger; unlock/restore secondary không danger, confirmation existing được giữ. G10-buttons. |
 | 10.5 | **PASS** | Một theme chung css/pmui.css; computed stylesheet list còn Bootstrap và pmcosts.css legacy. Đây là 1 theme chung, không phải 1 stylesheet tổng cộng; không tạo theme thứ hai. E9-visibility + template review. |
 | 10.6 | **PASS** | Existing G10-allocation browser evidence: 8 headers, exact totals/overbooking, same-day rows and year rollover. User approved light warning background with border #d97706; solid fill is not required and reduces number readability. No code change or new test run in Step B. |
@@ -492,6 +492,34 @@ Quét không lọc trạng thái, cùng store_id và khác ID, cả username=use
 
 Review bảo mật: input limits trước ghi; prepared parameters; tên collation lấy metadata và whitelist identifier; permission/CSRF/tenant giữ nguyên; collision không bỏ user khóa/ẩn; credential không in hoặc đưa vào audit; batch/identity lock thứ tự thống nhất và nhả khi lỗi; fixture không ghi bảng users thật. Không phát hiện defect còn mở trong phạm vi BƯỚC 2 đã review. Giữ **59 PASS / 2 FAIL / 19 CHƯA CHẠY**; không tự nâng checklist từ regression. Không sửa OT, Audit Log UI hay D2; dừng trước BƯỚC 3. Không push/merge/deploy mới.
 
+## P0/P1 — Điều tra flaky và đối chiếu tài liệu (07/10/2026)
+
+Đã thực chạy Apply smoke 10 lần liên tiếp rồi Role HTTP smoke 10 lần liên tiếp: mỗi suite 10/10 PASS. Probe close/acquire 300 lần tái hiện 8 lần GET_LOCK(timeout=0) thất bại tức thời sau close phía client, rồi bounded wait acquire thành công dưới 0,4 ms: xác định giả định timing harness. Hai diagnostic HTTP run, mỗi run 139 case PASS; lần cuối trace max HTTP 2054,531 ms, hai acquire cố tình bị chặn khoảng 2 giây, release tối đa 0,093 ms; invalid-password case sau contention không gọi named lock.
+
+Timeout HTTP lịch sử **chưa có nguyên nhân gốc xác định**; không coi 10 lần PASS là bằng chứng “chỉ lỗi harness”. metadata_locks SELECT denied 1142, không đổi quyền; IS_USED_LOCK chỉ kiểm tra được các tên hiện hành xác định từ persistent data, không phải toàn bộ lock graph. P0 chưa đóng đầy đủ, P2–P4 chưa thực hiện, không push/merge/deploy. Bằng chứng từng lần, lệnh, giới hạn và kết luận ở `docs/P0_FLAKY_INVESTIGATION_20261007.md`. Giữ 59 PASS/2 FAIL/19 CHƯA CHẠY.
+
+P1 theo câu hỏi người dùng: PLAN_FINAL mục “Logic nghiệp vụ đã chốt”, dòng 88 có rule ngày dự án (khi có cả hai ngày) và ngoại lệ task cùng ngày. Đã bổ sung mục “Điều hướng dự án đã chốt” làm nguồn chuẩn cho 303 Lưu/Ẩn thành công và ngoại lệ 303 lỗi ngày; các lỗi khác không redirect thành công. Đây là cập nhật tài liệu khớp code đã có, không thay đổi runtime.
+# Tiếp tục P0 — trace kết nối HTTP (07/10/2026)
+
+Chạy `.tools/php83/php.exe .local/p0_trace_role_smoke.php`: exit 0, 139 HTTP cases
+PASS; suite xác nhận persistent state/engine unchanged. Run `fae0c2cfc989` ghi đủ
+139 TCP CONNECT events, 0 response failure; max connect 29,620 ms, max HTTP
+2061,033 ms. Case 115: connect 0,258 ms, HTTP 200 sau 52,034 ms, không GET_LOCK.
+Bằng chứng: `.local/p0_transport_summary.json`, `.local/p0_role_trace.jsonl`;
+chi tiết trong `docs/P0_FLAKY_INVESTIGATION_20261007.md`.
+Không tái hiện lỗi HTTP lịch sử; nguyên nhân vẫn chưa xác định. P0 chưa đóng,
+không chuyển P2. Tổng checklist giữ 59 PASS / 2 FAIL / 19 CHƯA CHẠY.
+Không sửa mã sản phẩm, không push/merge/deploy.
+
+## P0 bổ sung và PLAN D2 — 08/10/2026
+
+- tests/pm_import_apply_smoke.php đã đổi assertion close/acquire sang GET_LOCK(name,1) hữu hạn, giữ ownership trước/sau và owner NULL sau release; không sleep hoặc bỏ assertion. Lệnh .tools/php83/php.exe tests/pm_import_apply_smoke.php chạy 10 lần liên tiếp: 10/10 exit 0/PASS, dc_users và MyISAM unchanged. PHP lint exit 0.
+- Timeout sản phẩm identity 2 giây, batch 0 giây giữ nguyên. Batch fail-fast có thể busy tạm thời tại cửa sổ session close; độ chờ probe 0,087–0,369 ms không phải trần thời gian close-to-release.
+- HTTP diagnostic suite giữ client timeout 15 giây: 20/20 lượt có preflight hợp lệ PASS, 2780 request, max HTTP 2108,098 ms, max TCP 34,165 ms. Kiểm tra process/cổng trước mỗi lượt bằng Get-Process/netstat; giữ server local 8088, không còn fixture 18770 sau kiểm thử. CIM denied/lượt bị dừng được giữ bằng chứng riêng.
+- Kết luận HTTP: **chưa tái hiện**, chưa xác định nguyên nhân timeout cũ; không kết luận chỉ harness hoặc production-safe.
+- Bằng chứng/lệnh từng lượt và thời gian từng request: docs/P0_VERIFY_20261008.md cùng các artifact .local được liệt kê trong đó. Checklist tổng vẫn 59 PASS / 2 FAIL / 19 CHƯA CHẠY.
+- docs/PLAN_D2_TASK_ESTIMATE_WARNING.md chỉ PLAN, chờ duyệt scope/quyền/historical/estimate 0/NULL. Chưa BUILD D2; không push/merge/deploy.
+
 
 ## D2 BUILD/VERIFY — 08/10/2026
 
@@ -514,3 +542,57 @@ P3 chờ A/B/C, chưa PLAN/chưa BUILD và không sửa OT. P0:20/20 lượt h�
 Audit hồ sơ chỉ actor ID + action + tên trường đã đổi; audit mật khẩu actor ID + action, không giá trị liên hệ/credential/hash/IP. PM_HIDE_LEGACY mặc định/dự kiến triển khai true, legacy AJAX count 4 request HTTP404. Assertions riêng từng writer PM đã chạy; 55 regression scripts, 156 role HTTP cases, PHP lint14 file PASS, diff --check exit0. Fixture rollback/temporary exact-schema và persistent unchanged theo từng suite. Chi tiết docs/P4_VERIFY_20261008.md.
 
 Chỉ11.4 đổi FAIL→PASS trong phạm vi đã chốt; tổng **61 PASS / 0 FAIL / 19 CHƯA CHẠY**. Không tự nâng19mục hoặc tuyên bố UAT/production-ready. P3 chờA/B/C, chưaPLAN/chưaBUILD; P0 timeout lịch sử chưa tái hiện/chưa xác định nguyên nhân. Không migration/push/merge/deploy.
+
+
+## Kết quả hiện hành 08/10/2026 — commit và các lô
+
+P0 commit riêng833a148 bằng git add -p; P4 test fault commit26ca279. Regression trên code/tests đã commit26ca279 exit0:55 scripts PASS,157 role HTTP cases. Test matrix mới nằm ngoài regression này và phát hiện1.3 FAIL; regression PASS không thay thế cổng Tenant. Tổng hiện hành61 PASS /1 FAIL /18 CHƯA CHẠY. Lô1 dừng ngay; Lô2–3 chưa chạy. 2.3/9.2/9.3 chuyển kịch bản UAT, vẫn CHƯA CHẠY;5.1/5.2 chờP3 A/B/C. Bằng chứng và PLAN sửa chờ duyệt: [VERIFY_BATCHES_20261008.md](VERIFY_BATCHES_20261008.md). Không push/merge/deploy.
+
+
+## 08/10/2026 — collecting matrix theo duyệt mới
+
+80 cặp endpoint/ID đã thực chạy trên runtime chưa sửa:39 PASS/41 FAIL;11 control PASS;exit1,stderr rỗng. Những kết quả này là subcases của1.3, không thay số mục checklist80. Tổng vẫn **61 PASS /1 FAIL /18 CHƯA CHẠY**. Foreign có thật và missing được kiểm chứng, cùng status/message; toàn bộ FAIL hiện doHTTP200. Trace ca gốc thực sự làOutOfBoundsException từPmProjectService::saveTask(), dòng122, controller catch bỏstatus.
+
+Lượt cuối hash21bảng thật/field user/tracking không đổi. Lượt cleanupFAIL do biến độngdc_users/dc_trackings được giữ riêng; probe read-only cho thấy login10:27:11 và last_login củaID111 cùng thời điểm, chưa xác định nguồnrequest. Không khôi phục hoặc viết dữ liệu thật. Các lỗi harness1137/compositechecksum/PMmanager/UnicodeJSON đã được mô tả bằng bằng chứng, không quy thành lỗi sản phẩm.
+
+[Bảng đầy đủ80cặp, thông báo và output](TENANT_MATRIX_VERIFY_20261008.md); [PLAN chung chờ duyệt](TENANT_SCOPE_FIX_PLAN_20261008.md). Giữ InvalidArgumentException200 ở form đã duyệt, bỏ expectation400 chopmprojects; date-range/303/Lưu/Ẩn giữ nguyên. Không thêm matrix đangFAIL vào regression, chưa commit fix/chưa tạo lại manifest. Đã thêm009 vào thứ tự deploy ởDEPLOY_LOG.md (chỉ4ADD COLUMN nullable, phụ thuộc003). Các lô và1.4 vẫn dừng;P3 chờA/B/C. Không push/merge/deploy.
+
+
+## Gate rà soát bổ sung Tenant 1.3 — 08/10/2026
+
+Trước khi nhận yêu cầu dừng BUILD có điều kiện, sửa local theo lượt duyệt trước đã chạy matrix:80/80 cặp PASS,11 controls PASS,exit0;21 bảng persistent hash trước/sau không đổi. Output .local/tenant-matrix-full-command-20261008.json; data .local/tenant-matrix-full-20261008.json. Đây chỉ là kết quả contract cũ, không đủ nâng1.3 khi yêu cầu mới bổ sung message không chứa loại tài nguyên và rà endpoint/local quyền/malformed.
+
+Regression khởi chạy trên working tree chưa commit: powershell -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1; exit1 tại pm_projects_smoke (assignee không tồn tại: test cũ chỉ bắt InvalidArgumentException, service local ném OutOfBoundsException). Chưa sửa assertion/chưa chạy tiếp nhóm. Công cụ chờ từng timeout nhưng artifact hoàn tất cho biết FAIL, không ghi PASS.
+
+Hiện vẫn **61 PASS /1 FAIL /18 CHƯA CHẠY**;1.3 giữ FAIL cho tới khi VERIFY toàn bộ phạm vi cuối được duyệt. [Bốn bảng chờ duyệt](TENANT_SCOPE_REVIEW_GATE_20261008.md). Không commit thêm, push/merge/deploy/migration;P3 chờ A/B/C. Bốn bảng chỉ đọc code, không thêm runtime changes sau gate mới.
+
+
+## Tenant 1.3 — VERIFY trên commit cuối, 08/10/2026
+
+Người dùng đã duyệt bốn bảng và BUILD theo nhóm. Commit local riêng: A `b70b441`, B `a3b17e3`, C `c850158c3734298c3f96755c9df006fc3a9305f7`. Không push/merge/deploy/migration.
+
+Lệnh thực chạy: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1` trên commit C; exit 0. Output: `PASS: 56 regression scripts. No migrations applied by this runner.` Suite role HTTP: 157 ca PASS. Matrix: `RESULT: 80 PASS / 0 FAIL endpoint-ID pairs; 160 requests; 0 control failures; cleanup=PASS.` 11 positive controls, 35 behavioral controls, không lỗi. Artifact `.local/tenant-matrix-all-20261008.json` ghi source_commit đúng C và runtime_modified=false; 21 hash persistent trước/sau bằng nhau, changed_user_fields rỗng, cleanup=true. Output đầy đủ giữ local `.local/tenant-committed-regression-20261008.txt`; không commit log.
+
+Preflight cuối: chỉ thấy process PHP PID 37372 chạy server local 8088 đã biết; harness kiểm tra port 18776 trống và tạo session test cô lập, chỉ dừng server do nó tạo. Không tuyên bố đã kiểm kê mọi session trình duyệt. Lượt trước có thay đổi last-login/tracking ngoài fixture đã ghi riêng; chưa xác định nguồn, không gán nguyên nhân. Lượt cuối không có thay đổi bảng thật.
+
+Chỉ nâng 1.3. Các mục CHƯA CHẠY còn lại giữ nguyên đến khi có bằng chứng riêng; 5.1/5.2 chờ P3, 2.3/9.2/9.3 dành UAT người dùng.
+
+
+## Lô 1 bổ sung — 09/10/2026
+
+Đã hoàn thiện phần HTTP dở hôm qua. Lệnh thực: `PHP tests/pm_aggregate_store_input_smoke.php` exit 0:36/36; `PHP tests/pm_session_role_http_smoke.php` exit 0:98/98; `PHP tests/pm_tenant_matrix_smoke.php all` exit 0:80/80 +11 controls +35 behaviors. Assertions dữ liệu/audit/tracking giữ nguyên; 21/22 bảng thật hash trước/sau bằng nhau. Nâng đúng 1.4,0.2,2.7, không nâng 2.6/3.6. Chi tiết [BATCH1_HTTP_VERIFY_20261009.md](BATCH1_HTTP_VERIFY_20261009.md). Các mục còn lại giữ nguyên; P3 vẫn chờ A/B/C. Regression trên commit 5533099963c6332047c0a912f148919147e6f8c0 đã kết thúc exit0:58 scripts PASS; output đầy đủ .local/committed-regression-20261009.txt. Probe0.4 bổ sung sau đó FAIL, không thuộc regression58 và chưa thêm runner.
+
+
+## Lô2 — dừng 0.4, 09/10/2026
+
+`PHP tests/pm_required_fields_http_smoke.php` exit1:7 PASS/14 FAIL/21cases; cleanup21 bảng PASS. 0.3 nângPASS,0.4FAIL theo thông báo không rõ trường; không có bằng chứng ghi dữ liệu trống. [BATCH2_REQUIRED_FIELDS_VERIFY_20261009.md](BATCH2_REQUIRED_FIELDS_VERIFY_20261009.md) chứa bảng từng case/status/output. Chờ [PLAN_REQUIRED_FIELDS_20261009.md](PLAN_REQUIRED_FIELDS_20261009.md); chưa sửa runtime, chưa chạy các mục còn lại của lô2/lô3.
+
+
+## 0.4 — BUILD/VERIFY sau duyệt, 09/10/2026
+
+Targeted`PHP tests/pm_required_fields_http_smoke.php` exit0:30PASS/0FAIL, cleanup21 bảng PASS. Regression`powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/pm_regression.ps1` exit0:59scripts PASS; stdout .local/required-fields-regression-20261009.txt. Matrix80/80+11controls+35behaviors,roleHTTP157,no-role98,store-input36PASS. Đã review query/CSRF/scope/status/escaping, không đổi OT/schema. Chỉ nâng0.4PASS;13mục còn lại giữ nguyên, tiếp tục lô2 sau phần này.
+
+## P3 BUILD sau vòng71/0/9 — 09/10/2026
+Code đang VERIFY theo lựa chọn B; bằng chứng P3_BUILD_VERIFY_20261009.md. 5.1/5.2 đã có assertions thực chạy PASS, tổng73PASS/0FAIL/7CHƯA CHẠY. Migration010 local sau backup đã duyệt/chạy, regressionP3 mới60scripts exit0. Concurrency P3 trênDBriêng chưa chạy và chưa tính PASS; khôngpush/merge/deploy.
+
+P3 chốtscope09/10: usernhậnkiểmthửDBthủcông; runtimecommitfb67557/regression60exit0/explain108/fingerprint95PASS. Tổng73PASS/0FAIL/7CHƯACHẠY, khôngnângconcurrencyP3/3.6hoặccácUAT. Gói95runtime chỉreview, chưađạtgateproduction.
