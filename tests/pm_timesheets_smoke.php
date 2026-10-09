@@ -57,8 +57,13 @@ try{
     $full=$ts->weeklySummary('2100-01-03');
     if($full['start']!=='28/12/2099'||$full['end']!=='03/01/2100'||$full['days'][3]['hours']!=='0.21'||$full['days'][3]['regular_hours']!=='0.21'||$full['days'][3]['has_ot']||$full['days'][0]['has_entries']||$full['days'][0]['hours']!=='0.00')throw new RuntimeException('Weekly pagination/tenant/user/deleted/year boundary failed.');
     if($ts->weeklySummary('2099-12-31',$otherId)['days'][3]['hours']!=='1.00')throw new RuntimeException('Admin edit-target weekly scope failed.');
+    $beforeRateChange=$ts->getOwn($second);
     $query->execute('UPDATE dc_pm_hourly_rates SET rate=? WHERE store_id=? AND user_id=? AND effective_from=?','siis',['100.25',$store,$actor,'2026-06-01']);
+    $afterRateChange=$ts->getOwn($second);
+    if($afterRateChange['cost']!==$beforeRateChange['cost']||$afterRateChange['rate_snapshot']!==$beforeRateChange['rate_snapshot'])throw new RuntimeException('5.5 persisted cost changed after editing rate');
     $input['hours']='4';$ts->save($input,$second);
+    if($ts->getOwn($second)['cost']!==$beforeRateChange['cost'])throw new RuntimeException('5.5 same-date resave changed historical cost');
+    echo "PASS 5.5: stored cost and rate_snapshot unchanged after rate edit and same-date resave (exact DECIMAL strings).\n";
     if($ts->getOwn($second)['rate_snapshot']!=='1234567890123.45')throw new RuntimeException('Same-day rate snapshot changed.');
     $input['hours']='24';
     try{$ts->save($input);throw new RuntimeException('24 hour limit not enforced.');}catch(DomainException $expected){}

@@ -49,6 +49,11 @@ try{
     $book=\PhpOffice\PhpSpreadsheet\IOFactory::load($path);$sheet=$book->getActiveSheet();
     reportCheck($sheet->getCell('C3')->getDataType()==='s'&&$sheet->getCell('C3')->getValue()==='=HYPERLINK("bad")','Formula injection/type failed.');
     reportCheck($sheet->getCell('E3')->getDataType()==='s'&&$sheet->getCell('I3')->getValue()==='@SUM(1,1)','Formula-like shift/description unsafe.');$book->disconnectWorksheets();unlink($path);$path=null;
+    foreach(['=','+','-','@'] as $prefix){
+        $literal=$prefix.'SUM(1,1)';$q->execute('UPDATE dc_pm_timesheets SET shift_label=?,description=? WHERE store_id=? AND id=?','ssii',[$literal,$literal,$store,$first]);
+        $roundPath=tempnam(sys_get_temp_dir(),'pm-prefix-roundtrip-');try{file_put_contents($roundPath,$service->xlsx($filter));$roundBook=\PhpOffice\PhpSpreadsheet\IOFactory::load($roundPath);$roundSheet=$roundBook->getActiveSheet();foreach(['E3','I3'] as $cell){reportCheck($roundSheet->getCell($cell)->getDataType()==='s','8.3 prefix not explicit string');reportCheck($roundSheet->getCell($cell)->getValue()===$literal&&$roundSheet->getCell($cell)->getCalculatedValue()===$literal,'8.3 literal altered or calculated');}$roundBook->disconnectWorksheets();}finally{unlink($roundPath);}
+        echo 'PASS 8.3: prefix '.$prefix.' round-trips as literal text in shift and description.'.PHP_EOL;
+    }
     $q->execute('UPDATE dc_pm_timesheets SET cost=? WHERE store_id=? AND id=?','sii',['1234567890123456.78',$store,$first]);
     $costFilter=array_replace($filter,['mode'=>'costs']);$r=$service->report($costFilter);reportCheck($r['data']['summary']['cost']==='1234567890123456.78','DECIMAL report altered money.');
     reportCheck($service->report(array_replace($costFilter,['user_id'=>$actor,'role_code'=>'ADMIN']))['data']['summary']['cost']==='1234567890123456.78','Cost person/role filter lost DECIMAL.');
