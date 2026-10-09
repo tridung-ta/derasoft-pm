@@ -1,0 +1,315 @@
+{
+  "prefix": "uat261009",
+  "accounts": [
+    [
+      "uat261009_pm1",
+      "UAT Quản lý Một",
+      "uat261009.pm1@example.com",
+      "PM",
+      "UAT261009",
+      40,
+      ""
+    ],
+    [
+      "uat261009_pm2",
+      "UAT Quản lý Hai",
+      "uat261009.pm2@example.com",
+      "PM",
+      "UAT261009",
+      40,
+      ""
+    ],
+    [
+      "uat261009_hr",
+      "UAT Nhân sự",
+      "uat261009.hr@example.com",
+      "HR",
+      "UAT261009",
+      40,
+      ""
+    ],
+    [
+      "uat261009_emp1",
+      "UAT Nhân viên Một",
+      "uat261009.emp1@example.com",
+      "EMPLOYEE",
+      "UAT261009",
+      40,
+      ""
+    ],
+    [
+      "uat261009_emp2",
+      "UAT Nhân viên Hai",
+      "uat261009.emp2@example.com",
+      "EMPLOYEE",
+      "UAT261009",
+      40,
+      ""
+    ],
+    [
+      "uat261009_norole",
+      "UAT Chưa có quyền",
+      "uat261009.norole@example.com",
+      "",
+      "UAT261009",
+      40,
+      ""
+    ]
+  ],
+  "projects": [
+    [
+      "UAT261009_A",
+      "UAT Đồng bộ giao diện A",
+      "uat261009_pm1",
+      -7,
+      14,
+      2000000
+    ],
+    [
+      "UAT261009_B",
+      "UAT Phạm vi quản lý B",
+      "uat261009_pm2",
+      -7,
+      14,
+      1000000
+    ]
+  ],
+  "tasks": [
+    [
+      "UAT A Giờ vượt ước tính",
+      "UAT261009_A",
+      "uat261009_emp1",
+      4,
+      -3,
+      -1,
+      "todo"
+    ],
+    [
+      "UAT A Chưa có ước tính",
+      "UAT261009_A",
+      "uat261009_emp2",
+      0,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT A Số nhỏ",
+      "UAT261009_A",
+      "uat261009_emp2",
+      0.01,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT A Bằng ngưỡng",
+      "UAT261009_A",
+      "uat261009_emp2",
+      1,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT A Chấm công OT",
+      "UAT261009_A",
+      "uat261009_emp1",
+      20,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT B Task riêng",
+      "UAT261009_B",
+      "uat261009_emp2",
+      4,
+      -3,
+      -1,
+      "todo"
+    ]
+  ],
+  "cases": [
+    [
+      "01",
+      "Điều kiện host",
+      "Backup, nhận diện phiên bản/schema, bảo trì mọi writer khi upload. Không chạy SQL hàng loạt.",
+      "Ghi bằng chứng trước triển khai; không suy từ local."
+    ],
+    [
+      "02",
+      "Tạo bộ mẫu",
+      "Admin tạo phòng ban UAT261009 và 6 nhân sự; mật khẩu do bạn tự đặt, điện thoại để trống.",
+      "Tên/email mẫu duy nhất; lưu ID vào biên bản. Không dùng email để gửi thư thật."
+    ],
+    [
+      "03",
+      "Phân quyền",
+      "Gán đúng vai trò; tài khoản norole bỏ hết vai trò sau khi tạo.",
+      "Không thêm ADMIN cho các tài khoản PM/HR/Employee."
+    ],
+    [
+      "04",
+      "Thành viên",
+      "PM1 quản lý A; PM2 quản lý B. EMP1 và EMP2 tham gia A; EMP2 tham gia B.",
+      "Chỉ đúng manager hoặc Admin có quyền sửa. PM1 không là thành viên B."
+    ],
+    [
+      "05",
+      "Đơn giá/capacity",
+      "Admin tạo rate cá nhân 100000 VND/giờ từ D-7 và capacity 8/ngày,40/tuần cho EMP1/EMP2.",
+      "Chỉ ảnh hưởng tài khoản UAT. Không sửa cấu hình chấm công chung để test."
+    ],
+    [
+      "06",
+      "Chưa chấm công",
+      "Đăng nhập EMP1 trước khi thêm giờ ngày D.",
+      "Dashboard giờ hôm nay 0 và nhắc chưa chấm công; hiển thị task được giao."
+    ],
+    [
+      "07",
+      "Kanban thật",
+      "PM1 chuyển task A sang done bằng nút; reload. Chuyển lại todo bằng kéo-thả; reload.",
+      "AJAX 200; trạng thái lưu thật; audit actor ID; completed_at khi done và bỏ khi mở lại."
+    ],
+    [
+      "08",
+      "Tách quyền PM",
+      "PM1 mở project_id B và gửi task B qua DevTools bằng cookie PM1.",
+      "403/404 theo endpoint; không sửa task, không lộ tên B. Không đổi ID dữ liệu thật."
+    ],
+    [
+      "09",
+      "Readonly Employee",
+      "EMP1/HR không có nút quản lý task. Thử POST endpoint task của bộ UAT.",
+      "403, không đổi trạng thái. HR không xem tổng task/dashboard PM."
+    ],
+    [
+      "10",
+      "No-role",
+      "Đăng nhập norole và mở dashboard/PM endpoints.",
+      "Bị từ chối theo quyền; không có dữ liệu quản lý."
+    ],
+    [
+      "11",
+      "Phiên/CSRF",
+      "Gửi task không cookie, thiếu/sai CSRF, hoặc logout rồi cập nhật tab cũ.",
+      "401 khi chưa đăng nhập; 403 khi CSRF sai; không có write/audit thành công."
+    ],
+    [
+      "12",
+      "D2 gốc",
+      "EMP1 chấm 5h task ước tính 4h ngày D. PM1 phân bổ 4h 08:00–12:00 cùng task ngày D.",
+      "1 cảnh báo actual 5 / estimate 4. Allocation không overbooking; task warning riêng."
+    ],
+    [
+      "13",
+      "Ngân sách",
+      "Ngay sau ca 12, trước thêm dữ liệu EMP2, mở Dashboard PM1/Chi phí A.",
+      "Nếu snapshot thường 8h và rate100000: cost500000 / budget2000000 =25.00%. Dùng sheet Chi phí khi config khác."
+    ],
+    [
+      "14",
+      "D2 biên",
+      "EMP2 chấm 5h estimate0, 0.02h estimate0.01, 1h estimate1 ngày D; phân bổ các task ấy 1h mỗi task, không trùng giờ.",
+      "Estimate0 không cảnh báo; 0.01→0.02 cảnh báo; 1.00→1.00 không cảnh báo. Không cộng hours+ot_hours."
+    ],
+    [
+      "15",
+      "Không nhân SUM",
+      "Thêm allocation thứ hai của cùng task A Giờ vượt ước tính (1h,13:00–14:00).",
+      "Actual vẫn5h; chỉ1 cảnh báo task. Tổng allocation5h, chưa overbook8h."
+    ],
+    [
+      "16",
+      "Overbooking riêng",
+      "Sau ca15 thêm allocation4h,14:00–18:00 EMP1 ngày D.",
+      "Tổng9>capacity8 cảnh báo; D2 vẫn actual5/estimate4, không trộn mảng cảnh báo."
+    ],
+    [
+      "17",
+      "OT/tổng giờ",
+      "EMP1 chấm8h rồi2h task OT ngày D-1. Đọc snapshot thật; dùng maximum +0.01 để thử vượt ngày.",
+      "Theo snapshot nếu thường8/mult1 thì regular8/OT2/cost1000000. Vượt max bị chặn cả Admin; không fake PASS nếu cấu hình khác."
+    ],
+    [
+      "18",
+      "Ngày/snapshot",
+      "Đổi ngày entry UAT sang ngày đã gần giới hạn; chỉ dùng account UAT.",
+      "Nếu tổng vượt snapshot thì rollback. Không thay cấu hình tenant hay ngày của người thật."
+    ],
+    [
+      "19",
+      "Dự án ngày",
+      "Thử dự án start=end, sau đó start<end; task start=due cùng ngày.",
+      "Dự án trùng ngày báo lỗi/303; task cùng ngày hợp lệ. Lưu/Ẩn dự án về danh sách."
+    ],
+    [
+      "20",
+      "Validator nhân sự",
+      "Bỏ password, nhập7 ký tự; tel chứa chữ hoặc11 chữ số; username31/fullname51/email51.",
+      "Thông báo riêng; không lưu tài khoản sai. Email chỉ validate định dạng, không chứng minh mailbox tồn tại."
+    ],
+    [
+      "21",
+      "Collision",
+      "Thử account mới email trùng email EMP1 hoặc username/email chéo user khác trong cùng store.",
+      "Bị từ chối; không sửa/khóa tài khoản trùng. Có thể dùng email EMP1 làm username ở form nếu form cho phép."
+    ],
+    [
+      "22",
+      "Import đúng",
+      "Tạo phòng ban UAT261009 trước. Upload 01_import_valid.xlsx; Preview, Stage, Apply đúng1 lần.",
+      "2 account mới inactive, EMPLOYEE; cấp mật khẩu trong kết quả rồi kích hoạt. Không dùng các account này cho ca đầu."
+    ],
+    [
+      "23",
+      "Import sai",
+      "Preview/Stage 02_import_invalid.xlsx và 03_import_collision.xlsx.",
+      "Có lỗi theo dòng; cả file bị từ chối. File collision có hai dòng cùng email theo DB collation."
+    ],
+    [
+      "24",
+      "Audit/hồ sơ",
+      "Đổi fullname/email của account UAT và đổi mật khẩu bằng account đó; xem audit.",
+      "Actor ID; hồ sơ chỉ tên field, không giá trị; không password/hash/email/tel/IP trong audit mới."
+    ],
+    [
+      "25",
+      "Export/UI",
+      "Lọc, nhớ/quên filter, Excel nhân sự/dự án/báo cáo; toast; thử bấm đúp trên entry UAT; mobile390px.",
+      "Export giữ filter, file mở được; không gửi trùng; nhãn và focus rõ; Chi phí giữ thiết kế đã chốt."
+    ],
+    [
+      "26",
+      "Legacy",
+      "Trong chế độ PM, gọi legacy ajax count và endpoint không allowlist.",
+      "404; không render legacy menu. PM_HIDE_LEGACY mặc định true."
+    ],
+    [
+      "27",
+      "Tenant thật",
+      "Nếu host đã có tenant thứ2, tạo bộ UAT tương đương ở tenant đó bằng tài khoản được cấp và dùng ID chéo.",
+      "Thiếu và tenant khác cùng status/message không lộ ID/name. Nếu không có tenant2: CHƯA CHẠY, không tự tạo store."
+    ],
+    [
+      "28",
+      "Concurrency/rate",
+      "Hai browser/cookie ghi cùng ngày account UAT; đổi rate tại ranh giới giữa hai ngày UAT mới.",
+      "Không vượt tổng giờ; rate_snapshot/cost cũ giữ nguyên. Ghi request/response thật, chưa chạy tự động."
+    ],
+    [
+      "29",
+      "Dashboard lỗi/truncation",
+      "Theo dõi log host, dự án budget0 và dữ liệu >20 nếu có sẵn; không gây lỗi DB trên host thật.",
+      "Thiếu data có thông báo; budget0 không chia0; tỷ lệ chỉVND đủrate; link xem phần còn lại."
+    ],
+    [
+      "30",
+      "Kết thúc bộ mẫu",
+      "Ghi ID/kết quả trước khi ẩn các dự án/tài khoản UAT theo UI nếu muốn.",
+      "Không DELETE/TRUNCATE. Giữ lịch sử và dữ liệu cũ. Không xác nhận production PASS trước test thật."
+    ]
+  ]
+}

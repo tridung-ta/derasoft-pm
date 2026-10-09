@@ -6,10 +6,10 @@ async (page) => {
  for(const fixture of fixtures){
   await p.goto('http://127.0.0.1:18767'+fixture);await p.evaluate(()=>document.fonts.ready);
   if(await p.locator('.brand-mark').count()!==1)throw Error('Brand missing/duplicated: '+fixture);
-  const button=p.locator('button.pm-logout');
+  await p.locator('.pm-user-menu summary').click();const button=p.locator('button.pm-logout');
   if(await button.count()!==1)throw Error('Logout missing/duplicated');
   const style=await button.evaluate(el=>({bg:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color,height:el.getBoundingClientRect().height}));
-  if(style.bg!=='rgb(24, 24, 27)'||style.color!=='rgb(250, 250, 250)'||style.height<44)throw Error('Logout contrast/target: '+JSON.stringify(style));
+  if(style.bg!=='rgb(32, 44, 50)'||style.color!=='rgb(255, 255, 255)'||style.height<44)throw Error('Logout contrast/target: '+JSON.stringify(style));
   if(await button.locator('svg').count()!==1)throw Error('Logout icon missing');
   if(await button.locator('..').locator('input[name="csrf_token"]').count()!==1)throw Error('Logout CSRF missing');
   for(const width of [1440,390,720]){
@@ -25,5 +25,5 @@ async (page) => {
  await p.goto('http://127.0.0.1:18767/.local/phase9b-dashboard-restricted.html');
  if(await p.locator('.pm-overview-workspace a').count())throw Error('Restricted overview exposed routes');
  if(errors.length)throw Error(errors.join('; '));await ctx.close();
- return 'PASS: shared D brand, prominent logout/CSRF/focus, permission-derived overview, desktop/mobile and 200% text scaling without page overflow. Contrast #18181b/#fafafa = 16.97:1.';
+ return 'PASS: shared D brand, prominent logout/CSRF/focus, permission-derived overview, desktop/mobile and 200% text scaling without page overflow. Account menu logout uses workspace ink and white foreground.';
 }

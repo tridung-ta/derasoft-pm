@@ -1,0 +1,15 @@
+async page=>{
+ const context=await page.context().browser().newContext({viewport:{width:1440,height:960}});const p=await context.newPage();const errors=[];p.on('pageerror',e=>errors.push(e.message));const base='http://127.0.0.1:18767/.local/';
+ function lum(color){return color.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);}
+ try{
+  await p.goto(base+'phase9-login.html');const toggle=p.locator('.pm-password-toggle');if(await toggle.count()!==1)throw new Error('Login reveal missing');await toggle.click();if(await p.locator('#password').getAttribute('type')!=='text')throw new Error('Login reveal failed');await toggle.click();
+  const colors=await p.locator('.intro h1,.intro p,.panel button.submit').evaluateAll(nodes=>nodes.map(e=>({fg:getComputedStyle(e).color,bg:getComputedStyle(e.matches('button')?e:e.closest('.intro')).backgroundColor})));
+  if(colors.some(c=>(Math.max(lum(c.fg),lum(c.bg))+.05)/(Math.min(lum(c.fg),lum(c.bg))+.05)<4.5))throw new Error('Login contrast');
+  await p.goto(base+'phase9b-import-initial.html');let downloads=0;
+  await p.route('**/.local/phase9b-import-initial.html',async route=>{if(route.request().method()!=='POST'){await route.continue();return;}const params=new URLSearchParams(route.request().postData());if(params.get('action')!=='template'||params.get('op')!=='pmimports'||params.get('csrf_token')!=='test-token')throw new Error('Template download POST lost action/CSRF');downloads++;await route.fulfill({contentType:'text/plain',headers:{'Content-Disposition':'attachment; filename="download-lifecycle-test.txt"'},body:'Synthetic UI download test'});});
+  const downloadButton=p.locator('button[value=template]');for(let i=0;i<2;i++){const result=p.waitForEvent('download');await downloadButton.click();await result;if(await downloadButton.isDisabled())throw new Error('Template download locked');}if(downloads!==2)throw new Error('Cannot repeat download');
+  await p.goto(base+'phase9b-import-apply.html');await p.locator('#pm-import-history').click();const apply=p.locator('button[value=apply]').first();let confirmation='';p.once('dialog',async dialog=>{confirmation=dialog.message();await dialog.dismiss();});await apply.click();if(!confirmation.includes('batch import #')||!confirmation.includes('dòng'))throw new Error('Apply missing named confirmation');if(await apply.isDisabled())throw new Error('Canceled Apply stays locked');
+  for(const [name,file] of [['login','phase9-login'],['import','phase9b-import-initial']])for(const width of [1440,390]){await p.setViewportSize({width,height:960});await p.goto(base+file+'.html');if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Overflow '+name+' '+width);await p.screenshot({path:'workspace-'+name+'-'+width+'.png'});}
+  if(errors.length)throw new Error(errors.join(';'));return 'PASS: login reveal/hide and AA contrast; two native downloads preserve action/CSRF and buttons; Apply named confirmation/cancel; desktop/mobile. Download response mocked, no DB access.';
+ }finally{await context.close();}
+}

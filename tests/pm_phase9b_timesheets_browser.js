@@ -22,9 +22,9 @@ async page => {
         await page.evaluate(()=>document.documentElement.style.fontSize='200%');
         if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Text scaling overflow');
         await page.goto(base+'phase9-timesheets-2.html');
-        if(await page.locator('.pm-time-settings,form[method=post]').count())throw new Error('Employee read-only writes exposed');
+        if(await page.locator('main .pm-time-settings,main form[method=post]').count())throw new Error('Employee read-only writes exposed');
         await page.goto(base+'phase9b-timesheets-unavailable.html');
-        if(await page.locator('.pm-time-week').count()||!await page.getByRole('status').textContent().then(t=>t.includes('unavailable')))throw new Error('Unavailable shows fabricated totals');
+        if(await page.locator('.pm-time-week').count()||!await page.getByRole('status').filter({hasText:'unavailable'}).textContent().then(t=>t.includes('unavailable')))throw new Error('Unavailable shows fabricated totals');
         const noJs=await context.browser().newContext({javaScriptEnabled:false});
         try{const p=await noJs.newPage();await p.goto(base+'phase9-timesheets-1.html');await p.locator('.pm-time-settings summary').click();if(!await p.getByRole('button',{name:'Lưu quy tắc',exact:true}).isVisible())throw new Error('No-JS collapse failed');}finally{await noJs.close();}
         if(errors.length)throw new Error(errors.join(';'));

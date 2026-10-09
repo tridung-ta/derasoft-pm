@@ -17,6 +17,6 @@ if(in_array('--preview',$argv,true)){
         ['url'=>'?op=pmimports','label'=>'Import nhân sự','current'=>false]
     ],'op'=>'pmusers','csrfToken'=>'synthetic']);
     $nav=$s->fetch('admin/pm-navigation.tpl.html');
-    file_put_contents(ROOT_PATH.'.local/phase9-theme-nav.html','<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/"><link rel="stylesheet" href="css/pmui.css"><title>Theme navigation fixture</title></head><body class="pm-app">'.$nav.'<main id="pm-main" tabindex="-1"><h1>Điều hướng PM</h1><p>Dữ liệu giả để kiểm tra giao diện.</p></main></body></html>');
+    file_put_contents(ROOT_PATH.'.local/phase9-theme-nav.html','<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/"><link rel="stylesheet" href="css/pmui.css"><link rel="stylesheet" href="css/pmworkspace.css"><title>Theme navigation fixture</title></head><body class="pm-app">'.$nav.'<main id="pm-main" tabindex="-1"><h1>Điều hướng PM</h1><p>Dữ liệu giả để kiểm tra giao diện.</p></main></body></html>');
 }
 echo "PASS: login local CSS, escaped error/live alert and skip link.\n";

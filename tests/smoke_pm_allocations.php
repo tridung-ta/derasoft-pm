@@ -11,6 +11,14 @@ foreach(['task-estimate-warning-panel','task-estimate-warning-list','Task đang 
 if(str_contains($html,'<script>project')||str_contains($html,'<script>warning'))throw new RuntimeException('Escaping failed.');
 if(in_array('--preview',$argv,true)){file_put_contents(ROOT_PATH.'.local/phase7-preview.html',str_replace('<head>','<head><base href="/">',$html));file_put_contents(ROOT_PATH.'.local/phase7-preview.json',json_encode($data,JSON_UNESCAPED_UNICODE));}
 unset($data['task_estimate_warnings']);$data['can_manage']=false;$data['is_admin']=false;$data['tasks']=[];$data['projects']=[];$data['users']=[];$data['capacities']=[];
-$s->assign('allocationData',$data);$html=$s->fetch('admin/pm-allocations.tpl.html');if(str_contains($html,'task-estimate-warning-panel'))throw new RuntimeException('Employee view contains total-task warning panel.');if(str_contains($html,'allocation-editor')||str_contains($html,'name="csrf_token"'))throw new RuntimeException('Employee can mutate from view.');
+$s->assign('allocationData',$data);$html=$s->fetch('admin/pm-allocations.tpl.html');if(str_contains($html,'task-estimate-warning-panel'))throw new RuntimeException('Employee view contains total-task warning panel.');if(str_contains($html,'allocation-editor'))throw new RuntimeException('Employee can mutate from view.');
+$dom=new DOMDocument();@$dom->loadHTML('<?xml encoding="UTF-8">'.$html);$xpath=new DOMXPath($dom);
+$posts=$xpath->query('//form[translate(@method,"POST","post")="post"]');
+if($posts->length!==1)throw new RuntimeException('Employee has unexpected POST form count.');
+foreach($posts as $form){
+    if($xpath->query('.//input[@name="op" and @value="logout"]',$form)->length!==1
+        ||$xpath->query('.//input[@name="csrf_token" and @value="test-token"]',$form)->length!==1
+        ||$xpath->query('.//input[@name="action"]',$form)->length!==0)throw new RuntimeException('Employee POST must be CSRF-protected logout only.');
+}
 $s->assign(['allocationData'=>null,'error'=>'<script>error</script>']);$html=$s->fetch('admin/pm-allocations.tpl.html');if(str_contains($html,'<script>error')||str_contains($html,'id="allocation-rows"'))throw new RuntimeException('Error view failed.');
 echo "PASS group 5: Smarty allocation forms, CSRF fields, history, escaping, Employee read-only and error state.\n";

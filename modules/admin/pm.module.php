@@ -125,3 +125,5 @@ $template->assign('pmRoleCodes', $pmAccess->getRoleCodes());
 $template->assign('profileUser', $userInfo);
 $displayName = trim((string) $userInfo->getFullName());
 $template->assign('displayName', $displayName !== '' ? $displayName : $userInfo->getUsername());
+
+if($section==='dashboard'){include_once(ROOT_PATH.'classes/services/pmdashboardservice.class.php');$template->assign('workOverview',PmDashboardService::overview($db,$pmAccess,(int)$storeId,(int)$userInfo->getId()));}

@@ -17,7 +17,7 @@ try {
         'pm_email_unique_migration', 'pm_import_results_migration',
         'pm_import_apply_smoke', 'pm_import_native_duplicate',
         'pm_roles_batch_smoke', 'pm_ui_http_smoke', 'smoke_pm_ui', 'pm_explain_smoke',
-        'pm_session_guard_smoke', 'pm_db_isolation_smoke', 'pm_phase11_metadata', 'pm_phase11_bootstrap', 'pm_role_http_smoke', 'pm_tenant_matrix_smoke', 'pm_aggregate_store_input_smoke', 'pm_session_role_http_smoke', 'pm_required_fields_http_smoke'
+        'pm_session_guard_smoke', 'pm_db_isolation_smoke', 'pm_phase11_metadata', 'pm_phase11_bootstrap', 'pm_role_http_smoke', 'pm_tenant_matrix_smoke', 'pm_aggregate_store_input_smoke', 'pm_session_role_http_smoke', 'pm_required_fields_http_smoke', 'pm_workspace_dashboard_smoke', 'pm_allocation_summary_contract_smoke'
     )
     foreach ($test in $tests) {
         & $php "tests/$test.php"

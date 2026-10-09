@@ -1995,3 +1995,58 @@ P3local010: backup20MB/hashđãghi, applylặp2lầnPASS,95persistentfingerprint
 09/10chốtscopeP3: người dùng bỏconcurrencyDBriêng, nhậnUATthủcông;60regressionexit0,108EXPLAIN/lint/browser/migration2lầnPASS,95dataunchanged. Chốtlocaltheophạmviđãduyệt,concurrencyCHƯACHẠY. Chuẩnbịcommitlocalvàgóireview,khôngproduction.
 
 09/10P3commitlocalfb67557 vàgóireview95runtime/112entries đãverifyCRC/SHA256;sourcefb67557 immutableblob, manifest319paths. ConcurrencyDBuserUAT, không tựPASS; khôngproduction/push/merge. Chi tiếtPHASE11_RELEASE_HANDOFF.md.
+
+09/10workspace redesign BUILD local: common sidebar3groups/topbaraccount, sharedstylesheet/toast/nativebusy, read-only personaldashboard permissiongated. Smarty dashboard/timesheets/users và18HTTPcasesPASS; browser1440/390nooverflow/account/mobilemenuPASS. Preview synthetic `.local/phase9-dashboard.html`, dữliệuchưacấp hiểnthị—. PM/Adminalerts, filterpersistence vàKanbandrag chưaVERIFY/hoàntất; khôngclaimfull5items, khôngcommitphasecomplete/push/merge/deploy.
+
+### UI local — Kanban tiếp tục 09/10/2026
+- Chỉ thay template/CSS/JS và test: kéo thả qua endpoint AJAX hiện có, không chuyển thẻ trước khi server xác nhận; lọc theo tên người phụ trách đã render, nhãn quá hạn theo ngày Việt Nam. Read-only không có tay kéo; nút và POST không-JS giữ nguyên.
+- Thu gọn form sửa dự án/thêm task bằng details; xác nhận ẩn ghi tên đối tượng. Không sửa BE/DB trong lượt này.
+- VERIFY: `.tools/php83/php.exe tests/smoke_pm_projects.php --preview` → PASS render/escaping/read-only/estimate 0. `playwright-cli -s=workspace run-code --filename ../tests/pm_kanban_browser.js` (cwd .local) → PASS kéo thả qua AJAX, không chuyển trước xác nhận, lọc người, read-only, pending/duplicate, network/auth/server/invalid/timeout, 360/390/768/1440 và chữ 200%, POST không-JS. Lần truyền code trực tiếp thất bại do quoting PowerShell; chạy file nguyên bản đã đạt.
+- Chưa kiểm thử lại toàn bộ regression cho redesign; chưa hoàn tất toàn bộ 5 nhóm yêu cầu. Dashboard tổng hợp PM/Admin cần duyệt thay đổi BE riêng theo yêu cầu mới. Không commit/push/merge/deploy.
+
+### Workspace UI local — bảng dữ liệu và phản hồi 09/10/2026
+- Template/JS/CSS: nhớ lựa chọn bộ lọc trong sessionStorage của tab, khôi phục chủ động và không tự gửi request; không lưu từ khóa tên/email, CSRF hay mật khẩu. Xóa nhớ khi đăng xuất. Trạng thái rỗng nhân sự có xóa bộ lọc/thêm nhân sự theo permission có sẵn. Form phòng ban thu gọn; xác nhận ẩn ghi đúng tên và giữ thông tin lịch sử.
+- Toast chỉ dành cho thông báo success được đánh dấu; reminder chấm công không bị chuyển thành toast. Export không bị khóa submit vô thời hạn; giữ chống bấm đúp cho POST lưu và giữ named submitter. Menu tài khoản đóng bằng Escape/click ngoài; navigation thích ứng khi đổi breakpoint.
+- VERIFY thực chạy: 9 script Smarty/UI `smoke_pm_users`, `smoke_pm_reports`, `smoke_pm_admin`, `smoke_pm_ui`, `smoke_pm_allocations`, `smoke_pm_timesheets`, `smoke_pm_audit`, `smoke_pm_imports`, `smoke_pm_projects` → PASS sau sửa test allocations. Lỗi đầu ở allocations: assertion cũ cấm mọi CSRF kể cả logout. Assertion mới yêu cầu đúng một POST logout có CSRF và không action; vẫn cấm allocation editor và dữ liệu tổng task Employee.
+- Browser `playwright-cli -s=workspace run-code --filename ../tests/pm_workspace_browser.js` (cwd .local) → PASS restore/forget/exclusion dữ liệu text, Escape, toast/dismiss, double submit/submitter/pageshow/export, sticky header và 390/768/1440 không tràn ngang. Kanban browser suite chạy lại PASS. Các thao tác browser dùng fixture/mock, không ghi DB. Chưa regression đầy đủ/new UI UAT; không nâng báo cáo nghiệp vụ thành PASS dựa vào UI.
+- Đã xem ảnh desktop/mobile dashboard/nhân sự/báo cáo. Bộ dữ liệu preview nhân sự/báo cáo chưa chứa navigation permission thật nên menu nhóm rỗng trong fixture, không dùng ảnh này kết luận quyền runtime. Không sửa BE/DB, không push/merge/deploy trong lượt này.
+
+### Workspace UI local — chấm công / phân bổ / chi phí 09/10/2026
+- Frontend: sổ tuần 4 cột trên desktop thông thường, 2 cột trên mobile, 7 cột khi màn hình rất rộng; hôm nay nền nhạt/viền teal, OT giữ nhãn số. Quy tắc snapshot ngày luôn hiển thị; hướng dẫn chỉnh sửa có thể mở khi cần. Form tạo phân bổ thu gọn mặc định, tự mở khi sửa/lỗi. Xác nhận ẩn chấm công/phân bổ có task/ngày/người tương ứng. Chi phí đồng bộ typography và khung cập nhật.
+- Sửa xung đột CSS: section của các module làm nhóm navigation thành card; override giới hạn sidebar và ẩn nhóm không có link. Không đổi phân quyền, API, service hay DB.
+- VERIFY: `.tools/php83/php.exe tests/smoke_pm_timesheets.php --preview`, `smoke_pm_allocations.php --preview`, `smoke_pm_costs.php --preview` → PASS. Browser `playwright-cli -s=workspace run-code --filename ../tests/pm_phase9b_timesheets_browser.js`, `pm_phase9b_allocation_browser.js`, `pm_phase9b_costs_browser.js` (cwd .local) → PASS responsive/200% text, read-only, keyboard/no-JS, polling mocked, Chart.js fallback/CSP và escape. Timesheet test cập nhật selector status chính xác vì có 2 thông báo hợp lệ; assertion readonly nằm trong main để không tính logout ngoài main.
+- Đã kiểm tra ảnh desktop/mobile rồi sửa CSS sidebar và xác nhận lại. Đây là UI fixture, không phải kiểm thử DB/production hay UAT. Không push/merge/deploy.
+
+### Workspace UI local — hồ sơ / bảo mật / nhật ký 09/10/2026
+- Chỉ frontend: form hồ sơ giới hạn chiều rộng, mô tả không còn chỉ dành cho quản trị, username readonly giữ nguyên không gửi. Password có 3 nút hiện/ẩn bằng bàn phím, aria-controls/pressed và thông báo confirm không khớp; giữ POST/CSRF và validation BE nguyên trạng, không ghi mật khẩu ra log/storage. Audit trước/sau chia cột, JSON được format qua textContent, vẫn escape và giữ dữ liệu legacy; bộ lọc audit nhớ entity_type/action.
+- VERIFY: `smoke_pm_admin.php --preview`, `smoke_pm_audit.php --preview` → PASS. `playwright-cli -s=workspace run-code --filename ../tests/pm_ui_browser.js` (cwd .local) → PASS 13 fixtures tại 360/390/768/1440, labels, skip focus, CSP, no inline/overflow, chữ 200%. `pm_account_browser.js` → PASS readonly username, 3 toggles, keyboard reveal/hide, confirm mismatch/recovery, audit không thực thi HTML, desktop/mobile; không POST/DB mutation. Đã xem screenshot desktop password và mobile profile.
+- Hub ignored `.local/workspace-review.html` liên kết 10 preview bằng dữ liệu giả, không phải ứng dụng production/UAT. UI vẫn local; dashboard PM/Admin chờ duyệt BE rõ ràng. Không push/merge/deploy.
+
+### Workspace UI — review và verify cuối lượt tiếp tục 09/10/2026
+- Sửa frontend 3 lỗi: lọc Kanban theo ID để phân biệt người trùng tên; quên filter xóa nút restore; audit giữ nguyên chuỗi số không JSON roundtrip.
+- PASS 5 browser suites: Kanban, workspace, account, preview hub, tổng thể 13 fixtures. Hub 10/10 liên kết HTTP 200. Chi tiết lệnh/output/phạm vi tại WORKSPACE_UI_VERIFY_20261009.md.
+- Lệnh diff trước bị auto-review usage limit chưa chạy; lượt này retry đã chạy exit 0. BE dashboard vẫn chờ duyệt riêng; không full regression DB/UAT, không commit phase/push/merge/deploy.
+
+### Workspace UI — hoàn thiện bản frontend để xem local
+- Hoàn thiện login/import, template download lặp lại không bị khóa, confirm Apply có batch/số dòng. Đồng bộ màu gốc trên mọi module, trạng thái destructive/disabled và icon logout; đã sửa xung đột CSS thật.
+- Lượt cuối: 10 smoke Smarty/UI + 15 suite Playwright PASS, 13/13 link preview HTTP 200. AA: primary 6.71:1, disabled 5.85:1; glyph Việt Inter được xác nhận CDP. Chi tiết tại WORKSPACE_UI_VERIFY_20261009.md.
+- Phần frontend đã có bản xem thống nhất; chưa gọi hoàn tất toàn bộ yêu cầu dashboard vì tổng hợp PM/Admin cần duyệt BE. Không sửa BE/DB trong lượt này; không push/merge/deploy.
+
+## Bàn dự án và Kanban — tiếp tục UI local
+- Tách metadata task thành phụ trách / ước tính / hạn; đổi bố cục cột, thẻ và trạng thái rỗng. Số lượng theo bộ lọc người phụ trách và cập nhật sau AJAX xác nhận thành công. Không thêm endpoint/query/schema.
+- Dự án không có kết quả: xóa tìm kiếm; người có quyền tạo được mở form hiện có.
+- VERIFY: PHP tests/smoke_pm_projects.php --preview PASS (render/escape/read-only/estimate 0); playwright-cli -s=workspace run-code --filename ../tests/pm_kanban_browser.js PASS (counts/filter/move, drag, recovery, native POST, 360/390/768/1440, 200%); pm_workspace_browser.js PASS.
+- Lần đầu smoke FAIL vì assertion vẫn đòi câu không có dự án khi q đang khác rỗng; cập nhật đúng trạng thái không tìm thấy, vẫn kiểm tra quyền tạo. Assertion mới phát hiện counts chưa refresh sau AJAX do khác newline; sửa frontend, chạy lại PASS.
+- Đã xem screenshot Kanban desktop; fixtures chứa chuỗi script để kiểm tra escape, không phải dữ liệu thực. Không kiểm thử DB và không push/merge/deploy.
+
+## People desk UI ? 09/10/2026
+Frontend only: compact membership rows, collapsed native member editor, named removal confirmation; personnel identity/status and editor sections refined. Cost design preserved.
+VERIFY: PHP tests/smoke_pm_projects.php --preview and tests/smoke_pm_users.php --preview PASS; playwright-cli -s=workspace run-code --filename ../tests/pm_ui_browser.js PASS (13 fixtures, 360/390/768/1440, labels/CSP/200%); pm_kanban_browser.js PASS; pm_people_desk_browser.js PASS (collapsed member editor, keyboard, CSRF, person dialog Escape/focus, desktop/mobile). Screenshots people-desk-1440.png and people-desk-390.png inspected.
+Initial browser runs could not execute because session and preview server had stopped; reopened local preview then ran successfully. Initial shell pipeline damaged newly inserted Vietnamese text; corrected encoding before successful final renders. No DB test/write, BE change, push/merge/deploy in this batch.
+
+## Navigation toggle and task authentication feedback
+Navigation summary now uses authored SVG menu/chevron, accent button and distinct open state on mobile. No cost-specific change. Frontend 401 copy distinguishes static .local preview (synthetic data, no session) and authenticated application. Read-only code inspection: preview router serves HTML without session; pm_ajax.php rejects missing actor before DB bootstrap. User screenshot URL not yet known; actual authenticated status saving remains unverified, not declared fixed.
+Commands: PHP tests/smoke_pm_admin.php --preview PASS; tests/smoke_pm_projects.php --preview PASS; playwright-cli -s=workspace run-code --filename ../tests/pm_workspace_browser.js PASS; pm_kanban_browser.js PASS including preview 401 guidance (mock endpoint). BE/auth checks unchanged; no DB writes/push/deploy.
+
+## Workspace integration và dữ liệu host UAT — 09/10/2026
+BUILD theo yêu cầu đồng bộfrontend/backend; giữUIChi phí, không schema/DBtest/production. Dashboard preparedDAO/scopedservice; summaryallocation bounded100/khôngeditorchoices, DECIMALbudget và unavailabledata. Local noDBverify15scripts+7lint+5allowlist; browser17/17PASS;4XLSXparser/app/formulasPASS,30ca host đềuCHƯACHẠY. EXPLAIN/dashboardqueries và2testcontracts đãđăngkýregression nhưng fullDBrunner khôngchạylại. KhôngsuyoldPASSthànhreleasePASS. Chi tiếtWORKSPACE_INTEGRATION_VERIFY_20261009.md; triểnkhai và bộmẫuWORKSPACE_RELEASE_HANDOFF_20261009.md.

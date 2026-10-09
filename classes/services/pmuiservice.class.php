@@ -28,6 +28,10 @@ class PmUiService {
         $add('pmallocations','Phân bổ',$access->hasPermission('pm.allocations.view')&&($admin||$pm||$employee));
         $add('pmreports','Báo cáo',$access->hasPermission('pm.reports.view'));
         $add('pmimports','Import nhân sự',$access->hasPermission('pm.imports.manage')&&$admin);
+        foreach($items as &$item){
+            $url=$item['url'];
+            $item['group']=str_contains($url,'act=profile')||str_contains($url,'act=password')?'account':(in_array($url,['?op=pmusers','?op=pm&act=team','?op=pmimports'],true)?'management':(in_array($url,['?op=pmaudit','?op=pmcosts','?op=pmreports'],true)?'reports':'work'));
+        }unset($item);
         return $items;
     }
 }

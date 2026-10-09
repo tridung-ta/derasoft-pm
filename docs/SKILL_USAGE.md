@@ -218,3 +218,14 @@ Tái sử dụng feature-development để hoàn thiện test, code-review cho m
 ## Validation0.4 — 09/10/2026
 
 feature-development BUILD đúng PLAN được duyệt; code-review rà phạm vi thông báo/typed exception/status và git-feature-commit chuẩn bị commitlocal sau59suite PASS. Không sửa giao diện nên không áp skillUI; sử dụng UI error escaped đã có. Temp observer chỉ keys/booleans, prepared SQL. Giữ baseline14FAIL và harness redirect expectation lỗi riêng; không nớiassertion hay sửaproduct theo harness. 30cases PASS,21 bảng thật không đổi, regression59PASS.
+
+## Workspace UI review — 09/10/2026
+Impeccable cho UI, code-review cho kiểm tra lỗi trước chốt. Lọc theo tên gây gộp tài khoản trùng fullname: dùng ID hiện có làm value, giữ tên làm nhãn. JSON roundtrip không phù hợp với bằng chứng audit có số lớn: giữ chuỗi escaped nguyên văn. Playwright fixture xác nhận hai identity riêng và số 12345678901234567890.01 không đổi; không dùng PASS frontend để suy luận DB/production PASS.
+
+## Hoàn thiện workspace — cascade và download
+Impeccable + Playwright: module CSS cũ có selector mạnh hơn .pm-app nên ghi đè token theme; tăng scope root chỉ body PM. Chờ transition kết thúc khi đo computed style của nút để không ghi PASS từ màu cũ. Download với named submitter action=template giữ trang nên không dùng busy guard của POST lưu; browser tải hai lần và kiểm tra action/CSRF thực tế bằng mock. Các assertion size/AA/font/permission vẫn giữ, chỉ đổi kỳ vọng token thiết kế cũ.
+
+Kanban UI: dùng impeccable + Playwright; đếm DOM theo cột sau phản hồi xác nhận, không cập nhật lạc quan. Bổ sung assertion số lượng/empty/filter, phát hiện refresh bị bỏ sót rồi sửa và chạy lại PASS. Giữ cả lần FAIL trong tài liệu, không suy từ test AJAX cũ thành tính năng đếm đã PASS.
+
+## Đồng bộ workspace và host UAT
+feature-development cho BUILDBE đãđược yêu cầu; impeccable/playwright-cli cho template/browser; code-review cho scope/taskpermission/prepared/decimal/truncation; spreadsheets để tạo4XLSX bằngartifact-tool cómarker vàrender11views, appparserverify; git-feature-commit cho localcommit theoAGENTS. Khôngdatabase-safety vì khôngmigration/seedSQL/DBwrite, chỉread-onlypreflightfile vàdữliệu mẫu nhậpUIbởingườidùng. Lỗi bootstrap làtestnhầmheader/head, sửaregexkhôngbỏassertion; workbooktotalRows parsertrảstring, castint vàgiữcounts. No-DBstubs khôngthay thếEXPLAIN/SQLexecution, giữCHƯACHẠY.

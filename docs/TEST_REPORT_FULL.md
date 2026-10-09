@@ -596,3 +596,6 @@ Targeted`PHP tests/pm_required_fields_http_smoke.php` exit0:30PASS/0FAIL, cleanu
 Code đang VERIFY theo lựa chọn B; bằng chứng P3_BUILD_VERIFY_20261009.md. 5.1/5.2 đã có assertions thực chạy PASS, tổng73PASS/0FAIL/7CHƯA CHẠY. Migration010 local sau backup đã duyệt/chạy, regressionP3 mới60scripts exit0. Concurrency P3 trênDBriêng chưa chạy và chưa tính PASS; khôngpush/merge/deploy.
 
 P3 chốtscope09/10: usernhậnkiểmthửDBthủcông; runtimecommitfb67557/regression60exit0/explain108/fingerprint95PASS. Tổng73PASS/0FAIL/7CHƯACHẠY, khôngnângconcurrencyP3/3.6hoặccácUAT. Gói95runtime chỉreview, chưađạtgateproduction.
+
+## Gói workspace integration 09/10/2026 — không đổi kết quả checklist cũ
+Người dùng yêu cầu không tạoDBtest; kiểm thửDB/host nhận chạy thủ công. Kết quả checklist và7mục CHƯACHẠY trước giữnguyên, không chạy lại toàn bộ để xác nhận release mới. No-DB15scripts+7lint+5allowlist,17browser suites và4workbook files đạt trong phạm vi mô tảWORKSPACE_INTEGRATION_VERIFY_20261009.md. AuthenticatedKanbanpersist/audit, SQLscope/currency/concurrency/EXPLAIN vàimportApplyDB của bảnmớiCHƯACHẠY. Bộmanual-test có30ca vàdữliệu sẵn, tất cả trạng tháiCHƯACHẠY cho tới khi có bằng chứnghost.

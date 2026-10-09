@@ -5,9 +5,9 @@ async page => {
     function luminance(rgb){return rgb.match(/[\d.]+/g).slice(0,3).map(Number).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4}).reduce((s,x,i)=>s+x*[.2126,.7152,.0722][i],0);}
     try {
         await page.goto(base+'phase9-dashboard.html');
-        if(await page.locator('.pm-overview-kpis .metric').count()!==3||await page.locator('.pm-overview-shortcuts a').count()!==4)throw new Error('Overview metrics/shortcuts');
+        if(await page.locator('.pm-overview-kpis .metric').count()!==3||await page.locator('.pm-overview-shortcuts a').count()!==2)throw new Error('Overview metrics/shortcuts');
         await page.goto(base+'phase9b-dashboard-restricted.html');
-        if(await page.locator('.pm-overview-shortcuts a').count()!==1||await page.locator('.pm-overview-kpis').textContent().then(t=>t.includes('987654321')))throw new Error('Restricted overview');
+        if(await page.locator('.pm-overview-shortcuts a').count()!==0||await page.locator('.pm-overview-kpis').textContent().then(t=>t.includes('987654321')))throw new Error('Restricted overview');
         await page.goto(base+'phase9-audit-1.html');
         const detail=page.locator('.pm-audit-detail').first();await detail.locator('summary').focus();await page.keyboard.press('Enter');
         if(!await detail.locator('pre').last().isVisible()||await page.locator('main script').count())throw new Error('Inline audit escaping/keyboard');

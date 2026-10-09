@@ -1,5 +1,5 @@
 <?php
-define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';require ROOT_PATH.'classes/services/pmprojectservice.class.php';require ROOT_PATH.'classes/services/pmcostservice.class.php';require ROOT_PATH.'classes/services/pmallocationservice.class.php';require ROOT_PATH.'classes/services/pmreportservice.class.php';require ROOT_PATH.'classes/services/pmimportservice.class.php';require ROOT_PATH.'classes/dao/pmauditlogs.class.php';require ROOT_PATH.'classes/dao/pmusers.class.php';require ROOT_PATH.'classes/services/pmtimesheetservice.class.php';
+define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'includes/config.inc.php';require ROOT_PATH.'classes/services/pmprojectservice.class.php';require ROOT_PATH.'classes/services/pmcostservice.class.php';require ROOT_PATH.'classes/services/pmallocationservice.class.php';require ROOT_PATH.'classes/services/pmreportservice.class.php';require ROOT_PATH.'classes/services/pmimportservice.class.php';require ROOT_PATH.'classes/dao/pmauditlogs.class.php';require ROOT_PATH.'classes/dao/pmusers.class.php';require ROOT_PATH.'classes/services/pmtimesheetservice.class.php';require ROOT_PATH.'classes/dao/pmdashboard.class.php';
 if(($config['db_name']??'')!=='derasoft_pm_local'||!in_array($config['db_server'],['localhost','127.0.0.1'],true))throw new RuntimeException('Non-local refused.');
 class ExplainStatement extends mysqli_stmt {
     private array $values=[];private string $types='';
@@ -28,6 +28,7 @@ try{
     foreach(['tasks','users','projects','costs'] as $mode){$input=['mode'=>$mode,'from'=>'2026-10-01','to'=>'2026-10-04'];if($mode!=='users')$input['project_id']=$project;if(in_array($mode,['tasks','users','costs'],true))$input['role_code']='ADMIN';(new PmReportService($db,$store,$actor))->report($input,true);}
     $c->family='imports';$imports=new PmImportService($db,$store,$actor);$imports->history();$imports->detail($import);
     $c->family='timesheets';$timeService=new PmTimesheetService($db,$store,$actor);$timeService->dayRules('2026-10-04');
+    $c->family='dashboard';(new PmAllocationService($db,$store,$actor))->dashboardSummary('2026-10-04');$dashboard=new PmDashboard($q,$store);$dashboard->ownHours($actor,'2026-10-04','2026-09-28');$dashboard->ownTasks($actor,'2026-10-11');$dashboard->lateProjects(null,'2026-10-04');$dashboard->lateProjects($actor,'2026-10-04');
     $captured=$c->captured;$report=[];$seen=[];
     if(!array_filter($captured,fn($entry)=>str_contains($entry[0],'SUM(s.hours) actual_hours')))throw new RuntimeException('Missing D2 actual prepared aggregate query for EXPLAIN.');
     if(!array_filter($captured,fn($entry)=>str_contains($entry[0],'SELECT standard_hours,ot_multiplier,max_total_hours')))throw new RuntimeException('Missing P3 dayRules query for EXPLAIN.');
@@ -36,7 +37,7 @@ try{
         $plan=$q->fetchAll('EXPLAIN '.$sql,$types,$params);
         $report[]=['family'=>$family,'sql'=>$sql,'plan'=>$plan];
     }
-    $families=array_unique(array_column($report,'family'));if(count($families)!==7)throw new RuntimeException('Missing EXPLAIN family.');
+    $families=array_unique(array_column($report,'family'));if(count($families)!==8)throw new RuntimeException('Missing EXPLAIN family.');
     if(in_array('--report',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-explain.json',json_encode(['environment'=>'local small dataset + rollback PM fixture; NOT production benchmark','index_changes'=>false,'queries'=>$report],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR));
-    echo 'PASS: '.count($report).' actual prepared query shapes EXPLAIN across users/audit/costs/allocations/reports/imports/timesheets; no ADD INDEX, no migration, no persistent fixtures. Plans in ignored .local with --report; parameter values omitted.'.PHP_EOL;
+    echo 'PASS: '.count($report).' actual prepared query shapes EXPLAIN across users/audit/costs/allocations/reports/imports/timesheets/dashboard; no ADD INDEX, no migration, no persistent fixtures. Plans in ignored .local with --report; parameter values omitted.'.PHP_EOL;
 }finally{$c->endFixture();}

@@ -31,3 +31,7 @@ Thumbs.db
 /logs/
 /.local/
 *.log
+
+# Generated review workbooks and Python test cache
+/outputs/
+__pycache__/
