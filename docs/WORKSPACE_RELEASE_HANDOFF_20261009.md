@@ -56,4 +56,10 @@ Mở manual-test/BO_DU_LIEU_UAT.xlsx, làm theo thứ tự sheet Hướng dẫn 
 - Full pm_regression.ps1 và EXPLAIN không chạy lại vì có thao tác DB/fixtures; test mới đã đăng ký để chạy khi sau này có môi trường phù hợp. Không dùng kết quả cũ để gọi gói này production PASS.
 
 ## Bổ sung gói thông báo ngày 12/10/2026
-Gói ngày 12/10 thay cho gói workspace ngày 09/10, gồm runtime cập nhật đầy đủ. Không cần chạy thêm SQL/migration nếu schema hiện có đã đạt preflight. Upload nội dung runtime như hướng dẫn trên; giữ config, license, uploads và dữ liệu.\n\noptional/maintenance.html chỉ dùng khi host đang phục vụ đúng file maintenance.html: backup file host rồi thay nội dung nếu cần. Nếu thông báo do hosting/proxy sinh ra thì file này không điều khiển nó. Không tự đổi MAINTENANCE hay chế độ bảo trì.\n\nAsset JS/CSS có query version 20261012-vi. Sau upload, làm mới compiled Smarty/OPcache qua công cụ hosting và Ctrl+F5. Thử required/email/tel/đơn giá, thông báo thành công/lỗi, session hết hạn và mất mạng. Nhãn “Cần kiểm tra”/“Đã hoàn tất” phải hiện, lỗi dài xuống dòng, lỗi không bị toast che.\n\nDữ liệu Excel vẫn là bộ mẫu 09/10: nếu kiểm thử ngày khác, dịch các ngày theo hướng dẫn; 30 ca chưa tự thực hiện. Không upload review/manual-test/optional cả thư mục vào web root.\n
+Gói ngày 12/10 thay cho gói workspace ngày 09/10, gồm runtime cập nhật đầy đủ. Không cần chạy thêm SQL/migration nếu schema hiện có đã đạt preflight. Upload nội dung runtime như hướng dẫn trên; giữ config, license, uploads và dữ liệu.
+
+optional/maintenance.html chỉ dùng khi host đang phục vụ đúng file maintenance.html: backup file host rồi thay nội dung nếu cần. Nếu thông báo do hosting/proxy sinh ra thì file này không điều khiển nó. Không tự đổi MAINTENANCE hay chế độ bảo trì.
+
+Asset JS/CSS có query version 20261012-vi. Sau upload, làm mới compiled Smarty/OPcache qua công cụ hosting và Ctrl+F5. Thử required/email/tel/đơn giá, thông báo thành công/lỗi, session hết hạn và mất mạng. Nhãn “Cần kiểm tra”/“Đã hoàn tất” phải hiện, lỗi dài xuống dòng, lỗi không bị toast che.
+
+Dữ liệu Excel vẫn là bộ mẫu 09/10: nếu kiểm thử ngày khác, dịch các ngày theo hướng dẫn; 30 ca chưa tự thực hiện. Không upload review/manual-test/optional cả thư mục vào web root.
