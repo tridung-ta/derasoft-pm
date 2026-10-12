@@ -7,7 +7,7 @@ class PmImports {
         $rows=$this->db->fetchAll("SELECT index_name AS index_name,column_name AS column_name,non_unique AS non_unique,sub_part AS sub_part FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='dc_users' ORDER BY index_name,seq_in_index");
         $indexes=[];$invalid=[];foreach($rows as $r){$indexes[$r['index_name']][]=$r['column_name'];if((int)$r['non_unique']!==0||$r['sub_part']!==null)$invalid[$r['index_name']]=true;}
         foreach($indexes as $name=>$columns)if(!isset($invalid[$name])&&($columns===['email']||$columns===['store_id','email']||$columns===['email','store_id']))return;
-        throw new RuntimeException('Apply requires full DB email UNIQUE.');
+        throw new RuntimeException('Chưa thể nhập nhân sự vì cơ sở dữ liệu thiếu ràng buộc email duy nhất. Vui lòng liên hệ quản trị viên.');
     }
     public function lockName(int $storeId,int $id): string {
         $name=$this->db->fetchOne('SELECT DATABASE() name')['name'];return 'pmimport:'.substr(hash('sha256',$name.':'.$storeId.':'.$id),0,54);
@@ -21,7 +21,7 @@ class PmImports {
     public function intent(int $storeId,int $id,int $row,string $payload): array {
         $this->db->execute('INSERT IGNORE INTO dc_pm_import_results(store_id,import_id,source_row,provenance_token,payload_sha256) VALUES(?,?,?,?,?)','iiiss',[$storeId,$id,$row,bin2hex(random_bytes(32)),hash('sha256',$payload)]);
         $r=$this->db->fetchOne('SELECT status,provenance_token,payload_sha256 FROM dc_pm_import_results WHERE store_id=? AND import_id=? AND source_row=?','iii',[$storeId,$id,$row]);
-        if(!$r||!hash_equals($r['payload_sha256'],hash('sha256',$payload)))throw new RuntimeException('Immutable import payload changed.');return $r;
+        if(!$r||!hash_equals($r['payload_sha256'],hash('sha256',$payload)))throw new RuntimeException('Dữ liệu nhập đã thay đổi sau khi kiểm tra. Vui lòng kiểm tra lại tệp.');return $r;
     }
     public function attempt(int $storeId,int $id,int $row): void {$this->db->execute("UPDATE dc_pm_import_results SET status='pending',reason_code='pending',attempt_count=attempt_count+1 WHERE store_id=? AND import_id=? AND source_row=?",'iii',[$storeId,$id,$row]);}
     public function outcome(int $storeId,int $id,int $row,string $status,string $reason,?int $userId=null): void {$this->db->execute('UPDATE dc_pm_import_results SET status=?,reason_code=?,user_id=? WHERE store_id=? AND import_id=? AND source_row=?','ssiiii',[$status,$reason,$userId,$storeId,$id,$row]);}

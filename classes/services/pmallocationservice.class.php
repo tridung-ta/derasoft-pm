@@ -43,7 +43,7 @@ class PmAllocationService {
         $this->db->execute('INSERT INTO dc_pm_audit_logs(store_id,actor_id,entity_type,entity_id,action,old_values,new_values) VALUES(?,?,?,?,?,?,?)','iisisss',[$this->storeId,$this->actorId,$entity,$id,$action,$old?json_encode($old,JSON_THROW_ON_ERROR):null,$new?json_encode($new,JSON_THROW_ON_ERROR):null]);
     }
     public function save(array $data,?int $id=null): array {
-        foreach(['task_id','user_id','work_date','hours','start_time','end_time'] as $key)if(isset($data[$key])&&!is_scalar($data[$key]))throw new InvalidArgumentException('Input không hợp lệ.');
+        foreach(['task_id','user_id','work_date','hours','start_time','end_time'] as $key)if(isset($data[$key])&&!is_scalar($data[$key]))throw new InvalidArgumentException('Dữ liệu nhập không hợp lệ.');
         $this->permission(true);$task=$this->id($data['task_id']??'');$user=$this->id($data['user_id']??'');
         $day=self::date((string)($data['work_date']??''));$hours=self::hundredths($data['hours']??'');
         $start=$data['start_time']??null;$end=$data['end_time']??null;$start=$start===''?null:$start;$end=$end===''?null:$end;
@@ -58,13 +58,13 @@ class PmAllocationService {
             $this->dao->lockUsers($keys);
             if($old){$locked=$this->dao->find($id,true);if($locked!==$old)throw new DomainException('Phân bổ đã thay đổi, vui lòng tải lại.');$this->project((int)$old['project_id']);}
             $t=$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND id=?','ii',[$this->storeId,$task]);
-            if(!$t)throw new OutOfBoundsException('Không tìm thấy task.');
+            if(!$t)throw new OutOfBoundsException('Không tìm thấy công việc.');
             $projectIds=[(int)$t['project_id']];if($old)$projectIds[]=(int)$old['project_id'];$projectIds=array_unique($projectIds);sort($projectIds,SORT_NUMERIC);
             foreach($projectIds as $projectId)$this->project($projectId,$projectId===(int)$t['project_id'],true);
             $t=$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND id=? FOR UPDATE','ii',[$this->storeId,$task]);
             if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=?','ii',[$this->storeId,$user])||(int)$t['assignee_id']!==$user)throw new PmScopeDeniedException('Nhân sự ngoài phạm vi phân công.');
             if($t['deleted_at']!==null
-                ||!$this->db->fetchOne('SELECT m.user_id FROM dc_pm_project_members m JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id WHERE m.store_id=? AND m.user_id=? AND m.project_id=? AND m.status=1 AND u.status=1 FOR UPDATE','iii',[$this->storeId,$user,(int)$t['project_id']]))throw new DomainException('Task, nhân viên hoặc membership không active/không phù hợp.');
+                ||!$this->db->fetchOne('SELECT m.user_id FROM dc_pm_project_members m JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id WHERE m.store_id=? AND m.user_id=? AND m.project_id=? AND m.status=1 AND u.status=1 FOR UPDATE','iii',[$this->storeId,$user,(int)$t['project_id']]))throw new DomainException('Công việc, nhân sự hoặc tư cách thành viên dự án không còn hoạt động hoặc không phù hợp.');
             $overlap=$this->dao->overlapping($user,$day,$start,$end,$id);
             $new=['project_id'=>(int)$t['project_id'],'task_id'=>$task,'user_id'=>$user,'work_date'=>$day,'hours'=>self::decimal($hours),'start_time'=>$start,'end_time'=>$end];
             if($id)$this->db->execute('UPDATE dc_pm_allocations SET project_id=?,task_id=?,user_id=?,work_date=?,hours=?,start_time=?,end_time=?,updated_by=? WHERE store_id=? AND id=?','iiissssiii',[...array_values($new),$this->actorId,$this->storeId,$id]);
@@ -86,7 +86,7 @@ class PmAllocationService {
         return $this->db->fetchOne('SELECT id FROM dc_pm_capacity_overrides WHERE store_id=? AND user_id=? AND deleted_at IS NULL AND (effective_to IS NULL OR effective_to >= ?) AND (? IS NULL OR ? >= effective_from) AND (? IS NULL OR id<>?) LIMIT 1 FOR UPDATE','iisssii',[$this->storeId,$userId,$from,$to,$to,$excludeId,$excludeId])!==null;
     }
     public function saveCapacity(array $data,?int $id=null): int {
-        foreach(['user_id','effective_from','effective_to','daily_limit_hours','weekly_limit_hours'] as $key)if(isset($data[$key])&&!is_scalar($data[$key]))throw new InvalidArgumentException('Input không hợp lệ.');
+        foreach(['user_id','effective_from','effective_to','daily_limit_hours','weekly_limit_hours'] as $key)if(isset($data[$key])&&!is_scalar($data[$key]))throw new InvalidArgumentException('Dữ liệu nhập không hợp lệ.');
         $this->admin();$user=$this->id($data['user_id']??'');$from=self::date((string)($data['effective_from']??''));$to=empty($data['effective_to'])?null:self::date((string)$data['effective_to']);
         if($to!==null&&$to<$from)throw new InvalidArgumentException('Khoảng hiệu lực đảo ngược.');
         $daily=self::decimal(self::hundredths($data['daily_limit_hours']??''));$weekly=self::decimal(self::hundredths($data['weekly_limit_hours']??'',16800));
@@ -94,11 +94,11 @@ class PmAllocationService {
             $this->dao->lockUsers([[$user,$from]]);
             $u=$this->db->fetchOne('SELECT id,status FROM dc_users WHERE store_id=? AND id=?','ii',[$this->storeId,$user]);
             if(!$u)throw new PmScopeDeniedException('Nhân sự ngoài phạm vi.');
-            if((int)$u['status']!==1)throw new DomainException('Nhân viên không active trong tenant.');
+            if((int)$u['status']!==1)throw new DomainException('Nhân sự không hoạt động trong đơn vị hiện tại.');
             $old=$id?$this->db->fetchOne('SELECT * FROM dc_pm_capacity_overrides WHERE store_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','ii',[$this->storeId,$id]):null;
             if($id&&!$old)throw new PmScopeDeniedException('Dữ liệu ngoài phạm vi.');
-            if($old&&(int)$old['user_id']!==$user)throw new DomainException('Không thể đổi chủ sở hữu capacity.');
-            if($this->hasOverlappingCapacity($user,$from,$to,$id))throw new DomainException('Khoảng capacity chồng lấn.');
+            if($old&&(int)$old['user_id']!==$user)throw new DomainException('Không thể đổi nhân sự của ngưỡng phân bổ đã tạo.');
+            if($this->hasOverlappingCapacity($user,$from,$to,$id))throw new DomainException('Thời gian hiệu lực bị trùng với ngưỡng phân bổ đã lưu.');
             $new=['user_id'=>$user,'daily_limit_hours'=>$daily,'weekly_limit_hours'=>$weekly,'effective_from'=>$from,'effective_to'=>$to];
             if($id)$this->db->execute('UPDATE dc_pm_capacity_overrides SET daily_limit_hours=?,weekly_limit_hours=?,effective_from=?,effective_to=?,updated_by=? WHERE store_id=? AND id=?','ssssiii',[$daily,$weekly,$from,$to,$this->actorId,$this->storeId,$id]);
             else{$this->db->execute('INSERT INTO dc_pm_capacity_overrides(store_id,user_id,daily_limit_hours,weekly_limit_hours,effective_from,effective_to,created_by,updated_by) VALUES(?,?,?,?,?,?,?,?)','iissssii',[$this->storeId,...array_values($new),$this->actorId,$this->actorId]);$id=(int)$this->db->fetchOne('SELECT LAST_INSERT_ID() id')['id'];}
@@ -106,9 +106,9 @@ class PmAllocationService {
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
     public function deleteCapacity(int $id): void {
-        $this->admin();$old=$this->db->fetchOne('SELECT * FROM dc_pm_capacity_overrides WHERE store_id=? AND id=? AND deleted_at IS NULL','ii',[$this->storeId,$id]);if(!$old)throw new OutOfBoundsException('Không tìm thấy capacity.');
+        $this->admin();$old=$this->db->fetchOne('SELECT * FROM dc_pm_capacity_overrides WHERE store_id=? AND id=? AND deleted_at IS NULL','ii',[$this->storeId,$id]);if(!$old)throw new OutOfBoundsException('Không tìm thấy ngưỡng phân bổ.');
         $this->db->beginTransaction();try{$this->dao->lockUsers([[(int)$old['user_id'],$old['effective_from']]]);
-            $current=$this->db->fetchOne('SELECT * FROM dc_pm_capacity_overrides WHERE store_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','ii',[$this->storeId,$id]);if($current!==$old)throw new DomainException('Capacity đã thay đổi.');
+            $current=$this->db->fetchOne('SELECT * FROM dc_pm_capacity_overrides WHERE store_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','ii',[$this->storeId,$id]);if($current!==$old)throw new DomainException('Ngưỡng phân bổ đã thay đổi. Vui lòng tải lại trang.');
             $this->db->execute('UPDATE dc_pm_capacity_overrides SET deleted_at=NOW(),updated_by=? WHERE store_id=? AND id=?','iii',[$this->actorId,$this->storeId,$id]);$this->audit('capacity',$id,'soft_delete',$old,null);$this->db->commit();
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }

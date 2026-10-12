@@ -6,7 +6,7 @@ class PmAccountAuditService {
     public function __construct($database,private int $storeId,private int $actorId){$this->db=new PmDb($database);}
     public function profileChanged(array $fields): void {
         $allowed=['fullname','email','address','tel'];
-        foreach($fields as $field)if(!is_string($field)||!in_array($field,$allowed,true))throw new InvalidArgumentException('Invalid profile audit field.');
+        foreach($fields as $field)if(!is_string($field)||!in_array($field,$allowed,true))throw new InvalidArgumentException('Trường thông tin hồ sơ cần ghi nhật ký không hợp lệ.');
         $fields=array_values(array_unique($fields));sort($fields);
         if(!$fields)return;
         $this->write('profile_update',json_encode(['changed_fields'=>$fields],JSON_THROW_ON_ERROR));

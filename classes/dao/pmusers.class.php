@@ -74,23 +74,23 @@ class PmUsers {
     public function assignRoles(int $storeId,int $userId,array $roleIds,int $primaryRoleId): void {
         PmIdInput::parse($userId);PmIdInput::parse($primaryRoleId);
         foreach($roleIds as $roleId)PmIdInput::parse($roleId);
-        if(!$this->get($storeId,$userId))throw new OutOfBoundsException('User was not found in this tenant.');
+        if(!$this->get($storeId,$userId))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');
         $roleIds=array_values(array_unique(array_map('intval',$roleIds)));
         foreach(array_unique([...$roleIds,$primaryRoleId]) as $roleId){
             $role=$this->db->fetchOne('SELECT id,status FROM dc_pm_roles WHERE store_id=? AND id=?','ii',[$storeId,$roleId]);
             if(!$role)throw new OutOfBoundsException('Không tìm thấy vai trò trong đơn vị hiện tại.');
-            if((int)$role['status']!==1)throw new InvalidArgumentException('Invalid role for tenant.');
+            if((int)$role['status']!==1)throw new InvalidArgumentException('Vai trò không hợp lệ hoặc đã ngừng hoạt động.');
         }
-        if(!in_array($primaryRoleId,$roleIds,true))throw new InvalidArgumentException('Primary role must be assigned.');
+        if(!in_array($primaryRoleId,$roleIds,true))throw new InvalidArgumentException('Vai trò chính phải nằm trong danh sách vai trò được gán.');
         $this->db->beginTransaction();
         try{
             $this->db->execute('DELETE FROM dc_pm_user_roles WHERE store_id=? AND user_id=?','ii',[$storeId,$userId]);
             foreach(array_unique(array_map('intval',$roleIds)) as $roleId){
                 $role=$this->db->fetchOne('SELECT id FROM dc_pm_roles WHERE store_id=? AND id=? AND status=1','ii',[$storeId,$roleId]);
-                if(!$role)throw new InvalidArgumentException('Invalid role for tenant.');
+                if(!$role)throw new InvalidArgumentException('Vai trò không hợp lệ hoặc đã ngừng hoạt động.');
                 $this->db->execute('INSERT INTO dc_pm_user_roles(store_id,user_id,role_id,is_primary) VALUES(?,?,?,?)','iiii',[$storeId,$userId,$roleId,$roleId===$primaryRoleId?1:0]);
             }
-            if(!in_array($primaryRoleId,$roleIds,true))throw new InvalidArgumentException('Primary role must be assigned.');
+            if(!in_array($primaryRoleId,$roleIds,true))throw new InvalidArgumentException('Vai trò chính phải nằm trong danh sách vai trò được gán.');
             $this->db->commit();
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
@@ -98,8 +98,8 @@ class PmUsers {
         return $this->db->fetchAll('SELECT role_id,is_primary FROM dc_pm_user_roles WHERE store_id=? AND user_id=?','ii',[$storeId,$userId]);
     }
     public function rolesForUsers(int $storeId,array $userIds): array {
-        if(count($userIds)>100)throw new InvalidArgumentException('Role batch is limited to 100 users.');
-        foreach($userIds as $id)if(!is_int($id)||$id<=0)throw new InvalidArgumentException('Invalid user ID.');
+        if(count($userIds)>100)throw new InvalidArgumentException('Mỗi lần chỉ được cập nhật vai trò cho tối đa 100 nhân sự.');
+        foreach($userIds as $id)if(!is_int($id)||$id<=0)throw new InvalidArgumentException('Mã nhân sự không hợp lệ.');
         $userIds=array_values(array_unique($userIds));$grouped=array_fill_keys($userIds,[]);
         if(!$userIds)return $grouped;
         $placeholders=implode(',',array_fill(0,count($userIds),'?'));

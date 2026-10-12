@@ -39,7 +39,7 @@ class PmReportService {
         if($f['mode']==='costs'){
             $costInput=['from'=>$f['from'],'to'=>$f['to'],'project_id'=>$f['project_id'],'user_id'=>$f['user_id'],'role_code'=>$f['role_code'],'page'=>$f['page']];
             $costs=(new PmCostService($this->database,$this->storeId,$this->actorId))->dashboard($costInput);
-            if($export){if($costs['total_pages']*20>5000)throw new InvalidArgumentException('Export tối đa 5000 dự án. Vui lòng thu hẹp bộ lọc.');$all=[];for($page=1;$page<=$costs['total_pages'];$page++){$part=$page===$costs['page']?$costs:(new PmCostService($this->database,$this->storeId,$this->actorId))->dashboard(array_replace($costInput,['page'=>$page]));$all=array_merge($all,$part['projects']);}$costs['projects']=$all;}
+            if($export){if($costs['total_pages']*20>5000)throw new InvalidArgumentException('Chỉ được xuất tối đa 5000 dự án. Vui lòng thu hẹp bộ lọc.');$all=[];for($page=1;$page<=$costs['total_pages'];$page++){$part=$page===$costs['page']?$costs:(new PmCostService($this->database,$this->storeId,$this->actorId))->dashboard(array_replace($costInput,['page'=>$page]));$all=array_merge($all,$part['projects']);}$costs['projects']=$all;}
             return ['mode'=>'costs','filters'=>$f,'data'=>$costs];
         }
         if($scope==='own'&&$f['user_id']!==null&&$f['user_id']!==$this->actorId)throw new PmScopeDeniedException('Chỉ xem báo cáo cá nhân.');
@@ -67,7 +67,7 @@ class PmReportService {
         }elseif($report['mode']==='tasks'){
             $rows[]=['Task','Dự án','Nhân viên','Trạng thái','Bắt đầu','Hạn','Hoàn thành','Hoàn thành trong kỳ','Quá hạn','Hoàn thành trễ'];
             foreach($report['data']['rows'] as $r)$rows[]=[$r['name'],$r['project_name'],$r['user_name'],$r['status'],$r['start_date'],$r['due_date'],$r['completed_at'],(string)$r['completed_in_period'],(string)$r['overdue'],(string)$r['completed_late']];
-            $rows[]=['Tuần bắt đầu','Nhân viên','Task hoàn thành'];foreach($report['data']['by_week'] as $w)$rows[]=[$w['week_start'],$w['user_name'],$w['completed']];
+            $rows[]=['Tuần bắt đầu','Nhân viên','Công việc hoàn thành'];foreach($report['data']['by_week'] as $w)$rows[]=[$w['week_start'],$w['user_name'],$w['completed']];
         }else{
             $rows[]=['Dự án','Budget VND','Actual khoảng lọc','Currency','Actual lifetime','Currency','Ước tính','Currency'];
             foreach($report['data']['projects'] as $p)$rows[]=[$p['name'],$p['budget'],$p['actual']['cost']??'Không khả dụng',$p['actual']['currency']??'',$p['lifetime']['cost']??'Không khả dụng',$p['lifetime']['currency']??'',$p['estimate']['cost']??'Chưa đủ dữ liệu',$p['estimate']['currency']??''];

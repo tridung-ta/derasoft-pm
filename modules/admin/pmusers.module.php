@@ -22,7 +22,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         elseif(in_array($action,['department_save','department_status','department_delete','department_restore','status','save'],true))requirePermission('pm.users.manage');
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
         $targetId=PmIdInput::parse($request->element('id'),in_array($action,['save','department_save','rate_save'],true));
-        if(in_array($action,['department_save','department_status','department_delete','department_restore'],true)&&($targetId||$action!=='department_save')&&!$departments->existsInStore((int)$storeId,$targetId,$action==='department_restore'))throw new OutOfBoundsException('Không tìm thấy phòng ban trong tenant hiện tại.');
+        if(in_array($action,['department_save','department_status','department_delete','department_restore'],true)&&($targetId||$action!=='department_save')&&!$departments->existsInStore((int)$storeId,$targetId,$action==='department_restore'))throw new OutOfBoundsException('Không tìm thấy phòng ban trong đơn vị hiện tại.');
         if(in_array($action,['save','status','roles'],true)&&($targetId||$action!=='save')&&!$pmUsers->existsInStore((int)$storeId,$targetId))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');
         if($action==='department_save'){
             $code=strtoupper(trim((string)$request->element('code')));$name=trim((string)$request->element('name'));
@@ -31,7 +31,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if($departments->codeExists((int)$storeId,$code,$targetId?:null))throw new DomainException('Mã phòng ban đã tồn tại.');
             $targetId=$departments->save((int)$storeId,$targetId?:null,$code,$name);$notice='Đã lưu phòng ban.';
         }elseif($action==='department_restore'){
-            if(!$departments->restore((int)$storeId,$targetId))throw new OutOfBoundsException('Không tìm thấy phòng ban đã ẩn trong tenant hiện tại.');
+            if(!$departments->restore((int)$storeId,$targetId))throw new OutOfBoundsException('Không tìm thấy phòng ban đã ẩn trong đơn vị hiện tại.');
             $notice='Đã khôi phục phòng ban.';
         }elseif($action==='department_status'){
             $status=(int)$request->element('status');if(!in_array($status,[0,1],true))throw new InvalidArgumentException('Trạng thái phòng ban không hợp lệ.');
@@ -75,8 +75,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if($requiredErrors)throw new PmUserInputException($requiredErrors);
             if($pmUsers->emailExists((int)$storeId,$email,$targetId?:null))throw new DomainException('Email đã được sử dụng.');
             $departmentId=PmIdInput::parse($request->element('department_id'),true);$departmentId=$departmentId?:null;
-            if($departmentId&&!$departments->existsInStore((int)$storeId,$departmentId))throw new OutOfBoundsException('Không tìm thấy phòng ban trong tenant hiện tại.');
-            if($departmentId&&!$departments->exists((int)$storeId,$departmentId))throw new DomainException('Phòng ban không thuộc tenant hiện tại.');
+            if($departmentId&&!$departments->existsInStore((int)$storeId,$departmentId))throw new OutOfBoundsException('Không tìm thấy phòng ban trong đơn vị hiện tại.');
+            if($departmentId&&!$departments->exists((int)$storeId,$departmentId))throw new DomainException('Phòng ban không thuộc đơn vị hiện tại.');
             $data=['fullname'=>$fullname,'email'=>$email,'tel'=>trim((string)$request->element('tel')),'department_id'=>$departmentId,'weekly_limit_hours'=>(float)$request->element('weekly_limit_hours')];
             if($data['weekly_limit_hours']<=0||$data['weekly_limit_hours']>168)throw new InvalidArgumentException('Giới hạn giờ/tuần không hợp lệ.');
             if($targetId){if(!$pmUsers->updateSafe((int)$storeId,$targetId,$data))throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');}

@@ -1,12 +1,14 @@
 /* Chart.js only receives numeric display values; authoritative money remains decimal strings. */
 (() => {
     'use strict';
+    const failureText = error => error.name === 'AbortError' ? 'Hết thời gian chờ. Vui lòng thử lại.' : error.name === 'TypeError' ? 'Không thể kết nối máy chủ. Vui lòng kiểm tra kết nối mạng và thử lại.' : error.name === 'SyntaxError' ? 'Phản hồi từ máy chủ không hợp lệ. Vui lòng tải lại trang.' : error.message;
+
     const source = document.getElementById('cost-data');
     if (!source) return;
     let data = JSON.parse(source.textContent), timer = null, controller = null, authorizationLost = false;
     const charts = {}, status = document.getElementById('refresh-status');
     const text = (id, value) => { document.getElementById(id).textContent = value; };
-    const amount = row => row.cost === null ? 'Không cộng: khác currency hoặc thiếu dữ liệu' : `${row.cost} ${row.currency}`;
+    const amount = row => row.cost === null ? 'Không cộng: khác loại tiền tệ hoặc thiếu dữ liệu' : `${row.cost} ${row.currency}`;
     const node = (tag, value) => { const element = document.createElement(tag); element.textContent = value; return element; };
     const actualAmount = value => {
         const element=node('span',amount(value));
@@ -59,7 +61,7 @@
             if(!data.tasks.length){const tr=node('tr',''),td=node('td','Chưa có công việc trong phạm vi.');td.colSpan=4;tr.append(td);tasks.append(tr);}
         }
         const groups = document.getElementById('breakdowns'); groups.replaceChildren();
-        Object.entries({ user: 'Nhân sự', department: 'Phòng ban', role: 'Role chính', date: 'Ngày' }).forEach(([key, label]) => Object.entries(data.groups[key]).forEach(([bucket, r]) => row(groups, [`${label} #${bucket}`, `${r.hours} / ${r.regular_hours} / ${r.ot_hours}`, actualAmount(r)])));
+        Object.entries({ user: 'Nhân sự', department: 'Phòng ban', role: 'Vai trò chính', date: 'Ngày' }).forEach(([key, label]) => Object.entries(data.groups[key]).forEach(([bucket, r]) => row(groups, [`${label} #${bucket}`, `${r.hours} / ${r.regular_hours} / ${r.ot_hours}`, actualAmount(r)])));
         if(!groups.children.length){const tr=node('tr',''),td=node('td','Chưa có chấm công trong khoảng lọc.');td.colSpan=3;tr.append(td);groups.append(tr);}
         const pager = document.getElementById('pager'); pager.replaceChildren();
         [[data.page - 1, 'Trang trước'], [data.page + 1, 'Trang sau']].forEach(([page, label]) => {
@@ -80,7 +82,7 @@
             if(response.status===401||response.status===403){authorizationLost=true;throw new Error('Phiên hoặc quyền truy cập đã thay đổi. Vui lòng đăng nhập lại hoặc tải lại trang.');}
             if (!response.ok) throw new Error(next.error || 'Không thể tải chi phí.');
             data = next; render(); status.textContent = 'Đã cập nhật lúc ' + new Date().toLocaleTimeString('vi-VN') + ' · chu kỳ 60 giây';
-        } catch (error) { if (!document.hidden) status.textContent = error.name === 'AbortError' ? 'Cập nhật quá thời gian; giữ số liệu trước đó.' : error.message + ' Giữ số liệu trước đó.'; }
+        } catch (error) { if (!document.hidden) status.textContent = failureText(error) + ' Giữ số liệu trước đó.'; }
         finally { clearTimeout(timeout); controller = null; schedule(); }
     }
     document.addEventListener('visibilitychange', () => { if (document.hidden) { clearTimeout(timer); if (controller) controller.abort(); } else schedule(); });

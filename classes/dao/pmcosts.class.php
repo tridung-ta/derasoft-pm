@@ -32,7 +32,7 @@ class PmCosts {
     private function actualQuery(array $f,string $group): array {
         $expressions=['total'=>'0','project'=>'s.project_id','task'=>'s.task_id','user'=>'s.user_id','department'=>'COALESCE(u.department_id,0)',
             'role'=>"COALESCE((SELECT ur.role_id FROM dc_pm_user_roles ur WHERE ur.store_id=s.store_id AND ur.user_id=s.user_id AND ur.is_primary=1 ORDER BY ur.role_id LIMIT 1),0)",'date'=>'s.work_date'];
-        if(!isset($expressions[$group]))throw new InvalidArgumentException('Invalid cost grouping.');
+        if(!isset($expressions[$group]))throw new InvalidArgumentException('Cách nhóm chi phí không hợp lệ.');
         [$where,$types,$params]=$this->scope($f);
         $where.=' AND s.deleted_at IS NULL';
         if($f['from']!==null){$where.=' AND s.work_date>=?';$types.='s';$params[]=$f['from'];}

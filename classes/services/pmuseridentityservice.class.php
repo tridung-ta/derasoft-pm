@@ -5,7 +5,7 @@ class PmUserIdentityService {
     private ?string $collation=null;
     public function __construct($database){$this->db=new PmDb($database);}
     public function lockName(int $storeId): string {
-        if($storeId<=0)throw new InvalidArgumentException('Tenant không hợp lệ.');
+        if($storeId<=0)throw new InvalidArgumentException('Đơn vị không hợp lệ.');
         $name=$this->db->fetchOne('SELECT DATABASE() name')['name'];
         return 'pmidentity:'.substr(hash('sha256',$name.':'.$storeId),0,50);
     }
@@ -33,7 +33,7 @@ class PmUserIdentityService {
     public function identityKey(string $value): string {
         if($this->collation===null){
             $rows=$this->db->fetchAll("SELECT COLLATION_NAME name FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_users' AND COLUMN_NAME IN ('username','email')");
-            if(count($rows)!==2||$rows[0]['name']!==$rows[1]['name']||!preg_match('/^utf8mb4_[a-z0-9_]+$/D',$rows[0]['name']))throw new RuntimeException('Unsupported identity collation.');
+            if(count($rows)!==2||$rows[0]['name']!==$rows[1]['name']||!preg_match('/^utf8mb4_[a-z0-9_]+$/D',$rows[0]['name']))throw new RuntimeException('Cấu hình đối chiếu tài khoản chưa được hỗ trợ. Vui lòng liên hệ quản trị viên.');
             $this->collation=$rows[0]['name'];
         }
         $c=$this->collation;

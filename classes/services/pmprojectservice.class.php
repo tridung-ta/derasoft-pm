@@ -88,7 +88,7 @@ class PmProjectService {
         $client=trim((string)($data['client_name']??''));if(mb_strlen($client)>150)throw new InvalidArgumentException('Tên khách hàng quá dài.');
         $manager=$this->access->hasRole('ADMIN')?PmIdInput::parse($data['manager_id']??null,true):$this->actorId;
         if($manager>0)$this->requireScopedUser($manager);
-        if(!in_array($manager,array_map('intval',array_column($this->availableUsers(true),'id')),true))throw new InvalidArgumentException('Người phụ trách phải là Admin/PM đang hoạt động trong tenant.');
+        if(!in_array($manager,array_map('intval',array_column($this->availableUsers(true),'id')),true))throw new InvalidArgumentException('Người phụ trách phải là quản trị viên hoặc quản lý dự án đang hoạt động trong đơn vị hiện tại.');
         $this->db->beginTransaction();
         try{
             if($id){$project=$this->getProject($id,true);$this->requireManage($project,'pm.projects.manage');}
@@ -113,8 +113,8 @@ class PmProjectService {
             $project=$this->getProject($projectId,true);$this->requireManage($project,'pm.project_members.manage');
             $this->requireScopedUser($userId);
             if(!$active&&!$this->db->fetchOne('SELECT id FROM dc_pm_project_members WHERE store_id=? AND project_id=? AND user_id=? AND status=1','iii',[$this->storeId,$projectId,$userId]))throw new OutOfBoundsException('Không tìm thấy thành viên trong dự án.');
-            if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$userId])&&$active)throw new InvalidArgumentException('Thành viên phải đang hoạt động trong tenant.');
-            if(!$active){if((int)$project['manager_id']===$userId)throw new DomainException('Không thể gỡ người phụ trách dự án.');if($this->db->fetchOne('SELECT id FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND assignee_id=? AND deleted_at IS NULL LIMIT 1','iii',[$this->storeId,$projectId,$userId]))throw new DomainException('Cần giao lại hoặc bỏ người được giao của các task trước khi gỡ thành viên.');}
+            if(!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$userId])&&$active)throw new InvalidArgumentException('Thành viên phải đang hoạt động trong đơn vị hiện tại.');
+            if(!$active){if((int)$project['manager_id']===$userId)throw new DomainException('Không thể gỡ người phụ trách dự án.');if($this->db->fetchOne('SELECT id FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND assignee_id=? AND deleted_at IS NULL LIMIT 1','iii',[$this->storeId,$projectId,$userId]))throw new DomainException('Cần giao lại công việc hoặc bỏ người được giao trước khi gỡ thành viên.');}
             $this->db->execute('INSERT INTO dc_pm_project_members(store_id,project_id,user_id,status,project_role) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE status=VALUES(status),project_role=COALESCE(VALUES(project_role),project_role)','iiiis',[$this->storeId,$projectId,$userId,$active?1:0,$projectRole]);$this->db->commit();
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
@@ -125,16 +125,16 @@ class PmProjectService {
     public function saveTask(int $projectId,array $data,?int $id=null): int {
         $name=trim((string)($data['name']??''));$description=(string)($data['description']??'');$status=(string)($data['status']??'todo');$priority=(string)($data['priority']??'normal');
         if($name==='')throw new InvalidArgumentException('Vui lòng nhập tên công việc.');
-        if(mb_strlen($name)>150||mb_strlen($description)>10000||!in_array($status,['todo','in_progress','review','done'],true)||!in_array($priority,['low','normal','high'],true))throw new InvalidArgumentException('Thông tin task không hợp lệ.');
+        if(mb_strlen($name)>150||mb_strlen($description)>10000||!in_array($status,['todo','in_progress','review','done'],true)||!in_array($priority,['low','normal','high'],true))throw new InvalidArgumentException('Thông tin công việc không hợp lệ.');
         $rawHours=$data['estimated_hours']??'0';
         if(trim((string)$rawHours)==='')throw new InvalidArgumentException('Vui lòng nhập giờ ước tính công việc.');
         $hours=$this->number($rawHours,6);$due=$this->date($data['due_date']??null);$assignee=PmIdInput::parse($data['assignee_id']??null,true);$assignee=$assignee?:null;
         $this->db->beginTransaction();try{
             $project=$this->getProject($projectId,true);$this->requireManage($project,'pm.tasks.manage');
             if($assignee)$this->requireScopedUser($assignee);
-            if($assignee&&!$this->db->fetchOne('SELECT m.id FROM dc_pm_project_members m INNER JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id AND u.status=1 WHERE m.store_id=? AND m.project_id=? AND m.user_id=? AND m.status=1','iii',[$this->storeId,$projectId,$assignee]))throw new InvalidArgumentException('Task chỉ được giao cho thành viên active của dự án.');
+            if($assignee&&!$this->db->fetchOne('SELECT m.id FROM dc_pm_project_members m INNER JOIN dc_users u ON u.store_id=m.store_id AND u.id=m.user_id AND u.status=1 WHERE m.store_id=? AND m.project_id=? AND m.user_id=? AND m.status=1','iii',[$this->storeId,$projectId,$assignee]))throw new InvalidArgumentException('Chỉ được giao công việc cho thành viên đang hoạt động của dự án.');
             $old=$id?$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','iii',[$this->storeId,$projectId,$id]):null;
-            if($id&&!$old)throw new OutOfBoundsException('Không tìm thấy task.');
+            if($id&&!$old)throw new OutOfBoundsException('Không tìm thấy công việc.');
             $start=$this->date($data['start_date']??($old['start_date']??null));if($start&&$due&&$start>$due)throw new InvalidArgumentException('Ngày bắt đầu phải trước hạn hoàn thành.');
             if($id)$this->db->execute('UPDATE dc_pm_tasks SET name=?,description=?,assignee_id=?,status=?,priority=?,estimated_hours=?,due_date=? WHERE store_id=? AND project_id=? AND id=?','ssissssiii',[$name,$description,$assignee,$status,$priority,$hours,$due,$this->storeId,$projectId,$id]);
             else{$this->db->execute('INSERT INTO dc_pm_tasks(store_id,project_id,name,description,assignee_id,status,priority,estimated_hours,due_date,created_by) VALUES(?,?,?,?,?,?,?,?,?,?)','iississssi',[$this->storeId,$projectId,$name,$description,$assignee,$status,$priority,$hours,$due,$this->actorId]);$id=(int)$this->db->fetchOne('SELECT LAST_INSERT_ID() id')['id'];}
@@ -153,7 +153,7 @@ class PmProjectService {
         try{
             $project=$this->getProject($projectId,true);$this->requireManage($project,'pm.tasks.manage');
             $old=$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND id=? AND deleted_at IS NULL FOR UPDATE','iii',[$this->storeId,$projectId,$id]);
-            if(!$old)throw new OutOfBoundsException('Không tìm thấy task.');
+            if(!$old)throw new OutOfBoundsException('Không tìm thấy công việc.');
             if($old['status']!==$status){
                 $completed=$this->completionTime($status,$old);
                 $this->db->execute('UPDATE dc_pm_tasks SET status=?,completed_at=? WHERE store_id=? AND project_id=? AND id=?','ssiii',[$status,$completed,$this->storeId,$projectId,$id]);
@@ -163,11 +163,11 @@ class PmProjectService {
         }catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
     public function deleteTask(int $projectId,int $id): void {
-        $this->db->beginTransaction();try{$project=$this->getProject($projectId,true);$this->requireManage($project,'pm.tasks.manage');$old=$this->taskSnapshot($projectId,$id);if($this->db->execute('UPDATE dc_pm_tasks SET deleted_at=NOW() WHERE store_id=? AND project_id=? AND id=? AND deleted_at IS NULL','iii',[$this->storeId,$projectId,$id])!==1)throw new OutOfBoundsException('Không tìm thấy task.');$this->auditTask($id,'soft_delete',$old,$this->taskSnapshot($projectId,$id));$this->db->commit();}catch(Throwable $e){$this->db->rollBack();throw $e;}
+        $this->db->beginTransaction();try{$project=$this->getProject($projectId,true);$this->requireManage($project,'pm.tasks.manage');$old=$this->taskSnapshot($projectId,$id);if($this->db->execute('UPDATE dc_pm_tasks SET deleted_at=NOW() WHERE store_id=? AND project_id=? AND id=? AND deleted_at IS NULL','iii',[$this->storeId,$projectId,$id])!==1)throw new OutOfBoundsException('Không tìm thấy công việc.');$this->auditTask($id,'soft_delete',$old,$this->taskSnapshot($projectId,$id));$this->db->commit();}catch(Throwable $e){$this->db->rollBack();throw $e;}
     }
     private function taskSnapshot(int $projectId,int $id): array {
         $row=$this->db->fetchOne('SELECT * FROM dc_pm_tasks WHERE store_id=? AND project_id=? AND id=? FOR UPDATE','iii',[$this->storeId,$projectId,$id]);
-        if(!$row)throw new OutOfBoundsException('Không tìm thấy task.');return $row;
+        if(!$row)throw new OutOfBoundsException('Không tìm thấy công việc.');return $row;
     }
     private function auditTask(int $id,string $action,?array $old,array $new): void {
         $this->db->execute('INSERT INTO dc_pm_audit_logs(store_id,actor_id,entity_type,entity_id,action,old_values,new_values) VALUES(?,?,?,?,?,?,?)','iisisss',[$this->storeId,$this->actorId,'task',$id,$action,$old===null?null:json_encode($old,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE),json_encode($new,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE)]);

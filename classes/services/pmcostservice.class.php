@@ -14,7 +14,7 @@ class PmCostService {
         return $value;
     }
     public function projectChoices(): array {
-        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new PmScopeDeniedException('Forbidden');
+        if(!$this->access->hasPermission('pm.costs.view')||!($this->access->hasRole('ADMIN')||$this->access->hasRole('PM')))throw new PmScopeDeniedException('Bạn không có quyền truy cập chức năng này.');
         return $this->costs->projectChoices(['store_id'=>$this->storeId,'manager_id'=>$this->access->hasRole('ADMIN')?null:$this->actorId]);
     }
     private function actual(array $f,string $group,array &$warnings): array {
@@ -27,7 +27,7 @@ class PmCostService {
         $rows=[];
         foreach($this->costs->actualHours($f,$group) as $r){
             $key=(string)$r['bucket'];$codes=$currencies[$key];$valid=isset($amounts[$key]);
-            $warning=$valid?null:'Khác currency hoặc currency không hợp lệ ('.implode(', ',$codes).'): không cộng chi phí cho '.$group.' #'.$key.'.';
+            $warning=$valid?null:'Khác loại tiền tệ hoặc loại tiền tệ không hợp lệ ('.implode(', ',$codes).'): không cộng chi phí cho '.$group.' #'.$key.'.';
             if($warning)$warnings[]=$warning;
             $missingRateEntries=(int)$r['missing_rate_entries'];
             $rows[$key]=array_merge($r,['cost'=>$valid?(string)$amounts[$key]['cost']:null,'currency'=>$valid?$codes[0]:null,'currencies'=>$codes,'warning'=>$warning,'missing_rate_entries'=>$missingRateEntries,'cost_complete'=>$valid&&$missingRateEntries===0]);
@@ -45,20 +45,20 @@ class PmCostService {
         $db=$this->costs->db();
         // Guard and SUM must see the same rows, including during concurrent polling/writes.
         $isolation=$db->transactionIsolation();
-        if(!in_array($isolation,['REPEATABLE-READ','SERIALIZABLE'],true))throw new RuntimeException('Cost snapshot requires repeatable-read isolation.');
+        if(!in_array($isolation,['REPEATABLE-READ','SERIALIZABLE'],true))throw new RuntimeException('Không thể tổng hợp chi phí nhất quán. Vui lòng liên hệ quản trị viên.');
         $db->beginTransaction();
         try{
             if($f['project_id']&&!$this->costs->projectExists($f))throw new PmScopeDeniedException('Dự án không tồn tại hoặc ngoài phạm vi của bạn.');
-            $warnings=['Phòng ban/role dùng phân loại hiện tại; timesheet chưa có snapshot phòng ban/role lịch sử.'];
+            $warnings=['Phòng ban và vai trò dùng phân loại hiện tại; chấm công chưa lưu thông tin phân loại tại thời điểm ghi nhận.'];
             $groups=[];foreach(['total','project','task','user','department','role','date'] as $group)$groups[$group]=$this->actual($f,$group,$warnings);
             $lifetime=$f;$lifetime['from']=null;$lifetime['to']=null;
             $allActual=$this->actual($lifetime,'project',$warnings);
             $estimateRows=$this->costs->estimateRows($f);$estimateCurrencies=[];$missing=[];
             foreach($estimateRows as $r){$pid=(int)$r['project_id'];if($r['currency']===null||$r['assignee_id']===null){$missing[$pid]=true;$warnings[]='Task #'.$r['id'].' thiếu assignee hoặc đơn giá; ước tính chưa đầy đủ.';}else{$estimateCurrencies[$pid][$r['currency']]=true;}}
-            $safeProjects=[];foreach($estimateCurrencies as $pid=>$codes){if(count($codes)===1&&preg_match('/^[A-Z]{3}$/D',(string)array_key_first($codes))&&!isset($missing[$pid]))$safeProjects[]=$pid;else $warnings[]='Ước tính dự án #'.$pid.' thiếu dữ liệu hoặc khác currency: không cộng tiền.';}
+            $safeProjects=[];foreach($estimateCurrencies as $pid=>$codes){if(count($codes)===1&&preg_match('/^[A-Z]{3}$/D',(string)array_key_first($codes))&&!isset($missing[$pid]))$safeProjects[]=$pid;else $warnings[]='Ước tính dự án #'.$pid.' thiếu dữ liệu hoặc khác loại tiền tệ: không cộng tiền.';}
             $estimates=[];foreach($this->costs->estimateAmounts($f,$safeProjects) as $r)$estimates[(int)$r['project_id']]=$r;
             $projects=$this->costs->projects($f,max(1,(int)($input['page']??1)));
-            foreach($projects['rows'] as &$p){$pid=(int)$p['id'];$p['actual']=$groups['project'][(string)$pid]??self::emptyActual();$p['lifetime']=$allActual[(string)$pid]??self::emptyActual();$p['estimate']=$estimates[$pid]??['cost'=>isset($missing[$pid])||isset($estimateCurrencies[$pid])?null:'0.00','currency'=>'VND'];$p['comparable']=$p['lifetime']['cost']!==null&&$p['lifetime']['currency']==='VND'&&$p['estimate']['cost']!==null&&$p['estimate']['currency']==='VND';if(!$p['comparable'])$warnings[]='Dự án #'.$pid.': ngân sách VND không so sánh với số tiền thiếu dữ liệu hoặc khác currency.';}unset($p);
+            foreach($projects['rows'] as &$p){$pid=(int)$p['id'];$p['actual']=$groups['project'][(string)$pid]??self::emptyActual();$p['lifetime']=$allActual[(string)$pid]??self::emptyActual();$p['estimate']=$estimates[$pid]??['cost'=>isset($missing[$pid])||isset($estimateCurrencies[$pid])?null:'0.00','currency'=>'VND'];$p['comparable']=$p['lifetime']['cost']!==null&&$p['lifetime']['currency']==='VND'&&$p['estimate']['cost']!==null&&$p['estimate']['currency']==='VND';if(!$p['comparable'])$warnings[]='Dự án #'.$pid.': ngân sách VND không so sánh với số tiền thiếu dữ liệu hoặc khác loại tiền tệ.';}unset($p);
             $tasks=$this->costs->taskNames($f);$taskEstimates=[];foreach($estimateRows as $r)$taskEstimates[(int)$r['id']]=$r;
             foreach($tasks as &$t){$t['actual']=$groups['task'][(string)$t['id']]??self::emptyActual();$t['estimate']=$taskEstimates[(int)$t['id']]??null;}unset($t);
             $summary=$groups['total']['0']??self::emptyActual();
@@ -72,7 +72,7 @@ class PmCostService {
             $estimateCodes=[];foreach($estimates as $r)$estimateCodes[$r['currency']]=true;
             $estimateTotal=null;$estimateCurrency=count($estimateCodes)===1?array_key_first($estimateCodes):null;
             if(!$missing&&count($safeProjects)===count($estimateCurrencies)&&count($estimateCodes)<=1)$estimateTotal=$this->costs->decimalSum(array_column($estimates,'cost'));
-            else $warnings[]='Tổng ước tính thiếu dữ liệu hoặc khác currency: không cộng tiền.';
+            else $warnings[]='Tổng ước tính thiếu dữ liệu hoặc khác loại tiền tệ: không cộng tiền.';
             $result=['filters'=>['from'=>$f['from']??'','to'=>$f['to']??'','project_id'=>$f['project_id']],'valuation_date'=>$today,'summary'=>$summary,'estimate_total'=>$estimateTotal,'estimate_currency'=>$estimateCurrency??($estimateTotal!==null?'VND':null),'projects'=>$projects['rows'],'tasks'=>$f['project_id']?$tasks:[],'groups'=>$groups,'warnings'=>array_values(array_unique($warnings)),'page'=>$projects['page'],'total_pages'=>max(1,(int)ceil($projects['total']/20))];
             $db->commit();return $result;
         }catch(Throwable $error){$db->rollBack();throw $error;}

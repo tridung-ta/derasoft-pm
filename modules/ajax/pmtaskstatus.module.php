@@ -1,7 +1,7 @@
 <?php
 // Only the authenticated, CSRF-checked PM entry point may execute this writer.
 if(!defined('PM_TASK_STATUS_AUTHORIZED')||PM_TASK_STATUS_AUTHORIZED!==true||($_SERVER['REQUEST_METHOD']??'')!=='POST'){
-    http_response_code(404);header('Content-Type: application/json; charset=utf-8');echo json_encode(['error'=>'Unknown PM endpoint']);exit;
+    http_response_code(404);header('Content-Type: application/json; charset=utf-8');echo json_encode(['error'=>'Không tìm thấy chức năng được yêu cầu.']);exit;
 }
 include_once(ROOT_PATH.'classes/services/pmprojectservice.class.php');
 try{

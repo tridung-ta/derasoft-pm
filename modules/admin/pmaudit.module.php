@@ -2,7 +2,7 @@
 include_once(ROOT_PATH.'classes/dao/pmauditlogs.class.php');
 $pmAccess = new PmAccess($db, (int)$storeId, (int)$userInfo->getId());
 requirePermission('pm.audit.view');
-if (!($pmAccess->hasRole('ADMIN') || $pmAccess->hasRole('PM') || $pmAccess->hasRole('HR'))) { http_response_code(403); exit('Forbidden'); }
+if (!($pmAccess->hasRole('ADMIN') || $pmAccess->hasRole('PM') || $pmAccess->hasRole('HR'))) { http_response_code(403); exit('Bạn không có quyền truy cập chức năng này.'); }
 $templateFile = 'pm-audit.tpl.html';
 $filters = ['entity_type' => (string)$request->element('entity_type'), 'action' => (string)$request->element('action')];
 $result = ['rows' => [], 'total' => 0, 'page' => 1]; $error = '';

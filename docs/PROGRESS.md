@@ -2050,3 +2050,6 @@ Commands: PHP tests/smoke_pm_admin.php --preview PASS; tests/smoke_pm_projects.p
 
 ## Workspace integration và dữ liệu host UAT — 09/10/2026
 BUILD theo yêu cầu đồng bộfrontend/backend; giữUIChi phí, không schema/DBtest/production. Dashboard preparedDAO/scopedservice; summaryallocation bounded100/khôngeditorchoices, DECIMALbudget và unavailabledata. Local noDBverify15scripts+7lint+5allowlist; browser17/17PASS;4XLSXparser/app/formulasPASS,30ca host đềuCHƯACHẠY. EXPLAIN/dashboardqueries và2testcontracts đãđăngkýregression nhưng fullDBrunner khôngchạylại. KhôngsuyoldPASSthànhreleasePASS. Chi tiếtWORKSPACE_INTEGRATION_VERIFY_20261009.md; triểnkhai và bộmẫuWORKSPACE_RELEASE_HANDOFF_20261009.md.
+
+## 12/10/2026 — thông báo tiếng Việt
+Đã sửa câu chữ PM/AJAX/validator, lỗi mạng/JSON, cảnh báo đơn giá lịch sử khi render và câu xác nhận mất dấu. Thanh thông báo rõ viền, nhãn và không chồng lấn; asset có version. Không DB/migration/production. Kết quả thật và giới hạn tại VI_NOTIFICATIONS_VERIFY_20261012.md. Chuẩn bị commit local và ZIP; không push/merge/deploy.\n

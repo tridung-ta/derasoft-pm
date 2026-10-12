@@ -10,7 +10,7 @@ class PmRateService {
         $hasUser = $userId !== null && $userId > 0;
         $hasRole = $roleId !== null && $roleId > 0;
         if ($hasUser === $hasRole) {
-            throw new InvalidArgumentException('Hourly rate must belong to exactly one user or role.');
+            throw new InvalidArgumentException('Đơn giá phải áp dụng cho một nhân sự hoặc một vai trò, không chọn đồng thời cả hai.');
         }
     }
 
@@ -28,28 +28,28 @@ class PmRateService {
         $this->validateRateOwner($userId, $roleId);
         $this->validateDates($from, $to);
         if ($rate < 0 || !preg_match('/^[A-Z]{3}$/', $currency)) {
-            throw new InvalidArgumentException('Invalid hourly rate or currency.');
+            throw new InvalidArgumentException('Đơn giá hoặc loại tiền tệ không hợp lệ. Vui lòng kiểm tra lại.');
         }
         if ($userId !== null && !$this->database->fetchOne('SELECT 1 FROM dc_users WHERE store_id=? AND id=? AND status<>2','ii',[$storeId,$userId])) {
-            throw new OutOfBoundsException('Rate user was not found in this tenant.');
+            throw new OutOfBoundsException('Không tìm thấy nhân sự trong đơn vị hiện tại.');
         }
         if ($roleId !== null && !$this->database->fetchOne('SELECT 1 FROM dc_pm_roles WHERE store_id=? AND id=? AND status=1','ii',[$storeId,$roleId])) {
-            throw new OutOfBoundsException('Rate role was not found in this tenant.');
+            throw new OutOfBoundsException('Không tìm thấy vai trò trong đơn vị hiện tại.');
         }
 
         $this->database->beginTransaction();
         try {
             if ($rateId !== null) {
                 $existing = $this->database->fetchOne('SELECT user_id,role_id FROM dc_pm_hourly_rates WHERE store_id=? AND id=? AND status=1 FOR UPDATE','ii',[$storeId,$rateId]);
-                if (!$existing) throw new OutOfBoundsException('Không tìm thấy đơn giá trong tenant hiện tại.');
+                if (!$existing) throw new OutOfBoundsException('Không tìm thấy đơn giá trong đơn vị hiện tại.');
                 if (($existing['user_id'] === null ? null : (int)$existing['user_id']) !== $userId
                     || ($existing['role_id'] === null ? null : (int)$existing['role_id']) !== $roleId) {
-                    throw new InvalidArgumentException('Không thể thay đổi nhân viên hoặc role của đơn giá đã tạo.');
+                    throw new InvalidArgumentException('Không thể thay đổi nhân sự hoặc vai trò của đơn giá đã tạo.');
                 }
             }
             $this->lockOwnerRates($storeId, $userId, $roleId);
             if ($this->hasOverlappingRate($storeId, $userId, $roleId, $from, $to, $rateId)) {
-                throw new DomainException('Hourly rate effective period overlaps an existing rate.');
+                throw new DomainException('Thời gian hiệu lực bị trùng với đơn giá đã lưu. Vui lòng chọn khoảng thời gian khác.');
             }
             if ($rateId === null) {
                 $this->database->execute(
@@ -64,7 +64,7 @@ class PmRateService {
                     'SELECT id FROM dc_pm_hourly_rates WHERE store_id = ? AND id = ? AND status = 1 FOR UPDATE',
                     'ii', [$storeId, $rateId]
                 );
-                if (!$exists) throw new OutOfBoundsException('Hourly rate was not found in this tenant.');
+                if (!$exists) throw new OutOfBoundsException('Không tìm thấy đơn giá trong đơn vị hiện tại.');
                 $this->database->execute(
                     'UPDATE dc_pm_hourly_rates SET user_id=?,role_id=?,rate=?,currency=?,effective_from=?,effective_to=?
                      WHERE store_id=? AND id=? AND status=1',
@@ -130,7 +130,7 @@ class PmRateService {
         );
         if ($rate) return $this->rateResult($rate, 'role', null);
         return ['rate'=>0.0,'rate_decimal'=>'0.00','currency'=>'VND','source'=>'fallback','source_id'=>null,
-            'warning'=>'Hourly rate is not configured for this user and date.'];
+            'warning'=>'Chưa thiết lập đơn giá cho nhân sự tại ngày chấm công này.'];
     }
 
     private function lockOwnerRates(int $storeId, ?int $userId, ?int $roleId): void {
@@ -148,7 +148,7 @@ class PmRateService {
         if (!$fromDate || $fromDate->format('Y-m-d') !== $from
             || ($to !== null && (!$toDate || $toDate->format('Y-m-d') !== $to))
             || ($toDate && $toDate < $fromDate)) {
-            throw new InvalidArgumentException('Invalid hourly rate effective period.');
+            throw new InvalidArgumentException('Ngày hiệu lực đơn giá không hợp lệ. Ngày kết thúc phải bằng hoặc sau ngày bắt đầu.');
         }
     }
 

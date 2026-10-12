@@ -229,3 +229,6 @@ Kanban UI: dùng impeccable + Playwright; đếm DOM theo cột sau phản hồi
 
 ## Đồng bộ workspace và host UAT
 feature-development cho BUILDBE đãđược yêu cầu; impeccable/playwright-cli cho template/browser; code-review cho scope/taskpermission/prepared/decimal/truncation; spreadsheets để tạo4XLSX bằngartifact-tool cómarker vàrender11views, appparserverify; git-feature-commit cho localcommit theoAGENTS. Khôngdatabase-safety vì khôngmigration/seedSQL/DBwrite, chỉread-onlypreflightfile vàdữliệu mẫu nhậpUIbởingườidùng. Lỗi bootstrap làtestnhầmheader/head, sửaregexkhôngbỏassertion; workbooktotalRows parsertrảstring, castint vàgiữcounts. No-DBstubs khôngthay thếEXPLAIN/SQLexecution, giữCHƯACHẠY.
+
+## 12/10/2026 — thông báo Việt
+Impeccable clarify cho câu chữ/feedback, code-review cho đường exception/controller và playwright-cli cho browser. Giữ theme Inter theo AGENTS. Quét UTF8 không phát hiện mojibake nhưng xác nhận gỡ thành viên có dấu hỏi hỏng, sửa đúng chuỗi. Chờ clock harness sửa API; ảnh mobile phát hiện toast che lỗi, sửa inline + assertion. No-DB không thay thế host UAT.\n

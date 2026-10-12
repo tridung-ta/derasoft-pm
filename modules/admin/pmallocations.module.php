@@ -11,10 +11,10 @@ try{
         if(!is_string($request->element('csrf_token'))||!hash_equals($_SESSION['pm_csrf_token'],$request->element('csrf_token')))throw new InvalidArgumentException('Phiên làm việc đã hết hạn. Vui lòng tải lại trang.');
         $rawId=$request->element('id');if($rawId!==null&&$rawId!==''&&(!is_scalar($rawId)||!preg_match('/^[1-9]\d{0,9}$/D',(string)$rawId)))throw new InvalidArgumentException('ID không hợp lệ.');$id=$rawId?(int)$rawId:null;
         $action=$request->element('action');
-        if($action==='save'){$data=[];foreach(['task_id','user_id','work_date','hours','start_time','end_time'] as $key){$data[$key]=$request->element($key);if($data[$key]!==null&&!is_scalar($data[$key]))throw new InvalidArgumentException('Input không hợp lệ.');}$saved=$service->save($data,$id);$warnings=$saved['warnings'];$notice='Đã lưu phân bổ.';}
-        elseif($action==='delete'&&$id){$service->delete($id);$notice='Đã ẩn phân bổ; giữ lịch sử audit.';}
-        elseif($action==='capacity'){$data=[];foreach(['user_id','daily_limit_hours','weekly_limit_hours','effective_from','effective_to'] as $key){$data[$key]=$request->element($key);if($data[$key]!==null&&!is_scalar($data[$key]))throw new InvalidArgumentException('Input không hợp lệ.');}$service->saveCapacity($data,$id);$notice='Đã lưu capacity.';}
-        elseif($action==='capacity_delete'&&$id){$service->deleteCapacity($id);$notice='Đã ẩn capacity.';}
+        if($action==='save'){$data=[];foreach(['task_id','user_id','work_date','hours','start_time','end_time'] as $key){$data[$key]=$request->element($key);if($data[$key]!==null&&!is_scalar($data[$key]))throw new InvalidArgumentException('Dữ liệu nhập không hợp lệ.');}$saved=$service->save($data,$id);$warnings=$saved['warnings'];$notice='Đã lưu phân bổ.';}
+        elseif($action==='delete'&&$id){$service->delete($id);$notice='Đã ẩn phân bổ; giữ nguyên lịch sử thay đổi.';}
+        elseif($action==='capacity'){$data=[];foreach(['user_id','daily_limit_hours','weekly_limit_hours','effective_from','effective_to'] as $key){$data[$key]=$request->element($key);if($data[$key]!==null&&!is_scalar($data[$key]))throw new InvalidArgumentException('Dữ liệu nhập không hợp lệ.');}$service->saveCapacity($data,$id);$notice='Đã lưu ngưỡng phân bổ.';}
+        elseif($action==='capacity_delete'&&$id){$service->deleteCapacity($id);$notice='Đã ẩn ngưỡng phân bổ.';}
         else throw new InvalidArgumentException('Thao tác không hợp lệ.');
     }elseif($request->element('id')){
         $v=$request->element('id');if(!is_scalar($v)||!preg_match('/^[1-9]\d{0,9}$/D',(string)$v))throw new InvalidArgumentException('ID không hợp lệ.');$edit=$service->get((int)$v);

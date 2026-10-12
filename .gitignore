@@ -35,3 +35,5 @@ Thumbs.db
 # Generated review workbooks and Python test cache
 /outputs/
 __pycache__/
+
+/.playwright-cli/

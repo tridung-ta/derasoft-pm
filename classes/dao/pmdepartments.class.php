@@ -34,7 +34,7 @@ class PmDepartments {
     public function save(int $storeId,?int $id,string $code,string $name): int {
         if($id){
             $current=$this->db->fetchOne('SELECT id FROM dc_pm_departments WHERE store_id=? AND id=? AND deleted_at IS NULL','ii',[$storeId,$id]);
-            if(!$current)throw new OutOfBoundsException('Không tìm thấy phòng ban trong tenant hiện tại.');
+            if(!$current)throw new OutOfBoundsException('Không tìm thấy phòng ban trong đơn vị hiện tại.');
             $affected=$this->db->execute('UPDATE dc_pm_departments SET code=?,name=?,updated_at=NOW() WHERE store_id=? AND id=? AND deleted_at IS NULL','ssii',[$code,$name,$storeId,$id]);
             if($affected<0)throw new RuntimeException('Không thể cập nhật phòng ban.');
             return $id;

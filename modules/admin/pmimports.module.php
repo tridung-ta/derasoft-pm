@@ -18,7 +18,7 @@ try{
         }else{
         if($action==='template'){$bytes=$service->template();header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');header('Content-Disposition: attachment; filename="pm-personnel-template.xlsx"');header('Cache-Control: no-store');header('X-Content-Type-Options: nosniff');echo $bytes;exit;}
         if(!in_array($action,['preview','stage'],true))throw new InvalidArgumentException('Thao tác không hợp lệ.');
-        $file=$_FILES['workbook']??null;if(!is_array($file)||!isset($file['error'],$file['tmp_name'],$file['name'],$file['size'])||$file['error']!==UPLOAD_ERR_OK||!is_string($file['tmp_name'])||!is_string($file['name'])||$file['size']>2097152||!is_uploaded_file($file['tmp_name']))throw new InvalidArgumentException('Upload XLSX tối đa 2MB không hợp lệ.');
+        $file=$_FILES['workbook']??null;if(!is_array($file)||!isset($file['error'],$file['tmp_name'],$file['name'],$file['size'])||$file['error']!==UPLOAD_ERR_OK||!is_string($file['tmp_name'])||!is_string($file['name'])||$file['size']>2097152||!is_uploaded_file($file['tmp_name']))throw new InvalidArgumentException('Tệp tải lên không hợp lệ. Vui lòng chọn tệp Excel XLSX có dung lượng tối đa 2 MB.');
         $path=tempnam(sys_get_temp_dir(),'pm-import-');if($path===false||!move_uploaded_file($file['tmp_name'],$path))throw new RuntimeException('Không lưu được file tạm.');
         $result=$action==='stage'?$service->stage($path,$file['name']):$service->preview($path,$file['name']);$history=$service->history();
         }
@@ -27,6 +27,6 @@ try{
 catch(PmScopeDeniedException $e){http_response_code(403);$error=PmScopeDeniedException::MESSAGE;}
 catch(DomainException $e){http_response_code(403);$error=$e->getMessage();}
 catch(OverflowException $e){http_response_code(409);$error=$e->getMessage();}
-catch(Throwable $e){http_response_code(500);error_log('PM import operation failed.');$error='Không thể kiểm tra import.';}
+catch(Throwable $e){http_response_code(500);error_log('PM import operation failed.');$error='Không thể hoàn tất thao tác nhập nhân sự. Vui lòng thử lại.';}
 finally{if(is_string($path)&&is_file($path))unlink($path);}
 header('Cache-Control: no-store');$template->assign(['pageTitle'=>'Import nhân sự — DeraSoft PM','csrfToken'=>$_SESSION['pm_csrf_token'],'importResult'=>$result,'importBatch'=>$batch,'importHistory'=>$history,'error'=>$error]);

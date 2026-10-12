@@ -3,7 +3,7 @@ $root=Split-Path -Parent $PSScriptRoot
 Push-Location $root
 try {
  $php=Join-Path $root '.tools/php83/php.exe'
- $tests=@('pm_user_input_smoke','smoke_pm_dependencies','pm_phase11_bootstrap','pm_workspace_dashboard_smoke','pm_allocation_summary_contract_smoke',
+ $tests=@('pm_user_input_smoke','pm_vietnamese_messages_smoke','smoke_pm_dependencies','pm_phase11_bootstrap','pm_workspace_dashboard_smoke','pm_allocation_summary_contract_smoke',
   'smoke_pm_admin','smoke_pm_users','smoke_pm_projects','smoke_pm_timesheets','smoke_pm_audit',
   'smoke_pm_costs','smoke_pm_allocations','smoke_pm_reports','smoke_pm_imports','smoke_pm_ui')
  foreach($test in $tests){& $php "tests/$test.php" --preview;if($LASTEXITCODE -ne 0){throw "Failed: $test"}}

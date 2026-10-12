@@ -9,7 +9,7 @@ class PmImportService {
     private PmDb $db;private PmAccess $access;private mysqli $connection;
     public function __construct($database,private int $storeId,private int $actorId){$this->db=new PmDb($database);$this->connection=$database->connection;$this->access=new PmAccess($database,$storeId,$actorId);}
     private function permission(): void {
-        if(!$this->access->hasRole('ADMIN')||!$this->access->hasPermission('pm.imports.manage')||!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId]))throw new PmScopeDeniedException('Chỉ Admin được kiểm tra import.');
+        if(!$this->access->hasRole('ADMIN')||!$this->access->hasPermission('pm.imports.manage')||!$this->db->fetchOne('SELECT id FROM dc_users WHERE store_id=? AND id=? AND status=1','ii',[$this->storeId,$this->actorId]))throw new PmScopeDeniedException('Chỉ quản trị viên được kiểm tra tệp nhập nhân sự.');
     }
     private function inspect(string $path,string $name): void {
         if(strtolower(pathinfo($name,PATHINFO_EXTENSION))!=='xlsx'||!is_file($path)||filesize($path)>2097152||filesize($path)===0)throw new InvalidArgumentException('Chỉ nhận XLSX tối đa 2MB.');
@@ -53,10 +53,10 @@ class PmImportService {
                         $rowKeys[$key]=['field'=>$field,'row'=>$i];
                     }
                     foreach($rowKeys as $key=>$entry)$seen[$key]??=$entry;
-                    if($identity->conflicts($this->storeId,$r['username'],$r['email']))$messages[]='Username/email trùng định danh tài khoản khác trong tenant.';
+                    if($identity->conflicts($this->storeId,$r['username'],$r['email']))$messages[]='Tên đăng nhập hoặc email trùng với định danh tài khoản khác trong đơn vị hiện tại.';
                 }
                 if(!preg_match('/^\d{1,3}(?:\.\d{1,2})?$/D',$r['weekly_limit_hours'])||(float)$r['weekly_limit_hours']<=0||(float)$r['weekly_limit_hours']>168)$messages[]='Giới hạn tuần phải >0 và <=168.';
-                if($r['role_code']!=='EMPLOYEE'||!$this->db->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[$this->storeId]))$messages[]='Chỉ staging role EMPLOYEE active; không tự cấp quyền quản trị.';
+                if($r['role_code']!=='EMPLOYEE'||!$this->db->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[$this->storeId]))$messages[]='Chỉ chấp nhận vai trò nhân viên đang hoạt động; không tự cấp quyền quản trị.';
                 $r['department_id']=null;
                 if($r['department_code']!==''){$d=$this->db->fetchOne('SELECT id FROM dc_pm_departments WHERE store_id=? AND code=? AND status=1 AND deleted_at IS NULL','is',[$this->storeId,$r['department_code']]);if(!$d)$messages[]='Phòng ban không active trong tenant.';else $r['department_id']=(int)$d['id'];}
                 $r['row_number']=$i;$rows[]=$r;if($messages)$errors[]=['row'=>$i,'messages'=>$messages];
@@ -81,7 +81,7 @@ class PmImportService {
         return $this->batchDetail($dao,$id);
     }
     private function batchDetail(PmImports $dao,int $id): array {
-        $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new PmScopeDeniedException('Không tìm thấy batch trong tenant.');
+        $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new PmScopeDeniedException('Không tìm thấy đợt nhập trong đơn vị hiện tại.');
         $batch['results']=$dao->results($this->storeId,$id);$batch['counts']=['applied'=>0,'skipped_duplicate'=>0,'failed'=>0,'pending'=>0];
         foreach($batch['results'] as $row)$batch['counts'][$row['status']]++;
         $batch['counts']['pending']+=(int)$batch['row_count']-count($batch['results']);return $batch;
@@ -93,11 +93,11 @@ class PmImportService {
         $identity=new PmUserIdentityService((object)['connection'=>$this->connection]);$identityLock=null;
         try{
             $identityLock=$identity->acquire($this->storeId);
-            $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new PmScopeDeniedException('Không tìm thấy batch trong tenant.');
+            $batch=$dao->batch($this->storeId,$id);if(!$batch)throw new PmScopeDeniedException('Không tìm thấy đợt nhập trong đơn vị hiện tại.');
             if($batch['status']==='completed')return $this->batchDetail($dao,$id);
             if(!in_array($batch['status'],['staged','partial','in_progress'],true))throw new InvalidArgumentException('Trạng thái batch không hợp lệ.');
             if($batch['status']!=='staged'&&!$resume)throw new InvalidArgumentException('Chọn tiếp tục batch để xử lý các dòng chưa hoàn tất.');
-            $rows=$dao->rows($this->storeId,$id);if(count($rows)!==(int)$batch['row_count']||count($rows)<1||count($rows)>500)throw new RuntimeException('Invalid staging count.');
+            $rows=$dao->rows($this->storeId,$id);if(count($rows)!==(int)$batch['row_count']||count($rows)<1||count($rows)>500)throw new RuntimeException('Số dòng dữ liệu đã kiểm tra không hợp lệ. Vui lòng kiểm tra lại tệp.');
             $dao->setStatus($this->storeId,$id,'in_progress');
             foreach($rows as $row){
                 $source=(int)$row['source_row'];$intent=$dao->intent($this->storeId,$id,$source,$row['payload']);
@@ -140,7 +140,7 @@ class PmImportService {
             if(!$dao->batch($this->storeId,$id))throw new PmScopeDeniedException('Dữ liệu ngoài phạm vi.');
             $u=$dao->ownedUser($this->storeId,$id,$row);$p=$u?@unserialize($u['properties'],['allowed_classes'=>false]):null;
             $marker=['store_id'=>$this->storeId,'import_id'=>$id,'source_row'=>$row,'token'=>$u['provenance_token']??''];
-            if(!$u||(int)$u['status']!==0||!is_array($p)||($p['pm_import']??null)!==$marker)throw new DomainException('Chỉ cấp mật khẩu cho tài khoản import của dòng này đang chưa kích hoạt.');
+            if(!$u||(int)$u['status']!==0||!is_array($p)||($p['pm_import']??null)!==$marker)throw new DomainException('Chỉ được cấp mật khẩu cho tài khoản được nhập từ dòng này và chưa kích hoạt.');
             $identity->assertAvailable($this->storeId,$u['username'],$u['email'],(int)$u['id']);
             if(!$dao->setPassword($this->storeId,(int)$u['id'],password_hash($password,PASSWORD_DEFAULT)))throw new DomainException('Trạng thái tài khoản đã thay đổi.');
             $this->db->execute("INSERT INTO dc_pm_audit_logs(store_id,actor_id,entity_type,entity_id,action,new_values) VALUES(?,?,'import',?,'provision_password',?)",'iiis',[$this->storeId,$this->actorId,$id,json_encode(['source_row'=>$row,'user_id'=>(int)$u['id'],'account_status'=>0],JSON_THROW_ON_ERROR)]);
@@ -148,16 +148,16 @@ class PmImportService {
         }finally{try{if($identityLock!==null)$identity->release($identityLock);}finally{$dao->release($lock);}}
     }
     private function validateApplyRow(mixed $r): int {
-        if(!is_array($r)||!array_key_exists('department_id',$r)||($r['department_id']!==null&&(!is_int($r['department_id'])||$r['department_id']<=0)))throw new InvalidArgumentException('Invalid row.');
-        foreach(self::HEADERS as $key)if(!isset($r[$key])||!is_string($r[$key]))throw new InvalidArgumentException('Invalid row.');
-        if(array_key_exists('tel',$r)&&!is_string($r['tel']))throw new InvalidArgumentException('Invalid phone field.');
+        if(!is_array($r)||!array_key_exists('department_id',$r)||($r['department_id']!==null&&(!is_int($r['department_id'])||$r['department_id']<=0)))throw new InvalidArgumentException('Dòng dữ liệu nhân sự không hợp lệ. Vui lòng kiểm tra lại tệp.');
+        foreach(self::HEADERS as $key)if(!isset($r[$key])||!is_string($r[$key]))throw new InvalidArgumentException('Dòng dữ liệu nhân sự không hợp lệ. Vui lòng kiểm tra lại tệp.');
+        if(array_key_exists('tel',$r)&&!is_string($r['tel']))throw new InvalidArgumentException('Dữ liệu điện thoại không hợp lệ.');
         PmUserInputService::validateFields($r['username'],$r['fullname'],$r['email'],$r['tel']??'');
-        if(!preg_match('/^[A-Za-z0-9_.-]{3,30}$/D',$r['username'])||!preg_match('/^\d{1,3}(?:\.\d{1,2})?$/D',$r['weekly_limit_hours'])||(float)$r['weekly_limit_hours']<=0||(float)$r['weekly_limit_hours']>168||$r['role_code']!=='EMPLOYEE')throw new InvalidArgumentException('Invalid row.');
-        $role=$this->db->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[$this->storeId]);if(!$role)throw new InvalidArgumentException('Inactive role.');
+        if(!preg_match('/^[A-Za-z0-9_.-]{3,30}$/D',$r['username'])||!preg_match('/^\d{1,3}(?:\.\d{1,2})?$/D',$r['weekly_limit_hours'])||(float)$r['weekly_limit_hours']<=0||(float)$r['weekly_limit_hours']>168||$r['role_code']!=='EMPLOYEE')throw new InvalidArgumentException('Dòng dữ liệu nhân sự không hợp lệ. Vui lòng kiểm tra lại tệp.');
+        $role=$this->db->fetchOne("SELECT id FROM dc_pm_roles WHERE store_id=? AND code='EMPLOYEE' AND status=1",'i',[$this->storeId]);if(!$role)throw new InvalidArgumentException('Vai trò đã ngừng hoạt động.');
         if($r['department_code']!==''){
             $d=$this->db->fetchOne('SELECT id FROM dc_pm_departments WHERE store_id=? AND code=? AND status=1 AND deleted_at IS NULL','is',[$this->storeId,$r['department_code']]);
-            if(!$d||(int)$d['id']!==($r['department_id']??null))throw new InvalidArgumentException('Inactive department.');
-        }elseif(($r['department_id']??null)!==null)throw new InvalidArgumentException('Invalid department.');
+            if(!$d||(int)$d['id']!==($r['department_id']??null))throw new InvalidArgumentException('Phòng ban đã ngừng hoạt động.');
+        }elseif(($r['department_id']??null)!==null)throw new InvalidArgumentException('Phòng ban không hợp lệ.');
         return (int)$role['id'];
     }
     public function template(): string {

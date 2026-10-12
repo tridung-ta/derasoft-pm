@@ -9,8 +9,10 @@ def run(*args):return subprocess.check_output(git+list(args),cwd=root)
 def digest(data):return hashlib.sha256(data).hexdigest()
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--ref',default='HEAD');parser.add_argument('--package',action='store_true')
-    args=parser.parse_args();ref=run('rev-parse',args.ref).decode().strip()
+    parser.add_argument('--date',default='20261009');parser.add_argument('--ref',default='HEAD');parser.add_argument('--package',action='store_true')
+    args=parser.parse_args();
+    if len(args.date)!=8 or not args.date.isdigit():raise ValueError('Invalid date')
+    ref=run('rev-parse',args.ref).decode().strip()
     changes=run('diff','--name-status','--no-renames',baseline,ref).decode().strip().splitlines()
     rows=[];files={}
     for line in changes:
@@ -44,14 +46,17 @@ def main():
         raise RuntimeError('UAT source changed after commit')
     for name in ['BO_DU_LIEU_UAT.xlsx','01_import_valid.xlsx','02_import_invalid.xlsx','03_import_collision.xlsx']:
         files['manual-test/'+name]=(uat/name).read_bytes()
-    manifest={'date':'2026-10-09','source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
+    if args.date>='20261012':
+        files['optional/maintenance.html']=run('show',ref+':maintenance.html')
+        files['review/NOTIFICATION_VERIFY.md']=run('show',ref+':docs/VI_NOTIFICATIONS_VERIFY_20261012.md')
+    manifest={'date':args.date,'source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
        'baseline':baseline,'package_type':'incremental existing-PM update; manual host UAT',
        'state':'local prepared; not uploaded; DB/session/host UAT NOT RUN',
        'new_migrations':[],'uat_data_source_sha256':digest(files['review/UAT_DATA_SOURCE.json']),'files':rows,
        'manual_files':{p:digest(data) for p,data in files.items() if not p.startswith('runtime/')}}
     files['review/WORKSPACE_MANIFEST.json']=(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n').encode()
     files['README_FIRST.txt']=(
-        'DeraSoft PM workspace integration - 09/10/2026\nSource commit: '+ref+
+        'DeraSoft PM workspace integration - '+args.date+'\nSource commit: '+ref+
         '\nRead review/README_DEPLOY.md BEFORE upload.\n'
         'Upload CONTENTS of runtime/ into the EXISTING PM web root; preserve config/license/uploads and legacy.\n'
         'manual-test/ is data for manual UI/import testing; DO NOT upload it to web root.\n'
@@ -65,14 +70,14 @@ def main():
         if '..' in Path(path).parts or path.startswith('/') or '\\' in path:raise RuntimeError('Unsafe archive path')
         if path.startswith('runtime/') and (path.endswith('.sql') or any(x in path for x in ['config.inc.php','.local/','.tools/','license/','upload/','templates_c/'])):
             raise RuntimeError('Protected runtime file: '+path)
-    output=root/'.local/releases'/('DeraSoft_PM_workspace_20261009_'+ref[:7]+'.zip')
+    output=root/'.local/releases'/('DeraSoft_PM_workspace_'+args.date+'_'+ref[:7]+'.zip')
     output.parent.mkdir(parents=True,exist_ok=True)
     if not args.package:
         print('PASS: immutable code inventory and UAT inputs verified; no ZIP/upload/DB.')
         return
     with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
         for path,data in sorted(files.items()):
-            info=zipfile.ZipInfo(path,(2026,10,9,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,data)
+            info=zipfile.ZipInfo(path,(int(args.date[:4]),int(args.date[4:6]),int(args.date[6:8]),0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,data)
     with zipfile.ZipFile(output) as archive:
         if set(archive.namelist())!=set(files) or archive.testzip() is not None:raise RuntimeError('ZIP inventory/CRC')
         for path,data in files.items():

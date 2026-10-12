@@ -54,7 +54,7 @@ function requirePermission(string $permissionCode): void {
     global $pmAccess;
     if (!isset($pmAccess) || !$pmAccess instanceof PmAccess || !$pmAccess->hasPermission($permissionCode)) {
         http_response_code(403);
-        exit('Forbidden');
+        exit('Bạn không có quyền truy cập chức năng này.');
     }
 }
 
@@ -62,6 +62,6 @@ function requireProjectAccess(int $projectId): void {
     global $pmAccess;
     if (!isset($pmAccess) || !$pmAccess instanceof PmAccess || !$pmAccess->hasProjectAccess($projectId)) {
         http_response_code(403);
-        exit('Forbidden');
+        exit('Bạn không có quyền truy cập chức năng này.');
     }
 }

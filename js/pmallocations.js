@@ -1,6 +1,8 @@
 /* Local-only polling; DOM text nodes keep user data out of HTML. */
 (() => {
     'use strict';
+    const failureText = error => error.name === 'AbortError' ? 'Hết thời gian chờ. Vui lòng thử lại.' : error.name === 'TypeError' ? 'Không thể kết nối máy chủ. Vui lòng kiểm tra kết nối mạng và thử lại.' : error.name === 'SyntaxError' ? 'Phản hồi từ máy chủ không hợp lệ. Vui lòng tải lại trang.' : error.message;
+
     const filter = document.getElementById('allocation-filter');
     if (!filter) return;
     const status = document.getElementById('allocation-poll-status');
@@ -53,23 +55,23 @@
         });
         if (!data.rows.length) {const tr=document.createElement('tr');const cell=text('td','Không có phân bổ trong tuần/phạm vi đã chọn.');cell.colSpan=5;tr.append(cell);fragment.append(tr);}
         body.replaceChildren(fragment);
-        status.textContent = data.truncated ? 'Đã cập nhật; chỉ hiển thị 1000 dòng đầu. Hãy lọc thêm.' : 'Đã cập nhật lịch phân bổ; polling 60 giây.';
+        status.textContent = data.truncated ? 'Đã cập nhật; chỉ hiển thị 1000 dòng đầu. Hãy lọc thêm.' : 'Đã cập nhật lịch phân bổ; tự động làm mới mỗi 60 giây.';
     }
     async function poll() {
         if (document.hidden || authorizationLost) return;
         controller = new AbortController();
         const timeout = setTimeout(() => controller?.abort(), 15000);
         try {const params=new URLSearchParams(new FormData(filter));params.set('op','pmallocations');render(await request(params,controller.signal));}
-        catch (e) {if (!document.hidden) status.textContent='Không thể cập nhật; giữ dữ liệu cũ. ' + (e.name === 'AbortError' ? 'Hết thời gian chờ.' : e.message);}
+        catch (e) {if (!document.hidden) status.textContent='Không thể cập nhật; giữ dữ liệu cũ. ' + failureText(e);}
         finally {clearTimeout(timeout);controller=null;if(!document.hidden&&!authorizationLost)timer=setTimeout(poll,60000);}
     }
     document.addEventListener('visibilitychange', () => {clearTimeout(timer);if(document.hidden)controller?.abort();else if(!controller&&!authorizationLost)timer=setTimeout(poll,60000);});
     if (!document.hidden) timer=setTimeout(poll,60000);
     const suggestions=document.getElementById('allocation-suggestions');
     if (suggestions) suggestions.addEventListener('submit', async event => {
-        event.preventDefault();const list=document.getElementById('suggestion-results');list.replaceChildren(text('li','Đang kiểm tra capacity…'));
+        event.preventDefault();const list=document.getElementById('suggestion-results');list.replaceChildren(text('li','Đang kiểm tra khả năng nhận việc…'));
         const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),15000);
-        try {const params=new URLSearchParams(new FormData(suggestions));params.set('op','pmallocations');params.set('action','suggestions');const data=await request(params,ctrl.signal);list.replaceChildren(...data.suggestions.map(u=>text('li',u.name+' · '+u.available_hours+' giờ trống'+(u.schedule_unknown?' · thiếu lịch chi tiết':''))));if(!data.suggestions.length)list.append(text('li','Không có người đủ capacity theo bộ lọc.'));}
-        catch(e){list.replaceChildren(text('li',e.name==='AbortError'?'Hết thời gian chờ.':e.message));}finally{clearTimeout(timeout);}
+        try {const params=new URLSearchParams(new FormData(suggestions));params.set('op','pmallocations');params.set('action','suggestions');const data=await request(params,ctrl.signal);list.replaceChildren(...data.suggestions.map(u=>text('li',u.name+' · '+u.available_hours+' giờ trống'+(u.schedule_unknown?' · thiếu lịch chi tiết':''))));if(!data.suggestions.length)list.append(text('li','Không có nhân sự đủ khả năng nhận việc theo bộ lọc.'));}
+        catch(e){list.replaceChildren(text('li',failureText(e)));}finally{clearTimeout(timeout);}
     });
 })();

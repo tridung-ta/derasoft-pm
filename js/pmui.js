@@ -133,3 +133,39 @@ document.querySelectorAll('[data-pm-open-project]').forEach(button => button.add
     editor.open = true;
     editor.querySelector('input:not([type=hidden])')?.focus();
 }));
+
+
+/* Localize native validation without replacing field-specific application errors. */
+document.querySelectorAll('.pm-app input, .pm-app select, .pm-app textarea, .pm-login-page input').forEach(field => {
+    let localized = '';
+    field.addEventListener('invalid', () => {
+        const v = field.validity;
+        if (v.customError) return;
+        localized = v.valueMissing ? 'Vui lòng điền thông tin bắt buộc.'
+            : v.typeMismatch ? (field.type === 'email' ? 'Email không đúng định dạng. Ví dụ: ten@example.com.' : 'Dữ liệu không đúng định dạng yêu cầu.')
+            : v.badInput ? 'Vui lòng nhập một số hợp lệ.'
+            : v.rangeUnderflow ? 'Giá trị phải lớn hơn hoặc bằng ' + field.min + '.'
+            : v.rangeOverflow ? 'Giá trị phải nhỏ hơn hoặc bằng ' + field.max + '.'
+            : v.tooShort ? 'Vui lòng nhập ít nhất ' + field.minLength + ' ký tự.'
+            : v.tooLong ? 'Chỉ được nhập tối đa ' + field.maxLength + ' ký tự.'
+            : v.stepMismatch ? 'Giá trị không đúng bước tăng cho phép. Vui lòng kiểm tra hướng dẫn của ô nhập.'
+            : v.patternMismatch ? (field.name === 'tel' ? 'Điện thoại chỉ được gồm chữ số và tối đa 10 số.' : 'Dữ liệu không đúng định dạng yêu cầu.')
+            : 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.';
+        field.setCustomValidity(localized);
+    });
+    const clear = () => {if (localized && field.validationMessage === localized) field.setCustomValidity('');localized = '';};
+    field.addEventListener('input', clear);field.addEventListener('change', clear);
+    field.form?.addEventListener('reset', clear);
+});
+
+/* Persistent, readable feedback; never auto-dismiss errors. */
+document.querySelectorAll('p.error,.alert-error,.message.error,[data-pm-success],.alert-success').forEach(node => {
+    if (!node.textContent.trim() || node.querySelector('.pm-feedback-title')) return;
+    const success = node.matches('[data-pm-success],.alert-success') && !node.matches('.error,.alert-error');
+    node.classList.add('pm-feedback', success ? 'pm-feedback-success' : 'pm-feedback-error');
+    if (success && [...document.querySelectorAll('p.error,.alert-error,.message.error')].some(error => error.textContent.trim() && !error.hidden)) node.classList.remove('pm-toast');
+    node.setAttribute('role', success ? 'status' : 'alert');
+    const title = document.createElement('strong');
+    title.className = 'pm-feedback-title';title.textContent = success ? 'Đã hoàn tất' : 'Cần kiểm tra';
+    node.prepend(title);
+});
