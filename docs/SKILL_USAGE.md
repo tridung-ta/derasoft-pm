@@ -232,3 +232,5 @@ feature-development cho BUILDBE đãđược yêu cầu; impeccable/playwright-c
 
 ## 12/10/2026 — thông báo Việt
 Impeccable clarify cho câu chữ/feedback, code-review cho đường exception/controller và playwright-cli cho browser. Giữ theme Inter theo AGENTS. Quét UTF8 không phát hiện mojibake nhưng xác nhận gỡ thành viên có dấu hỏi hỏng, sửa đúng chuỗi. Chờ clock harness sửa API; ảnh mobile phát hiện toast che lỗi, sửa inline + assertion. No-DB không thay thế host UAT.\n
+## 13/10/2026 — refinement toast
+Tái sử dụng impeccable và playwright-cli, giữ Inter/theme. SVG close thay glyph, test44px và keyboard. Harness gọi include trực tiếp bị403: sửa test qua index, giữ guard. Không áp skill backend hoặc thay DB. Code review giữ errors persistent và escaping.

@@ -2053,3 +2053,5 @@ BUILD theo yêu cầu đồng bộfrontend/backend; giữUIChi phí, không sche
 
 ## 12/10/2026 — thông báo tiếng Việt
 Đã sửa câu chữ PM/AJAX/validator, lỗi mạng/JSON, cảnh báo đơn giá lịch sử khi render và câu xác nhận mất dấu. Thanh thông báo rõ viền, nhãn và không chồng lấn; asset có version. Không DB/migration/production. Kết quả thật và giới hạn tại VI_NOTIFICATIONS_VERIFY_20261012.md. Chuẩn bị commit local và ZIP; không push/merge/deploy.\n
+## 13/10/2026 — toast gọn và tiêu đề giới thiệu
+Đã chỉnh toast/SVG close44px, đổi tiêu đề thành Sẵn sàng làm việc, version asset13. Browser2suites và16no-DBscripts PASS; không DB/production. Xem TOAST_VERIFY_20261013.md.

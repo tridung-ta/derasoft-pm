@@ -48,7 +48,7 @@ header('X-Robots-Tag: noindex, nofollow, noarchive');
 		<aside class="status" aria-label="Trạng thái dự án">
 			<div>
 				<span class="status-label">Không gian làm việc</span>
-				<h2>Hệ thống đã hoàn thành</h2>
+				<h2>Sẵn sàng làm việc</h2>
 				<p>Đăng nhập để quản lý dự án, chấm công, phân bổ nguồn lực và xem báo cáo theo quyền được cấp.</p>
 			</div>
 			<a class="admin-link" href="/admin.php">Đăng nhập quản trị</a>
