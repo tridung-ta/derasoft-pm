@@ -2,6 +2,7 @@
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmcosts');
 $s->assign('projectChoices',[['id'=>1,'name'=>'<script>Project name</script>','code'=>'QA']]);
 $actual=['cost'=>null,'currency'=>null,'hours'=>'10.00','regular_hours'=>'8.00','ot_hours'=>'2.00'];
 $data=['valuation_date'=>'2026-10-02','filters'=>['from'=>'2026-10-01','to'=>'2026-10-02','project_id'=>1],'summary'=>$actual,'estimate_total'=>null,'estimate_currency'=>null,'warnings'=>['Khác currency: không cộng chi phí.','<script>bad</script>'],'projects'=>[['id'=>1,'name'=>'<script>bad</script>','budget'=>'2000.00','actual'=>$actual,'lifetime'=>$actual,'estimate'=>['cost'=>null,'currency'=>null]]],'tasks'=>[['id'=>1,'name'=>'Task','deleted_at'=>'2026-10-02','actual'=>$actual,'estimate'=>null]],'groups'=>['user'=>[1=>$actual],'department'=>[],'role'=>[],'date'=>[]],'page'=>1,'total_pages'=>2];

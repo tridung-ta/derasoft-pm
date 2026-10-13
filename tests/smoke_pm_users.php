@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmusers');
 $s->assign([
     'pageTitle'=>'Nhân sự',
     'users'=>[['id'=>1,'username'=>'demo','fullname'=>'Demo User','email'=>'demo@example.test','tel'=>'','department_id'=>1,'department_name'=>'Engineering','weekly_limit_hours'=>'40.00','status'=>1]],

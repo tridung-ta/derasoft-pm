@@ -2,6 +2,7 @@
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmtimesheets');
 $days=[];foreach(['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'] as $i=>$label)$days[]=['date'=>'2026-06-0'.($i+1),'short_date'=>'0'.($i+1).'/06','label'=>$label,'hours'=>$i===0?'9.00':'0.00','regular_hours'=>$i===0?'8.00':'0.00','ot_hours'=>$i===0?'1.00':'0.00','has_ot'=>$i===0,'has_entries'=>$i===0,'is_today'=>$i===0];
 $s->assign(['weeklySummary'=>['start'=>'01/06/2026','end'=>'07/06/2026','user_id'=>111,'days'=>$days],'weeklyError'=>'','dayRules'=>['standard_hours'=>'8.00','max_total_hours'=>'12.00','is_snapshot'=>true]]);
 $s->assign(['pageTitle'=>'Chấm công','notice'=>'','error'=>'','csrfToken'=>'test','timesheets'=>[],'assignedTasks'=>[['id'=>1,'name'=>'<script>bad</script>','project_name'=>'QA']],'formData'=>['task_id'=>1,'work_date'=>'2026-06-01','shift_label'=>'Morning','hours'=>'6','description'=>'<script>bad</script>'],'editId'=>0,'canEdit'=>true,'page'=>1,'totalPages'=>1,'isAdmin'=>true,'settings'=>['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.00','max_total_hours_per_day'=>'12.00']]);

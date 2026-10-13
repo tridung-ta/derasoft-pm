@@ -2,6 +2,7 @@
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmallocations');
 $row=['id'=>1,'user_id'=>1,'task_id'=>1,'project_id'=>1,'work_date'=>'2026-12-31','hours'=>'9.00','start_time'=>null,'end_time'=>null,'project_name'=>'<script>project</script>','task_name'=>'Task','user_name'=>'Nhân viên thử','historical'=>1,'warnings'=>['<script>warning</script>','Vượt ngưỡng phân bổ ngày.'],'day_total'=>'9.00','week_total'=>'41.00','daily_limit'=>'8.00','weekly_limit'=>'40.00'];
 $data=['from'=>'2026-12-28','to'=>'2027-01-03','rows'=>[$row],'project_id'=>null,'user_id'=>null,'projects'=>[['id'=>1,'name'=>'Dự án thử']],'tasks'=>[['id'=>1,'name'=>'Task thử','assignee_id'=>1,'user_name'=>'Nhân viên thử']],'users'=>[['id'=>1,'fullname'=>'Nhân viên thử']],'capacities'=>[],'can_manage'=>true,'is_admin'=>true,'truncated'=>false];
 $data['task_estimate_warnings']=[['task_id'=>1,'project_id'=>1,'task_name'=>'<script>Task quá giờ</script>','project_name'=>'Dự án thử','estimated_hours'=>'4.00','actual_hours'=>'5.00','excess_hours'=>'1.00','historical'=>1]];

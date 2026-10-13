@@ -1,5 +1,6 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'classes/template/smarty.class.php';$s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmimports');
 $preview=in_array('--preview',$argv,true);
 $s->assign(['pageTitle'=>'Import thử','csrfToken'=>'test-token','error'=>'','importHistory'=>[],'importResult'=>null,'importBatch'=>null]);
 $html=$s->fetch('admin/pm-imports.tpl.html');

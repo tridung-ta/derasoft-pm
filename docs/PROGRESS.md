@@ -2055,3 +2055,6 @@ BUILD theo yêu cầu đồng bộfrontend/backend; giữUIChi phí, không sche
 Đã sửa câu chữ PM/AJAX/validator, lỗi mạng/JSON, cảnh báo đơn giá lịch sử khi render và câu xác nhận mất dấu. Thanh thông báo rõ viền, nhãn và không chồng lấn; asset có version. Không DB/migration/production. Kết quả thật và giới hạn tại VI_NOTIFICATIONS_VERIFY_20261012.md. Chuẩn bị commit local và ZIP; không push/merge/deploy.\n
 ## 13/10/2026 — toast gọn và tiêu đề giới thiệu
 Đã chỉnh toast/SVG close44px, đổi tiêu đề thành Sẵn sàng làm việc, version asset13. Browser2suites và16no-DBscripts PASS; không DB/production. Xem TOAST_VERIFY_20261013.md.
+
+## 13/10 — yêu cầu thông báo ở giữa và rà menu
+Đã chuyển success toast giữa viewport chữ18/16px,128pxcao, CSS versioncentered.12trang x2viewport điều hướng và20browser suites PASS;16no-DBscripts PASS. Không DB/production. Host admin.php?op=pm có sidebar trong ảnh, root cause toolbar cũ chưa xác định. Gói cuối theo CENTERED_NOTIFICATION_NAV_VERIFY_20261013.md.

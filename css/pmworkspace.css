@@ -79,20 +79,22 @@ body.pm-app .pm-feedback.pm-toast{max-width:min(480px,calc(100vw - 32px));paddin
 body.pm-app .pm-feedback-success:not(.pm-toast){position:relative;padding-right:60px!important}
 .pm-feedback-success:not(.pm-toast)>button{position:absolute;right:8px;top:8px;width:36px;height:36px;background:transparent;color:inherit;border:1px solid currentColor;border-radius:5px;font-size:22px}
 
-/* Compact success notification; close affordance keeps a 44px target. */
+/* Centered, readable success notification with a 44px close target. */
 body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{
- width:max-content;max-width:min(400px,calc(100vw - 32px));
- padding:12px 56px 12px 16px!important;
- font-size:14px!important;line-height:1.5!important;border-radius:8px;
- box-shadow:0 4px 14px #20262c0d;
+ left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
+ transform:translate(-50%,-50%);width:560px;max-width:calc(100vw - 32px);
+ min-height:128px;max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;
+ padding:24px 72px 24px 28px!important;margin:0!important;
+ font-size:18px!important;line-height:1.6!important;border-radius:12px;
+ box-shadow:0 12px 32px #20262c24;
 }
-.pm-feedback.pm-toast .pm-feedback-title{font-size:14px;font-weight:650;margin-bottom:2px}
+.pm-feedback.pm-toast .pm-feedback-title{font-size:20px;font-weight:700;margin-bottom:8px}
 body .pm-feedback.pm-feedback-success>button{
  display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;
- padding:0!important;right:4px;top:4px;border:0!important;border-radius:6px;
+ padding:0!important;right:12px;top:12px;border:0!important;border-radius:6px;
  background:transparent;color:inherit;cursor:pointer;
 }
 body .pm-feedback.pm-feedback-success>button:hover{background:#174f3c0d}
 body .pm-feedback.pm-feedback-success>button:focus-visible{outline:2px solid #174f3c;outline-offset:-4px}
-.pm-feedback-success>button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-@media(max-width:640px){body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{padding:12px 56px 12px 14px!important}}
+.pm-feedback-success>button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+@media(max-width:640px){body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{padding:20px 64px 20px 20px!important;font-size:16px!important}.pm-feedback.pm-toast .pm-feedback-title{font-size:18px}}

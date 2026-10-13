@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmprojects');
 $s->assign(['pageTitle'=>'Dự án','notice'=>'','error'=>'','csrfToken'=>'test','projects'=>[],'page'=>1,'totalPages'=>1,'q'=>'','project'=>null,'members'=>[],'tasks'=>[],'allUsers'=>[],'managers'=>[['id'=>1,'fullname'=>'Manager']],'canCreate'=>true,'canEditProject'=>true,'canEditMembers'=>true,'canEditTasks'=>true,'isAdmin'=>true,'actorId'=>1,'projectStatuses'=>['planned'=>'Dự kiến','active'=>'Đang làm','paused'=>'Tạm dừng','completed'=>'Hoàn thành'],'taskStatuses'=>['todo'=>'Cần làm','in_progress'=>'Đang làm','review'=>'Kiểm tra','done'=>'Hoàn thành']]);
 if(strpos($s->fetch('admin/pm-projects.tpl.html'),'value="project_save"')===false)throw new RuntimeException('Project create form missing.');
 $cards=[];

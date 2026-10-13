@@ -63,3 +63,6 @@ optional/maintenance.html chỉ dùng khi host đang phục vụ đúng file mai
 Asset JS/CSS có query version 20261012-vi. Sau upload, làm mới compiled Smarty/OPcache qua công cụ hosting và Ctrl+F5. Thử required/email/tel/đơn giá, thông báo thành công/lỗi, session hết hạn và mất mạng. Nhãn “Cần kiểm tra”/“Đã hoàn tất” phải hiện, lỗi dài xuống dòng, lỗi không bị toast che.
 
 Dữ liệu Excel vẫn là bộ mẫu 09/10: nếu kiểm thử ngày khác, dịch các ngày theo hướng dẫn; 30 ca chưa tự thực hiện. Không upload review/manual-test/optional cả thư mục vào web root.
+
+## Bản cuối thông báo giữa màn hình ngày13/10
+Gói centered thay gói compact trước. Kiểu thông báo đặt giữa màn hình theo yêu cầu mới; asset CSS version20261013-centered. Review/CENTERED_NAV_VERIFY.md có kiểm tra menu12trang và hướng dẫn đối chiếu host. Upload nội dung runtime một lần, giữ config/DB; chưa có bằng chứng nguyên nhân menu cũ trên host. Không migration mới.

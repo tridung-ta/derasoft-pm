@@ -1,6 +1,7 @@
 <?php
 define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
+require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmreports');
 $r=['mode'=>'hours','filters'=>['from'=>'2026-10-01','to'=>'2026-10-02','project_id'=>null,'user_id'=>null],'data'=>['summary'=>['hours'=>'2.00','regular_hours'=>'2.00','ot_hours'=>'0.00'],'rows'=>[['work_date'=>'2026-10-01','shift_label'=>'Day','user_name'=>'<script>bad</script>','project_name'=>'Project','task_name'=>'Task','hours'=>'2.00','regular_hours'=>'2.00','ot_hours'=>'0.00','description'=>'<img src=x>','historical'=>1]],'by_user'=>[],'page'=>1,'total_pages'=>2]];
 $r['filters']['mode']='hours';$r['data']['by_user']=[['user_name'=>'Sample','hours'=>'2.00','regular_hours'=>'2.00','ot_hours'=>'0.00']];
 $s->assign(['pageTitle'=>'Reports','report'=>$r,'error'=>'','csrfToken'=>'test','canExportReports'=>true,'canReportCosts'=>false]);$html=$s->fetch('admin/pm-reports.tpl.html');
