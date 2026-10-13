@@ -2070,3 +2070,6 @@ Nút Điều hướng bị giấu bởi mediaquerydesktop, đã hiện ở mọi
 
 ## 13/10/2026 — Điều hướng góc phải
 Bỏ sidebar PM, chuyển Điều hướng dưới Tài khoản. VERIFY local 21 browser suites PASS; sau sửa cascade và khoảng trống đầu trang, suite navigation 12 trang desktop/mobile PASS. No-DB verify PASS. Không BE/DB/production. Chi tiết HEADER_NAV_VERIFY_20261013.md.
+
+## Cập nhật vị trí bên trái — 13/10/2026
+Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài khoản giữ bên phải. CSS cache 20261013-leftnav. Chạy playwright-cli -s=workspace run-code --filename tests/pm_navigation_all_pages_browser.js: PASS 12 trang x desktop/mobile; vị trí trái 24/18px, menu trong viewport, Enter/Escape/outside click và logout POST/CSRF. git diff --check PASS. Không BE/DB/production.

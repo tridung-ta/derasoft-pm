@@ -249,3 +249,6 @@ Nút Điều hướng bị giấu bởi mediaquerydesktop, đã hiện ở mọi
 
 ## 13/10/2026 — Header navigation
 Tái sử dụng impeccable và playwright-cli, code-review cho shell/link/CSRF, git-feature-commit cho commit local. QA phát hiện left:0 kế thừa làm menu mobile tràn và nút che liên kết; override left:auto/right:0, chừa vùng điều khiển trên nội dung. Navigation 12 trang PASS sau sửa; giữ Inter theo AGENTS. Không dùng fixture browser để tuyên bố DB/production PASS.
+
+## Cập nhật vị trí bên trái — 13/10/2026
+Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài khoản giữ bên phải. CSS cache 20261013-leftnav. Chạy playwright-cli -s=workspace run-code --filename tests/pm_navigation_all_pages_browser.js: PASS 12 trang x desktop/mobile; vị trí trái 24/18px, menu trong viewport, Enter/Escape/outside click và logout POST/CSRF. git diff --check PASS. Không BE/DB/production.

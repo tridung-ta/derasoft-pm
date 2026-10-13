@@ -112,15 +112,15 @@ body.pm-app .pm-feedback-success.pm-toast,body.pm-login-page .pm-feedback-succes
 
 .pm-shift-date{display:block;font-weight:600;margin-bottom:8px;white-space:nowrap}.pm-shift-badge{display:inline-block;padding:4px 8px;border:1px solid #bfcfc5;border-radius:5px;background:#f3f7f4;color:#294b3b;font-size:12px;white-space:nowrap}.pm-shift-user{display:block;margin-top:8px;color:#59636d}.pm-shift-legacy{font-size:12px;margin-top:6px}.pm-shift-legacy summary{cursor:pointer;color:#59636d}.pm-shift-legacy>span{display:block;overflow-wrap:anywhere;margin-top:6px}
 
-/* Full-width workspace with navigation below the account button. */
+/* Full-width workspace with navigation below the brand on the left. */
 body.pm-app:has(.pm-header-controls){padding:64px 0 0!important}
 body.pm-app:has(.pm-header-controls) main#pm-main{margin:0!important;width:100%!important;max-width:none!important;padding:80px 38px 32px!important;min-height:calc(100vh - 64px)}
 .pm-work-topbar.pm-header-only{left:0!important;padding:0 24px;z-index:60}
 .pm-header-only .pm-work-brand{padding:0;gap:10px;font-size:14px;margin:0;color:#202c32}
 .pm-header-controls{margin-left:auto;position:relative}
-.pm-header-controls .pm-work-menu{position:fixed;right:24px;top:76px;width:168px;margin:0}
+.pm-header-controls .pm-work-menu{position:fixed;left:24px;right:auto;top:76px;width:168px;margin:0}
 .pm-header-controls .pm-work-menu>summary{display:flex;margin:0!important;cursor:pointer;justify-content:center;gap:9px;min-height:44px}
-body.pm-app .pm-header-controls .pm-work-menu .pm-module-nav{position:absolute;left:auto!important;right:0!important;top:calc(100% + 8px);display:block!important;width:320px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 148px);overflow:auto;background:#fff!important;border:1px solid #bccbc3!important;border-radius:10px;padding:16px!important;margin:0!important;box-shadow:0 8px 24px #20262c16}
+body.pm-app .pm-header-controls .pm-work-menu .pm-module-nav{position:absolute;left:0!important;right:auto!important;top:calc(100% + 8px);display:block!important;width:320px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 148px);overflow:auto;background:#fff!important;border:1px solid #bccbc3!important;border-radius:10px;padding:16px!important;margin:0!important;box-shadow:0 8px 24px #20262c16}
 .pm-header-controls .pm-nav-section{margin:0 0 12px}
 .pm-header-controls .pm-nav-section:last-child{margin-bottom:0}
 .pm-header-controls .pm-nav-section h2{font-size:11px;letter-spacing:.04em;padding:0 10px;margin:0 0 4px;color:#59636d}
@@ -128,4 +128,4 @@ body.pm-app .pm-header-controls .pm-module-nav a{display:flex!important;align-it
 .pm-header-controls .pm-module-nav a:hover{background:#f1f5f2!important}
 .pm-header-controls .pm-module-nav a[aria-current=page]{background:#e6f1eb!important;color:#155f46!important;font-weight:600}
 .pm-header-controls .pm-user-menu div{z-index:2}
-@media(max-width:640px){body.pm-app:has(.pm-header-controls) main#pm-main{padding:80px 18px 28px!important}.pm-work-topbar.pm-header-only{padding:0 18px}.pm-header-controls .pm-work-menu{right:18px;width:152px}.pm-header-only .pm-work-brand{font-size:13px}}
+@media(max-width:640px){body.pm-app:has(.pm-header-controls) main#pm-main{padding:80px 18px 28px!important}.pm-work-topbar.pm-header-only{padding:0 18px}.pm-header-controls .pm-work-menu{left:18px;right:auto;width:152px}.pm-header-only .pm-work-brand{font-size:13px}}

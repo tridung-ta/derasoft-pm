@@ -14,3 +14,6 @@ Theo yêu cầu mới, bỏ sidebar khỏi shell PM đang dùng; chuyển nút �
 ## Giới hạn / host UAT
 Các trang browser dùng fixture không DB. Test HTTP/DB và pm_phase10_browser chưa chạy theo chỉ định người dùng; không suy luận production PASS. Không tạo DB, không seed hoặc thay đổi dữ liệu thật.
 Upload toàn bộ runtime từ ZIP mới (thay gói navshift trước), làm mới compiled Smarty/OPcache bằng công cụ host và Ctrl+F5. Kiểm tra mọi vai trò, mở/đóng Điều hướng, Tài khoản/Đăng xuất, nhãn ca và thông báo sau lưu.
+
+## Cập nhật vị trí bên trái — 13/10/2026
+Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài khoản giữ bên phải. CSS cache 20261013-leftnav. Chạy playwright-cli -s=workspace run-code --filename tests/pm_navigation_all_pages_browser.js: PASS 12 trang x desktop/mobile; vị trí trái 24/18px, menu trong viewport, Enter/Escape/outside click và logout POST/CSRF. git diff --check PASS. Không BE/DB/production.

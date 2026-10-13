@@ -78,3 +78,6 @@ Gói mới gom thông báo refined top10s, nút Điều hướng hiện desktop/
 
 ## Gói cuối headernav ngày 13/10
 Quyết định mới thay sidebar bằng Điều hướng góc phải, ngay dưới Tài khoản. Asset 20261013-headernav; xem review/HEADER_NAV_VERIFY.md. Gói này thay các ZIP trước, giữ toast refined top10s và nhãn ca. Upload toàn bộ runtime, giữ cấu hình/DB; làm mới Smarty/OPcache và Ctrl+F5. Không migration mới.
+
+## Cập nhật vị trí bên trái — 13/10/2026
+Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài khoản giữ bên phải. CSS cache 20261013-leftnav. Chạy playwright-cli -s=workspace run-code --filename tests/pm_navigation_all_pages_browser.js: PASS 12 trang x desktop/mobile; vị trí trái 24/18px, menu trong viewport, Enter/Escape/outside click và logout POST/CSRF. git diff --check PASS. Không BE/DB/production.

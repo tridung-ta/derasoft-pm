@@ -11,7 +11,7 @@ async page=>{
     if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Overflow: '+fixture);if(await p.locator('h1').first().evaluate(e=>e.getBoundingClientRect().top)<128)throw new Error('Title overlaps controls');
     const button=p.locator('.pm-work-menu summary');if(!await button.isVisible())throw new Error('Navigation toggle hidden: '+fixture);
     const accountRect=await p.locator('.pm-user-menu summary').boundingBox();const navRect=await button.boundingBox();
-    if(navRect.y<accountRect.y+accountRect.height||Math.abs(navRect.x+navRect.width-accountRect.x-accountRect.width)>2)throw new Error('Navigation not below/aligned with account');
+    if(navRect.y<accountRect.y+accountRect.height||Math.abs(navRect.x-(width>640?24:18))>2)throw new Error('Navigation not on left below header');
     if(await p.locator('.pm-module-nav').isVisible())throw new Error('Menu not initially hidden');
     await button.focus();await p.keyboard.press('Enter');if(!await p.locator('.pm-module-nav').isVisible())throw new Error('Header menu did not open');
     await p.keyboard.press('Escape');if(await p.locator('.pm-module-nav').isVisible()||!await button.evaluate(e=>e===document.activeElement))throw new Error('Escape/focus');
@@ -23,6 +23,6 @@ async page=>{
    }
   }
   if(errors.length)throw new Error(errors.join(';'));
-  return 'PASS: 12 PM screens x desktop/mobile no sidebar; navigation below account/topbar/menu/logout POST+CSRF, no horizontal overflow. Synthetic render fixtures; production and authenticated DB NOT RUN.';
+  return 'PASS: 12 PM screens x desktop/mobile no sidebar; navigation on left below header/menu/logout POST+CSRF, no horizontal overflow. Synthetic render fixtures; production and authenticated DB NOT RUN.';
  }finally{await context.close();}
 }
