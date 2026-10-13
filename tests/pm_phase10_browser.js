@@ -43,7 +43,7 @@ async page => {
     await login('EMPLOYEE');await page.goto(base+'/admin.php?op=pmtimesheets');
     const timesheet=page.locator('form').filter({has:page.locator('input[name="action"][value="save"]')});
     const taskOption=timesheet.locator('select[name="task_id"] option').filter({hasText:'Phase10 browser task'});await timesheet.locator('[name="task_id"]').selectOption(await taskOption.getAttribute('value'));
-    await timesheet.locator('[name="shift_label"]').fill('P10');await timesheet.locator('[name="hours"]').fill('9.00');await timesheet.locator('button').click();await page.waitForLoadState();
+    await timesheet.locator('[name="shift_label"]').selectOption('Ca linh hoạt');await timesheet.locator('[name="hours"]').fill('9.00');await timesheet.locator('button').click();await page.waitForLoadState();
     if(!await page.getByText('P10',{exact:false}).count())throw new Error('Timesheet not saved');
     await page.goto(base+'/admin.php?op=pmreports');const download=page.waitForEvent('download');await page.getByRole('button',{name:'Xuất XLSX'}).click();await (await download).saveAs('phase10-authenticated.xlsx');
     if(errors.length)throw new Error(errors.join(';'));

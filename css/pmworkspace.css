@@ -56,7 +56,7 @@ body.pm-app:has(.pm-work-sidebar){padding:64px 0 0 232px}.pm-app .shell{display:
 
 /* Navigation toggle: identifiable action, with an explicit open state. */
 .pm-nav-toggle-icon{width:18px;height:18px;flex:none}.pm-nav-toggle-chevron{width:16px;height:16px;flex:none;transition:transform .16s ease-out}.pm-work-menu[open] .pm-nav-toggle-chevron{transform:rotate(180deg)}
-@media(max-width:900px){.pm-work-menu>summary{display:flex;align-items:center;gap:9px;min-height:44px;padding:10px 12px;background:#14675e;border:1px solid #14675e;color:#fff;font-weight:600;border-radius:6px;list-style:none}.pm-work-menu>summary::-webkit-details-marker{display:none}.pm-work-menu>summary:hover{background:#10564e}.pm-work-menu[open]>summary{background:#202c32;border-color:#202c32}.pm-work-menu>summary:focus-visible{outline:3px solid #14675e;outline-offset:3px}}
+.pm-work-menu>summary{display:flex;align-items:center;gap:9px;min-height:44px;padding:10px 12px;background:#14675e;border:1px solid #14675e;color:#fff;font-weight:600;border-radius:6px;list-style:none}.pm-work-menu>summary::-webkit-details-marker{display:none}.pm-work-menu>summary:hover{background:#10564e}.pm-work-menu[open]>summary{background:#202c32;border-color:#202c32}.pm-work-menu>summary:focus-visible{outline:3px solid #14675e;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.pm-nav-toggle-chevron{transition:none}}
 
 /* Role dashboard uses existing scoped services; cost page appearance is untouched. */
@@ -107,3 +107,7 @@ body.pm-app .pm-feedback-success.pm-toast,body.pm-login-page .pm-feedback-succes
 .pm-feedback.pm-toast>button{right:8px;top:12px;color:#53685d}
 .pm-feedback.pm-toast>button svg{width:18px;height:18px}
 @media(max-width:640px){.pm-toast-icon{left:14px}}
+
+@media(min-width:901px){.pm-work-menu>summary{margin-bottom:16px;cursor:pointer}.pm-work-menu:not([open])>summary{margin-bottom:0}}
+
+.pm-shift-date{display:block;font-weight:600;margin-bottom:8px;white-space:nowrap}.pm-shift-badge{display:inline-block;padding:4px 8px;border:1px solid #bfcfc5;border-radius:5px;background:#f3f7f4;color:#294b3b;font-size:12px;white-space:nowrap}.pm-shift-user{display:block;margin-top:8px;color:#59636d}.pm-shift-legacy{font-size:12px;margin-top:6px}.pm-shift-legacy summary{cursor:pointer;color:#59636d}.pm-shift-legacy>span{display:block;overflow-wrap:anywhere;margin-top:6px}

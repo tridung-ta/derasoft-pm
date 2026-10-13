@@ -3,6 +3,7 @@ define('ROOT_PATH',dirname(__DIR__).DIRECTORY_SEPARATOR);
 require ROOT_PATH.'classes/template/smarty.class.php';
 $s=new Smarty();$s->setTemplateDir(ROOT_PATH.'templates');$s->setCompileDir(sys_get_temp_dir());
 require_once ROOT_PATH.'tests/pm_navigation_fixture.php';pmAssignNavigationFixture($s,'pmtimesheets');
+require_once ROOT_PATH.'classes/services/pmshiftlabelservice.class.php';$s->assign(['shiftChoices'=>PmShiftLabelService::choices(),'legacyShiftLabel'=>null]);
 $days=[];foreach(['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'] as $i=>$label)$days[]=['date'=>'2026-06-0'.($i+1),'short_date'=>'0'.($i+1).'/06','label'=>$label,'hours'=>$i===0?'9.00':'0.00','regular_hours'=>$i===0?'8.00':'0.00','ot_hours'=>$i===0?'1.00':'0.00','has_ot'=>$i===0,'has_entries'=>$i===0,'is_today'=>$i===0];
 $s->assign(['weeklySummary'=>['start'=>'01/06/2026','end'=>'07/06/2026','user_id'=>111,'days'=>$days],'weeklyError'=>'','dayRules'=>['standard_hours'=>'8.00','max_total_hours'=>'12.00','is_snapshot'=>true]]);
 $s->assign(['pageTitle'=>'Chấm công','notice'=>'','error'=>'','csrfToken'=>'test','timesheets'=>[],'assignedTasks'=>[['id'=>1,'name'=>'<script>bad</script>','project_name'=>'QA']],'formData'=>['task_id'=>1,'work_date'=>'2026-06-01','shift_label'=>'Morning','hours'=>'6','description'=>'<script>bad</script>'],'editId'=>0,'canEdit'=>true,'page'=>1,'totalPages'=>1,'isAdmin'=>true,'settings'=>['standard_hours_per_day'=>'8.00','ot_multiplier'=>'1.00','max_total_hours_per_day'=>'12.00']]);
@@ -17,3 +18,15 @@ $s->assign(['weeklySummary'=>null,'weeklyError'=>'<script>unavailable</script>']
 if(str_contains($html,'<script>')||str_contains($html,'<time datetime=')||!str_contains($html,'&lt;script&gt;unavailable'))throw new RuntimeException('Unavailable summary escaping failed.');
 if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9b-timesheets-unavailable.html',str_replace('<head>','<head><base href="/">',$html));
 echo "PASS: timesheet Smarty forms, escaping, locked read-only and Admin settings visibility.\n";
+
+$s->assign(['canEdit'=>true,'isAdmin'=>true,'editId'=>1,'legacyShiftLabel'=>'<script>x</script>','formData'=>['task_id'=>1,'work_date'=>'2026-06-01','shift_label'=>'<script>x</script>','hours'=>'6','description'=>'legacy']]);
+$legacyRow=$s->getTemplateVars('timesheets')[0];$legacyRow['shift_label']='<script>x</script>';$s->assign('timesheets',[$legacyRow]);
+$html=$s->fetch('admin/pm-timesheets.tpl.html');
+if(str_contains($html,'<script>')||!str_contains($html,'value="&lt;script&gt;x&lt;/script&gt;" selected')||!str_contains($html,'pm-shift-legacy'))throw new RuntimeException('Legacy shift rendering/escaping failed');
+if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/pm-shift-legacy-preview.html',str_replace('<head>','<head><base href="/">',$html));
+$legacyRow['shift_label']='Ca sáng';$s->assign(['editId'=>0,'legacyShiftLabel'=>null,'timesheets'=>[$legacyRow],'formData'=>['task_id'=>1,'work_date'=>'2026-06-01','shift_label'=>'','hours'=>'6','description'=>'']]);
+$html=$s->fetch('admin/pm-timesheets.tpl.html');
+if(substr_count($html,'name="shift_label"')!==1||!str_contains($html,'pm-shift-badge')||!str_contains($html,'01/06/2026'))throw new RuntimeException('Shift select/date/badge missing');
+foreach(PmShiftLabelService::choices() as $name)if(!str_contains($html,'value="'.$name.'"'))throw new RuntimeException('Shift choice missing');
+if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/pm-shift-choice-preview.html',str_replace('<head>','<head><base href="/">',$html));
+echo "PASS: four fixed shift choices, canonical badge/date and legacy original escaped/preserved in edit UI.\n";

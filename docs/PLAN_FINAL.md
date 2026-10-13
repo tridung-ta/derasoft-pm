@@ -212,3 +212,6 @@ Log PM mới dùng actor ID, giữ nguyên lịch sử. profile_update chỉ tê
 
 ## P3 — tổng giờ tối đa/ngày riêng, duyệt09/10/2026
 Người dùng chọnB và duyệt PLAN_P3_DAILY_TOTAL_LIMIT_20261009.md: standard_hours_per_day là ngưỡng regular/OT, max_total_hours_per_day là trần SUM(hours) trên mọi task/dự án của cùng tenant/user/date. Default24, Admin cũng không bypass. Ngày đã có ledger giữ snapshot; ledger rỗng không xóa. Migration010 ADD max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00; local được duyệt và đã backup/apply, production chưa duyệt. BUILD/VERIFY xem P3_BUILD_VERIFY_20261009.md.
+
+## Quyết định ngày13/10/2026 — Nhãn ca
+Duyệt PLAN_TIMESHEET_SHIFT_LABEL_20261013: tạo mới/đổi nhãn chỉ chọn Ca sáng/Ca chiều/Ca tối/Ca linh hoạt; nhãn cũ không đổi giữ nguyên, không tự phân loại lại. Nhãn không quyết định OT, nhiều task được dùng cùng ca, không random hoặc migration. Rà lại nhãn hiện tại sau khóa ngày. Nút Điều hướng hiển thị ở desktop/mobile theo ảnh yêu cầu. Xem NAV_SHIFT_VERIFY_20261013.md.

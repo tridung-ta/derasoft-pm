@@ -36,3 +36,5 @@ catch(InvalidArgumentException $e){$weeklyError='Chọn ngày hợp lệ để x
 catch(Throwable $e){error_log('PM timesheet weekly summary failed.');$weeklyError='Không thể tải tổng giờ trong tuần. Vui lòng tải lại trang.';}
 $template->assign(['dayRules'=>$dayRules,'weeklySummary'=>$weeklySummary,'weeklyError'=>$weeklyError]);
 $template->assign(['pageTitle'=>'Chấm công — DeraSoft PM','notice'=>$notice,'error'=>$error,'csrfToken'=>$_SESSION['pm_csrf_token'],'timesheets'=>$result['rows'],'assignedTasks'=>$tasks,'formData'=>$data,'editId'=>$id,'canEdit'=>!$edit||$service->canEdit($edit['work_date']),'editingLocked'=>$edit&&$service->isLocked($edit['work_date']),'editingUserId'=>$edit?(int)$edit['user_id']:null,'page'=>$page,'totalPages'=>max(1,(int)ceil($result['total']/20)),'isAdmin'=>$pmAccess->hasRole('ADMIN'),'settings'=>$service->settings()]);
+
+$template->assign(['shiftChoices'=>PmShiftLabelService::choices(),'legacyShiftLabel'=>$edit&&!array_key_exists((string)$edit['shift_label'],PmShiftLabelService::choices())?(string)$edit['shift_label']:null]);

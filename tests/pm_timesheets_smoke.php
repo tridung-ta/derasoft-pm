@@ -34,7 +34,7 @@ try{
     $query->execute("INSERT INTO dc_pm_hourly_rates(store_id,user_id,rate,currency,effective_from,effective_to,status,created_by) VALUES(?,?,?,'VND','2026-06-01','2026-06-02',1,?)",'iisi',[$store,$actor,'1234567890123.45',$actor]);
     $ts=new PmTimesheetService($db,$store,$actor);
     $ts->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50']);
-    $input=['task_id'=>$task,'work_date'=>'2026-06-01','shift_label'=>'Morning','hours'=>'6','description'=>'<script>QA</script>'];
+    $input=['task_id'=>$task,'work_date'=>'2026-06-01','shift_label'=>'Ca linh hoạt','hours'=>'6','description'=>'<script>QA</script>'];
     $first=$ts->save($input);$input['hours']='4';$second=$ts->save($input);
     $row=$ts->getOwn($second);
     $other=$query->fetchOne("SELECT u.id FROM dc_users u WHERE u.store_id=? AND u.id<>? AND u.status=1 AND NOT EXISTS(SELECT 1 FROM dc_pm_user_roles ur JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE ur.store_id=u.store_id AND ur.user_id=u.id AND r.code='ADMIN' AND r.status=1) LIMIT 1",'ii',[$store,$actor]);

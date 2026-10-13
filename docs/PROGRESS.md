@@ -2064,3 +2064,6 @@ Toast phía trên căn giữa ngang,480px/chữ16/15px; success tự ẩn10s, er
 
 ## 13/10 — banner refined
 Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; top-center10s giữ nguyên. Browser2suites và16no-DBscripts PASS. Asset20261013-refined; khôngBE/DB/production. Xem TOAST_VISUAL_VERIFY_20261013.md, gói mới thay bản trước.
+
+## 13/10 — điều hướng và nhãn ca đã duyệt
+Nút Điều hướng bị giấu bởi mediaquerydesktop, đã hiện ở mọi kích thước. BUILD whitelist/select/badge/legacy-preservation cho nhãn ca; helper kiểm tra lại sau khóa, không đổiOT/schema. Feature-development + impeccable/playwright + code-review theo phạm vi.17noDBscripts/21browsers PASS, ngày mobile nowrap xác nhậntargeted. SuiteDB chỉ sửa fixture, chưa chạy. NAV_SHIFT_VERIFY_20261013.md có bằng chứng và giới hạn.

@@ -1,4 +1,5 @@
 <?php
+include_once(ROOT_PATH.'classes/services/pmshiftlabelservice.class.php');
 include_once(ROOT_PATH.'classes/security/pmscopedeniedexception.class.php');
 include_once(ROOT_PATH.'classes/database/pmdb.class.php');
 include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
@@ -101,14 +102,15 @@ class PmTimesheetService {
         return $this->db->fetchOne('SELECT * FROM dc_pm_timesheet_days WHERE store_id=? AND user_id=? AND work_date=? FOR UPDATE','iis',[$this->storeId,$userId,$date]);
     }
     public function save(array $data,?int $id=null): int {
-        $this->ownPermission();$date=(string)($data['work_date']??'');$this->validDate($date);$hours=$this->quantity($data['hours']??'',24);$shift=trim((string)($data['shift_label']??''));$description=(string)($data['description']??'');$taskId=(int)($data['task_id']??0);
-        if($shift===''||mb_strlen($shift)>30||mb_strlen($description)>5000)throw new InvalidArgumentException('Ca hoặc mô tả không hợp lệ.');
-        $before=$id?$this->getTimesheet($id):null;$userId=$before?(int)$before['user_id']:$this->actorId;$dates=array_unique([$date,$before['work_date']??$date]);sort($dates);
+        $this->ownPermission();$date=(string)($data['work_date']??'');$this->validDate($date);$hours=$this->quantity($data['hours']??'',24);$shiftInput=$data['shift_label']??'';$description=(string)($data['description']??'');$taskId=(int)($data['task_id']??0);
+        if(mb_strlen($description)>5000)throw new InvalidArgumentException('Mô tả không được vượt quá 5000 ký tự.');
+        $before=$id?$this->getTimesheet($id):null;$shift=PmShiftLabelService::validate($shiftInput,$before?(string)$before['shift_label']:null);$userId=$before?(int)$before['user_id']:$this->actorId;$dates=array_unique([$date,$before['work_date']??$date]);sort($dates);
         $this->db->beginTransaction();try{
             foreach($dates as $dayDate){$this->requireEditable($dayDate);$this->lockDay($dayDate,$userId);}
             // A write may have waited on the ledger lock across the midnight boundary.
             foreach($dates as $dayDate)$this->requireEditable($dayDate);
             $old=$id?$this->getTimesheet($id):null;
+            $shift=PmShiftLabelService::validate($shiftInput,$old?(string)$old['shift_label']:null);
             if($old&&$old['work_date']!==$before['work_date'])throw new DomainException('Bản ghi vừa thay đổi. Vui lòng tải lại trang.');
             $task=$this->db->fetchOne('SELECT t.project_id FROM dc_pm_tasks t JOIN dc_pm_projects p ON p.store_id=t.store_id AND p.id=t.project_id JOIN dc_pm_project_members m ON m.store_id=t.store_id AND m.project_id=t.project_id AND m.user_id=t.assignee_id AND m.status=1 WHERE t.store_id=? AND t.id=? AND t.assignee_id=? AND t.deleted_at IS NULL AND p.deleted_at IS NULL FOR UPDATE','iii',[$this->storeId,$taskId,$userId]);
             if(!$task && $old && $this->access->hasRole('ADMIN') && $taskId===(int)$old['task_id'])$task=['project_id'=>$old['project_id']];

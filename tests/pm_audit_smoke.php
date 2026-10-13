@@ -55,7 +55,7 @@ try{
     $task=$projects->saveTask($project,['name'=>'Window task','assignee_id'=>$owner,'status'=>'todo','priority'=>'normal','estimated_hours'=>'12','due_date'=>'']);
     $user=new WindowSmokeService($db,$store,$owner);$adminService=new WindowSmokeService($db,$store,$actor);
     $adminService->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50']);
-    $auditData=['task_id'=>$task,'work_date'=>'2026-10-02','shift_label'=>'Audit','hours'=>'4','description'=>'Audit QA'];
+    $auditData=['task_id'=>$task,'work_date'=>'2026-10-02','shift_label'=>'Ca linh hoạt','hours'=>'4','description'=>'Audit QA'];
     $timesheet=$user->save($auditData);
     $adminAudit=new PmAuditLogs($db,$store,$actor);
     if(!$adminAudit->list(['entity_type'=>'timesheet'])['total'])throw new RuntimeException('Admin audit missing.');

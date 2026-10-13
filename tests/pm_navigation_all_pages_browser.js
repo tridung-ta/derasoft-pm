@@ -9,6 +9,8 @@ async page=>{
     if(await p.locator('.pm-work-sidebar').count()!==1||await p.locator('.pm-work-topbar').count()!==1)throw new Error('Missing/duplicate shared shell: '+fixture);
     if(!await p.locator('.pm-user-menu summary').isVisible())throw new Error('Account hidden: '+fixture);
     if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Overflow: '+fixture);
+    const button=p.locator('.pm-work-menu summary');if(!await button.isVisible())throw new Error('Navigation toggle hidden: '+fixture);
+    if(width===1440){await button.focus();await p.keyboard.press('Enter');if(await p.locator('.pm-module-nav').isVisible())throw new Error('Desktop collapse failed');await p.keyboard.press('Enter');if(!await p.locator('.pm-module-nav').isVisible())throw new Error('Desktop expand failed');}
     if(width===390){
      const toggle=p.locator('.pm-work-menu summary');if(!await toggle.isVisible())throw new Error('Mobile toggle hidden: '+fixture);
      await toggle.click();if(!await p.locator('.pm-module-nav').isVisible())throw new Error('Menu did not open: '+fixture);

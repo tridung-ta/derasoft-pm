@@ -72,3 +72,6 @@ Quyết định mới: thông báo thành công căn giữa ngang nhưng nằm p
 
 ## 13/10 — banner refined
 Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; top-center10s giữ nguyên. Browser2suites và16no-DBscripts PASS. Asset20261013-refined; khôngBE/DB/production. Xem TOAST_VISUAL_VERIFY_20261013.md, gói mới thay bản trước.
+
+## Gói cuối navshift ngày13/10
+Gói mới gom thông báo refined top10s, nút Điều hướng hiện desktop/mobile và nhãn ca chuẩn. Asset20261013-navshift. Upload toàn bộ runtime gồm helper pmshiftlabelservice.class.php; không migration mới. Review/NAV_SHIFT_VERIFY.md có bằng chứng và hostUAT. Workbook mẫu khi ghi công chọn Ca linh hoạt hoặc ca phù hợp trong4choices; nhãn cũ giữ nguyên nếu không đổi. Làm mới Smarty/OPcache vàCtrl+F5.

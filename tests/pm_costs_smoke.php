@@ -32,7 +32,7 @@ try{
     $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
     $query->execute("INSERT INTO dc_pm_hourly_rates(store_id,user_id,rate,currency,effective_from,effective_to,status,created_by) VALUES(?,?,?,'VND',?,NULL,1,?)",'iissi',[$store,$actor,'100.25','2026-10-01',$actor]);
     $timesheets=new WindowSmokeService($db,$store,$actor);$timesheets->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50']);
-    $entry=['task_id'=>$task,'work_date'=>'2026-10-01','shift_label'=>'Day','hours'=>'6','description'=>'Cost QA'];
+    $entry=['task_id'=>$task,'work_date'=>'2026-10-01','shift_label'=>'Ca linh hoạt','hours'=>'6','description'=>'Cost QA'];
     $first=$timesheets->save($entry);$entry['hours']='4';$second=$timesheets->save($entry);$entry['work_date']='2026-10-02';$entry['hours']='2';$third=$timesheets->save($entry);
     $costs=new PmCostService($db,$store,$actor);$filter=['project_id'=>$project,'from'=>'2026-10-01','to'=>'2026-10-01'];
     $choices=$costs->projectChoices();

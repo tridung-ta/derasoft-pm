@@ -24,7 +24,7 @@ matrixCase('pmprojects','member_id','user',['action'=>'member_save','project_id'
 matrixCase('pmprojects','assignee_id','user',['action'=>'task_save']+$task,true,'PM');
 matrixCase('pmprojects','manager_id','user',['action'=>'project_save','project_id'=>900000001]+$project,true,'ADMIN');
 foreach(['project_id'=>'project','task_id'=>'task'] as $key=>$type)matrixCase('pmtaskstatus',$key,$type,['project_id'=>900000001,'task_id'=>900000011,'status'=>'done'],true,'PM','/pm_ajax.php');
-$sheet=['id'=>900000021,'task_id'=>900000011,'work_date'=>$today,'shift_label'=>'Fixture shift','hours'=>'1','description'=>'fixture'];
+$sheet=['id'=>900000021,'task_id'=>900000011,'work_date'=>$today,'shift_label'=>'Ca linh hoạt','hours'=>'1','description'=>'fixture'];
 matrixCase('pmtimesheets','id','timesheet');
 matrixCase('pmtimesheets','id','timesheet',['action'=>'save']+$sheet,true);
 matrixCase('pmtimesheets','id','timesheet',['action'=>'delete'],true);

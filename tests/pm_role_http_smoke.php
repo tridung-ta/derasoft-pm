@@ -80,7 +80,7 @@ function roleTask(array $state,int $id): array {
 }
 function roleTimeWrite(array $changes,string $role='PM',int $expected=200): array {
     $today=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');
-    $post=array_replace(['op'=>'pmtimesheets','action'=>'save','csrf_token'=>'role-http-csrf','task_id'=>'900000011','work_date'=>$today,'shift_label'=>'HTTP new','hours'=>'2','description'=>'HTTP fixture'],$changes);
+    $post=array_replace(['op'=>'pmtimesheets','action'=>'save','csrf_token'=>'role-http-csrf','task_id'=>'900000011','work_date'=>$today,'shift_label'=>'Ca linh hoạt','hours'=>'2','description'=>'HTTP fixture'],$changes);
     $html=roleHttp($role,'op=pmtimesheets',$expected,$post);
     if (!preg_match('/<!-- PM_FIXTURE_STATE ([A-Za-z0-9+\/=]+) -->/',$html,$m)) throw new RuntimeException('Missing timesheet write state.');
     $state=json_decode(base64_decode($m[1],true),true,512,JSON_THROW_ON_ERROR);
@@ -197,7 +197,7 @@ try {
     $state=roleWrite(['task_id'=>'900000011','start_date'=>'2026-10-02','due_date'=>'2026-10-02']);
     roleAssert(roleTask($state,900000011)['start_date']==='2026-10-02'&&roleTask($state,900000011)['due_date']==='2026-10-02'&&count($state['dc_pm_audit_logs'])===1,'Same-day task save rejected.');
     $state=roleTimeWrite([]);
-    $created=array_values(array_filter($state['dc_pm_timesheets'],fn($s)=>$s['shift_label']==='HTTP new'));
+    $created=array_values(array_filter($state['dc_pm_timesheets'],fn($s)=>$s['shift_label']==='Ca linh hoạt'));
     roleAssert(count($created)===1&&$created[0]['regular_hours']==='0.00'&&$created[0]['ot_hours']==='2.00'&&$created[0]['cost']==='300.00'&&$created[0]['rate_snapshot']==='100.00','HTTP timesheet create OT/rate/cost failed.');
     roleAssert(($state['dc_pm_audit_logs'][0]['action']??'')==='create','Timesheet create audit missing.');
     $state=roleTimeWrite(['id'=>'900000021']);

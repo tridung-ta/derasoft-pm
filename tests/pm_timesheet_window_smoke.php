@@ -33,7 +33,7 @@ try{
     $task=$projects->saveTask($project,['name'=>'Window task','assignee_id'=>$owner,'status'=>'todo','priority'=>'normal','estimated_hours'=>'12','due_date'=>'']);
     $user=new WindowSmokeService($db,$store,$owner);$adminService=new WindowSmokeService($db,$store,$actor);
     $adminService->saveSettings(['standard_hours_per_day'=>'8','ot_multiplier'=>'1.50']);
-    $data=['task_id'=>$task,'work_date'=>'2026-10-02','shift_label'=>'Day','hours'=>'6','description'=>'Window QA'];
+    $data=['task_id'=>$task,'work_date'=>'2026-10-02','shift_label'=>'Ca linh hoạt','hours'=>'6','description'=>'Window QA'];
     $id=$user->save($data);$data['hours']='4';$second=$user->save($data);
     $deleteProbe=$user->save(array_replace($data,['hours'=>'1']));$user->delete($deleteProbe);
     $user->date='2026-10-04';$user->save($data,$second);

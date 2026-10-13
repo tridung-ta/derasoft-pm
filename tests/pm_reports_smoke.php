@@ -18,7 +18,9 @@ $connection->beginFixture();$path=null;
 try{
     $projects=new PmProjectService($db,$store,$actor);$code='REPORT_'.bin2hex(random_bytes(4));$p=$projects->saveProject(['code'=>$code,'name'=>'=HYPERLINK("bad")','manager_id'=>$actor,'status'=>'active','budget'=>'0','start_date'=>'','end_date'=>'']);
     $t=$projects->saveTask($p,['name'=>'<script>task</script>','assignee_id'=>$actor,'status'=>'todo','priority'=>'normal','estimated_hours'=>'2','due_date'=>'']);
-    $timesheets=new PmTimesheetService($db,$store,$actor);$entry=['task_id'=>$t,'work_date'=>'2026-10-01','shift_label'=>'=1+1','hours'=>'6','description'=>'@SUM(1,1)'];$first=$timesheets->save($entry);$entry['hours']='4';$second=$timesheets->save($entry);
+    $timesheets=new PmTimesheetService($db,$store,$actor);$entry=['task_id'=>$t,'work_date'=>'2026-10-01','shift_label'=>'Ca linh hoạt','hours'=>'6','description'=>'@SUM(1,1)'];$first=$timesheets->save($entry);$entry['hours']='4';$second=$timesheets->save($entry);
+    // Legacy free-text fixture keeps formula-injection coverage after canonical creation.
+    $q->execute('UPDATE dc_pm_timesheets SET shift_label=? WHERE store_id=? AND id IN (?,?)','siii',['=1+1',$store,$first,$second]);
     $service=new PmReportService($db,$store,$actor);$filter=['from'=>'2026-10-01','to'=>'2026-10-01','project_id'=>$p];$r=$service->report($filter);
     reportCheck($r['data']['summary']['hours']==='10.00'&&count($r['data']['rows'])===2,'Hours inclusive/summary failed.');
     $directory=$service->report(['mode'=>'users','user_id'=>$actor]);reportCheck(count($directory['data']['rows'])===1&&!isset($directory['data']['rows'][0]['password_hash']),'Personnel export leaked secret or wrong scope.');

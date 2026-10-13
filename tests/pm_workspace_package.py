@@ -27,7 +27,7 @@ def main():
         rows.append(row)
     runtime={r['path'] for r in rows if r['action']=='upload_runtime'}
     required={'classes/dao/pmdashboard.class.php','classes/services/pmdashboardservice.class.php',
-              'css/pmworkspace.css','js/pmkanban.js','pm_ajax.php','assets/fonts/inter/InterVariable.woff2'}
+              'classes/services/pmshiftlabelservice.class.php','css/pmworkspace.css','js/pmkanban.js','pm_ajax.php','assets/fonts/inter/InterVariable.woff2'}
     if not required.issubset(runtime):raise RuntimeError('Missing runtime dependency')
     untracked=run('ls-files','--others','--exclude-standard').decode().splitlines()
     if any(classify('A',p)=='upload_runtime' for p in untracked):raise RuntimeError('Untracked runtime not packaged')
@@ -54,6 +54,7 @@ def main():
         files['review/CENTERED_NAV_VERIFY.md']=run('show',ref+':docs/CENTERED_NOTIFICATION_NAV_VERIFY_20261013.md')
         files['review/TOP_TOAST_VERIFY.md']=run('show',ref+':docs/TOP_TOAST_10S_VERIFY_20261013.md')
         files['review/TOAST_VISUAL_VERIFY.md']=run('show',ref+':docs/TOAST_VISUAL_VERIFY_20261013.md')
+        files['review/NAV_SHIFT_VERIFY.md']=run('show',ref+':docs/NAV_SHIFT_VERIFY_20261013.md')
     manifest={'date':args.date,'source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
        'baseline':baseline,'package_type':'incremental existing-PM update; manual host UAT',
        'state':'local prepared; not uploaded; DB/session/host UAT NOT RUN',
