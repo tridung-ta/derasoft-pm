@@ -32,7 +32,7 @@ async page => {
   });
   if(Object.values(submission).some(value=>!value))throw new Error('Submit guard/download lifecycle '+JSON.stringify(submission));
   const sticky=await p.locator('thead th').first().evaluate(e=>getComputedStyle(e).position);if(sticky!=='sticky')throw new Error('Table header not sticky');
-  for(const width of [390,768,1440]){await p.setViewportSize({width,height:960});if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Overflow '+width);if(await p.locator('.pm-work-menu').evaluate(e=>e.open)!==(width>900))throw new Error('Menu breakpoint '+width);}
+  for(const width of [390,768,1440]){await p.setViewportSize({width,height:960});if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Overflow '+width);if(await p.locator('.pm-work-menu').evaluate(e=>e.open)!==false)throw new Error('Menu breakpoint '+width);}
   if(errors.length)throw new Error(errors.join(';'));
   return {result:'PASS: filter restore/forget, excludes search text/CSRF, account Escape, success toast/dismiss, submit double guard/submitter/BFCache reset/export reusable, sticky headers, 390/768/1440 without page overflow. No DB access or mutations.'};
  }finally{await context.close();}

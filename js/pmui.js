@@ -75,7 +75,7 @@ if (typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototy
 
 /* Shared progressive workspace behavior; controllers remain authoritative. */
 (() => {
- const menu=document.querySelector('.pm-work-menu');const mobile=matchMedia('(max-width:900px)');const adaptMenu=()=>{if(menu)menu.open=!mobile.matches;};adaptMenu();if(mobile.addEventListener)mobile.addEventListener('change',adaptMenu);
+ const menu=document.querySelector('.pm-work-menu');const mobile=matchMedia('(max-width:900px)');const adaptMenu=()=>{if(menu)menu.open=false;};adaptMenu();if(mobile.addEventListener)mobile.addEventListener('change',adaptMenu);
  const pending=new WeakSet();
  document.addEventListener('submit',event=>{const form=event.target;const action=event.submitter?.name==='action'?event.submitter.value:form.elements.namedItem('action')?.value;if(event.defaultPrevented||form.method.toLowerCase()!=='post'||['export','template'].includes(action))return;if(pending.has(form)){event.preventDefault();return;}pending.add(form);const submitter=event.submitter;if(submitter&&submitter.name){const copy=document.createElement('input');copy.type='hidden';copy.name=submitter.name;copy.value=submitter.value;copy.dataset.pmSubmitter='1';form.append(copy);}form.setAttribute('aria-busy','true');form.querySelectorAll('button[type=submit],button:not([type]),input[type=submit]').forEach(b=>{b.dataset.pmWasDisabled=b.disabled?'1':'0';b.disabled=true;});});
  addEventListener('pageshow',()=>{document.querySelectorAll('form[aria-busy=true]').forEach(form=>{pending.delete(form);form.removeAttribute('aria-busy');form.querySelectorAll('[data-pm-was-disabled]').forEach(b=>{b.disabled=b.dataset.pmWasDisabled==='1';delete b.dataset.pmWasDisabled;});form.querySelectorAll('[data-pm-submitter]').forEach(e=>e.remove());});});
@@ -176,3 +176,8 @@ document.querySelectorAll('p.error,.alert-error,.message.error,[data-pm-success]
     }
     if (success) {const timer = setTimeout(() => node.remove(), 10000);node.querySelector('button')?.addEventListener('click', () => clearTimeout(timer), {once:true});}
 });
+
+/* Header navigation uses native details and preserves the existing link permissions. */
+const headerNavigation=document.querySelector('.pm-header-controls .pm-work-menu');
+document.addEventListener('click',event=>{if(headerNavigation?.open&&!headerNavigation.contains(event.target))headerNavigation.open=false;});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&headerNavigation?.open){headerNavigation.open=false;headerNavigation.querySelector('summary').focus();}});

@@ -20,7 +20,7 @@ async page => {
         if(file==='phase9-theme-nav.html'){
             if(await page.locator('.pm-module-nav a').count()!==9||await page.locator('.pm-module-nav a .pm-nav-icon').count()!==9)throw new Error('Full navigation icons missing');
             const nav=await page.locator('.pm-module-nav').evaluate(e=>getComputedStyle(e).backgroundColor);
-            if(nav!=='rgba(0, 0, 0, 0)')throw new Error('Wrong sidebar theme');
+            if(nav!=='rgb(255, 255, 255)')throw new Error('Wrong header menu theme');
         }
         if(file==='phase6-preview.html'){
             const align=await page.locator('.pm-money-table td').nth(1).evaluate(e=>getComputedStyle(e).textAlign);

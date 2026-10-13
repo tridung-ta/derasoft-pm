@@ -246,3 +246,6 @@ Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; 
 
 ## 13/10 — điều hướng và nhãn ca đã duyệt
 Nút Điều hướng bị giấu bởi mediaquerydesktop, đã hiện ở mọi kích thước. BUILD whitelist/select/badge/legacy-preservation cho nhãn ca; helper kiểm tra lại sau khóa, không đổiOT/schema. Feature-development + impeccable/playwright + code-review theo phạm vi.17noDBscripts/21browsers PASS, ngày mobile nowrap xác nhậntargeted. SuiteDB chỉ sửa fixture, chưa chạy. NAV_SHIFT_VERIFY_20261013.md có bằng chứng và giới hạn.
+
+## 13/10/2026 — Header navigation
+Tái sử dụng impeccable và playwright-cli, code-review cho shell/link/CSRF, git-feature-commit cho commit local. QA phát hiện left:0 kế thừa làm menu mobile tràn và nút che liên kết; override left:auto/right:0, chừa vùng điều khiển trên nội dung. Navigation 12 trang PASS sau sửa; giữ Inter theo AGENTS. Không dùng fixture browser để tuyên bố DB/production PASS.

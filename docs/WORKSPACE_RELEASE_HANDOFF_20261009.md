@@ -75,3 +75,6 @@ Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; 
 
 ## Gói cuối navshift ngày13/10
 Gói mới gom thông báo refined top10s, nút Điều hướng hiện desktop/mobile và nhãn ca chuẩn. Asset20261013-navshift. Upload toàn bộ runtime gồm helper pmshiftlabelservice.class.php; không migration mới. Review/NAV_SHIFT_VERIFY.md có bằng chứng và hostUAT. Workbook mẫu khi ghi công chọn Ca linh hoạt hoặc ca phù hợp trong4choices; nhãn cũ giữ nguyên nếu không đổi. Làm mới Smarty/OPcache vàCtrl+F5.
+
+## Gói cuối headernav ngày 13/10
+Quyết định mới thay sidebar bằng Điều hướng góc phải, ngay dưới Tài khoản. Asset 20261013-headernav; xem review/HEADER_NAV_VERIFY.md. Gói này thay các ZIP trước, giữ toast refined top10s và nhãn ca. Upload toàn bộ runtime, giữ cấu hình/DB; làm mới Smarty/OPcache và Ctrl+F5. Không migration mới.

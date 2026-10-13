@@ -2067,3 +2067,6 @@ Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; 
 
 ## 13/10 — điều hướng và nhãn ca đã duyệt
 Nút Điều hướng bị giấu bởi mediaquerydesktop, đã hiện ở mọi kích thước. BUILD whitelist/select/badge/legacy-preservation cho nhãn ca; helper kiểm tra lại sau khóa, không đổiOT/schema. Feature-development + impeccable/playwright + code-review theo phạm vi.17noDBscripts/21browsers PASS, ngày mobile nowrap xác nhậntargeted. SuiteDB chỉ sửa fixture, chưa chạy. NAV_SHIFT_VERIFY_20261013.md có bằng chứng và giới hạn.
+
+## 13/10/2026 — Điều hướng góc phải
+Bỏ sidebar PM, chuyển Điều hướng dưới Tài khoản. VERIFY local 21 browser suites PASS; sau sửa cascade và khoảng trống đầu trang, suite navigation 12 trang desktop/mobile PASS. No-DB verify PASS. Không BE/DB/production. Chi tiết HEADER_NAV_VERIFY_20261013.md.

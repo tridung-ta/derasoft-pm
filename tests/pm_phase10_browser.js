@@ -26,7 +26,7 @@ async page => {
         }
         await page.goto(base+'/admin.php?op=pm');
         if(role==='ADMIN'||role==='EMPLOYEE')await page.screenshot({path:'phase10-'+role.toLowerCase()+'.png',fullPage:true});
-        await page.locator('.sidebar-footer button.logout').click();await page.waitForLoadState();
+        await page.locator('.pm-user-menu summary').click();await page.locator('button.pm-logout').click();await page.waitForLoadState();
         await page.goto(base+'/admin.php?op=pm');if(!await page.locator('input[name="username"]').count())throw new Error('Logout did not clear auth '+role);
     }
     await login('ADMIN');await page.goto(base+'/admin.php?op=pmprojects');
