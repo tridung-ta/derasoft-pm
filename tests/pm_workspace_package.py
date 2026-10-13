@@ -52,6 +52,7 @@ def main():
     if args.date>='20261013':
         files['review/TOAST_VERIFY.md']=run('show',ref+':docs/TOAST_VERIFY_20261013.md')
         files['review/CENTERED_NAV_VERIFY.md']=run('show',ref+':docs/CENTERED_NOTIFICATION_NAV_VERIFY_20261013.md')
+        files['review/TOP_TOAST_VERIFY.md']=run('show',ref+':docs/TOP_TOAST_10S_VERIFY_20261013.md')
     manifest={'date':args.date,'source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
        'baseline':baseline,'package_type':'incremental existing-PM update; manual host UAT',
        'state':'local prepared; not uploaded; DB/session/host UAT NOT RUN',

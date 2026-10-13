@@ -66,3 +66,6 @@ Dữ liệu Excel vẫn là bộ mẫu 09/10: nếu kiểm thử ngày khác, d�
 
 ## Bản cuối thông báo giữa màn hình ngày13/10
 Gói centered thay gói compact trước. Kiểu thông báo đặt giữa màn hình theo yêu cầu mới; asset CSS version20261013-centered. Review/CENTERED_NAV_VERIFY.md có kiểm tra menu12trang và hướng dẫn đối chiếu host. Upload nội dung runtime một lần, giữ config/DB; chưa có bằng chứng nguyên nhân menu cũ trên host. Không migration mới.
+
+## Bản cuối top10s ngày13/10
+Quyết định mới: thông báo thành công căn giữa ngang nhưng nằm phía trên dưới thanh tài khoản, không nằm giữa chiều dọc; tự ẩn sau10giây. Lỗi vẫn hiện. Khung480px, chữ16/15px; asset version20261013-top10s. Dùng ZIP cuối chứa review/TOP_TOAST_VERIFY.md, thay bản centered trước; không thêmmigration.

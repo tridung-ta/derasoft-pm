@@ -168,4 +168,5 @@ document.querySelectorAll('p.error,.alert-error,.message.error,[data-pm-success]
     const title = document.createElement('strong');
     title.className = 'pm-feedback-title';title.textContent = success ? 'Đã hoàn tất' : 'Cần kiểm tra';
     node.prepend(title);
+    if (success) {const timer = setTimeout(() => node.remove(), 10000);node.querySelector('button')?.addEventListener('click', () => clearTimeout(timer), {once:true});}
 });

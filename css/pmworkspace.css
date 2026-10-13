@@ -81,14 +81,14 @@ body.pm-app .pm-feedback-success:not(.pm-toast){position:relative;padding-right:
 
 /* Centered, readable success notification with a 44px close target. */
 body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{
- left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;
- transform:translate(-50%,-50%);width:560px;max-width:calc(100vw - 32px);
- min-height:128px;max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;
- padding:24px 72px 24px 28px!important;margin:0!important;
- font-size:18px!important;line-height:1.6!important;border-radius:12px;
+ left:50%!important;top:80px!important;right:auto!important;bottom:auto!important;
+ transform:translateX(-50%);width:480px;max-width:calc(100vw - 32px);
+ min-height:96px;max-height:calc(100dvh - 96px);overflow:auto;box-sizing:border-box;
+ padding:16px 64px 16px 22px!important;margin:0!important;
+ font-size:16px!important;line-height:1.55!important;border-radius:10px;
  box-shadow:0 12px 32px #20262c24;
 }
-.pm-feedback.pm-toast .pm-feedback-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.pm-feedback.pm-toast .pm-feedback-title{font-size:18px;font-weight:700;margin-bottom:4px}
 body .pm-feedback.pm-feedback-success>button{
  display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;
  padding:0!important;right:12px;top:12px;border:0!important;border-radius:6px;
@@ -97,4 +97,4 @@ body .pm-feedback.pm-feedback-success>button{
 body .pm-feedback.pm-feedback-success>button:hover{background:#174f3c0d}
 body .pm-feedback.pm-feedback-success>button:focus-visible{outline:2px solid #174f3c;outline-offset:-4px}
 .pm-feedback-success>button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-@media(max-width:640px){body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{padding:20px 64px 20px 20px!important;font-size:16px!important}.pm-feedback.pm-toast .pm-feedback-title{font-size:18px}}
+@media(max-width:640px){body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{padding:16px 60px 16px 18px!important;font-size:15px!important}.pm-feedback.pm-toast .pm-feedback-title{font-size:17px}}

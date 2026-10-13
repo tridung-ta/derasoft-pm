@@ -237,3 +237,6 @@ Tái sử dụng impeccable và playwright-cli, giữ Inter/theme. SVG close tha
 
 ## 13/10 — centered và rà điều hướng
 Tái sử dụng impeccable/playwright-cli/code-review. Kiểm tra12trang2viewport; phát hiện fixture thiếu dữ liệu menu và fileImportcũ, sửa test setup bằng nguồn PmUiService, không sửa quyền runtime.20browser và16no-DBscripts PASS. Ảnh host đã có sidebar; chưa suy cache là nguyên nhân. Xem CENTERED_NOTIFICATION_NAV_VERIFY_20261013.md.
+
+## 13/10 — top-center10s theo yêu cầu mới
+Toast phía trên căn giữa ngang,480px/chữ16/15px; success tự ẩn10s, error giữ nguyên.4suitebrowser liên quan và16no-DBscripts PASS; clockharness pauseAt để assert9999/10000ms chính xác. KhôngDB/production. Xem TOP_TOAST_10S_VERIFY_20261013.md.
