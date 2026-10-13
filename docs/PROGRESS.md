@@ -2061,3 +2061,6 @@ BUILD theo yêu cầu đồng bộfrontend/backend; giữUIChi phí, không sche
 
 ## 13/10 — top-center10s theo yêu cầu mới
 Toast phía trên căn giữa ngang,480px/chữ16/15px; success tự ẩn10s, error giữ nguyên.4suitebrowser liên quan và16no-DBscripts PASS; clockharness pauseAt để assert9999/10000ms chính xác. KhôngDB/production. Xem TOP_TOAST_10S_VERIFY_20261013.md.
+
+## 13/10 — banner refined
+Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; top-center10s giữ nguyên. Browser2suites và16no-DBscripts PASS. Asset20261013-refined; khôngBE/DB/production. Xem TOAST_VISUAL_VERIFY_20261013.md, gói mới thay bản trước.

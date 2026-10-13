@@ -82,13 +82,13 @@ body.pm-app .pm-feedback-success:not(.pm-toast){position:relative;padding-right:
 /* Centered, readable success notification with a 44px close target. */
 body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{
  left:50%!important;top:80px!important;right:auto!important;bottom:auto!important;
- transform:translateX(-50%);width:480px;max-width:calc(100vw - 32px);
- min-height:96px;max-height:calc(100dvh - 96px);overflow:auto;box-sizing:border-box;
- padding:16px 64px 16px 22px!important;margin:0!important;
- font-size:16px!important;line-height:1.55!important;border-radius:10px;
- box-shadow:0 12px 32px #20262c24;
+ transform:translateX(-50%);width:440px;max-width:calc(100vw - 32px);
+ min-height:84px;max-height:calc(100dvh - 96px);overflow:auto;box-sizing:border-box;
+ padding:14px 60px 14px 66px!important;margin:0!important;
+ font-size:15px!important;line-height:1.55!important;border-radius:12px;
+ box-shadow:0 8px 24px #20262c16;
 }
-.pm-feedback.pm-toast .pm-feedback-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.pm-feedback.pm-toast .pm-feedback-title{font-size:15px;font-weight:650;margin-bottom:3px}
 body .pm-feedback.pm-feedback-success>button{
  display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;
  padding:0!important;right:12px;top:12px;border:0!important;border-radius:6px;
@@ -97,4 +97,13 @@ body .pm-feedback.pm-feedback-success>button{
 body .pm-feedback.pm-feedback-success>button:hover{background:#174f3c0d}
 body .pm-feedback.pm-feedback-success>button:focus-visible{outline:2px solid #174f3c;outline-offset:-4px}
 .pm-feedback-success>button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-@media(max-width:640px){body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{padding:16px 60px 16px 18px!important;font-size:15px!important}.pm-feedback.pm-toast .pm-feedback-title{font-size:17px}}
+@media(max-width:640px){body.pm-app .pm-feedback.pm-toast,body.pm-login-page .pm-feedback.pm-toast{padding:14px 56px 14px 60px!important;font-size:15px!important}.pm-feedback.pm-toast .pm-feedback-title{font-size:15px}}
+
+/* A neutral banner with a restrained success marker. */
+body.pm-app .pm-feedback-success.pm-toast,body.pm-login-page .pm-feedback-success.pm-toast{background:#fff!important;border-color:#b7cdc1!important;color:#344d42!important}
+.pm-feedback-success.pm-toast .pm-feedback-title{color:#185c40}
+.pm-toast-icon{position:absolute;left:18px;top:18px;width:32px;height:32px;display:grid;place-items:center;background:#edf6ef;border-radius:9px;color:#21754f}
+.pm-toast-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.pm-feedback.pm-toast>button{right:8px;top:12px;color:#53685d}
+.pm-feedback.pm-toast>button svg{width:18px;height:18px}
+@media(max-width:640px){.pm-toast-icon{left:14px}}

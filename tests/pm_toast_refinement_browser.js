@@ -5,8 +5,8 @@ async page => {
   for(const width of [1440,390]){
    await p.setViewportSize({width,height:850});await p.goto('http://127.0.0.1:18767/.local/pm-toast-review.html');
    const toast=p.locator('.pm-toast');
-   const details=await toast.evaluate(e=>{const s=getComputedStyle(e),b=e.querySelector('button'),r=b.getBoundingClientRect();return {font:s.fontSize,line:s.lineHeight,buttonWidth:r.width,buttonHeight:r.height,border:getComputedStyle(b).borderTopWidth,svg:!!b.querySelector('svg'),overflow:document.documentElement.scrollWidth>innerWidth+1,height:e.getBoundingClientRect().height,centerX:e.getBoundingClientRect().left+e.getBoundingClientRect().width/2,top:e.getBoundingClientRect().top,role:e.getAttribute('role')};});
-   if(details.font!==(width<640?'15px':'16px')||details.buttonWidth!==44||details.buttonHeight!==44||details.border!=='0px'||!details.svg||details.overflow||details.height<90||Math.abs(details.centerX-width/2)>1||Math.abs(details.top-80)>1||details.role!=='status')throw new Error(JSON.stringify(details));
+   const details=await toast.evaluate(e=>{const s=getComputedStyle(e),b=e.querySelector('button'),r=b.getBoundingClientRect();return {font:s.fontSize,line:s.lineHeight,buttonWidth:r.width,buttonHeight:r.height,border:getComputedStyle(b).borderTopWidth,svg:!!b.querySelector('svg'),marker:!!e.querySelector('.pm-toast-icon svg'),overflow:document.documentElement.scrollWidth>innerWidth+1,height:e.getBoundingClientRect().height,centerX:e.getBoundingClientRect().left+e.getBoundingClientRect().width/2,top:e.getBoundingClientRect().top,role:e.getAttribute('role')};});
+   if(details.font!=='15px'||details.buttonWidth!==44||details.buttonHeight!==44||details.border!=='0px'||!details.svg||!details.marker||details.overflow||details.height<80||Math.abs(details.centerX-width/2)>1||Math.abs(details.top-80)>1||details.role!=='status')throw new Error(JSON.stringify(details));
    await p.screenshot({path:'toast-review-'+width+'.png',fullPage:true});
    await toast.locator('button').focus();await p.keyboard.press('Enter');if(await toast.count())throw new Error('Close did not work');
    await p.goto('http://127.0.0.1:18767/.local/pm-toast-review.html');
@@ -19,6 +19,6 @@ async page => {
    if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Launch overflow');
   }
   if(errors.length)throw new Error(errors.join(';'));
-  return 'PASS: top-center large toast1440/390,expires exactly10s,16px desktop/15px mobile,44px SVG close target,no border/no overflow, keyboard dismissal,status role; real launch title Vietnamese; no DB.';
+  return 'PASS: top-center large toast1440/390,expires exactly10s,neutral white banner with success SVG,15px,44px SVG close target,no border/no overflow, keyboard dismissal,status role; real launch title Vietnamese; no DB.';
  }finally{await context.close();}
 }

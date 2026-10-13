@@ -168,5 +168,11 @@ document.querySelectorAll('p.error,.alert-error,.message.error,[data-pm-success]
     const title = document.createElement('strong');
     title.className = 'pm-feedback-title';title.textContent = success ? 'Đã hoàn tất' : 'Cần kiểm tra';
     node.prepend(title);
+    if (success && node.classList.contains('pm-toast')) {
+        const badge = document.createElement('span');badge.className = 'pm-toast-icon';badge.setAttribute('aria-hidden','true');
+        const icon = document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');
+        const path = document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','m5 12 4 4L19 6');
+        icon.append(path);badge.append(icon);node.prepend(badge);
+    }
     if (success) {const timer = setTimeout(() => node.remove(), 10000);node.querySelector('button')?.addEventListener('click', () => clearTimeout(timer), {once:true});}
 });

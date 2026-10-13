@@ -69,3 +69,6 @@ Gói centered thay gói compact trước. Kiểu thông báo đặt giữa màn 
 
 ## Bản cuối top10s ngày13/10
 Quyết định mới: thông báo thành công căn giữa ngang nhưng nằm phía trên dưới thanh tài khoản, không nằm giữa chiều dọc; tự ẩn sau10giây. Lỗi vẫn hiện. Khung480px, chữ16/15px; asset version20261013-top10s. Dùng ZIP cuối chứa review/TOP_TOAST_VERIFY.md, thay bản centered trước; không thêmmigration.
+
+## 13/10 — banner refined
+Thông báo trắng/viền xanh nhẹ, dấu kiểmSVG, chữ15px,440px rộng; top-center10s giữ nguyên. Browser2suites và16no-DBscripts PASS. Asset20261013-refined; khôngBE/DB/production. Xem TOAST_VISUAL_VERIFY_20261013.md, gói mới thay bản trước.
