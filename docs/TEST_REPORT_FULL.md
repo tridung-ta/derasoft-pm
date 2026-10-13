@@ -599,3 +599,6 @@ P3 chốtscope09/10: usernhậnkiểmthửDBthủcông; runtimecommitfb67557/reg
 
 ## Gói workspace integration 09/10/2026 — không đổi kết quả checklist cũ
 Người dùng yêu cầu không tạoDBtest; kiểm thửDB/host nhận chạy thủ công. Kết quả checklist và7mục CHƯACHẠY trước giữnguyên, không chạy lại toàn bộ để xác nhận release mới. No-DB15scripts+7lint+5allowlist,17browser suites và4workbook files đạt trong phạm vi mô tảWORKSPACE_INTEGRATION_VERIFY_20261009.md. AuthenticatedKanbanpersist/audit, SQLscope/currency/concurrency/EXPLAIN vàimportApplyDB của bảnmớiCHƯACHẠY. Bộmanual-test có30ca vàdữliệu sẵn, tất cả trạng tháiCHƯACHẠY cho tới khi có bằng chứnghost.
+
+## Rà soát cuối local 13/10/2026
+Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suites, 44 PHP/5 JS syntax checks và 4 XLSX validation PASS. Không chạy full DB regression theo chỉ định; giữ 73 PASS/0 FAIL/7 CHƯA CHẠY. Chi tiết FINAL_LOCAL_REVIEW_20261013.md; chưa chứng nhận hoàn thành toàn bộ/UAT/production. Người dùng cho phép push GitHub, chỉ nhánh feature, không merge/deploy.

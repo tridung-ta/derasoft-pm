@@ -2073,3 +2073,6 @@ Bỏ sidebar PM, chuyển Điều hướng dưới Tài khoản. VERIFY local 21
 
 ## Cập nhật vị trí bên trái — 13/10/2026
 Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài khoản giữ bên phải. CSS cache 20261013-leftnav. Chạy playwright-cli -s=workspace run-code --filename tests/pm_navigation_all_pages_browser.js: PASS 12 trang x desktop/mobile; vị trí trái 24/18px, menu trong viewport, Enter/Escape/outside click và logout POST/CSRF. git diff --check PASS. Không BE/DB/production.
+
+## Rà soát cuối local 13/10/2026
+Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suites, 44 PHP/5 JS syntax checks và 4 XLSX validation PASS. Không chạy full DB regression theo chỉ định; giữ 73 PASS/0 FAIL/7 CHƯA CHẠY. Chi tiết FINAL_LOCAL_REVIEW_20261013.md; chưa chứng nhận hoàn thành toàn bộ/UAT/production. Người dùng cho phép push GitHub, chỉ nhánh feature, không merge/deploy.

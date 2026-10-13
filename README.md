@@ -11,16 +11,7 @@
 
 # DeraSoft PM
 
-**Update — 07 Oct 2026:** Phase 11 adds scoped task audits, customer/member
-roles/task dates, weekly/task statistics, directory XLSX exports and self-hosted
-Bootstrap CSS with the existing Inter theme. Latest local verification: 47 regression
-scripts, including 73 HTTP fixture cases; earlier UI verification: 14 browser suites.
-See [requirements matrix](docs/PHASE11_REQUIREMENTS.md) and
-[coverage limits](docs/LOCAL_VERIFY_PHASE11.md). The
-[Phase 11 branch](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase11-requirements)
-is integrated into main from develop at `953bba8`.
-Operator reports the prior full package runs on production without observed errors;
-the new personnel fix is not deployed. Specific role/Excel/zoom UAT cases remain open.
+**Update — 13 Oct 2026:** The current local workspace adds role dashboards, scoped task estimate warnings, configurable daily total-hours limits, fixed shift labels, Vietnamese feedback and header navigation. Verification on f74da9c: 17 no-DB scripts, 24 browser suites, 44 PHP and 5 JavaScript syntax checks, and 4 UAT workbooks passed. The 80-item checklist remains 73 PASS / 0 FAIL / 7 NOT RUN. Database integration and host UAT on the latest changes remain unverified. See [current review and limits](docs/FINAL_LOCAL_REVIEW_20261013.md) and the [working branch](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase11-launch-copy). This update is not a new main merge or production deployment.
 
 **Project & timesheet management built by extending an existing PHP application.**
 
@@ -37,7 +28,7 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 | Authentication & access | Legacy password upgrade, secure sessions, four roles and tenant-scoped permissions |
 | Workforce | User and department management, multiple roles and effective hourly rates |
 | Projects & tasks | Project members, task assignment, priorities, deadlines and four-column Kanban |
-| Timesheets | Task/date/shift entries, a 24-hour daily limit and recalculation after changes |
+| Timesheets | Task/date/fixed-shift entries, configurable daily total-hours limits up to 24 hours and recalculation after changes |
 | Overtime & costing | Daily OT across projects, stored rate snapshots and MySQL DECIMAL cost calculation |
 | Automatic locking | Three calendar days to edit; Admin corrections after locking receive separate audit actions |
 | Audit viewer | Tenant/project/department access scopes, financial-field redaction, filters and pagination |
