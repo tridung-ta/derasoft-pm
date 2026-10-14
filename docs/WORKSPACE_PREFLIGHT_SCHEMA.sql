@@ -19,3 +19,8 @@ SELECT table_name,column_name,column_type,is_nullable,column_default FROM inform
  ORDER BY table_name,ordinal_position;
 SELECT index_name,non_unique,seq_in_index,column_name FROM information_schema.statistics
  WHERE table_schema=DATABASE() AND table_name='dc_users' ORDER BY index_name,seq_in_index;
+
+-- 011 reminders: inspect exact schema before enabling CLI AND web. Read-only.
+SELECT table_name,engine,table_collation FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications';
+SELECT column_name,column_type,is_nullable,column_default,extra FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications' ORDER BY ordinal_position;
+SELECT index_name,non_unique,seq_in_index,column_name FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications' ORDER BY index_name,seq_in_index;

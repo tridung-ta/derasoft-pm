@@ -2079,3 +2079,6 @@ Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suite
 
 ## 14/10/2026 — Phase12 cron reminders local
 Đã BUILD 2job reminders, CLI mặc địnhdryrun/explicittenant/lock/idempotency, migration011 chỉCREATEfile, notificationheader/list/CSRFmarkread và featureflag mặcđịnhOFF. 53checks mới,18noDBscripts/19PHP lint/6allowlist,25browsers PASS. DB/schema/concurrency/EXPLAIN thực CHƯACHẠY theo chỉđịnh;khôngmigrationsrun/push/merge/deploy. PM_CRON_VERIFY_20261014.md có bằngchứng và PM_CRON_HOST_UAT_20261014.md có quytrình.
+
+## 14/10/2026 — Phase12 DB local được phép
+Sau backup guardloopback/derasoft_pm_local, áp011local;41SQL/concurrency/crash/HTTP/EXPLAIN/checksumchecks PASS. Usersthậtkhôngwrite;PMfixturestoresdọnsạch,011rỗng. ChưaBUILDthrottle/userids;proposal7ngày/assignmentrecipient/hẹpfirstcommit chờduyệt. Deploydocs sửa5nhóm yêu cầu;gates vẫngiữ,khônghost/push/merge/deploy. PM_CRON_DB_VERIFY_20261014.md cóbằngchứngvàgiới hạn.

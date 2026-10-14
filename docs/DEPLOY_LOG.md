@@ -217,6 +217,9 @@ agent has not inspected production schema or approved execution there.
 | 14 | `database/migrations/008_create_pm_import_results.sql` | 006 staging and 007 uniqueness for safe Apply; per-row intent/outcome/provenance journal. |
 | 15 | `database/migrations/009_add_pm_project_task_metadata.sql` | Purpose: client_name on projects, project_role on members, start_date/completed_at on tasks. Depends on 003 project/member/task tables (001–002 prerequisites), before Phase11 runtime reads these columns. Schema DDL is **ADD COLUMN only**: four nullable columns, no CREATE/UPDATE/MODIFY/DROP/backfill/engine change; existence checks + SET/PREPARE/EXECUTE are supporting statements. Inspect actual column types/nullability first and skip already-present additions; approval/backup/maintenance remain separate. Rollback app code only, retain columns/data. |
 
+| 16 | `database/migrations/010_add_pm_daily_total_limit.sql` | Depends on004; after009 in release order. ADD max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00 to dc_pm_timesheet_days, existence guard; no hours/cost backfill. Deploy schema before daily-limit runtime; retain column on app rollback. Do not rerun already-present ALTER blindly. |
+| 17 | `database/migrations/011_create_pm_notifications.sql` | Depends on001–004 (core users/RBAC/projects/tasks/timesheets). CREATE dc_pm_notifications only;8 columns, unique event/recipient index. Preflight engine/collation/types/null/defaults/auto/index; defaultfeatureOFF. Local migration verified14/10; no host permission/execution. Keep table/data on rollback. |
+
 For an already-upgraded host, check each actual table/column/index/seed grant and skip steps
 already satisfied; record the evidence. Do not replay initial seed 001 against final tenant
 schema: it was written for the initial pre-002 schema. Existing grants must be preserved.

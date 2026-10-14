@@ -602,3 +602,6 @@ Người dùng yêu cầu không tạoDBtest; kiểm thửDB/host nhận chạy 
 
 ## Rà soát cuối local 13/10/2026
 Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suites, 44 PHP/5 JS syntax checks và 4 XLSX validation PASS. Không chạy full DB regression theo chỉ định; giữ 73 PASS/0 FAIL/7 CHƯA CHẠY. Chi tiết FINAL_LOCAL_REVIEW_20261013.md; chưa chứng nhận hoàn thành toàn bộ/UAT/production. Người dùng cho phép push GitHub, chỉ nhánh feature, không merge/deploy.
+
+## Phase12 local DB follow-up ? 14/10/2026
+User authorized guarded isolated local DB after backup. tests/pm_cron_db_smoke.php:41 PASS/0 errors, migration011 local, recipients/INSERT1062/process locks/two tenants/crash recovery/HTTP controller mark-read/5 EXPLAIN shapes/data fingerprints. All persistent dc_users and existing PM row hashes unchanged; new011 table empty. Details PM_CRON_DB_VERIFY_20261014.md. No host flag/migration/upload, no push/merge/deploy. Existing80-item totals and7pending remain unchanged; throttling/user-ids are proposals not built.

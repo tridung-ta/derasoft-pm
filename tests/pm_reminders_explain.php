@@ -1,7 +1,9 @@
 <?php
 // Operator-only read-only EXPLAIN. No fixture creation, DDL or business writes.
 if(PHP_SAPI!=='cli'){http_response_code(404);exit;}
-define('ROOT_PATH',dirname(__DIR__).'/');
+$appRoot=getenv('DERASOFT_PM_APP_ROOT')?:dirname(__DIR__);$resolved=realpath($appRoot);
+if(!$resolved||!is_file($resolved.'/classes/dao/pmnotifications.class.php')){fwrite(STDERR,"Invalid application root.\n");exit(2);}
+define('ROOT_PATH',$resolved.'/');
 if(count($argv)!==2||!preg_match('/^--store-id=([1-9][0-9]{0,17})$/D',$argv[1],$m)||filter_var($m[1],FILTER_VALIDATE_INT)===false){fwrite(STDERR,"Use --store-id=N; read-only schema/EXPLAIN only.\n");exit(2);}
 require ROOT_PATH.'classes/dao/pmnotifications.class.php';
 class ReminderExplainRecorder extends PmDb {

@@ -31,3 +31,6 @@ Host UAT: PM_CRON_HOST_UAT_20261014.md. Không chứng nhận production-ready h
 
 ## Skills
 deepseek-harness cho outcome/authorization/decomposition/evidence; feature-development cho BUILD; database-safety cho migration additive/rollback chỉfile; impeccable+playwright-cli cho UIquality; code-review cho SQL/quyền/CSRF/log; git-feature-commit cho một commitlocal. Giữ tài liệu skill/.tmp của công việc khác ngoàicommit.
+
+## Bổ sung DB local đã được cho phép — 14/10/2026
+Các dòng CHƯA CHẠY DB ở trên là trạng thái trước khi user cho phép local. Lượt mới41checks SQL thật PASS, gồm recipients/INSERT1062/2process/2tenant/crash/HTTPmarkread/EXPLAIN/datafingerprints;011chỉáp local,web/cronhostchưa bật. Xem PM_CRON_DB_VERIFY_20261014.md. Không tự nâng fullhostauth/UAT/performance/các7checklistmở.

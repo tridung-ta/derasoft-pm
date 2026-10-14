@@ -1,0 +1,69 @@
+<?php
+if(PHP_SAPI!=='cli')exit;
+define('ROOT_PATH',dirname(__DIR__).'/');require ROOT_PATH.'tests/pm_cron_db_fixture.php';require ROOT_PATH.'classes/services/pmreminderservice.class.php';
+$checks=[];$errors=[];$processes=[];$stores=[];$ownedStores=[];$observer=pmCronLocalConnection();$c=pmCronLocalConnection();$before=pmCronFingerprint($observer);
+function cronCheck(bool $ok,string $name): void {global $checks;$checks[]=['case'=>$name,'result'=>$ok?'PASS':'FAIL'];echo ($ok?'PASS: ':'FAIL: ').$name.PHP_EOL;if(!$ok)throw new RuntimeException($name);}
+function cronStart(array $cmd,array $env): array {$p=proc_open($cmd,[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes,ROOT_PATH,$env);if(!is_resource($p))throw new RuntimeException('Process start');fclose($pipes[0]);return [$p,$pipes];}
+function cronFinish(array $proc): array {[$p,$pipes]=$proc;$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);$code=proc_close($p);$json=json_decode(trim($out),true);return [$code,$json,$err];}
+function cronWaitFile(string $path): void {$end=microtime(true)+10;while(!is_file($path)){if(microtime(true)>$end)throw new RuntimeException('Worker barrier not ready');usleep(20000);}}
+try{
+ $backups=glob(ROOT_PATH.'.local/cron-backups/*.sql.sha256');sort($backups);$backup=end($backups);if(!$backup||hash_file('sha256',substr($backup,0,-7))!==trim(file_get_contents($backup)))throw new RuntimeException('Verified backup required');
+ $ddl=file_get_contents(ROOT_PATH.'database/migrations/011_create_pm_notifications.sql');$c->query($ddl);$q=new PmDb((object)['connection'=>$c]);(new PmNotifications($q,1))->preflight();cronCheck(true,'Migration011/schema preflight after verified backup');
+ // Newly added empty table is expected; data in all pre-existing tables must stay equal.
+ $postSchema=pmCronFingerprint($observer);foreach($before as $table=>$hash)cronCheck($postSchema[$table]===$hash,'Migration preserves '.$table);
+ $base=random_int(800000000,850000000);$stores=[$base,$base+1];foreach($stores as $s){foreach(array_keys($postSchema) as $table){$columns=$observer->query('SHOW COLUMNS FROM '.$table)->fetch_all(MYSQLI_ASSOC);if(!in_array('store_id',array_column($columns,'Field'),true))continue;$r=$observer->prepare('SELECT COUNT(*) n FROM '.$table.' WHERE store_id=?');$r->bind_param('i',$s);$r->execute();if((int)$r->get_result()->fetch_assoc()['n'])throw new RuntimeException('Fixture store collision');}}
+ $ownedStores=$stores;
+ $nonce=bin2hex(random_bytes(6));$token=bin2hex(random_bytes(32));$date=(new DateTimeImmutable('today',new DateTimeZone('Asia/Ho_Chi_Minh')))->format('Y-m-d');$users=[];$roleMap=[];
+ foreach($stores as $i=>$store){
+  foreach(['EMPLOYEE','PM'] as $role){$id=pmCronInsert($c,'dc_pm_roles',['store_id'=>$store,'code'=>$role,'name'=>'Cron fixture','status'=>1]);$roleMap[$store][$role]=$id;}
+  foreach(['pm.timesheets.own','pm.projects.view','pm.tasks.view'] as $permission){$id=pmCronInsert($c,'dc_pm_permissions',['store_id'=>$store,'code'=>$permission,'name'=>'Cron fixture','module'=>'pm']);foreach(['EMPLOYEE','PM'] as $role)if($role==='EMPLOYEE'||$permission!=='pm.timesheets.own')pmCronInsert($c,'dc_pm_role_permissions',['store_id'=>$store,'role_id'=>$roleMap[$store][$role],'permission_id'=>$id]);}
+  for($n=1;$n<=7;$n++){$user=['id'=>900000000+$i*100+$n,'store'=>$store,'status'=>$n===4?0:1,'n'=>$n];$users[]=$user;if($n!==5)pmCronInsert($c,'dc_pm_user_roles',['store_id'=>$store,'user_id'=>$user['id'],'role_id'=>$roleMap[$store][$n>=6?'PM':'EMPLOYEE'],'is_primary'=>1]);}
+ }
+ $f=['nonce'=>$nonce,'token'=>$token,'stores'=>$stores,'date'=>$date,'users'=>$users,'tasks'=>[],'projects'=>[]];
+ foreach($stores as $i=>$store){$manager=900000000+$i*100+6;$assignee=900000000+$i*100+1;$project=pmCronInsert($c,'dc_pm_projects',['store_id'=>$store,'code'=>'CRON-'.$nonce.'-'.$i,'name'=>'Cron fixture project','manager_id'=>$manager,'status'=>'active','created_by'=>$manager]);$f['projects'][$store]=$project;
+  pmCronInsert($c,'dc_pm_project_members',['store_id'=>$store,'project_id'=>$project,'user_id'=>$assignee,'status'=>1]);
+  foreach(['today'=>0,'tomorrow'=>1,'old400'=>-400,'old8'=>-8,'future'=>2,'done'=>-1,'hidden'=>-1,'null'=>null,'unassigned'=>0] as $label=>$offset){$due=$offset===null?null:(new DateTimeImmutable($date))->modify(($offset>=0?'+':'').$offset.' days')->format('Y-m-d');$task=pmCronInsert($c,'dc_pm_tasks',['store_id'=>$store,'project_id'=>$project,'name'=>'Cron '.$label,'assignee_id'=>$label==='unassigned'?null:$assignee,'status'=>$label==='done'?'done':'todo','due_date'=>$due,'deleted_at'=>$label==='hidden'?$date.' 00:00:00':null,'created_by'=>$manager]);$f['tasks'][$store][$label]=$task;}
+  pmCronInsert($c,'dc_pm_timesheets',['store_id'=>$store,'user_id'=>900000000+$i*100+3,'project_id'=>$project,'task_id'=>$f['tasks'][$store]['today'],'work_date'=>$date,'shift_label'=>'Ca linh hoạt','hours'=>'1','rate_snapshot'=>'0','rate_source'=>'user','currency'=>'VND','ot_multiplier_snapshot'=>'1','cost'=>'0']);
+ }
+ file_put_contents(ROOT_PATH.'.local/cron-db-fixture.json',json_encode($f,JSON_THROW_ON_ERROR));pmCronMirrorUsers($c,$f);$dao=new PmNotifications($q,$stores[0]);$clock=new DateTimeImmutable($date.' 18:00',new DateTimeZone('Asia/Ho_Chi_Minh'));
+ $recipients=array_column($dao->candidates('timesheet',$date),'recipient_id');sort($recipients);cronCheck(array_map('intval',$recipients)===[900000001,900000002],'Timesheet selection: includes no-assignment user; excludes entered/inactive/no-role');
+ $tasks=$dao->candidates('task',$date);cronCheck(count($tasks)===9,'Task selection: current/tomorrow/old400/old8 two recipients, unassigned PM only');cronCheck(in_array($f['tasks'][$stores[0]]['old400'],array_map('intval',array_column($tasks,'entity_id')),true),'First run includes 400-day-old open task (no age cap)');
+ $service=new PmReminderService($dao);$first=$service->run('task',true,$clock);$again=$service->run('task',true,$clock);cronCheck($first['created']===9&&$again['duplicate']===9&&$again['created']===0,'Real INSERT and native1062 rerun');
+ $counts=$q->fetchOne('SELECT COUNT(*) n FROM dc_pm_notifications WHERE store_id=?','i',[$stores[0]]);cronCheck((int)$counts['n']===9,'Nine stored notifications, no same-day duplicate');
+ $kinds=$q->fetchAll('SELECT kind,COUNT(*) n FROM dc_pm_notifications WHERE store_id=? GROUP BY kind','i',[$stores[0]]);$kinds=array_column($kinds,'n','kind');cronCheck((int)($kinds['task_overdue']??0)===4&&(int)($kinds['task_today']??0)===3&&(int)($kinds['task_tomorrow']??0)===2,'Initial fixture run: four overdue notices, including 400-day-old task; no historical-day backfill');
+ $env=getenv();$env['PM_CRON_TEST_TOKEN']=$token;$worker=ROOT_PATH.'tests/pm_cron_db_worker.php';$barrier=ROOT_PATH.'.local/cron-barrier-'.$nonce;
+ $hold=cronStart([PHP_BINARY,$worker,(string)$stores[0],'hold',$date],$env);$processes[]=$hold[0];cronWaitFile($barrier.'.ready');
+ $parallel=cronFinish(cronStart([PHP_BINARY,$worker,(string)$stores[0],'run',$date],$env));cronCheck($parallel[0]===0&&($parallel[1]['skipped_busy']??false),'Two processes same tenant: second skipped_busy while lock held');
+ $other=cronFinish(cronStart([PHP_BINARY,$worker,(string)$stores[1],'run',$date],$env));cronCheck($other[0]===0&&!$other[1]['skipped_busy']&&$other[1]['created']===9,'Two tenants: B writes while A lock held');
+ file_put_contents($barrier.'.go','go');$held=cronFinish($hold);cronCheck($held[0]===0&&$held[1]['duplicate']===9,'Holder resumes/release after same-tenant test');unlink($barrier.'.go');unlink($barrier.'.ready');
+ $future=(new DateTimeImmutable($date))->modify('+3 days')->format('Y-m-d');$crash=cronStart([PHP_BINARY,$worker,(string)$stores[0],'crash',$future],$env);$processes[]=$crash[0];cronWaitFile($barrier.'.ready');proc_terminate($crash[0]);cronFinish($crash);
+ $end=microtime(true)+10;$lock=$dao->lockName('task');do{$free=(int)($q->fetchOne('SELECT IS_FREE_LOCK(?) free_lock','s',[$lock])['free_lock']??0);if($free)break;usleep(20000);}while(microtime(true)<$end);cronCheck($free===1,'Crash frees connection lock with bounded polling');
+ $recovered=cronFinish(cronStart([PHP_BINARY,$worker,(string)$stores[0],'run',$future],$env));$futureCandidates=count($dao->candidates('task',$future));cronCheck($recovered[0]===0&&$recovered[1]['duplicate']===1&&$recovered[1]['created']===$futureCandidates-1,'Crash recovery preserves first insert, resumes without duplicates');
+ $id=(int)$q->fetchOne('SELECT id FROM dc_pm_notifications WHERE store_id=? AND recipient_id=? AND entity_id=? AND event_date=?','iiis',[$stores[0],900000001,$f['tasks'][$stores[0]]['today'],$date])['id'];
+ $port=18781;$existing=@fsockopen('127.0.0.1',$port,$errno,$message,0.1);if($existing){fclose($existing);throw new RuntimeException('HTTP test port occupied; refusing reuse');}
+ $server=cronStart([PHP_BINARY,'-S','127.0.0.1:'.$port,'-t',ROOT_PATH,ROOT_PATH.'tests/pm_cron_http_router.php'],$env);$processes[]=$server[0];$ready=false;$end=microtime(true)+5;do{$socket=@fsockopen('127.0.0.1',$port,$errno,$message,0.1);if($socket){fclose($socket);$ready=true;break;}usleep(20000);}while(microtime(true)<$end);cronCheck($ready,'HTTP fixture server ready on free loopback port');
+ $http=function(array $post,?int $actor=null)use($port,$token){$url='http://127.0.0.1:'.$port.'/admin.php?op=pmnotifications'.($actor?'&fixture_actor='.$actor:'');$context=stream_context_create(['http'=>['method'=>'POST','content'=>http_build_query($post),'header'=>"Content-Type: application/x-www-form-urlencoded\r\nX-PM-Test-Token: ".$token."\r\nConnection: close\r\n",'timeout'=>5,'ignore_errors'=>true,'follow_location'=>0]]);$body=file_get_contents($url,false,$context);$status=0;if(preg_match('/^HTTP\/\S+ (\d{3})/',$http_response_header[0]??'',$match))$status=(int)$match[1];return [$status,$body];};
+ $valid=['op'=>'pmnotifications','action'=>'read','id'=>$id,'csrf_token'=>hash('sha256',$token)];$bad=$http(array_replace($valid,['csrf_token'=>'wrong']));cronCheck($bad[0]===403,'HTTP mark-read CSRF reject');
+ $ok=$http($valid);$read=$q->fetchOne('SELECT read_at FROM dc_pm_notifications WHERE id=?','i',[$id]);cronCheck($ok[0]===303&&$read['read_at']!==null,'HTTP real controller mark-read persists and redirects303');
+ $foreign=$http($valid,900000101);$missing=$http(array_replace($valid,['id'=>999999999]),900000101);cronCheck($foreign[0]===404&&$missing[0]===404&&str_contains($foreign[1],'Không tìm thấy thông báo.')&&str_contains($missing[1],'Không tìm thấy thông báo.'),'HTTP foreign/missing same404/message');
+ proc_terminate($server[0]);cronFinish($server);
+ cronCheck($dao->list(900000005,$date)['total']===0,'No-role list contains no task data');
+ $q->execute('UPDATE dc_pm_project_members SET status=0 WHERE store_id=? AND project_id=? AND user_id=?','iii',[$stores[0],$f['projects'][$stores[0]],900000001]);cronCheck($dao->list(900000001,$date)['total']===0,'Membership loss removes details/unread');
+ $q->execute('UPDATE dc_pm_project_members SET status=1 WHERE store_id=? AND project_id=? AND user_id=?','iii',[$stores[0],$f['projects'][$stores[0]],900000001]);
+ class CronExplainDb extends PmDb {public array $queries=[];public function __construct(){}public function fetchAll(string $s,string $t='',array $p=[]): array{$this->queries[]=[$s,$t,$p];return [];}public function fetchOne(string $s,string $t='',array $p=[]): ?array{$this->queries[]=[$s,$t,$p];return null;}}
+ $record=new CronExplainDb();$explainDao=new PmNotifications($record,$stores[0]);$explainDao->candidates('timesheet',$date);$explainDao->candidates('task',$date);$explainDao->list(900000001,$date);$explainDao->markRead(900000001,$id,$date);$plans=[];
+ foreach($record->queries as $i=>[$sql,$types,$params]){$plans[]=['query'=>$i+1,'plan'=>$q->fetchAll('EXPLAIN '.$sql,$types,$params)];}cronCheck(count($plans)===5,'Five real reminder SELECT shapes EXPLAIN, no index changes');file_put_contents(ROOT_PATH.'.local/cron-db-explain.json',json_encode($plans,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+}catch(Throwable $e){$errors[]=['message'=>$e instanceof mysqli_sql_exception?'SQL error code '.(int)$e->getCode():$e->getMessage()];echo 'FAIL: '.end($errors)['message'].PHP_EOL;}
+finally{
+ foreach($processes as $p)if(is_resource($p))proc_terminate($p);
+ // Only rows in two positively reserved, previously empty fixture stores are removed.
+ try{foreach(['dc_pm_notifications','dc_pm_timesheets','dc_pm_tasks','dc_pm_project_members','dc_pm_projects','dc_pm_user_roles','dc_pm_role_permissions','dc_pm_permissions','dc_pm_roles'] as $table)foreach($ownedStores as $s){$st=$observer->prepare('DELETE FROM '.$table.' WHERE store_id=?');$st->bind_param('i',$s);$st->execute();}
+  $after=pmCronFingerprint($observer);$changed=[];foreach($before as $table=>$hash)if(($after[$table]??null)!==$hash)$changed[]=$table;
+  if(!isset($before['dc_pm_notifications'])&&($after['dc_pm_notifications']['rows']??-1)!==0)$changed[]='dc_pm_notifications';cronCheck(!$changed,'Persistent dc_users and all pre-existing PM data hashes unchanged; new011 table empty');
+  file_put_contents(ROOT_PATH.'.local/cron-db-checksums.json',json_encode(['before'=>$before,'after'=>$after,'changed'=>$changed],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+ }catch(Throwable $e){$errors[]=['message'=>'Cleanup/checksum failed','code'=>(int)$e->getCode()];echo "FAIL: cleanup/checksum.\n";}
+ file_put_contents(ROOT_PATH.'.local/cron-db-results.json',json_encode(['cases'=>$checks,'errors'=>$errors,'cleanup'=>$errors?false:true,'schema_applied_local'=>true],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+ $c->close();$observer->close();
+}
+echo 'RESULT: '.count(array_filter($checks,fn($r)=>$r['result']==='PASS')).' PASS; '.count($errors).' errors. Real local DB, users exact-schema mirrors; no host accessed.'.PHP_EOL;
+exit($errors?1:0);

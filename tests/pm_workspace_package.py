@@ -63,6 +63,9 @@ def main():
         files['review/CRON_VERIFY.md']=run('show',ref+':docs/PM_CRON_VERIFY_20261014.md')
         files['review/CRON_HOST_UAT.md']=run('show',ref+':docs/PM_CRON_HOST_UAT_20261014.md')
         files['manual-migrations/011_create_pm_notifications.sql']=run('show',ref+':database/migrations/011_create_pm_notifications.sql')
+        if subprocess.run(git+['cat-file','-e',ref+':docs/PM_CRON_DB_VERIFY_20261014.md'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
+            files['review/CRON_DB_VERIFY.md']=run('show',ref+':docs/PM_CRON_DB_VERIFY_20261014.md')
+            files['review/CRON_THROTTLE_PLAN.md']=run('show',ref+':docs/PLAN_PM_CRON_THROTTLE_20261014.md')
     manifest={'date':args.date,'source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
        'baseline':baseline,'package_type':'incremental existing-PM update; manual host UAT',
        'state':'local prepared; not uploaded; DB/session/host UAT NOT RUN',
@@ -75,7 +78,7 @@ def main():
         'Upload CONTENTS of runtime/ into the EXISTING PM web root; preserve config/license/uploads and legacy.\n'
         'manual-test/ is data for manual UI/import testing; DO NOT upload it to web root.\n'
         'BO_DU_LIEU_UAT.xlsx is a reference workbook, NOT an Import file. Only the three numbered files use import format.\n'
-        'No DB created. No SQL/migration is executed or auto-seeded. PREFLIGHT_SCHEMA.sql is read-only.\n'
+        'Package generation never creates a database or executes SQL. Migration 011 was tested locally only; host application requires separate approval. PREFLIGHT_SCHEMA.sql is read-only.\n'
         'Use your own passwords; none are packaged. Data is synthetic and host tests are NOT RUN.\n'
         'Schema/backup/maintenance checks precede upload. Do not rerun historical migrations blindly.\n'
     ).encode()
