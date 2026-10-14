@@ -96,7 +96,7 @@ Cần clockinjectable trong testfixture để mô phỏng ngày1/ngày2; không 
 ## 8. Kết thúc / bằng chứng gửi
 Gửi trạng thái mỗi bước, lệnh đã chạy, output chỉschema/count/errorcode/checksum; không gửi mật khẩu,dump,tên/email/IP/token/cookie. Có thể che hashbackup nếu muốn, nhưng giữ đối chiếu local. Agent ghiPASS chỉ dựa output thật; mục chưa chạy giữCHƯACHẠY.
 
-## 9. Cổng hiện tại
+## 9. [Historical pre-BUILD gate] Cổng hiện tại
 File012 đang chờ duyệt; chưa BUILD flags/throttle/snapshot/preflight012 trongruntime. COUNT14/10 localstore1 là8/0/0/0 (ba ngày13/12/09,không lịch nghỉlễ). Chưa áp012,chưa bậtflaghost,push/merge/deploy. Dòngcronbước10host chỉ cập nhật sau code vàVERIFY, không dùng optionchưacó.
 
 ## 10. Bổ sung sáu ca bắt buộc — chỉ kịch bản, CHƯA CHẠY
@@ -115,7 +115,7 @@ Lần chạy012 thứhai chỉ nhánh “đã tồn tại” và SELECT kiểm t
 |6. Cùngtask,due_date khác|Contractblock2+5 vớievent_date khác|Cảhai deadline vào được,countoverdue2; cùngeventdate thìkhóa cũ chặn theoquyếtđịnh đãduyệt|
 Tất cảcaCHƯACHẠY cho đến khi người dùng gửi output. Phầncộtsai dùngschema riêng chỉkhiuser/DBA chophépCREATEschema rỗnglocal;không có quyền thìgiữCHƯACHẠY,khôngsửa due_date app thànhNOTNULL. KhôngSOURCEtoàn bộprobe vì cóSTOP kiểmtra thủcông;paste từngblock. Giữschema thử,khôngDROP. QuayUSEderasoft_pm_local trước cácfixture khác.
 
-## 11. Preflight code cần BUILD sau duyệt — chưa triển khai
+## 11. [Historical pre-BUILD acceptance criteria] Preflight code cần BUILD sau duyệt — chưa triển khai
 - --commit bắt buộc due_dateDATE NULL và uq_pm_notification_deadline đúng cấu trúc, bêncạnh schema011/khóa cũ. Thiếucột/khóa → từchối trướcINSERT/lock/chọnngười; khôngfallbackhànhvi cũ.
 - Kiểmtra schema commit trước cửa sổ giờ: --commit thiếu012 vẫn bị từchối kểcả chưa08:00/17:30. FlagOFF/argsinvalid cũng từchối theoquyđịnh.
 - Dry-run vàweb không yêu cầu012; web vẫn cần schema011, dryrun chỉCOUNTcandidate. Basepreflight cần tươngthích8cột011 và9cột012, không buộc khóa snapshot cho read.
@@ -151,3 +151,8 @@ Backuphash/fileđủkhông chứngminh restorethànhcông; chỉnâng restorePAS
 ## 15. Thứ tự và preflight hiện tại
 011 →012 (backup/duyệtSQLriêng) →upload code → UATcopy/host → bậtcờCLI/web sauduyệt.
 Code mới thiếu012 từchối --commit,cảtrước giờjob;khônglùi policycũ. Dryrun/web chỉcầnbase011 (read8/9cols),khôngrequire snapshotkey;recipientindex vẫnđượckiểmtra trongpreflight. Dòngcron --all-users đãđượcchuẩn bị trongbước10tài liệuhost,khôngcài lịchhoặcbậtcờ.
+
+
+## Current operator boundary (2026-10-14)
+
+Application BUILD is complete locally. The agent must not connect to any database. The operator performs schema changes and direct SQL in phpMyAdmin, following the backup, migration and preflight steps above. Application integration and concurrency checks require the NEW local PHP runner in section 13; phpMyAdmin alone does not verify PHP service/HTTP/concurrency behavior. The operator runs that runner, not the agent. If unavailable, retain NOT RUN and report the limitation. SQL PASS does not imply application integration PASS. No production upload or flag enablement until local acceptance and separate deployment approval.

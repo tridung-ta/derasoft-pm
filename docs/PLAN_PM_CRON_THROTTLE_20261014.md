@@ -1,6 +1,6 @@
 # PLAN giảm nhắc Phase12 — cập nhật theo duyệt ngày14/10/2026
 
-Trạng thái: quy tắc và phương án012 được duyệt có điều kiện. CHƯA BUILD; chờ người dùng duyệt lại file012 và kết quả COUNT bổ sung. Không migration trên host, không push/merge/deploy.
+Current status (2026-10-14): BUILD completed locally at commit daa16bf. No-DB verification passed. SQL/application integration remains NOT RUN pending operator evidence. Sections 1, 4, 5 and the pre-BUILD gate record historical decisions; they do not supersede this status. No DB access, flag enablement, push, merge or deployment is authorized.
 
 ## 1. Ba câu trả lời trước BUILD
 ### (i) Snapshot hạn chót / schema
