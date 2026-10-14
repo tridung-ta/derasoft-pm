@@ -1,0 +1,690 @@
+{
+  "prefix": "uat261014b",
+  "department_code": "UAT261014B",
+  "as_of_date": "2026-10-14",
+  "accounts": [
+    [
+      "uat261014b_pm1",
+      "UAT Quản lý Một",
+      "uat261014b.pm1@example.com",
+      "PM",
+      "UAT261014B",
+      40,
+      ""
+    ],
+    [
+      "uat261014b_pm2",
+      "UAT Quản lý Hai",
+      "uat261014b.pm2@example.com",
+      "PM",
+      "UAT261014B",
+      40,
+      ""
+    ],
+    [
+      "uat261014b_hr",
+      "UAT Nhân sự",
+      "uat261014b.hr@example.com",
+      "HR",
+      "UAT261014B",
+      40,
+      ""
+    ],
+    [
+      "uat261014b_emp1",
+      "UAT Nhân viên Một",
+      "uat261014b.emp1@example.com",
+      "EMPLOYEE",
+      "UAT261014B",
+      40,
+      ""
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT Nhân viên Hai",
+      "uat261014b.emp2@example.com",
+      "EMPLOYEE",
+      "UAT261014B",
+      40,
+      ""
+    ],
+    [
+      "uat261014b_norole",
+      "UAT Chưa có quyền",
+      "uat261014b.norole@example.com",
+      "",
+      "UAT261014B",
+      40,
+      ""
+    ],
+    [
+      "uat261014b_emp3",
+      "UAT Nhân viên Ba",
+      "uat261014b.emp3@example.com",
+      "EMPLOYEE",
+      "UAT261014B",
+      40,
+      ""
+    ]
+  ],
+  "projects": [
+    [
+      "UAT261014B_A",
+      "UAT Đồng bộ giao diện A",
+      "uat261014b_pm1",
+      -7,
+      14,
+      2000000
+    ],
+    [
+      "UAT261014B_B",
+      "UAT Phạm vi quản lý B",
+      "uat261014b_pm2",
+      -7,
+      14,
+      1000000
+    ],
+    [
+      "UAT261014B_C",
+      "UAT Kiểm tra cửa sổ nhắc việc",
+      "uat261014b_pm1",
+      -430,
+      21,
+      0
+    ]
+  ],
+  "tasks": [
+    [
+      "UAT A Giờ vượt ước tính",
+      "UAT261014B_A",
+      "uat261014b_emp1",
+      4,
+      -3,
+      -1,
+      "todo"
+    ],
+    [
+      "UAT A Chưa có ước tính",
+      "UAT261014B_A",
+      "uat261014b_emp2",
+      0,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT A Số nhỏ",
+      "UAT261014B_A",
+      "uat261014b_emp2",
+      0.01,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT A Bằng ngưỡng",
+      "UAT261014B_A",
+      "uat261014b_emp2",
+      1,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT A Chấm công OT",
+      "UAT261014B_A",
+      "uat261014b_emp1",
+      20,
+      -3,
+      1,
+      "todo"
+    ],
+    [
+      "UAT B Task riêng",
+      "UAT261014B_B",
+      "uat261014b_emp2",
+      4,
+      -3,
+      -1,
+      "todo"
+    ],
+    [
+      "UAT C Đang thực hiện",
+      "UAT261014B_C",
+      "uat261014b_emp3",
+      4,
+      -2,
+      1,
+      "in_progress"
+    ],
+    [
+      "UAT C Quá hạn D7",
+      "UAT261014B_C",
+      "uat261014b_emp3",
+      4,
+      -10,
+      -7,
+      "todo"
+    ],
+    [
+      "UAT C Quá hạn D8",
+      "UAT261014B_C",
+      "uat261014b_emp3",
+      4,
+      -11,
+      -8,
+      "todo"
+    ],
+    [
+      "UAT C Quá hạn 400 ngày",
+      "UAT261014B_C",
+      "uat261014b_emp3",
+      4,
+      -410,
+      -400,
+      "todo"
+    ],
+    [
+      "UAT C Đến hạn hôm nay",
+      "UAT261014B_C",
+      "uat261014b_emp3",
+      4,
+      -2,
+      0,
+      "todo"
+    ],
+    [
+      "UAT C PM tự phụ trách",
+      "UAT261014B_C",
+      "uat261014b_pm1",
+      4,
+      -2,
+      -1,
+      "todo"
+    ]
+  ],
+  "allocationRows": [
+    [
+      "uat261014b_emp1",
+      "UAT261014B_A",
+      "UAT A Giờ vượt ước tính",
+      0,
+      4,
+      "08:00",
+      "12:00",
+      "Nhập đầu tiên; không overbook"
+    ],
+    [
+      "uat261014b_emp1",
+      "UAT261014B_A",
+      "UAT A Giờ vượt ước tính",
+      0,
+      1,
+      "13:00",
+      "14:00",
+      "Ca không nhân tổng task; nhập sau D2 gốc"
+    ],
+    [
+      "uat261014b_emp1",
+      "UAT261014B_A",
+      "UAT A Giờ vượt ước tính",
+      0,
+      4,
+      "14:00",
+      "18:00",
+      "Nhập cuối để tạo cảnh báo tổng9h/ngày"
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT261014B_A",
+      "UAT A Chưa có ước tính",
+      0,
+      1,
+      "08:00",
+      "09:00",
+      "Estimate0 không cảnh báo"
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT261014B_A",
+      "UAT A Số nhỏ",
+      0,
+      1,
+      "09:00",
+      "10:00",
+      "Estimate0.01 với actual0.02"
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT261014B_A",
+      "UAT A Bằng ngưỡng",
+      0,
+      1,
+      "10:00",
+      "11:00",
+      "Actual bằngestimate1 không cảnh báo"
+    ],
+    [
+      "uat261014b_emp3",
+      "UAT261014B_C",
+      "UAT C Đang thực hiện",
+      0,
+      2,
+      "08:00",
+      "10:00",
+      "Không chấm công EMP3 hôm nay trước thử nhắc"
+    ]
+  ],
+  "timesheetRows": [
+    [
+      "uat261014b_emp1",
+      "UAT A Giờ vượt ước tính",
+      0,
+      5,
+      "Ca linh hoạt",
+      "Ca D2 gốc; nhập trước các giờ khác"
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT A Chưa có ước tính",
+      0,
+      5,
+      "Ca linh hoạt",
+      "Estimate0; không cảnh báo task"
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT A Số nhỏ",
+      0,
+      0.02,
+      "Ca linh hoạt",
+      "DECIMAL0.02>0.01; cảnh báo"
+    ],
+    [
+      "uat261014b_emp2",
+      "UAT A Bằng ngưỡng",
+      0,
+      1,
+      "Ca linh hoạt",
+      "1.00=1.00; không cảnh báo"
+    ],
+    [
+      "uat261014b_emp1",
+      "UAT A Chấm công OT",
+      -1,
+      8,
+      "Ca sáng",
+      "Chỉ nhập nếu snapshot ngày cho phép"
+    ],
+    [
+      "uat261014b_emp1",
+      "UAT A Chấm công OT",
+      -1,
+      2,
+      "Ca chiều",
+      "Nếu max<10 bị chặn; không đổi quy tắc tenant"
+    ]
+  ],
+  "cases": [
+    [
+      "01",
+      "Điều kiện host",
+      "Backup, nhận diện phiên bản/schema, bảo trì mọi writer khi upload. Không chạy SQL hàng loạt.",
+      "Ghi bằng chứng trước triển khai; không suy từ local.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "02",
+      "Tạo bộ mẫu",
+      "Tạo phòng ban UAT261014B; import7user qua01, kích hoạt và gán vai trò theo Nhan su.",
+      "Tên/email mẫu duy nhất; lưu ID vào biên bản. Không dùng email để gửi thư thật.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "03",
+      "Phân quyền",
+      "Gán đúng vai trò; tài khoản norole bỏ hết vai trò sau khi tạo.",
+      "Không thêm ADMIN cho các tài khoản PM/HR/Employee.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "04",
+      "Thành viên",
+      "PM1 quản lý A; PM2 quản lý B. EMP1 và EMP2 tham gia A; EMP2 tham gia B.",
+      "Chỉ đúng manager hoặc Admin có quyền sửa. PM1 không là thành viên B.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "05",
+      "Đơn giá/capacity",
+      "Admin tạo rate cá nhân 100000 VND/giờ từ D-7 và capacity 8/ngày,40/tuần cho EMP1/EMP2.",
+      "Chỉ ảnh hưởng tài khoản UAT. Không sửa cấu hình chấm công chung để test.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "06",
+      "Chưa chấm công",
+      "Đăng nhập EMP1 trước khi thêm giờ ngày D.",
+      "Dashboard giờ hôm nay 0 và nhắc chưa chấm công; hiển thị task được giao.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "07",
+      "Kanban thật",
+      "PM1 chuyển task A sang done bằng nút; reload. Chuyển lại todo bằng kéo-thả; reload.",
+      "AJAX 200; trạng thái lưu thật; audit actor ID; completed_at khi done và bỏ khi mở lại.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "08",
+      "Tách quyền PM",
+      "PM1 mở project_id B và gửi task B qua DevTools bằng cookie PM1.",
+      "403/404 theo endpoint; không sửa task, không lộ tên B. Không đổi ID dữ liệu thật.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "09",
+      "Readonly Employee",
+      "EMP1/HR không có nút quản lý task. Thử POST endpoint task của bộ UAT.",
+      "403, không đổi trạng thái. HR không xem tổng task/dashboard PM.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "10",
+      "No-role",
+      "Đăng nhập norole và mở dashboard/PM endpoints.",
+      "Bị từ chối theo quyền; không có dữ liệu quản lý.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "11",
+      "Phiên/CSRF",
+      "Gửi task không cookie, thiếu/sai CSRF, hoặc logout rồi cập nhật tab cũ.",
+      "401 khi chưa đăng nhập; 403 khi CSRF sai; không có write/audit thành công.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "12",
+      "D2 gốc",
+      "EMP1 chấm 5h task ước tính 4h ngày D. PM1 phân bổ 4h 08:00–12:00 cùng task ngày D.",
+      "1 cảnh báo actual 5 / estimate 4. Allocation không overbooking; task warning riêng.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "13",
+      "Ngân sách",
+      "Ngay sau ca 12, trước thêm dữ liệu EMP2, mở Dashboard PM1/Chi phí A.",
+      "Nếu snapshot thường 8h và rate100000: cost500000 / budget2000000 =25.00%. Dùng sheet Chi phí khi config khác.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "14",
+      "D2 biên",
+      "EMP2 chấm 5h estimate0, 0.02h estimate0.01, 1h estimate1 ngày D; phân bổ các task ấy 1h mỗi task, không trùng giờ.",
+      "Estimate0 không cảnh báo; 0.01→0.02 cảnh báo; 1.00→1.00 không cảnh báo. Không cộng hours+ot_hours.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "15",
+      "Không nhân SUM",
+      "Thêm allocation thứ hai của cùng task A Giờ vượt ước tính (1h,13:00–14:00).",
+      "Actual vẫn5h; chỉ1 cảnh báo task. Tổng allocation5h, chưa overbook8h.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "16",
+      "Overbooking riêng",
+      "Sau ca15 thêm allocation4h,14:00–18:00 EMP1 ngày D.",
+      "Tổng9>capacity8 cảnh báo; D2 vẫn actual5/estimate4, không trộn mảng cảnh báo.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "17",
+      "OT/tổng giờ",
+      "EMP1 chấm8h rồi2h task OT ngày D-1. Đọc snapshot thật; dùng maximum +0.01 để thử vượt ngày.",
+      "Theo snapshot nếu thường8/mult1 thì regular8/OT2/cost1000000. Vượt max bị chặn cả Admin; không fake PASS nếu cấu hình khác.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "18",
+      "Ngày/snapshot",
+      "Đổi ngày entry UAT sang ngày đã gần giới hạn; chỉ dùng account UAT.",
+      "Nếu tổng vượt snapshot thì rollback. Không thay cấu hình tenant hay ngày của người thật.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "19",
+      "Dự án ngày",
+      "Thử dự án start=end, sau đó start<end; task start=due cùng ngày.",
+      "Dự án trùng ngày báo lỗi/303; task cùng ngày hợp lệ. Lưu/Ẩn dự án về danh sách.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "20",
+      "Validator nhân sự",
+      "Bỏ password, nhập7 ký tự; tel chứa chữ hoặc11 chữ số; username31/fullname51/email51.",
+      "Thông báo riêng; không lưu tài khoản sai. Email chỉ validate định dạng, không chứng minh mailbox tồn tại.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "21",
+      "Collision",
+      "Thử account mới email trùng email EMP1 hoặc username/email chéo user khác trong cùng store.",
+      "Bị từ chối; không sửa/khóa tài khoản trùng. Có thể dùng email EMP1 làm username ở form nếu form cho phép.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "22",
+      "Import đúng",
+      "Preview/Stage/Apply01 chỉ1lần trước các ca dữ liệu; giữ kết quả nhập. File sai02/03 chỉPreview/Stage.",
+      "2 account mới inactive, EMPLOYEE; cấp mật khẩu trong kết quả rồi kích hoạt. Không dùng các account này cho ca đầu.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "23",
+      "Import sai",
+      "Preview/Stage 02_import_invalid.xlsx và 03_import_collision.xlsx.",
+      "Có lỗi theo dòng; cả file bị từ chối. File collision có hai dòng cùng email theo DB collation.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "24",
+      "Audit/hồ sơ",
+      "Đổi fullname/email của account UAT và đổi mật khẩu bằng account đó; xem audit.",
+      "Actor ID; hồ sơ chỉ tên field, không giá trị; không password/hash/email/tel/IP trong audit mới.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "25",
+      "Export/UI",
+      "Lọc, nhớ/quên filter, Excel nhân sự/dự án/báo cáo; toast; thử bấm đúp trên entry UAT; mobile390px.",
+      "Export giữ filter, file mở được; không gửi trùng; nhãn và focus rõ; Chi phí giữ thiết kế đã chốt.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "26",
+      "Legacy",
+      "Trong chế độ PM, gọi legacy ajax count và endpoint không allowlist.",
+      "404; không render legacy menu. PM_HIDE_LEGACY mặc định true.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "27",
+      "Tenant thật",
+      "Nếu host đã có tenant thứ2, tạo bộ UAT tương đương ở tenant đó bằng tài khoản được cấp và dùng ID chéo.",
+      "Thiếu và tenant khác cùng status/message không lộ ID/name. Nếu không có tenant2: CHƯA CHẠY, không tự tạo store.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "28",
+      "Concurrency/rate",
+      "Hai browser/cookie ghi cùng ngày account UAT; đổi rate tại ranh giới giữa hai ngày UAT mới.",
+      "Không vượt tổng giờ; rate_snapshot/cost cũ giữ nguyên. Ghi request/response thật, chưa chạy tự động.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "29",
+      "Dashboard lỗi/truncation",
+      "Theo dõi log host, dự án budget0 và dữ liệu >20 nếu có sẵn; không gây lỗi DB trên host thật.",
+      "Thiếu data có thông báo; budget0 không chia0; tỷ lệ chỉVND đủrate; link xem phần còn lại.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "30",
+      "Nhãn ca",
+      "Tạo ca sáng/chiều/tối/linh hoạt; thử nhãn lạ ở userUAT.",
+      "Nhãn mới theo whitelist; dữ liệu cũ giữ nguyên.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "31",
+      "Cron chọn người nhận",
+      "Trước nhập giờ EMP3, tạo allocation2h và taskin_progress theo sheet. Chạy dry-run scoped EMP3.",
+      "Sau17:30 weekday đủ điều kiện nhắc; task theo phạm vi và quyền. Dùng IDsUAT thật.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "32",
+      "Cron cửa sổ",
+      "TaskC D7/D8/400/today/tomorrow; chạycommit ngàyD thực.",
+      "D7/today/tomorrow có;D8/400 không tạo mới. PM/assignee theo quyền.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "33",
+      "Cron chống trùng",
+      "Chạy lại đúngscopeUAT cùngngày rồi ngàykế.",
+      "Không thêm overdue cho cùng(task,recipient,deadline);nativekeycounters. Không dùngdatefakecommit.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "34",
+      "Cron đổi hạn",
+      "Chỉ đổi hạn taskUAT đãnhắc; cùngngày/ ngàykế/ quay hạncũ.",
+      "Cùngngày bịeventkey;ngàykếhạnmớiđượcnhắc;quayhạncũkhôngnhắc.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "35",
+      "Cron selfPM",
+      "TaskC PM tự phụ trách;đăngnhậpPM1.",
+      "PM=assignee chỉ1thôngbáo/task, khôngnhân người nhận.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "36",
+      "Thông báo đọc",
+      "Mở chuông/list;đánhdấuđãđọc,tảilại;SELECTread_at riêngIDsUAT.",
+      "Sốchưađọc giảm,read_at lưu;không xóa row.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "37",
+      "Thông báo quyền",
+      "EMP1 thửIDthôngbáoEMP3;PM1khôngcònmember hoặc taskdone/hide trên dữ liệuUAT.",
+      "Khônglộ nội dung;foreign/missing đồngnhất;CSRFsai403.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "38",
+      "Cron usermới",
+      "DùngEMP3 mới tạo,kíchhoạt,gánquyền+việc;giữlịchall-userskhôngsửaID.",
+      "Usermới đủđiềukiện tựđượcxét;userno-role/khóa khôngnhận.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "39",
+      "URL kiểmtra",
+      "Admin mở /editorial-category-scope-smoke.php;incognito/Employee thửURL.",
+      "Admin thấyPASSfixture;ẩn danh401;Employee403. Không chứngnhận dữliệu thật.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ],
+    [
+      "40",
+      "Kết thúc bộ mẫu",
+      "Ghi ID/kết quả trước khi ẩn các dự án/tài khoản UAT theo UI nếu muốn.",
+      "Không DELETE/TRUNCATE. Giữ lịch sử và dữ liệu cũ. Không xác nhận production PASS trước test thật.",
+      "CHƯA CHẠY",
+      "",
+      ""
+    ]
+  ]
+}
