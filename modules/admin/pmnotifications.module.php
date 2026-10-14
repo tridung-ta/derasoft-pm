@@ -2,6 +2,7 @@
 include_once(ROOT_PATH.'includes/pm_reminders.inc.php');
 if(!PM_REMINDERS_ENABLED){http_response_code(404);exit('Không tìm thấy chức năng được yêu cầu.');}
 include_once(ROOT_PATH.'classes/services/pmnotificationservice.class.php');
+include_once(ROOT_PATH.'classes/security/pmaccess.class.php');
 $pmAccess=new PmAccess($db,(int)$storeId,(int)$userInfo->getId());
 $templateFile='pm-notifications.tpl.html';$error='';$notice='';$result=['rows'=>[],'total'=>0,'unread'=>0,'page'=>1];
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
