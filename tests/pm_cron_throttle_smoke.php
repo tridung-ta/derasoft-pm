@@ -12,7 +12,7 @@ foreach([['--commit','--all-users'],['--commit','--user-ids=1,2'],['--user-ids=1
 $cli=ROOT_PATH.'cron/pm-reminders.php';
 foreach(['--store-id=9 --commit','--store-id=9 --commit --user-ids=1 --all-users','--store-id=9 --commit --user-ids=abc'] as $args){$lines=[];exec(escapeshellarg(PHP_BINARY).' '.escapeshellarg($cli).' '.$args.' 2>&1',$lines,$exit);throttleCheck($exit===2,'Real CLI scope refusal before DB');}
 class ThrottleDb extends PmDb {
- public array $calls=[];public bool $snapshot=true;public bool $deadlineKey=true;public bool $recipientKey=true;public bool $badDue=false;public array $userRows=[['id'=>1],['id'=>2]];
+ public array $calls=[];public bool $snapshot=true;public bool $deadlineKey=true;public bool $recipientKey=true;public bool $badDue=false;public $nullDefault=null;public array $userRows=[['id'=>1],['id'=>2]];
  public function __construct(){}
  private function record(string $sql,string $types,array $params): void {throttleCheck(strlen($types)===count($params)&&substr_count($sql,'?')===count($params),'Binding arity');$this->calls[]=[$sql,$params];}
  public function fetchOne(string $sql,string $types='',array $params=[]): ?array{$this->record($sql,$types,$params);if(str_contains($sql,'information_schema.TABLES'))return ['engine'=>'InnoDB','collation_name'=>'utf8mb4_unicode_ci'];return null;}
@@ -20,7 +20,7 @@ class ThrottleDb extends PmDb {
   $this->record($sql,$types,$params);
   if(str_contains($sql,'information_schema.COLUMNS')){
    $types=['id'=>'bigint unsigned','store_id'=>'bigint unsigned','recipient_id'=>'int unsigned','kind'=>'varchar(32)','entity_id'=>'bigint unsigned','event_date'=>'date','read_at'=>'datetime','created_at'=>'datetime'];if($this->snapshot)$types['due_date']='date';$rows=[];
-   foreach($types as $name=>$type)$rows[]=['name'=>$name,'type'=>$type,'nullable'=>in_array($name,['read_at','due_date'],true)&&!($name==='due_date'&&$this->badDue)?'YES':'NO','extra'=>$name==='id'?'auto_increment':'','default_value'=>$name==='created_at'?'CURRENT_TIMESTAMP()':($name==='entity_id'?'0':null)];return $rows;
+   foreach($types as $name=>$type)$rows[]=['name'=>$name,'type'=>$type,'nullable'=>in_array($name,['read_at','due_date'],true)&&!($name==='due_date'&&$this->badDue)?'YES':'NO','extra'=>$name==='id'?'auto_increment':'','default_value'=>$name==='created_at'?'CURRENT_TIMESTAMP()':($name==='entity_id'?'0':(in_array($name,['read_at','due_date'],true)?$this->nullDefault:null))];return $rows;
   }
   if(str_contains($sql,'information_schema.STATISTICS')){
    $rows=[['name'=>'PRIMARY','cols'=>'id','non_unique'=>0,'prefixes'=>0],['name'=>'uq_pm_notification_event','cols'=>'store_id,recipient_id,kind,entity_id,event_date','non_unique'=>0,'prefixes'=>0]];
@@ -68,3 +68,7 @@ class ThrottleReadDao extends PmNotifications {
 }
 $read=(new PmNotificationService(new ThrottleReadDao(),1,$morning))->listing();throttleCheck($read['rows'][0]['title']==='Công việc đến hạn hôm nay'&&$read['rows'][0]['url']==='?op=pmprojects&project_id=11','Current task deadline not snapshot drives title; injectable read clock');
 echo "PASS: $checks throttle checks, parser/scope/strict012 preflight/read011/SQL contracts/two1062 classifications; no database connected. SQL/HTTP integration NOT RUN.\n";
+
+$db=new ThrottleDb();$db->nullDefault='NULL';(new PmNotifications($db,9))->preflight(true);throttleCheck(true,'MariaDB unquoted NULL metadata accepted');
+foreach(["'NULL'",'2026-10-14',''] as $invalid){$db=new ThrottleDb();$db->nullDefault=$invalid;try{(new PmNotifications($db,9))->preflight(true);throw new LogicException('Invalid default accepted');}catch(RuntimeException $e){if($e instanceof LogicException)throw $e;throttleCheck(true,'Non-null or quoted NULL default refused');}}
+echo "PASS: MariaDB NULL metadata compatibility; no database connected.\n";

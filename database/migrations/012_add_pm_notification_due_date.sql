@@ -20,7 +20,7 @@ DEALLOCATE PREPARE pm012_add_column;
 
 SET @pm012_column_ok=(SELECT COUNT(*) FROM information_schema.COLUMNS
  WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_pm_notifications' AND COLUMN_NAME='due_date'
- AND DATA_TYPE='date' AND IS_NULLABLE='YES' AND COLUMN_DEFAULT IS NULL);
+ AND DATA_TYPE='date' AND IS_NULLABLE='YES' AND (COLUMN_DEFAULT IS NULL OR BINARY COLUMN_DEFAULT = BINARY 'NULL'));
 SET @pm012_index_exists=(SELECT COUNT(*) FROM information_schema.STATISTICS
  WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_pm_notifications' AND INDEX_NAME='uq_pm_notification_deadline');
 SET @pm012_sql=IF(@pm012_table_ok<>1 OR @pm012_column_ok<>1,

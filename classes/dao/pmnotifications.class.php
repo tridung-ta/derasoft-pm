@@ -62,8 +62,8 @@ class PmNotifications {
         if(count($columns)!==count($expected))throw new RuntimeException('Notification schema mismatch.');
         foreach($columns as $c){$type=preg_replace('/\b(bigint|int)\([0-9]+\)/','$1',$c['type']);if(!isset($expected[$c['name']])||[$type,$c['nullable']]!==$expected[$c['name']])throw new RuntimeException('Notification column mismatch.');if($c['name']==='id'&&!str_contains($c['extra'],'auto_increment'))throw new RuntimeException('Notification identity mismatch.');}
         $defaults=array_column($columns,'default_value','name');
-        if(($defaults['read_at']??null)!==null||!isset($defaults['entity_id'])||(string)$defaults['entity_id']!=='0'||!preg_match('/^current_timestamp(?:\(\))?$/i',(string)($defaults['created_at']??'')))throw new RuntimeException('Notification defaults mismatch.');
-        if($commit&&($defaults['due_date']??null)!==null)throw new RuntimeException('Notification deadline default mismatch.');
+        if(!in_array($defaults['read_at']??null,[null,'NULL'],true)||!isset($defaults['entity_id'])||(string)$defaults['entity_id']!=='0'||!preg_match('/^current_timestamp(?:\(\))?$/i',(string)($defaults['created_at']??'')))throw new RuntimeException('Notification defaults mismatch.');
+        if($commit&&!in_array($defaults['due_date']??null,[null,'NULL'],true))throw new RuntimeException('Notification deadline default mismatch.');
         $indexes=$this->db->fetchAll("SELECT INDEX_NAME name,NON_UNIQUE non_unique,GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) cols,SUM(SUB_PART IS NOT NULL) prefixes FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='dc_pm_notifications' GROUP BY INDEX_NAME,NON_UNIQUE");
         $map=array_column($indexes,null,'name');
         if($commit&&(!isset($map['uq_pm_notification_deadline'])||$map['uq_pm_notification_deadline']['cols']!=='store_id,recipient_id,kind,entity_id,due_date'||(int)$map['uq_pm_notification_deadline']['non_unique']!==0||(int)($map['uq_pm_notification_deadline']['prefixes']??0)!==0))throw new RuntimeException('Notification deadline unique missing.');
