@@ -9,7 +9,7 @@ FONT_ASSETS={'assets/fonts/inter/InterVariable.woff2','assets/fonts/inter/OFL.tx
 def classify(status,path):
     p=Path(path)
     protected=(path.startswith(('license/','upload/','uploads/','templates_c/','.local/','.tools/','logs/','debug/','cache/','caches/')) or p.name.startswith('.env') or path=='includes/config.inc.php' or '.bak-' in p.name or p.suffix.lower() in ('.sql','.bak','.dump','.log','.zip'))
-    runtime=(path in FONT_ASSETS or path.startswith(('classes/','modules/','includes/','templates/','css/','js/','languages/')) or (len(p.parts)==1 and p.suffix=='.php') or path=='.htaccess')
+    runtime=(path=='cron/pm-reminders.php' or path in FONT_ASSETS or path.startswith(('classes/','modules/','includes/','templates/','css/','js/','languages/')) or (len(p.parts)==1 and p.suffix=='.php') or path=='.htaccess')
     return 'review_deleted_keep_remote' if status=='D' else ('exclude_protected_or_sql' if protected else ('upload_runtime' if runtime else 'exclude_nonruntime'))
 def package(payload):
     target=root/'.local'/'releases'/f"{payload['version']}.zip"

@@ -26,9 +26,12 @@ def main():
             row['sha256']=digest(content);files['runtime/'+path]=content
         rows.append(row)
     runtime={r['path'] for r in rows if r['action']=='upload_runtime'}
+    cron_release='cron/pm-reminders.php' in runtime
+    if cron_release and args.date<'20261014':raise RuntimeError('Cron release requires date>=20261014 and manual migration 011 handoff')
     required={'classes/dao/pmdashboard.class.php','classes/services/pmdashboardservice.class.php',
               'classes/services/pmshiftlabelservice.class.php','css/pmworkspace.css','js/pmkanban.js','pm_ajax.php','assets/fonts/inter/InterVariable.woff2'}
     if not required.issubset(runtime):raise RuntimeError('Missing runtime dependency')
+    if cron_release and not {'cron/pm-reminders.php','includes/pm_reminders.inc.php','classes/dao/pmnotifications.class.php','classes/services/pmnotificationservice.class.php','classes/services/pmreminderservice.class.php','templates/admin/pm-notification-menu.tpl.html','templates/admin/pm-notifications.tpl.html','modules/admin/pmnotifications.module.php'}.issubset(runtime):raise RuntimeError('Missing cron runtime dependency')
     untracked=run('ls-files','--others','--exclude-standard').decode().splitlines()
     if any(classify('A',p)=='upload_runtime' for p in untracked):raise RuntimeError('Untracked runtime not packaged')
     docs={
@@ -56,10 +59,14 @@ def main():
         files['review/TOAST_VISUAL_VERIFY.md']=run('show',ref+':docs/TOAST_VISUAL_VERIFY_20261013.md')
         files['review/NAV_SHIFT_VERIFY.md']=run('show',ref+':docs/NAV_SHIFT_VERIFY_20261013.md')
         files['review/HEADER_NAV_VERIFY.md']=run('show',ref+':docs/HEADER_NAV_VERIFY_20261013.md')
+    if cron_release:
+        files['review/CRON_VERIFY.md']=run('show',ref+':docs/PM_CRON_VERIFY_20261014.md')
+        files['review/CRON_HOST_UAT.md']=run('show',ref+':docs/PM_CRON_HOST_UAT_20261014.md')
+        files['manual-migrations/011_create_pm_notifications.sql']=run('show',ref+':database/migrations/011_create_pm_notifications.sql')
     manifest={'date':args.date,'source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
        'baseline':baseline,'package_type':'incremental existing-PM update; manual host UAT',
        'state':'local prepared; not uploaded; DB/session/host UAT NOT RUN',
-       'new_migrations':[],'uat_data_source_sha256':digest(files['review/UAT_DATA_SOURCE.json']),'files':rows,
+       'new_migrations':['database/migrations/011_create_pm_notifications.sql'] if cron_release else [],'uat_data_source_sha256':digest(files['review/UAT_DATA_SOURCE.json']),'files':rows,
        'manual_files':{p:digest(data) for p,data in files.items() if not p.startswith('runtime/')}}
     files['review/WORKSPACE_MANIFEST.json']=(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n').encode()
     files['README_FIRST.txt']=(

@@ -14,6 +14,9 @@ class ManifestAllowlistTest(unittest.TestCase):
     def test_deleted_paths_keep_remote(self):
         for path in ['modules/admin/legacy.module.php','includes/config.inc.php',*FONT_ASSETS]:
             self.assertEqual(classify('D',path),'review_deleted_keep_remote')
+    def test_cron_exact_allowlist(self):
+        self.assertEqual(classify('A','cron/pm-reminders.php'),'upload_runtime')
+        self.assertEqual(classify('A','cron/unreviewed.php'),'exclude_nonruntime')
     def test_existing_runtime_and_docs(self):
         self.assertEqual(classify('M','css/pmui.css'),'upload_runtime')
         self.assertEqual(classify('M','pm_ajax.php'),'upload_runtime')

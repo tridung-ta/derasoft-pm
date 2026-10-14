@@ -181,3 +181,7 @@ document.querySelectorAll('p.error,.alert-error,.message.error,[data-pm-success]
 const headerNavigation=document.querySelector('.pm-header-controls .pm-work-menu');
 document.addEventListener('click',event=>{if(headerNavigation?.open&&!headerNavigation.contains(event.target))headerNavigation.open=false;});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&headerNavigation?.open){headerNavigation.open=false;headerNavigation.querySelector('summary').focus();}});
+
+const notificationMenu=document.querySelector('.pm-notification-menu');
+document.addEventListener('click',event=>{if(notificationMenu?.open&&!notificationMenu.contains(event.target))notificationMenu.open=false;});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&notificationMenu?.open){notificationMenu.open=false;notificationMenu.querySelector('summary').focus();}});

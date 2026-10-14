@@ -37,6 +37,7 @@ $aops[] = 'pmcosts';
 $aops[] = 'pmallocations';
 $aops[] = 'pmreports';
 $aops[] = 'pmimports';
+$aops[] = 'pmnotifications';
 include_once(ROOT_PATH.'includes/constant.inc.php');
 include_once(ROOT_PATH.'classes/data/translator.class.php');
 include_once(ROOT_PATH.'includes/admin/functions.inc.php');
@@ -118,7 +119,7 @@ if(PM_HIDE_LEGACY && !empty($_SESSION['userId'])) {
 }
 
 # In PM mode, authenticated users can only access the new dashboard or logout.
-if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'pmusers', 'pmprojects', 'pmtimesheets', 'pmaudit', 'pmcosts', 'pmallocations', 'pmreports', 'pmimports', 'logout'), true)) {
+if(PM_HIDE_LEGACY && isset($_SESSION['userId']) && $_SESSION['userId'] && !in_array($op, array('pm', 'pmusers', 'pmprojects', 'pmtimesheets', 'pmaudit', 'pmcosts', 'pmallocations', 'pmreports', 'pmimports', 'pmnotifications', 'logout'), true)) {
 	$op = 'pm';
 	$act = '';
 	$mod = '';
@@ -145,6 +146,15 @@ if(isset($topNav)) $template->assign('topNav',$topNav);
 if(PM_HIDE_LEGACY && isset($pmAccess) && $pmAccess instanceof PmAccess) {
 	include_once(ROOT_PATH.'classes/services/pmuiservice.class.php');
 	$template->assign('pmNavigation', PmUiService::navigation($pmAccess,(string)$op,(string)$act));
+	include_once(ROOT_PATH.'includes/pm_reminders.inc.php');
+	$template->assign('pmNotificationsEnabled',PM_REMINDERS_ENABLED);
+	if(PM_REMINDERS_ENABLED) {
+		try {
+			include_once(ROOT_PATH.'classes/services/pmnotificationservice.class.php');
+			$pmNotices=(new PmNotificationService(new PmNotifications(new PmDb($db),(int)$storeId),(int)$userInfo->getId()))->listing(1,5);
+			$template->assign(['pmNotificationPreview'=>$pmNotices['rows'],'pmNotificationUnread'=>$pmNotices['unread']]);
+		}catch(Throwable $e){error_log('PM notification header unavailable.');$template->assign('pmNotificationError',true);}
+	}
 }
 if(PM_HIDE_LEGACY)pmResponseHeaders();
 $template->assign('templatePath',TEMPLATE_PATH);

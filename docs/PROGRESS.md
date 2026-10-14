@@ -2076,3 +2076,6 @@ Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài kho
 
 ## Rà soát cuối local 13/10/2026
 Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suites, 44 PHP/5 JS syntax checks và 4 XLSX validation PASS. Không chạy full DB regression theo chỉ định; giữ 73 PASS/0 FAIL/7 CHƯA CHẠY. Chi tiết FINAL_LOCAL_REVIEW_20261013.md; chưa chứng nhận hoàn thành toàn bộ/UAT/production. Người dùng cho phép push GitHub, chỉ nhánh feature, không merge/deploy.
+
+## 14/10/2026 — Phase12 cron reminders local
+Đã BUILD 2job reminders, CLI mặc địnhdryrun/explicittenant/lock/idempotency, migration011 chỉCREATEfile, notificationheader/list/CSRFmarkread và featureflag mặcđịnhOFF. 53checks mới,18noDBscripts/19PHP lint/6allowlist,25browsers PASS. DB/schema/concurrency/EXPLAIN thực CHƯACHẠY theo chỉđịnh;khôngmigrationsrun/push/merge/deploy. PM_CRON_VERIFY_20261014.md có bằngchứng và PM_CRON_HOST_UAT_20261014.md có quytrình.

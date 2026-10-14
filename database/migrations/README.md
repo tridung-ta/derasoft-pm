@@ -34,3 +34,6 @@ Phase 1 chưa có migration SQL và không thay đổi database.
 
 ### 010 — daily total-hours snapshot
 Depends on004; apply schema before P3 runtime. ADD ONLY max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00 to dc_pm_timesheet_days; idempotent column guard. Retain existing snapshots/data and engines. Back up approvedtarget and maintain allwriters beforeDDL; no production execution authorized. Applicationrollback keepscolumn/data. Local09/10verified twice; detailed proof docs/P3_BUILD_VERIFY_20261009.md.
+
+## 011 — PM notifications (14/10/2026, chưa thực thi)
+011_create_pm_notifications.sql: chỉ CREATE TABLE IF NOT EXISTS dc_pm_notifications, 8 cột và unique event/index recipient. Phụ thuộc user/RBAC/project/task/timesheet migrations001–004. Runtime mới mặc định OFF và fail-safe khi chưa có bảng; chỉ bật sau preflight schema/UAT. Rollback tắt cron+PM_REMINDERS_ENABLED, phục hồi code, giữ nguyên bảng/dữ liệu. Không đổi engine/bảng cũ, không tự chạy SQL. Chi tiết ../docs/PM_CRON_HOST_UAT_20261014.md.

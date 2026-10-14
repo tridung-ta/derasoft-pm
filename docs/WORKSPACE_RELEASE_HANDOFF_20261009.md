@@ -81,3 +81,6 @@ Quyết định mới thay sidebar bằng Điều hướng góc phải, ngay dư
 
 ## Cập nhật vị trí bên trái — 13/10/2026
 Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài khoản giữ bên phải. CSS cache 20261013-leftnav. Chạy playwright-cli -s=workspace run-code --filename tests/pm_navigation_all_pages_browser.js: PASS 12 trang x desktop/mobile; vị trí trái 24/18px, menu trong viewport, Enter/Escape/outside click và logout POST/CSRF. git diff --check PASS. Không BE/DB/production.
+
+## Phase12 cron ngày14/10 — local, chưa phát hành
+Mới có cron PM CLI và chuông thông báo; cần migration011_create_pm_notifications.sql nếu muốn bật. Gói date20261014+ đưa SQL vào manual-migrations và report/hostUAT vào review; SQL không nằm trong runtime và không tự chạy. PM_REMINDERS_ENABLED mặcđịnhOFF. Phần no-migration của gói13/10 chỉ đúng bản13/10, không áp dụng tính năngcron mới. Khôngpush/deploy hoặc uploadgói mới khi chưaduyệt riêng. Xem PM_CRON_VERIFY_20261014.md và PM_CRON_HOST_UAT_20261014.md.
