@@ -32,6 +32,7 @@ def main():
               'classes/services/pmshiftlabelservice.class.php','css/pmworkspace.css','js/pmkanban.js','pm_ajax.php','assets/fonts/inter/InterVariable.woff2'}
     if not required.issubset(runtime):raise RuntimeError('Missing runtime dependency')
     if cron_release and not {'cron/pm-reminders.php','includes/pm_reminders.inc.php','classes/dao/pmnotifications.class.php','classes/services/pmnotificationservice.class.php','classes/services/pmreminderservice.class.php','templates/admin/pm-notification-menu.tpl.html','templates/admin/pm-notifications.tpl.html','modules/admin/pmnotifications.module.php'}.issubset(runtime):raise RuntimeError('Missing cron runtime dependency')
+    throttle_release='classes/services/pmreminderoptions.class.php' in runtime
     untracked=run('ls-files','--others','--exclude-standard').decode().splitlines()
     if any(classify('A',p)=='upload_runtime' for p in untracked):raise RuntimeError('Untracked runtime not packaged')
     docs={
@@ -66,10 +67,17 @@ def main():
         if subprocess.run(git+['cat-file','-e',ref+':docs/PM_CRON_DB_VERIFY_20261014.md'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
             files['review/CRON_DB_VERIFY.md']=run('show',ref+':docs/PM_CRON_DB_VERIFY_20261014.md')
             files['review/CRON_THROTTLE_PLAN.md']=run('show',ref+':docs/PLAN_PM_CRON_THROTTLE_20261014.md')
+    if throttle_release:
+        files['manual-migrations/012_add_pm_notification_due_date.sql']=run('show',ref+':database/migrations/012_add_pm_notification_due_date.sql')
+        files['review/THROTTLE_BUILD_VERIFY.md']=run('show',ref+':docs/PM_CRON_THROTTLE_BUILD_VERIFY_20261014.md')
+        for name in ['PM_CRON_012_MANUAL_TEST.md','PM_CRON_012_MANUAL_CONTRACT.sql','PM_CRON_012_CHECKSUM.sql','PM_CRON_012_PREFLIGHT.sql','PM_CRON_012_BAD_COLUMN_PROBE.sql']:
+            files['review/'+name]=run('show',ref+':docs/'+name)
+        for name in ['pm_cron_throttle_db_smoke.php','pm_cron_throttle_worker.php','pm_cron_throttle_http_router.php','pm_cron_db_fixture.php']:
+            files['operator-only/tests/'+name]=run('show',ref+':tests/'+name)
     manifest={'date':args.date,'source_commit':ref,'branch':run('branch','--show-current').decode().strip(),
        'baseline':baseline,'package_type':'incremental existing-PM update; manual host UAT',
        'state':'local prepared; not uploaded; DB/session/host UAT NOT RUN',
-       'new_migrations':['database/migrations/011_create_pm_notifications.sql'] if cron_release else [],'uat_data_source_sha256':digest(files['review/UAT_DATA_SOURCE.json']),'files':rows,
+       'new_migrations':(['database/migrations/011_create_pm_notifications.sql']+(['database/migrations/012_add_pm_notification_due_date.sql'] if throttle_release else [])) if cron_release else [],'uat_data_source_sha256':digest(files['review/UAT_DATA_SOURCE.json']),'files':rows,
        'manual_files':{p:digest(data) for p,data in files.items() if not p.startswith('runtime/')}}
     files['review/WORKSPACE_MANIFEST.json']=(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n').encode()
     files['README_FIRST.txt']=(

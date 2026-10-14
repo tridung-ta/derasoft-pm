@@ -44,6 +44,8 @@ function pmCronMirrorUsers(mysqli $c,array $fixture): void {
     }
 }
 function pmCronLoadFixture(): array {
-    $file=ROOT_PATH.'.local/cron-db-fixture.json';$f=json_decode(file_get_contents($file),true,512,JSON_THROW_ON_ERROR);
+    $name=getenv('PM_CRON_FIXTURE_NAME')?:'cron-db-fixture.json';
+    if(!in_array($name,['cron-db-fixture.json','cron-throttle-fixture.json'],true))throw new RuntimeException('Fixture path guard.');
+    $file=ROOT_PATH.'.local/'.$name;$f=json_decode(file_get_contents($file),true,512,JSON_THROW_ON_ERROR);
     $token=getenv('PM_CRON_TEST_TOKEN');if(!$token||!hash_equals($f['token'],$token))throw new RuntimeException('Fixture token guard.');return $f;
 }

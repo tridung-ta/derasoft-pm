@@ -37,3 +37,6 @@ Depends on004; apply schema before P3 runtime. ADD ONLY max_total_hours DECIMAL(
 
 ## 011 — PM notifications (14/10/2026, chưa thực thi)
 011_create_pm_notifications.sql: chỉ CREATE TABLE IF NOT EXISTS dc_pm_notifications, 8 cột và unique event/index recipient. Phụ thuộc user/RBAC/project/task/timesheet migrations001–004. Runtime mới mặc định OFF và fail-safe khi chưa có bảng; chỉ bật sau preflight schema/UAT. Rollback tắt cron+PM_REMINDERS_ENABLED, phục hồi code, giữ nguyên bảng/dữ liệu. Không đổi engine/bảng cũ, không tự chạy SQL. Chi tiết ../docs/PM_CRON_HOST_UAT_20261014.md.
+
+## 012 — notification deadline snapshot (proposal14/10, not executed)
+012_add_pm_notification_due_date.sql depends011. ADD COLUMNdue_dateDATE NULL and ADDUNIQUEuq_pm_notification_deadline(store_id,recipient_id,kind,entity_id,due_date);keepuq_pm_notification_event,kind/event_date semantics,legacyNULLrows. No backfill. Existenceguards/mismatchstatus requiremanualreview; no auto repair. Migrationindex may lock: testcopy/backup/maintenance beforehostapproval. KeepfeatureOFF untilnewruntime9columnpreflight. ManualSQL/expected: docs/PM_CRON_012_MANUAL_TEST.md. No agentSQLexecution orBUILD yet.

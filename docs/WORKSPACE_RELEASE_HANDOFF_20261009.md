@@ -84,3 +84,6 @@ Theo xác nhận mới, Điều hướng nằm bên trái dưới logo, Tài kho
 
 ## Phase12 cron ngày14/10 — local, chưa phát hành
 Mới có cron PM CLI và chuông thông báo; cần migration011_create_pm_notifications.sql nếu muốn bật. Gói date20261014+ đưa SQL vào manual-migrations và report/hostUAT vào review; SQL không nằm trong runtime và không tự chạy. PM_REMINDERS_ENABLED mặcđịnhOFF. Phần no-migration của gói13/10 chỉ đúng bản13/10, không áp dụng tính năngcron mới. Khôngpush/deploy hoặc uploadgói mới khi chưaduyệt riêng. Xem PM_CRON_VERIFY_20261014.md và PM_CRON_HOST_UAT_20261014.md.
+
+## Bản throttle01214/10 — local manualVERIFY
+Góicodephải gồmpmreminderoptions.class.php;manual-migrations012 snapshot/unique mớigiữ011;code--commitrequire012,read/dryrunbase011tươngthích. 63newnoDBchecksPASS;SQL/appnative vẫnCHƯACHẠY. Review/THROTTLE_BUILD_VERIFY.md vàPM_CRON_012_MANUAL_TEST.md córunner mới. operator-only/tests chỉcopy vào tests trênbảnlocal đầyđủ đểngười dùng test,khônguploadhost/webroot. Khôngcài cron/flag haydeploynếuchưaSQLUAT/duyệtriêng;firstcommitnarrowuserids,scheduledallusersphảiexplicitflag. Mọi gatecũ giữ nguyên.

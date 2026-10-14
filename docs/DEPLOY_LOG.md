@@ -220,6 +220,8 @@ agent has not inspected production schema or approved execution there.
 | 16 | `database/migrations/010_add_pm_daily_total_limit.sql` | Depends on004; after009 in release order. ADD max_total_hours DECIMAL(4,2) NOT NULL DEFAULT24.00 to dc_pm_timesheet_days, existence guard; no hours/cost backfill. Deploy schema before daily-limit runtime; retain column on app rollback. Do not rerun already-present ALTER blindly. |
 | 17 | `database/migrations/011_create_pm_notifications.sql` | Depends on001–004 (core users/RBAC/projects/tasks/timesheets). CREATE dc_pm_notifications only;8 columns, unique event/recipient index. Preflight engine/collation/types/null/defaults/auto/index; defaultfeatureOFF. Local migration verified14/10; no host permission/execution. Keep table/data on rollback. |
 
+| 18 | `database/migrations/012_add_pm_notification_due_date.sql` | PROPOSED FILE, not executed. Depends on011; ADD due_date DATE NULL and ADD unique(store_id,recipient_id,kind,entity_id,due_date). Keep old event_date unique, no backfill/DROP/semantic change. Verify defaults/types/both keys and011engine; STOP mismatch. Keep reminderflagOFF until runtimepreflight supports012 and copy-UAT. Column/index rollback by application disable only, retain schema/data. User must approve file and counts beforeBUILD, hostmigration permission separate. |
+
 For an already-upgraded host, check each actual table/column/index/seed grant and skip steps
 already satisfied; record the evidence. Do not replay initial seed 001 against final tenant
 schema: it was written for the initial pre-002 schema. Existing grants must be preserved.

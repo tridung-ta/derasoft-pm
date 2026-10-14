@@ -2082,3 +2082,6 @@ Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suite
 
 ## 14/10/2026 — Phase12 DB local được phép
 Sau backup guardloopback/derasoft_pm_local, áp011local;41SQL/concurrency/crash/HTTP/EXPLAIN/checksumchecks PASS. Usersthậtkhôngwrite;PMfixturestoresdọnsạch,011rỗng. ChưaBUILDthrottle/userids;proposal7ngày/assignmentrecipient/hẹpfirstcommit chờduyệt. Deploydocs sửa5nhóm yêu cầu;gates vẫngiữ,khônghost/push/merge/deploy. PM_CRON_DB_VERIFY_20261014.md cóbằngchứngvàgiới hạn.
+
+## 14/10 — BUILD throttle012 local, chưa SQLVERIFY
+ĐãBUILDpolicy/scopedCLI/snapshot/strict012/read011,runner012riêngvớiallocation/in_progress/mirrorusers/clock/finallychecksums. 63new+53legacyunitchecks,19noDBscripts/23PHP lint/6manifestchecks và2browserfixturesPASS. SQLmanual/HTTPconcurrency/EXPLAIN/backuprestoreCHƯACHẠY,bàn giao PM_CRON_012_MANUAL_TEST.md mục13. Code-review siếtunknown1062failed vàcleanupworker. KhôngSQLghi/flag/push/merge/deploy. PM_CRON_THROTTLE_BUILD_VERIFY_20261014.md.

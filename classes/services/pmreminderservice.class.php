@@ -10,9 +10,10 @@ class PmReminderService {
     }
     public function run(string $job,bool $commit,DateTimeImmutable $clock): array {
         $clock=$clock->setTimezone(new DateTimeZone('Asia/Ho_Chi_Minh'));
-        $stats=['job'=>$job,'dry_run'=>!$commit,'candidates'=>0,'created'=>0,'duplicate'=>0,'stale'=>0,'failed'=>0,'skipped_window'=>false,'skipped_busy'=>false];
+        $stats=['job'=>$job,'dry_run'=>!$commit,'candidates'=>0,'created'=>0,'duplicate'=>0,'duplicate_event'=>0,'duplicate_deadline'=>0,'stale'=>0,'failed'=>0,'skipped_window'=>false,'skipped_busy'=>false];
+        if($commit)$this->dao->preflight(true);
+        $this->dao->validateUsers();
         if(!self::eligibleTime($job,$clock)){$stats['skipped_window']=true;return $stats;}
-        if($commit)$this->dao->preflight();
         $lock=null;
         try {
             if($commit){$name=$this->dao->lockName($job);if(!$this->dao->acquire($name)){$stats['skipped_busy']=true;return $stats;}$lock=$name;}
@@ -24,7 +25,7 @@ class PmReminderService {
                     if(!$commit)continue;
                     $kind=$job==='timesheet'?'timesheet_missing':($row['due_date']<$date?'task_overdue':($row['due_date']===$date?'task_today':'task_tomorrow'));
                     try{$inserted=$this->dao->insert($row,$job,$kind,$date);$stats[$inserted?'created':'stale']++;}
-                    catch(mysqli_sql_exception $e){if((int)$e->getCode()===1062)$stats['duplicate']++;else{$stats['failed']++;error_log('PM reminder insert failed.');}}
+                    catch(mysqli_sql_exception $e){if((int)$e->getCode()===1062&&(str_contains($e->getMessage(),'uq_pm_notification_deadline')||str_contains($e->getMessage(),'uq_pm_notification_event'))){$stats['duplicate']++;$key=str_contains($e->getMessage(),'uq_pm_notification_deadline')?'duplicate_deadline':'duplicate_event';$stats[$key]++;}else{$stats['failed']++;error_log('PM reminder insert failed.');}}
                     catch(Throwable $e){$stats['failed']++;error_log('PM reminder insert failed.');}
                 }
             }while(count($rows)===100);

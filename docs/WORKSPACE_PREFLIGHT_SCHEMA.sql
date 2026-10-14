@@ -24,3 +24,8 @@ SELECT index_name,non_unique,seq_in_index,column_name FROM information_schema.st
 SELECT table_name,engine,table_collation FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications';
 SELECT column_name,column_type,is_nullable,column_default,extra FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications' ORDER BY ordinal_position;
 SELECT index_name,non_unique,seq_in_index,column_name FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications' ORDER BY index_name,seq_in_index;
+
+-- 012 proposal: after operator approval, verify new nullable snapshot and BOTH keys.
+SELECT column_name,column_type,is_nullable,column_default FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications' AND column_name='due_date';
+SELECT index_name,non_unique,seq_in_index,column_name,sub_part FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='dc_pm_notifications' AND index_name IN ('uq_pm_notification_event','uq_pm_notification_deadline') ORDER BY index_name,seq_in_index;
+-- Expected old key ends event_date, new key ends due_date, both unique/full five columns.

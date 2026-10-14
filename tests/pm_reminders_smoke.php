@@ -9,12 +9,13 @@ function verifyReminder(bool $test,string $message): void {global $checks;$check
 class ReminderFakeDao extends PmNotifications {
     public array $rows=[];public array $writes=[];public bool $busy=false;public bool $released=false;public bool $schema=false;public bool $queryFail=false;public bool $releaseFail=false;public int $insertCode=0;public int $insertCount=1;
     public function __construct(){}
-    public function preflight(): void {$this->schema=true;}
+    public function preflight(bool $commit=false): void {$this->schema=true;}
+    public function validateUsers(): void {}
     public function lockName(string $job): string{return 'lock:'.$job;}
     public function acquire(string $name): bool{return !$this->busy;}
     public function release(string $name): void{$this->released=true;if($this->releaseFail)throw new RuntimeException('SECRET');}
     public function candidates(string $job,string $date,int $afterUser=0,int $afterTask=0): array{if($this->queryFail)throw new RuntimeException('SECRET');return $afterUser?[]:$this->rows;}
-    public function insert(array $row,string $job,string $kind,string $date): int{$this->writes[]=[$row,$job,$kind,$date];if($this->insertCode)throw new mysqli_sql_exception('SECRET',$this->insertCode);return $this->insertCount;}
+    public function insert(array $row,string $job,string $kind,string $date): int{$this->writes[]=[$row,$job,$kind,$date];if($this->insertCode)throw new mysqli_sql_exception($this->insertCode===1062?"SECRET for key 'uq_pm_notification_event'":'SECRET',$this->insertCode);return $this->insertCount;}
 }
 $zone=new DateTimeZone('Asia/Ho_Chi_Minh');
 foreach([['timesheet','2026-10-14 17:29',false],['timesheet','2026-10-14 17:30',true],['timesheet','2026-10-17 18:00',false],['task','2026-10-14 07:59',false],['task','2026-10-14 08:00',true]] as [$job,$time,$expected])verifyReminder(PmReminderService::eligibleTime($job,new DateTimeImmutable($time,$zone))===$expected,'Clock window');

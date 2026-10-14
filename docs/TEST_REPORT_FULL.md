@@ -605,3 +605,6 @@ Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suite
 
 ## Phase12 local DB follow-up ? 14/10/2026
 User authorized guarded isolated local DB after backup. tests/pm_cron_db_smoke.php:41 PASS/0 errors, migration011 local, recipients/INSERT1062/process locks/two tenants/crash recovery/HTTP controller mark-read/5 EXPLAIN shapes/data fingerprints. All persistent dc_users and existing PM row hashes unchanged; new011 table empty. Details PM_CRON_DB_VERIFY_20261014.md. No host flag/migration/upload, no push/merge/deploy. Existing80-item totals and7pending remain unchanged; throttling/user-ids are proposals not built.
+
+## Throttle012 BUILD14/10 — no-DB verification only
+New policy/scoped CLI/due_date snapshots/strict012 commit preflight/read011 completed local. 63new unit/contract checks +53existing,19noDB scripts/23lint/6allowlist and2synthetic browser suites PASS. NativeSQL/app cases for this code remain NOT RUN until operator runs tests/pm_cron_throttle_db_smoke.php --run after backup/manual012. Earlier41SQL PASS belongs previous code, not this policy. Existing80-item totals/7pending unchanged. See PM_CRON_THROTTLE_BUILD_VERIFY_20261014.md; noSQLwrites/hostflag/push/merge/deploy.
