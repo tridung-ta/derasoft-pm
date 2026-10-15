@@ -2083,5 +2083,9 @@ Code-review + playwright-cli theo yêu cầu: 17 no-DB scripts, 24 browser suite
 ## 14/10/2026 — Phase12 DB local được phép
 Sau backup guardloopback/derasoft_pm_local, áp011local;41SQL/concurrency/crash/HTTP/EXPLAIN/checksumchecks PASS. Usersthậtkhôngwrite;PMfixturestoresdọnsạch,011rỗng. ChưaBUILDthrottle/userids;proposal7ngày/assignmentrecipient/hẹpfirstcommit chờduyệt. Deploydocs sửa5nhóm yêu cầu;gates vẫngiữ,khônghost/push/merge/deploy. PM_CRON_DB_VERIFY_20261014.md cóbằngchứngvàgiới hạn.
 
+## 15/10/2026 — Import: panel riêng, giữ tệp Preview và phản hồi Apply
+
+Hoàn tất thay đổi local theo yêu cầu: ba panel riêng, Preview không tải lại trang nên giữ tệp cho Stage; Apply/resume báo số thành công/trùng/lỗi/pending; cấp mật khẩu có phản hồi theo dòng. Không thay service/DAO/SQL/cron/shared UI. Skill: feature-development, impeccable, playwright-cli; code-review và git-feature-commit cho bước chốt local. 23 no-DB script, 30 PHP lint, 6 manifest checks và 3 browser fixture suite PASS. Controller dùng stub service; chưa chạy DB integration hay production. Chi tiết, giới hạn và 5 file upload: `docs/PM_IMPORT_UI_20261015.md`.
+
 ## 14/10 — BUILD throttle012 local, chưa SQLVERIFY
 ĐãBUILDpolicy/scopedCLI/snapshot/strict012/read011,runner012riêngvớiallocation/in_progress/mirrorusers/clock/finallychecksums. 63new+53legacyunitchecks,19noDBscripts/23PHP lint/6manifestchecks và2browserfixturesPASS. SQLmanual/HTTPconcurrency/EXPLAIN/backuprestoreCHƯACHẠY,bàn giao PM_CRON_012_MANUAL_TEST.md mục13. Code-review siếtunknown1062failed vàcleanupworker. KhôngSQLghi/flag/push/merge/deploy. PM_CRON_THROTTLE_BUILD_VERIFY_20261014.md.

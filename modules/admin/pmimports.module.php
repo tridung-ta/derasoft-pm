@@ -2,6 +2,10 @@
 include_once(ROOT_PATH.'classes/services/pmimportservice.class.php');
 $pmAccess=new PmAccess($db,(int)$storeId,(int)$userInfo->getId());requirePermission('pm.imports.manage');
 $service=new PmImportService($db,(int)$storeId,(int)$userInfo->getId());$templateFile='pm-imports.tpl.html';$result=null;$batch=null;$error='';$history=[];$path=null;
+$notice='';$passwordProvisionedRow=null;$importPanel='template';
+$requestedAction=$request->element('action');
+if(in_array($requestedAction,['preview','stage'],true))$importPanel='upload';
+elseif(in_array($requestedAction,['apply','resume','detail','provision_password'],true))$importPanel='history';
 if(empty($_SESSION['pm_csrf_token']))$_SESSION['pm_csrf_token']=bin2hex(random_bytes(32));
 try{
     $history=$service->history();
@@ -13,7 +17,16 @@ try{
             if($action==='provision_password'){
                 $row=$request->element('source_row');$password=$request->element('password');if(!is_scalar($row)||!ctype_digit((string)$row)||!is_string($password))throw new InvalidArgumentException('Dòng/mật khẩu không hợp lệ.');
                 $batch=$service->provisionPassword((int)$id,(int)$row,$password);
+                $passwordProvisionedRow=(int)$row;
+                $provisionedUserId=0;
+                foreach($batch['results'] as $provisionedResult)if((int)$provisionedResult['source_row']===$passwordProvisionedRow)$provisionedUserId=(int)$provisionedResult['user_id'];
+                $notice='Đã cấp mật khẩu cho User ID '.$provisionedUserId.' (dòng Excel '.$passwordProvisionedRow.'). Tài khoản vẫn chưa kích hoạt.';
             }else $batch=$action==='detail'?$service->detail((int)$id):$service->apply((int)$id,$action==='resume');
+            if(in_array($action,['apply','resume'],true)){
+                $c=$batch['counts'];
+                $notice='Apply #'.(int)$batch['id'].': đã tạo '.(int)$c['applied'].'; bỏ qua trùng '.(int)$c['skipped_duplicate'].'; lỗi '.(int)$c['failed'].'; chưa hoàn tất '.(int)$c['pending'].'.';
+                if($c['failed']>0||$c['pending']>0){$error=$notice.' Kiểm tra kết quả từng dòng và dùng Tiếp tục khi cần.';$notice='';}
+            }
             $history=$service->history();
         }else{
         if($action==='template'){$bytes=$service->template();header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');header('Content-Disposition: attachment; filename="pm-personnel-template.xlsx"');header('Cache-Control: no-store');header('X-Content-Type-Options: nosniff');echo $bytes;exit;}
@@ -29,4 +42,4 @@ catch(DomainException $e){http_response_code(403);$error=$e->getMessage();}
 catch(OverflowException $e){http_response_code(409);$error=$e->getMessage();}
 catch(Throwable $e){http_response_code(500);error_log('PM import operation failed.');$error='Không thể hoàn tất thao tác nhập nhân sự. Vui lòng thử lại.';}
 finally{if(is_string($path)&&is_file($path))unlink($path);}
-header('Cache-Control: no-store');$template->assign(['pageTitle'=>'Import nhân sự — DeraSoft PM','csrfToken'=>$_SESSION['pm_csrf_token'],'importResult'=>$result,'importBatch'=>$batch,'importHistory'=>$history,'error'=>$error]);
+header('Cache-Control: no-store');$template->assign(['importPanel'=>$importPanel,'pageTitle'=>'Import nhân sự — DeraSoft PM','csrfToken'=>$_SESSION['pm_csrf_token'],'importResult'=>$result,'importBatch'=>$batch,'importHistory'=>$history,'error'=>$error,'notice'=>$notice,'passwordProvisionedRow'=>$passwordProvisionedRow]);

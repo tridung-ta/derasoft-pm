@@ -1,7 +1,175 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{$pageTitle|escape}</title><link rel="stylesheet" href="css/vendor/bootstrap-5.3.8/bootstrap.min.css"><link rel="stylesheet" href="css/pmallocations.css"><link rel="stylesheet" href="css/pmui.css"><link rel="stylesheet" href="css/pmworkspace.css?v=20261014-reminders"></head><body class="pm-app pm-imports-page">{include file='./pm-navigation.tpl.html'}<main id="pm-main" tabindex="-1"><a href="?op=pm">Tổng quan</a><h1>Import nhân sự</h1><p class="pm-import-notice">Preview/staging chưa áp dụng. Apply xử lý từng dòng; tài khoản mới chưa kích hoạt, chỉ role EMPLOYEE. Admin cấp mật khẩu tại kết quả Apply, sau đó kích hoạt trong Quản lý nhân sự trước khi sử dụng. Không sửa tài khoản trùng email.</p>
-<nav class="pm-import-steps" aria-label="Các bước import"><ol><li><a href="#pm-import-template"><span aria-hidden="true">1</span> Tải mẫu</a></li><li><a href="#pm-import-upload"><span aria-hidden="true">2</span> Upload &amp; Preview</a></li><li><a href="#pm-import-history"><span aria-hidden="true">3</span> Lịch sử Apply</a></li></ol></nav>
-{if $error}<p class="error" role="alert">{$error|escape}</p>{/if}<section id="pm-import-template" tabindex="-1"><h2>File mẫu XLSX</h2><p>Header đúng thứ tự: username, fullname, email, department_code, weekly_limit_hours, role_code. Phòng ban có thể trống; role_code chỉ EMPLOYEE. Tối đa 2MB, 500 dòng, 1 sheet; không macro/công thức/liên kết ngoài.</p><form method="post"><input type="hidden" name="op" value="pmimports"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><button class="btn" name="action" value="template">Tải file mẫu</button></form></section>
-<section id="pm-import-upload" class="pm-import-upload" tabindex="-1"><h2>Kiểm tra toàn bộ file</h2><form method="post" enctype="multipart/form-data"><input type="hidden" name="op" value="pmimports"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><label>Workbook XLSX<input class="form-control" type="file" name="workbook" accept=".xlsx" required></label><p><button class="btn" name="action" value="preview">Kiểm tra / Preview</button> <button class="btn" name="action" value="stage">Kiểm tra và lưu staging</button></p></form><p>Nếu dùng Preview trước, chọn lại file khi muốn staging. Có lỗi thì không lưu bất kỳ dòng staging nào.</p></section>
-{if $importResult}<section><h2>Kết quả — chưa áp dụng</h2>{if isset($importResult.import_id)}<p class="notice" data-pm-success role="status">Đã staging #{$importResult.import_id|escape}; chưa tạo tài khoản.</p>{/if}{foreach from=$importResult.errors item=e}<p class="error" role="alert">Dòng {$e.row|escape}: {foreach from=$e.messages item=m}{$m|escape} {/foreach}</p>{/foreach}<div class="scroll"><p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>Dòng</th><th>Username</th><th>Họ tên</th><th>Email</th><th>Phòng ban</th><th>Giờ/tuần</th><th>Role</th></tr></thead><tbody>{foreach from=$importResult.rows item=r}<tr><td>{$r.row_number|escape}</td><td>{$r.username|escape}</td><td>{$r.fullname|escape}</td><td>{$r.email|escape}</td><td>{$r.department_code|escape}</td><td>{$r.weekly_limit_hours|escape}</td><td>{$r.role_code|escape}</td></tr>{/foreach}</tbody></table></div></div></section>{/if}
-{if isset($importBatch) && $importBatch}<section><h2>Kết quả Apply #{$importBatch.id|escape}</h2><p>Trạng thái: {$importBatch.status|escape}. Đã tạo: {$importBatch.counts.applied|escape}; bỏ qua trùng: {$importBatch.counts.skipped_duplicate|escape}; lỗi: {$importBatch.counts.failed|escape}; chưa hoàn tất: {$importBatch.counts.pending|escape}.</p><p>Mỗi dòng độc lập; khi gián đoạn dùng Tiếp tục. invalid_row_or_reference: kiểm tra phòng ban/role còn active; insert_failed: cần kiểm tra DB; username_collision_inactive: tài khoản mới giữ chưa kích hoạt, cần quản trị viên xử lý xung đột username; không tự sửa dữ liệu.</p><div class="scroll"><p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>Dòng</th><th>Kết quả</th><th>Lý do</th><th>User ID</th><th>Số lần thử</th><th>Cấp mật khẩu</th></tr></thead><tbody>{foreach from=$importBatch.results item=r}<tr><td>{$r.source_row|escape}</td><td>{$r.status|escape}</td><td>{$r.reason_code|escape}</td><td>{$r.user_id|escape}</td><td>{$r.attempt_count|escape}</td><td>{if $r.status == 'applied' && isset($r.account_status) && $r.account_status == 0}<form method="post"><input type="hidden" name="op" value="pmimports"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><input type="hidden" name="import_id" value="{$importBatch.id|escape}"><input type="hidden" name="source_row" value="{$r.source_row|escape}"><label>Mật khẩu mới (12–72 byte)<input class="form-control" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="72" required></label><button class="btn" name="action" value="provision_password">Cấp mật khẩu</button></form>{else}—{/if}</td></tr>{foreachelse}<tr><td colspan="6">Chưa xử lý dòng nào.</td></tr>{/foreach}</tbody></table></div></div></section>{/if}
-<section class="pm-import-history"><details><summary id="pm-import-history">Lịch sử import — 50 lần gần nhất</summary><div class="scroll"><p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p><div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0"><table><thead><tr><th>ID</th><th>Ngày</th><th>Số dòng</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody>{foreach from=$importHistory item=h}<tr><td>{$h.id|escape}</td><td>{$h.created_at|escape}</td><td>{$h.row_count|escape}</td><td>{$h.status|escape}</td><td><form method="post"><input type="hidden" name="op" value="pmimports"><input type="hidden" name="csrf_token" value="{$csrfToken|escape}"><input type="hidden" name="import_id" value="{$h.id|escape}"><button class="btn" name="action" value="detail">Kết quả</button>{if $h.status == 'staged'} <button class="btn" name="action" value="apply" data-pm-confirm="Áp dụng batch import #{$h.id|escape} gồm {$h.row_count|escape} dòng? Tài khoản mới được tạo ở trạng thái chưa kích hoạt.">Apply</button>{elseif $h.status == 'partial' || $h.status == 'in_progress'} <button class="btn" name="action" value="resume">Tiếp tục</button>{/if}</form></td></tr>{foreachelse}<tr><td colspan="5">Chưa có staging.</td></tr>{/foreach}</tbody></table></div></div></details></section></main><script src="js/pmui.js?v=20261014-reminders" defer></script></body></html>
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{$pageTitle|escape}</title>
+<link rel="stylesheet" href="css/vendor/bootstrap-5.3.8/bootstrap.min.css">
+<link rel="stylesheet" href="css/pmallocations.css">
+<link rel="stylesheet" href="css/pmui.css">
+<link rel="stylesheet" href="css/pmworkspace.css?v=20261014-reminders">
+<link rel="stylesheet" href="css/pmimports.css?v=20261015">
+</head>
+<body class="pm-app pm-imports-page">{include file='./pm-navigation.tpl.html'}<main id="pm-main" tabindex="-1" data-import-panel="{$importPanel|default:'template'|escape}">
+<a href="?op=pm">Tổng quan</a>
+<h1>Import nhân sự</h1>
+<p class="pm-import-notice">Preview/staging chưa áp dụng. Apply xử lý từng dòng; tài khoản mới chưa kích hoạt, chỉ role EMPLOYEE. Admin cấp mật khẩu tại kết quả Apply, sau đó kích hoạt trong Quản lý nhân sự trước khi sử dụng. Không sửa tài khoản trùng email.</p>
+<nav class="pm-import-steps" aria-label="Các bước import">
+<ol>
+<li>
+<a href="#pm-import-template">
+<span aria-hidden="true">1</span> Tải mẫu</a>
+</li>
+<li>
+<a href="#pm-import-upload">
+<span aria-hidden="true">2</span> Upload &amp; Preview</a>
+</li>
+<li>
+<a href="#pm-import-history">
+<span aria-hidden="true">3</span> Lịch sử Apply</a>
+</li>
+</ol>
+</nav>
+{if $notice|default:''}<p class="notice" role="status" data-pm-success>{$notice|escape}</p>{/if}{if $error}<p class="error" role="alert" tabindex="-1" data-pm-import-error>{$error|escape}</p>{/if}<section id="pm-import-template" data-import-panel tabindex="-1">
+<h2>File mẫu XLSX</h2>
+<p>Header đúng thứ tự: username, fullname, email, department_code, weekly_limit_hours, role_code. Phòng ban có thể trống; role_code chỉ EMPLOYEE. Tối đa 2MB, 500 dòng, 1 sheet; không macro/công thức/liên kết ngoài.</p>
+<form method="post">
+<input type="hidden" name="op" value="pmimports">
+<input type="hidden" name="csrf_token" value="{$csrfToken|escape}">
+<button class="btn" name="action" value="template">Tải file mẫu</button>
+</form>
+</section>
+<section id="pm-import-upload" data-import-panel class="pm-import-upload" tabindex="-1">
+<h2>Kiểm tra toàn bộ file</h2>
+<form method="post" enctype="multipart/form-data" data-import-upload>
+<input type="hidden" name="op" value="pmimports">
+<input type="hidden" name="csrf_token" value="{$csrfToken|escape}">
+<label>Workbook XLSX<input class="form-control" type="file" name="workbook" accept=".xlsx" required>
+</label>
+<p>
+<button class="btn" name="action" value="preview">Kiểm tra / Preview</button> <button class="btn" name="action" value="stage">Kiểm tra và lưu staging</button>
+</p>
+</form>
+<p>Preview giữ tệp đã chọn. Sau khi kiểm tra, bạn có thể lưu staging ngay.</p>
+<noscript>Trình duyệt chưa bật JavaScript: chọn lại tệp sau Preview hoặc lưu staging trực tiếp.</noscript>
+<div data-import-preview-feedback role="status" tabindex="-1">
+</div>
+<div id="pm-import-preview-result">
+{if $importResult}<section>
+<h2>Kết quả — chưa áp dụng</h2>{if isset($importResult.import_id)}<p class="notice" data-pm-success role="status">Đã staging #{$importResult.import_id|escape}; chưa tạo tài khoản.</p>{/if}{foreach from=$importResult.errors item=e}<p class="error" role="alert">Dòng {$e.row|escape}: {foreach from=$e.messages item=m}{$m|escape} {/foreach}</p>{/foreach}<div class="scroll">
+<p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p>
+<div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0">
+<table>
+<thead>
+<tr>
+<th>Dòng</th>
+<th>Username</th>
+<th>Họ tên</th>
+<th>Email</th>
+<th>Phòng ban</th>
+<th>Giờ/tuần</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>{foreach from=$importResult.rows item=r}<tr>
+<td>{$r.row_number|escape}</td>
+<td>{$r.username|escape}</td>
+<td>{$r.fullname|escape}</td>
+<td>{$r.email|escape}</td>
+<td>{$r.department_code|escape}</td>
+<td>{$r.weekly_limit_hours|escape}</td>
+<td>{$r.role_code|escape}</td>
+</tr>{/foreach}</tbody>
+</table>
+</div>
+</div>
+</section>{/if}
+</div>
+</section>
+<section id="pm-import-history" data-import-panel tabindex="-1">
+<h2>L?ch s? Apply</h2>
+{if isset($importBatch) && $importBatch}<section>
+<h2>Kết quả Apply #{$importBatch.id|escape}</h2>
+<p>Trạng thái: {$importBatch.status|escape}. Đã tạo: {$importBatch.counts.applied|escape}; bỏ qua trùng: {$importBatch.counts.skipped_duplicate|escape}; lỗi: {$importBatch.counts.failed|escape}; chưa hoàn tất: {$importBatch.counts.pending|escape}.</p>
+<p>Mỗi dòng độc lập; khi gián đoạn dùng Tiếp tục. invalid_row_or_reference: kiểm tra phòng ban/role còn active; insert_failed: cần kiểm tra DB; username_collision_inactive: tài khoản mới giữ chưa kích hoạt, cần quản trị viên xử lý xung đột username; không tự sửa dữ liệu.</p>
+<div class="scroll">
+<p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p>
+<div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0">
+<table>
+<thead>
+<tr>
+<th>Dòng</th>
+<th>Kết quả</th>
+<th>Lý do</th>
+<th>User ID</th>
+<th>Số lần thử</th>
+<th>Cấp mật khẩu</th>
+</tr>
+</thead>
+<tbody>{foreach from=$importBatch.results item=r}<tr>
+<td>{$r.source_row|escape}</td>
+<td>{$r.status|escape}</td>
+<td>{$r.reason_code|escape}</td>
+<td>{$r.user_id|escape}</td>
+<td>{$r.attempt_count|escape}</td>
+<td>{if $r.status == 'applied' && isset($r.account_status) && $r.account_status == 0}<form method="post" data-pm-provision-password>
+<input type="hidden" name="op" value="pmimports">
+<input type="hidden" name="csrf_token" value="{$csrfToken|escape}">
+<input type="hidden" name="import_id" value="{$importBatch.id|escape}">
+<input type="hidden" name="source_row" value="{$r.source_row|escape}">{if isset($passwordProvisionedRow) && $passwordProvisionedRow == $r.source_row}<p class="notice" role="status">Đã cấp mật khẩu cho User ID {$r.user_id|escape}. Kích hoạt tài khoản trong Nhân sự để đăng nhập.</p>{/if}<label>Mật khẩu mới (12–72 byte)<input class="form-control" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="72" aria-describedby="pm-import-password-error-{$r.source_row|escape}" required>
+</label>
+<p class="error" role="alert" id="pm-import-password-error-{$r.source_row|escape}" data-pm-password-error hidden>
+</p>
+<button class="btn" name="action" value="provision_password">Cấp mật khẩu</button>
+</form>{else}—{/if}</td>
+</tr>{foreachelse}<tr>
+<td colspan="6">Chưa xử lý dòng nào.</td>
+</tr>{/foreach}</tbody>
+</table>
+</div>
+</div>
+</section>{/if}
+<section class="pm-import-history">
+<h3>Lịch sử import — 50 lần gần nhất</h3>
+<div class="scroll">
+<p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p>
+<div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0">
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Ngày</th>
+<th>Số dòng</th>
+<th>Trạng thái</th>
+<th>Thao tác</th>
+</tr>
+</thead>
+<tbody>{foreach from=$importHistory item=h}<tr>
+<td>{$h.id|escape}</td>
+<td>{$h.created_at|escape}</td>
+<td>{$h.row_count|escape}</td>
+<td>{$h.status|escape}</td>
+<td>
+<form method="post">
+<input type="hidden" name="op" value="pmimports">
+<input type="hidden" name="csrf_token" value="{$csrfToken|escape}">
+<input type="hidden" name="import_id" value="{$h.id|escape}">
+<button class="btn" name="action" value="detail">Kết quả</button>{if $h.status == 'staged'} <button class="btn" name="action" value="apply" data-pm-confirm="Áp dụng batch import #{$h.id|escape} gồm {$h.row_count|escape} dòng? Tài khoản mới được tạo ở trạng thái chưa kích hoạt.">Apply</button>{elseif $h.status == 'partial' || $h.status == 'in_progress'} <button class="btn" name="action" value="resume">Tiếp tục</button>{/if}</form>
+</td>
+</tr>{foreachelse}<tr>
+<td colspan="5">Chưa có staging.</td>
+</tr>{/foreach}</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+</main>
+<script src="js/pmimports.js?v=20261015" defer>
+</script>
+<script src="js/pmui.js?v=20261014-reminders" defer>
+</script>
+<script src="js/pmimportfeedback.js?v=20261015-feedback" defer>
+</script>
+</body>
+</html>

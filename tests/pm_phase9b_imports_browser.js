@@ -6,16 +6,16 @@ async page => {
     try {
         await page.goto(base+'phase9b-import-initial.html');
         if(await page.locator('.pm-import-steps li').count()!==3)throw new Error('Three steps missing');
-        if(await page.locator('.pm-import-history details').evaluate(e=>e.open))throw new Error('History not collapsed');
+        if(await page.locator('[role=tabpanel]:visible').count()!==1)throw new Error('Initial panel visibility');
         const file=page.locator('input[name=workbook]');
         if(await file.getAttribute('accept')!=='.xlsx'||!await file.evaluate(e=>e.required&&e.labels.length===1)||await file.locator('..').textContent().then(t=>!t.includes('Workbook')))throw new Error('Native upload/label changed');
         if(await page.locator('#pm-import-upload form').getAttribute('enctype')!=='multipart/form-data')throw new Error('Upload encoding lost');
         // Synthetic previews use base href=/ for assets; normalize only fixture anchors.
         await page.evaluate(()=>document.querySelectorAll('.pm-import-steps a').forEach(a=>a.href=location.pathname+a.getAttribute('href')));
         await page.locator('.pm-import-steps a').nth(2).click();
-        await page.locator('#pm-import-history').focus();await page.keyboard.press('Enter');
+        await page.getByRole('tab').nth(2).focus();await page.keyboard.press('Enter');
         if(!await page.getByText('Chưa có staging.',{exact:true}).isVisible())throw new Error('Keyboard history failed');
-        await page.locator('#pm-import-history').focus();await page.keyboard.press('Space');
+        await page.getByRole('tab').nth(2).press('Home');
         for(const width of [360,390,768,1440]){
             await page.setViewportSize({width,height:1000});
             if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Initial overflow '+width);
