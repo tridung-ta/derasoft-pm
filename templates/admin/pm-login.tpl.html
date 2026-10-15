@@ -6,11 +6,11 @@
 	<meta name="robots" content="noindex, nofollow">
 	<title>Đăng nhập — DeraSoft PM</title>
 	<link rel="stylesheet" href="css/vendor/bootstrap-5.3.8/bootstrap.min.css"><link rel="stylesheet" href="css/pm-login-base.css?v=20261007-login2">
-<link rel="stylesheet" href="css/pmui.css?v=20261007-login3"><link rel="stylesheet" href="css/pmworkspace.css?v=20261014-reminders"></head>
+<link rel="stylesheet" href="css/pmui.css?v=20261007-login3"><link rel="stylesheet" href="css/pmworkspace.css?v=20261014-reminders"><link rel="stylesheet" href="css/pmreview.css?v=20261015-local1"></head>
 <body class="pm-app pm-login-page"><a class="pm-skip" href="#pm-main">Chuyển đến đăng nhập</a>
 	<main id="pm-main" tabindex="-1" class="layout">
 		<section class="intro">
-			<div class="brand"><span class="pm-login-mark" aria-hidden="true">D</span><span>DeraSoft PM</span></div>
+			<div class="brand"><span>DeraSoft</span></div>
 			<h1>Không gian làm việc tập trung.</h1>
 			<p>Quản lý dự án, nhân sự và thời gian trên một hệ thống thống nhất.</p>
 			<ul class="pm-login-capabilities" aria-label="Chức năng hệ thống">
@@ -18,8 +18,8 @@
 			</ul>
 		</section>
 		<section class="panel" aria-labelledby="login-title">
-			<h2 id="login-title">Đăng nhập quản trị</h2>
-			<p class="hint">Sử dụng tài khoản quản trị hiện tại của bạn.</p>
+			<h2 id="login-title">Đăng nhập</h2>
+			<p class="hint">Sử dụng tài khoản được cấp để tiếp tục.</p>
 			{if isset($error.message) && $error.message}
 				<div class="error" role="alert">{foreach from=$error.message item=message}{$message|escape}<br>{/foreach}</div>
 			{/if}

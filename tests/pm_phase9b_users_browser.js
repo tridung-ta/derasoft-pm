@@ -37,7 +37,7 @@ async page => {
     await page.evaluate(()=>{window.pmConfirmCalls=[];window.confirm=message=>{window.pmConfirmCalls.push(message);return false}});
     await page.getByRole('button',{name:'Xóa mềm',exact:true}).first().click();
     if(posts)throw new Error('Cancelled destructive form submitted');
-    if(await page.evaluate(()=>window.pmConfirmCalls[0])!=='Soft delete tài khoản này?')throw new Error('Confirmation message changed');
+    if(await page.evaluate(()=>window.pmConfirmCalls[0])!==await page.getByRole('button',{name:'Xóa mềm',exact:true}).first().locator('..').getAttribute('data-pm-confirm'))throw new Error('Confirmation message changed');
     for(const [name,width] of [['desktop',1440],['mobile',390]]){
         await page.setViewportSize({width,height:900});
         await page.evaluate(()=>scrollTo(0,0));

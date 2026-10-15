@@ -9,7 +9,8 @@ async page => {
     const panel=page.locator('#task-estimate-warning-panel');
     if(!await panel.isVisible()||await panel.locator('li').count()!==1)throw new Error('Initial task warning missing.');
     const initial=await panel.textContent();
-    for(const label of ['Task đang được phân bổ trong tuần này','Thực tế 5.00 giờ','Ước tính 4.00 giờ','Vượt 1.00 giờ','Đã ẩn / Lịch sử'])if(!initial.includes(label))throw new Error('Missing textual warning '+label);
+    if(!await page.locator('.pm-allocation-help').first().textContent().then(t=>t.includes('Task đang được phân bổ trong tuần này')))throw Error('Scope explanation missing from disclosure');
+    for(const label of ['Thực tế 5.00 giờ','Ước tính 4.00 giờ','Vượt 1.00 giờ','Đã ẩn / Lịch sử'])if(!initial.includes(label))throw new Error('Missing textual warning '+label);
     if(await panel.locator('script,img').count())throw new Error('Server warning HTML not escaped.');
     const visual=[];
     for(const [name,width] of [['desktop',1440],['mobile',390]]){

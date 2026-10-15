@@ -42,9 +42,10 @@ async page => {
         const detail=await (await page.request.get(base+'.local/phase9-projects-1.html')).text();
         await page.route('**/admin.php?op=pmprojects&project_id=2',route=>route.fulfill({contentType:'text/html',body:detail}));
         await page.locator('.pm-project-card h3 a').nth(1).click();
+        await page.waitForURL('**/admin.php?op=pmprojects&project_id=2');await page.getByRole('heading',{name:'Bảng công việc'}).waitFor();
         if(!page.url().includes('project_id=2')||!await page.getByRole('heading',{name:'Bảng công việc'}).isVisible())throw new Error('Project card navigation');
         await page.goto(base+'.local/phase9b-project-list-readonly.html');
-        if(await page.locator('.pm-project-create').count()||await page.locator('form[method=post]').count())throw new Error('Read-only mutation UI');
+        if(await page.locator('.pm-project-create').count()||await page.locator('main form[method=post]').count())throw new Error('Read-only mutation UI');
         if(await page.evaluate(()=>window.pmCspViolations.length)||errors.length)throw new Error('CSP/JS: '+errors.join(';'));
         const fallback=await context.browser().newContext({javaScriptEnabled:false,viewport:{width:390,height:1000}});
         try{

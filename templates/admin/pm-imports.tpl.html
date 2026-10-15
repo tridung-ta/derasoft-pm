@@ -9,11 +9,12 @@
 <link rel="stylesheet" href="css/pmui.css">
 <link rel="stylesheet" href="css/pmworkspace.css?v=20261014-reminders">
 <link rel="stylesheet" href="css/pmimports.css?v=20261015">
-</head>
+<link rel="stylesheet" href="css/pmreview.css?v=20261015-local1"></head>
 <body class="pm-app pm-imports-page">{include file='./pm-navigation.tpl.html'}<main id="pm-main" tabindex="-1" data-import-panel="{$importPanel|default:'template'|escape}">
 <a href="?op=pm">Tổng quan</a>
 <h1>Import nhân sự</h1>
-<p class="pm-import-notice">Preview/staging chưa áp dụng. Apply xử lý từng dòng; tài khoản mới chưa kích hoạt, chỉ role EMPLOYEE. Admin cấp mật khẩu tại kết quả Apply, sau đó kích hoạt trong Quản lý nhân sự trước khi sử dụng. Không sửa tài khoản trùng email.</p>
+<p class="pm-import-notice">Nhập nhân sự từ Excel. Tài khoản mới cần được cấp mật khẩu và kích hoạt trước khi sử dụng.</p>
+<details class="pm-reading-help"><summary>Quy trình import và kích hoạt</summary><p>Preview/staging chưa áp dụng. Apply xử lý từng dòng; tài khoản mới chưa kích hoạt, chỉ role EMPLOYEE. Admin cấp mật khẩu tại kết quả Apply, sau đó kích hoạt trong Quản lý nhân sự trước khi sử dụng. Không sửa tài khoản trùng email.</p></details>
 <nav class="pm-import-steps" aria-label="Các bước import">
 <ol>
 <li>
@@ -87,11 +88,11 @@
 </div>
 </section>
 <section id="pm-import-history" data-import-panel tabindex="-1">
-<h2>L?ch s? Apply</h2>
+<h2>Lịch sử Apply</h2>
 {if isset($importBatch) && $importBatch}<section>
 <h2>Kết quả Apply #{$importBatch.id|escape}</h2>
 <p>Trạng thái: {$importBatch.status|escape}. Đã tạo: {$importBatch.counts.applied|escape}; bỏ qua trùng: {$importBatch.counts.skipped_duplicate|escape}; lỗi: {$importBatch.counts.failed|escape}; chưa hoàn tất: {$importBatch.counts.pending|escape}.</p>
-<p>Mỗi dòng độc lập; khi gián đoạn dùng Tiếp tục. invalid_row_or_reference: kiểm tra phòng ban/role còn active; insert_failed: cần kiểm tra DB; username_collision_inactive: tài khoản mới giữ chưa kích hoạt, cần quản trị viên xử lý xung đột username; không tự sửa dữ liệu.</p>
+<details class="pm-reading-help"><summary>Giải thích kết quả và cách tiếp tục</summary><p>Mỗi dòng độc lập; khi gián đoạn dùng Tiếp tục. invalid_row_or_reference: kiểm tra phòng ban/role còn active; insert_failed: cần kiểm tra DB; username_collision_inactive: tài khoản mới giữ chưa kích hoạt, cần quản trị viên xử lý xung đột username; không tự sửa dữ liệu.</p></details>
 <div class="scroll">
 <p class="pm-table-hint">Bảng có thể cuộn ngang khi màn hình hẹp.</p>
 <div class="pm-table-region table-responsive" role="region" aria-label="Bảng dữ liệu" tabindex="0">

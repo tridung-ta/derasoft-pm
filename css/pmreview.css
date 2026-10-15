@@ -1,0 +1,76 @@
+/* PM local review. Shared visual rules only: no data, permission or form behavior. */
+body.pm-app{--pm-review-ink:#202c32;--pm-review-muted:#52616b;--pm-review-line:#cbd5d8;--pm-review-surface:#fff;--pm-review-soft:#f3f6f5;--pm-review-accent:#14675e;font-size:15px;line-height:1.55;caret-color:var(--pm-review-accent)}
+body.pm-app:has(.pm-header-controls) main#pm-main{max-width:1520px!important;margin:0 auto!important;padding:28px 32px 56px!important}
+body.pm-app main#pm-main{min-width:0}
+body.pm-app h1{font-size:clamp(26px,2.4vw,32px);line-height:1.25;letter-spacing:-.025em;margin:12px 0 14px;font-weight:650;text-wrap:balance}
+body.pm-app h2{font-size:19px;line-height:1.4;font-weight:650}
+body.pm-app h3{font-size:16px;line-height:1.45;font-weight:600}
+body.pm-app main>p,body.pm-app main>header p{max-width:76ch;color:var(--pm-review-muted)}
+body.pm-app main>section,body.pm-app main>.card{margin-block:20px}
+body.pm-app main>section:not(.metrics):not(.charts):not(.pm-overview-workspace):not(.pm-due-work),body.pm-app .card{padding:24px;border-color:var(--pm-review-line)}
+body.pm-app :is(label,dt){font-size:13px;font-weight:550;color:var(--pm-review-ink)}
+body.pm-app :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea){font-size:15px;line-height:1.5;border-color:#a9b8be;min-height:44px;max-width:100%}
+body.pm-app :is(input,textarea)::placeholder{color:#626f79;opacity:1}
+body.pm-app textarea{min-height:96px;resize:vertical}
+body.pm-app .grid,body.pm-app .form-grid{gap:16px 20px}
+body.pm-app form>.grid{margin-block:12px 20px}
+body.pm-app .btn{min-height:44px;padding:10px 16px;line-height:1.4;font-size:14px;white-space:normal}
+body.pm-app .btn.secondary:not(.danger){background:#fff;border:1px solid #a9b8be;color:#244b46}
+body.pm-app .btn.secondary:not(.danger):hover{background:#eaf2ef;border-color:#668e85;color:#143c35}
+body.pm-app .btn:disabled{cursor:not-allowed}
+body.pm-app :is(a,summary){text-underline-offset:3px}
+body.pm-app summary{min-height:44px;align-content:center;cursor:pointer}
+body.pm-app :focus-visible{outline:3px solid #14675e;outline-offset:3px;scroll-margin-top:88px}
+body.pm-app ::selection{background:#c8e8df;color:#143c35}
+body.pm-app :is(.pm-table-region,.pm-person-dialog,.pm-module-nav){scrollbar-color:#78938c #edf2f0;scrollbar-width:thin}
+body.pm-app .pm-table-region table{font-size:14px}
+body.pm-app .pm-table-region th{font-size:12px;letter-spacing:0;line-height:1.5;padding:12px 14px}
+body.pm-app .pm-table-region td{padding:14px;line-height:1.55;overflow-wrap:anywhere}
+body.pm-app .pm-table-region tbody tr:hover{background:#f5f8f7}
+body.pm-app .pm-table-region caption{font-size:12px;color:var(--pm-review-muted)}
+body.pm-app .pm-table-hint{font-size:12px;color:var(--pm-review-muted);margin:8px 0}
+@media(min-width:901px){body.pm-app .pm-table-hint{display:none}}
+body.pm-app :is(.warning,.error,.err,.notice,.msg,.message){font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+body.pm-app main>p.error,body.pm-app main>.err{max-width:none}
+body.pm-app .pm-reading-help,body.pm-app .pm-role-rate-editor{margin:12px 0 20px;border:0;background:transparent}
+body.pm-app .pm-reading-help>summary{font-size:13px;color:var(--pm-review-muted);font-weight:500}
+body.pm-app .pm-reading-help>p,body.pm-app .pm-field-help{font-size:13px;line-height:1.65;color:var(--pm-review-muted);max-width:78ch;margin:8px 0 16px}
+body.pm-app .pm-role-rate-editor>summary{font-weight:600;color:#244b46}
+body.pm-app .pm-people-filter>form>p{margin-bottom:0}
+body.pm-app .pm-person-dialog{width:min(920px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:24px}
+body.pm-app .pm-person-sheet>section{padding:20px 0;border:0;border-top:1px solid var(--pm-review-line);border-radius:0;box-shadow:none}
+body.pm-app .pm-person-sheet .top h2{font-size:20px}
+body.pm-app .pm-person-sheet form label{margin-block:10px}
+body.pm-app .pm-person-state{font-size:12px}
+body.pm-app .pm-task-edit-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;align-items:start}
+body.pm-app .pm-task-edit-form>label:has(textarea),body.pm-app .pm-task-edit-form>label:first-of-type{grid-column:1/-1}
+body.pm-app .pm-task-edit-form>button{justify-self:start}
+body.pm-app .pm-project-edit-form>label{margin:16px 0}
+body.pm-app .pm-project-editor[open],body.pm-app .pm-task-editor[open]{padding:16px 0}
+body.pm-app .pm-kanban{scrollbar-color:#78938c #edf2f0}
+body.pm-app .pm-time-rule-snapshot{font-size:13px;line-height:1.6;padding:12px 16px;max-width:90ch}
+body.pm-app .pm-time-week{gap:12px}
+body.pm-app .pm-time-help>summary{font-size:13px;color:var(--pm-review-muted)}
+body.pm-app .pm-cost-kpis h2{font-size:13px;line-height:1.5;color:var(--pm-review-muted);font-weight:550}
+body.pm-app .pm-cost-kpis article{padding:20px;min-width:0}
+body.pm-app .pm-cost-kpis p{font-size:clamp(20px,2vw,28px);font-weight:650;line-height:1.3;overflow-wrap:anywhere}
+body.pm-app .pm-cost-kpis .pm-missing-rate{font-size:13px}
+body.pm-app.pm-costs-page .warnings{padding:16px 20px}
+body.pm-app.pm-costs-page .warnings h2{font-size:15px;margin:0 0 8px}
+body.pm-app.pm-costs-page #warnings{font-size:13px;line-height:1.65;margin:0;max-width:110ch;padding-left:20px}
+body.pm-app.pm-costs-page #warnings:empty{display:none}
+body.pm-app #refresh-status{font-size:12px;padding:0;border:0;max-width:28ch;background:transparent}
+body.pm-app .pm-cost-table-part>h2{font-size:15px;margin-top:20px}
+body.pm-app .pm-report-summary dd{font-size:28px;font-variant-numeric:tabular-nums}
+body.pm-app .pm-report-pager,body.pm-app .pager{font-size:13px;display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px 0}
+body.pm-app .pm-report-pager a,body.pm-app .pager a{display:inline-flex;align-items:center;min-height:44px}
+body.pm-app .pm-notification-item{padding-block:20px}
+body.pm-app .pm-audit-detail pre{font-size:12px;line-height:1.6;max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
+body.pm-app.pm-login-page .intro h1{font-size:clamp(30px,3.5vw,44px);line-height:1.15;letter-spacing:-.03em}
+body.pm-app.pm-login-page .brand{font-size:20px}
+body.pm-app.pm-login-page .panel h2{font-size:24px}
+body.pm-app.pm-login-page .hint{font-size:14px;max-width:36ch}
+@media(max-width:900px){body.pm-app:has(.pm-header-controls) main#pm-main{padding:24px 20px 40px!important}body.pm-app .pm-cost-kpis p{font-size:22px}}
+@media(max-width:600px){body.pm-app:has(.pm-header-controls) main#pm-main{padding:20px 16px 36px!important}body.pm-app main>section:not(.metrics):not(.charts):not(.pm-overview-workspace):not(.pm-due-work),body.pm-app .card{padding:18px}body.pm-app .pm-task-edit-form{grid-template-columns:1fr}body.pm-app .pm-person-dialog{padding:18px}body.pm-app .pm-table-region td{padding:12px}body.pm-app .pm-cost-kpis article{padding:16px}body.pm-app .pm-cost-kpis p{font-size:22px}body.pm-app .pm-time-week{gap:8px}body.pm-app.pm-login-page .intro h1{font-size:30px}}
+@media(prefers-reduced-motion:reduce){body.pm-app{scroll-behavior:auto}}
+body.pm-app.pm-login-page .intro{background:#f4f4f5!important;color:#18181b}body.pm-app.pm-login-page .intro :is(.brand,h1,p){color:#18181b!important}
