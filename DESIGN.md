@@ -1,9 +1,9 @@
-# Giao diện vận hành
+# Operating interface - Vietnamese lacquer
 
-Inter tự host, nền sage sáng, mặt làm việc trắng và teal rừng đậm. Topbar cố định: Điều hướng trái, DeraSoft giữa, thông báo/tài khoản phải; không sidebar điều hướng cố định. Người dùng đã yêu cầu thiết kế lại bố cục toàn PM trên local ngày 15/10/2026 sau khi bản đổi viền/màu chưa đủ khác biệt.
+User-approved palette (2026-10-15): primary #8C1C13, gold accent #D4A24C, ivory canvas #F6EFE4, dark ink #14100E, secondary text #7A6A5F. Use white reading surfaces and oxblood primary actions. Gold marks selection and estimate chart data, never small text on white. Avoid large dark panels in the operating workspace. Destructive actions retain explicit labels and outlined danger styling.
 
-Desktop tổ chức theo workbench: vùng thao tác/lọc hẹp bên trái, dữ liệu rộng bên phải; mobile xếp dọc đúng thứ tự DOM. Tổng quan có luồng việc cần xử lý và rail lối truy cập chức năng. Danh sách dự án dùng hàng ngang cho tên, tiến độ và thông tin đối chiếu; chi tiết dự án tách team khỏi Kanban. Chấm công đặt lịch tuần trên cùng, form cạnh lịch sử. Phân bổ đặt bộ lọc cạnh lịch. Chi phí/báo cáo/nhân sự/nhật ký có contextual filter rail.
+Keep self-hosted Inter, clear borders and 44px controls. Navigation left, DeraSoft centered, account/notifications right. Desktop workbenches pair contextual controls with a wide data area; mobile stacks in DOM order. Dashboard has a work stream and access rail. Projects use horizontal rows, team sits beside Kanban. Timesheets place week above entry/history; allocations pair controls and calendar. Long explanations remain expandable.
 
-Khung dữ liệu phân cấp bằng bố cục và typography, không dùng các card giống nhau dàn đều. Đăng nhập có panel nhận diện teal và form sáng; số liệu luôn lấy từ backend hiện hữu. Không gradient, kính, số liệu giả hoặc tính năng giả. Focus rõ, thao tác tối thiểu 44px, native details/form/no-JS và CSP được giữ.
+Preserve native forms/details, permissions, CSRF, CSP and keyboard access. Login uses ivory introduction and white form, stacked on mobile. No fabricated product data, gradients or glass effects.
 
-Motion theo tương tác (menu, tab, dialog, toast), không delay thao tác, không scroll reveal hay vòng lặp. Reduced motion bỏ chuyển động không gian. Bản local chờ người dùng duyệt; không tự triển khai production.
+Interaction motion only: menu, tabs, dialogs and feedback. Reduced motion skips spatial effects. Local review only; no push, merge or production deployment without user approval.

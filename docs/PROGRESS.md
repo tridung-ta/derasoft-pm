@@ -2101,3 +2101,8 @@ Hoàn tất thay đổi local theo yêu cầu: ba panel riêng, Preview không t
 
 ## 14/10 — BUILD throttle012 local, chưa SQLVERIFY
 ĐãBUILDpolicy/scopedCLI/snapshot/strict012/read011,runner012riêngvớiallocation/in_progress/mirrorusers/clock/finallychecksums. 63new+53legacyunitchecks,19noDBscripts/23PHP lint/6manifestchecks và2browserfixturesPASS. SQLmanual/HTTPconcurrency/EXPLAIN/backuprestoreCHƯACHẠY,bàn giao PM_CRON_012_MANUAL_TEST.md mục13. Code-review siếtunknown1062failed vàcleanupworker. KhôngSQLghi/flag/push/merge/deploy. PM_CRON_THROTTLE_BUILD_VERIFY_20261014.md.
+
+
+## 2026-10-15 - Local Vietnamese lacquer palette
+
+Applied user-selected oxblood/gold/ivory palette across PM surfaces, removed large dark workspace panels and corrected mobile login stacking. Evidence and limits: `docs/PM_LACQUER_PALETTE_20261015.md`. No-DB verifier 23 scripts/30 lint/6 manifest tests, native contract guard14 and58 browser renders PASS. Button/login contrast, projects, costs, header and motion suites PASS. Local only; no push, merge or production deployment.

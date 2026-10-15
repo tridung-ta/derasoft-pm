@@ -6,13 +6,14 @@ async page=>{
         return nodes.map(e=>{const fg=lum(getComputedStyle(e).color),bg=lum(getComputedStyle(e.closest('.intro')).backgroundColor);return {tag:e.tagName,ratio:(Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05)}});
     });
     if(results.length!==3||results.some(r=>r.ratio<7))throw Error('Login intro not strongly legible: '+JSON.stringify(results));
-    if(!await page.locator('link[href*="css/pmui.css"]').evaluate(e=>e.getAttribute('href').includes('v=20261007-login3')))throw Error('Login CSS cache version missing');
-    if(!await page.locator('.intro').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(21, 63, 51)'))throw Error('Login brand panel color mismatch');
-    if(!await page.locator('button.submit').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(20, 103, 94)'))throw Error('Login button does not match teal theme');
+    if(!await page.locator('link[href*="css/pmui.css"]').evaluate(e=>e.getAttribute('href').includes('v=20261015-lacquer1')))throw Error('Login CSS cache version missing');
+    if(!await page.locator('.intro').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(246, 239, 228)'))throw Error('Login brand panel color mismatch');
+    if(!await page.locator('button.submit').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(140, 28, 19)'))throw Error('Login button does not match lacquer theme');
     for(const width of [1440,390,720]){
         await page.setViewportSize({width,height:1000});
         await page.evaluate(scale=>document.documentElement.style.fontSize=scale,width===720?'200%':'');
         if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('Login overflow');
+        if(width===390){const intro=await page.locator('.intro').boundingBox(),panel=await page.locator('.panel').boundingBox();if(panel.y<intro.y+intro.height-2||Math.abs(panel.x-intro.x)>2)throw Error('Mobile login must stack');}
         if(!await page.locator('.intro h1').isVisible()||!await page.getByRole('button',{name:'Đăng nhập',exact:true}).isVisible())throw Error('Login content hidden');
         if(width!==720)await page.screenshot({path:'login-contrast-'+width+'.png',fullPage:true});
     }

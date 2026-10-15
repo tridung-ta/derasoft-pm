@@ -15,8 +15,8 @@ header('X-Robots-Tag: noindex, nofollow, noarchive');
 	<meta name="robots" content="noindex, nofollow, noarchive">
 	<meta name="theme-color" content="#0f172a">
 	<title>DeraSoft PM</title>
-<link rel="stylesheet" href="css/pmlaunch.css?v=20261015-local1">
-<link rel="stylesheet" href="css/pmpolish.css?v=20261015-motion1"><script src="js/pmmotion.js?v=20261015-motion1" defer></script><link rel="stylesheet" href="css/pmstudio.css?v=20261015-layout1"></head>
+<link rel="stylesheet" href="css/pmlaunch.css?v=20261015-lacquer1">
+<link rel="stylesheet" href="css/pmpolish.css?v=20261015-lacquer1"><script src="js/pmmotion.js?v=20261015-motion1" defer></script><link rel="stylesheet" href="css/pmstudio.css?v=20261015-lacquer1"></head>
 <body class="pm-launch-page">
 	<main>
 		<section class="content" aria-labelledby="page-title">

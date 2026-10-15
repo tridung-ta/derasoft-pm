@@ -1,4 +1,4 @@
-﻿/* Shared PM header: navigation left, centered wordmark, account controls right. */
+/* Shared PM header: navigation left, centered wordmark, account controls right. */
 .pm-header-only .pm-work-brand{position:absolute;left:50%;transform:translateX(-50%);font-size:17px;white-space:nowrap}
 .pm-header-controls .pm-work-menu{top:10px;left:24px;width:168px}
 body.pm-app:has(.pm-header-controls) main#pm-main{padding-top:32px!important}
@@ -13,6 +13,6 @@ body.pm-app .pm-header-controls .pm-work-menu .pm-module-nav{max-height:calc(100
  .pm-header-controls .pm-user-menu>summary{font-size:0;width:44px;min-width:44px;padding:10px;gap:0}
  .pm-header-controls .pm-user-menu>summary:after{display:none}
  .pm-header-controls .pm-user-menu>summary:before{content:'';display:block;width:22px;height:22px;background:center/22px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23202c32' stroke-width='1.7'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21v-2a8 8 0 0116 0v2'/%3E%3C/svg%3E")}
- .pm-header-controls .pm-user-menu>summary:focus-visible{outline:3px solid #14675e;outline-offset:3px}
+ .pm-header-controls .pm-user-menu>summary:focus-visible{outline:3px solid #8c1c13;outline-offset:3px}
 }
 @media(max-width:640px){.pm-header-controls .pm-notification-menu>summary{position:relative;box-sizing:border-box;width:44px;min-width:44px;padding:10px;justify-content:center}.pm-header-controls .pm-notification-menu>summary>b{position:absolute;top:-5px;right:-4px;min-width:18px;height:18px;padding:0 3px;font-size:10px}}
