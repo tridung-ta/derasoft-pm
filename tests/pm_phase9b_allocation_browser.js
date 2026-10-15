@@ -12,7 +12,7 @@ async page => {
     if(await table.locator('thead th').count()!==8)throw new Error('Seven-day header missing');
     if(!await table.textContent().then(t=>t.includes('03/01')&&t.includes('9.00 giờ')&&t.includes('41.00 / 40.00')))throw new Error('Year rollover or totals');
     if(await table.locator('.pm-week-over').count()!==2)throw new Error('Day/week overbooking missing');
-    if(await table.locator('tbody td').first().textContent().then(t=>!t.includes('Chưa có chi tiết')))throw new Error('Hidden detail misrepresented as zero');
+    if(await table.locator('tbody td').first().locator('small').getAttribute('aria-label')!=='Chưa có chi tiết')throw new Error('Hidden detail misrepresented as zero');
     for(const width of [360,390,768,1440]){
         await page.setViewportSize({width,height:1000});
         if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw new Error('Page overflow '+width);

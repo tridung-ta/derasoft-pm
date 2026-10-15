@@ -21,10 +21,11 @@
         });
         const fragment=document.createDocumentFragment();
         fragment.append(text('h2','Lịch phân bổ trong tuần'));
-        fragment.append(text('p','Ô hiển thị tổng tải trong đơn vị. Ngày không có chi tiết trong phạm vi xem được ghi “Chưa có chi tiết”, không mặc định là 0 giờ.'));
+        const guide=document.createElement('details');guide.className='pm-allocation-help';guide.append(text('summary','Cách xem lịch'));guide.append(text('p','Ô hiển thị tổng tải trong đơn vị. Ngày không có chi tiết trong phạm vi xem được ghi “Chưa có chi tiết”, không mặc định là 0 giờ.'));
+        fragment.append(guide);
         if(!people.size){fragment.append(text('p','Không có phân bổ trong tuần/phạm vi đã chọn.'));}
         else {
-            const hint=text('p','Cuộn ngang hoặc dùng phím mũi tên trong bảng để xem đủ 7 ngày.');hint.className='pm-table-hint';fragment.append(hint);
+            const hint=text('p','Cuộn ngang hoặc dùng phím mũi tên trong bảng để xem đủ 7 ngày.');hint.className='pm-table-hint';guide.append(hint);
             const region=document.createElement('div');region.className='pm-table-region';region.tabIndex=0;region.setAttribute('role','region');region.setAttribute('aria-label','Lưới phân bổ tuần; cuộn ngang để xem đủ ngày');
             const table=document.createElement('table');table.className='pm-week-table';
             const caption=text('caption','Tuần '+days[0]+' — '+days[6]);table.append(caption);
@@ -39,7 +40,7 @@
                 tr.append(title);
                 days.forEach(day=>{
                     const cell=document.createElement('td');const rows=person.days.get(day);
-                    if(!rows){cell.append(text('small','Chưa có chi tiết'));}
+                    if(!rows){const empty=text('small','—');empty.setAttribute('aria-label','Chưa có chi tiết');empty.title='Chưa có chi tiết';cell.append(empty);}
                     else {
                         const d=rows[0].dataset;
                         const hours=text('strong',d.dayTotal+' giờ');hours.className='num-cell';cell.append(hours,text('small','Ngưỡng '+d.dayLimit+' giờ/ngày'));
