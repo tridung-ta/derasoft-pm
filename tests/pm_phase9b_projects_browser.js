@@ -18,10 +18,10 @@ async page => {
         if(await page.locator('.pm-project-card').first().locator('progress').count())throw new Error('No-task project shows invented progress');
         if(await page.locator('.pm-project-card').last().locator('progress').count())throw new Error('Restricted progress exposed');
         if(await page.locator('.pm-project-card script').count())throw new Error('Name escaping failed');
-        for(const [width,columns] of [[360,1],[390,1],[768,2],[1440,3]]){
+        for(const width of [360,390,768,1440]){
             await page.setViewportSize({width,height:1000});
-            const layout=await page.locator('.pm-project-grid').evaluate(e=>({columns:getComputedStyle(e).gridTemplateColumns.split(' ').length,overflow:document.documentElement.scrollWidth>innerWidth+1}));
-            if(layout.columns!==columns||layout.overflow)throw new Error('Responsive grid '+width+': '+JSON.stringify(layout));
+            const layout=await page.locator('.pm-project-grid').evaluate(e=>({display:getComputedStyle(e).display,direction:getComputedStyle(e).flexDirection,overflow:document.documentElement.scrollWidth>innerWidth+1}));
+            if(layout.display!=='flex'||layout.direction!=='column'||layout.overflow)throw new Error('Responsive worklist '+width+': '+JSON.stringify(layout));
         }
         const colors=await page.locator('.pm-project-status').evaluateAll(nodes=>nodes.map(e=>({fg:getComputedStyle(e).color,bg:getComputedStyle(e).backgroundColor})));
         function luminance(rgb){return rgb.match(/[\d.]+/g).slice(0,3).map(Number).map(x=>{x/=255;return x<=.04045?x/12.92:((x+.055)/1.055)**2.4}).reduce((sum,x,i)=>sum+x*[.2126,.7152,.0722][i],0);}
