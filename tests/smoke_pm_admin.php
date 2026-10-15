@@ -37,7 +37,7 @@ foreach (array('dashboard', 'profile', 'password', 'team') as $section) {
 		'pmNavigation' => PmUiService::navigation(new WorkspacePreviewAccess(),'pm',$section),
 	));
 	$html = $smarty->fetch('pm.tpl.html');if(in_array('--preview',$argv,true))file_put_contents(ROOT_PATH.'.local/phase9-'.$section.'.html',str_replace('<head>','<head><base href="/">',$html));
-	if(substr_count($html,'class="brand-mark"')!==1 || !str_contains($html,'logout pm-logout'))throw new RuntimeException('Dashboard brand/logout missing or duplicated.');
+	if(substr_count($html,'class="brand-mark"')!==0 || substr_count($html,'<strong>DeraSoft</strong>')!==1 || !str_contains($html,'logout pm-logout'))throw new RuntimeException('Dashboard brand/logout missing or duplicated.');
 	if($section==='dashboard'&&(!str_contains($html,'pm-overview-kpis')||!str_contains($html,'pm-overview-shortcuts')||substr_count($html,'class="metric"')!==3))throw new RuntimeException('Overview strip/shortcuts missing.');
 	if (strpos($html, 'DeraSoft PM') === false) {
 		fwrite(STDERR, "PM template failed for section: {$section}\n");
