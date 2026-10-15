@@ -116,7 +116,7 @@
 <input type="hidden" name="op" value="pmimports">
 <input type="hidden" name="csrf_token" value="{$csrfToken|escape}">
 <input type="hidden" name="import_id" value="{$importBatch.id|escape}">
-<input type="hidden" name="source_row" value="{$r.source_row|escape}">{if isset($passwordProvisionedRow) && $passwordProvisionedRow == $r.source_row}<p class="notice" role="status">Đã cấp mật khẩu cho User ID {$r.user_id|escape}. Kích hoạt tài khoản trong Nhân sự để đăng nhập.</p>{/if}<label>Mật khẩu mới (12–72 byte)<input class="form-control" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="72" aria-describedby="pm-import-password-error-{$r.source_row|escape}" required>
+<input type="hidden" name="source_row" value="{$r.source_row|escape}">{if isset($passwordProvisionedRow) && $passwordProvisionedRow == $r.source_row}<p class="notice" role="status">Đã cấp mật khẩu cho User ID {$r.user_id|escape}. Kích hoạt tài khoản trong Nhân sự để đăng nhập.</p>{/if}<label>Mật khẩu mới (8–72 byte)<input class="form-control" type="password" name="password" autocomplete="new-password" minlength="8" maxlength="72" aria-describedby="pm-import-password-error-{$r.source_row|escape}" required>
 </label>
 <p class="error" role="alert" id="pm-import-password-error-{$r.source_row|escape}" data-pm-password-error hidden>
 </p>
@@ -169,7 +169,7 @@
 </script>
 <script src="js/pmui.js?v=20261014-reminders" defer>
 </script>
-<script src="js/pmimportfeedback.js?v=20261015-feedback" defer>
+<script src="js/pmimportfeedback.js?v=20261015-password8" defer>
 </script>
 </body>
 </html>

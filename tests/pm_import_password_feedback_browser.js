@@ -15,9 +15,10 @@ async page=>{
   }
   await page.goto('http://127.0.0.1:18767/.local/import-password-feedback.html');
   const form=page.locator('[data-pm-provision-password]').first(),input=form.locator('[name=password]');
-  await input.fill('short');await form.locator('button').click();
+  await input.fill('1234567');await form.locator('button').click();
   if(!await form.locator('[data-pm-password-error]').isVisible()||await form.locator('button').isDisabled())throw Error('Invalid feedback or form locked');
-  await input.fill('ấ'.repeat(6));if(!await input.evaluate(e=>e.checkValidity()))throw Error('UTF8 valid12-72 byte password rejected by character minimum');
+  await input.fill('12345678');if(!await input.evaluate(e=>e.checkValidity()))throw Error('8 byte password rejected');
+  await input.fill('ấ'.repeat(3));if(!await input.evaluate(e=>e.checkValidity()))throw Error('UTF8 valid8-72 byte password rejected by character minimum');
   await input.fill('ấ'.repeat(25));if(await input.evaluate(e=>e.checkValidity()))throw Error('UTF8 >72 bytes accepted');
   await page.goto('http://127.0.0.1:18767/.local/import-password-success.html');
   if(await page.locator('.pm-toast').count()!==1||await page.locator('form[ data-pm-provision-password] p.notice').count()!==1)throw Error('Success feedback');

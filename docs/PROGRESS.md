@@ -2085,6 +2085,8 @@ Sau backup guardloopback/derasoft_pm_local, áp011local;41SQL/concurrency/crash/
 
 ## 15/10/2026 — Import: panel riêng, giữ tệp Preview và phản hồi Apply
 
+Cập nhật tiếp theo theo yêu cầu: cấp mật khẩu từ import giảm tối thiểu 12 xuống 8 byte UTF-8, giữ tối đa 72 và kiểm tra NUL. Đồng bộ service, JS, nhãn/minlength; tăng cache version. PHP lint, Smarty/controller fixture và browser desktop/mobile PASS (7 byte từ chối, 8 byte chấp nhận, 75 byte từ chối). Chưa kiểm tra ghi DB thật. Gói bổ sung chỉ 3 file runtime; không SQL, không đổi quy trình đăng nhập hay cron.
+
 Hoàn tất thay đổi local theo yêu cầu: ba panel riêng, Preview không tải lại trang nên giữ tệp cho Stage; Apply/resume báo số thành công/trùng/lỗi/pending; cấp mật khẩu có phản hồi theo dòng. Không thay service/DAO/SQL/cron/shared UI. Skill: feature-development, impeccable, playwright-cli; code-review và git-feature-commit cho bước chốt local. 23 no-DB script, 30 PHP lint, 6 manifest checks và 3 browser fixture suite PASS. Controller dùng stub service; chưa chạy DB integration hay production. Chi tiết, giới hạn và 5 file upload: `docs/PM_IMPORT_UI_20261015.md`.
 
 ## 14/10 — BUILD throttle012 local, chưa SQLVERIFY

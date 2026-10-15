@@ -131,7 +131,7 @@ class PmImportService {
     }
     protected function afterUserInsert(): void {}
     public function provisionPassword(int $id,int $row,string $password): array {
-        $this->permission();if($id<=0||$row<2||strlen($password)<12||strlen($password)>72||str_contains($password,"\0"))throw new InvalidArgumentException('Mật khẩu cần 12–72 byte, không chứa ký tự NUL; batch/dòng phải hợp lệ.');
+        $this->permission();if($id<=0||$row<2||strlen($password)<8||strlen($password)>72||str_contains($password,"\0"))throw new InvalidArgumentException('Mật khẩu cần 8–72 byte, không chứa ký tự NUL; batch/dòng phải hợp lệ.');
         $dao=new PmImports((object)['connection'=>$this->connection]);$lock=$dao->lockName($this->storeId,$id);
         if(!$dao->acquire($lock))throw new OverflowException('Batch đang được Admin khác xử lý.');
         $identity=new PmUserIdentityService((object)['connection'=>$this->connection]);$identityLock=null;

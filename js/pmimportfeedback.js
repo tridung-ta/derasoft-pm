@@ -18,7 +18,7 @@
             let message = '';
             if (!input.value) message = 'Vui lòng nhập mật khẩu cho tài khoản này.';
             else if (input.value.includes('\0')) message = 'Mật khẩu không được chứa ký tự NUL.';
-            else if (bytes < 12 || bytes > 72) message = 'Mật khẩu cần 12–72 byte UTF-8; hiện có ' + bytes + ' byte.';
+            else if (bytes < 8 || bytes > 72) message = 'Mật khẩu cần 8–72 byte UTF-8; hiện có ' + bytes + ' byte.';
             input.setCustomValidity(message);
             input.setAttribute('aria-invalid', message ? 'true' : 'false');
             feedback.textContent = message;
