@@ -12,6 +12,15 @@
 - Thông báo skill áp dụng lần đầu, đọc hướng dẫn trước khi dùng. Quyết định đã ghi nhận được tái sử dụng nếu bối cảnh vẫn phù hợp; kiểm tra lại khi yêu cầu hoặc hướng dẫn thay đổi.
 - Sau trường hợp mới, ghi nguyên nhân, cách xử lý và bằng chứng kiểm tra vào tài liệu; không ghi suy đoán thành kết luận hoặc PASS chưa chạy.
 
+## Bộ nhớ lỗi và phòng ngừa — 16/10/2026
+
+- Trước khi sửa lỗi, đổi UI, viết test hoặc đóng gói, đọc mục tương ứng trong `docs/BUG_LESSONS.md`; chọn theo triệu chứng, không nạp mọi workflow cùng lúc.
+- Quy tắc học theo dự án nằm trong `docs/learning/instincts.json`, được chắt lọc thủ công theo ECC continuous-learning-v2. Đây không phải hook/observer tự chạy hay mô hình đã được huấn luyện lại.
+- Bài học chỉ là điểm xuất phát: tái hiện trên phiên bản hiện tại, kiểm chứng nguyên nhân, sửa đúng tầng và chạy bài regression được dẫn. Không coi bài học cũ là nguyên nhân chắc chắn của lỗi mới.
+- Khi gặp trường hợp mới: thêm triệu chứng → loại lỗi → nguyên nhân có bằng chứng/đang mở → cách xử lý → test → giới hạn. Không lưu mật khẩu, token, session, dump hoặc dữ liệu người thật.
+- Giữ riêng lỗi sản phẩm, lỗi harness, tình huống đúng nghiệp vụ và yêu cầu đổi thiết kế. Không sửa ứng dụng chỉ để test cũ PASS, không hạ assertion quyền/CSRF/dữ liệu để che lỗi.
+- Chỉ ghi hoàn thành/host PASS đúng phạm vi người dùng nghiệm thu hoặc test thực chạy. Cron là cải tiến ngoài 10 nhóm yêu cầu; các kiểm chứng nâng cao còn mở giữ thành follow-up, không tự nâng PASS.
+
 ## Bối cảnh
 
 Dự án xây dựng hệ thống quản lý dự án và chấm công trên nền DeraSoft hiện có: PHP thuần, Smarty, MySQL và kiến trúc MVC tùy chỉnh. Không viết lại hệ thống từ đầu. Người dùng chính gồm Admin, Project Manager, HR và Nhân viên.
