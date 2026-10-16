@@ -2116,3 +2116,8 @@ Replaced lacquer palette with the user-selected dark Midnight Gold theme across 
 ## 2026-10-16 - Midnight Gold UI/backend action retest
 
 Completed full current regression66 and47 browser suites after correcting stale test assumptions (translated errors, collapsed panels, dark tokens/text logo, chart destruction fallback, confirmation, fixture CSS and preview port collision). Native form contracts14 PASS; no application business changes. Local backup taken; contents of96 tables unchanged, dc_users remains MyISAM. PM/HR controller HTTP157 fixtures PASS, Admin/Employee live-session route18 cases PASS. Browser mutations intercepted; no real-account PM/HR password login or cross-request persisted browser E2E claim. Archived phase10 browser requiring retired isolated DB not run. Details: `docs/PM_UI_BE_ACTION_RETEST_20261016.md`. No push/merge/deploy.
+
+
+## 2026-10-16 - Ten requirements reconciliation and user-reported UI upload
+
+User reports Midnight Gold upload successful; no agent host verification. Reconciled the10 groups in PHASE11_REQUIREMENTS.md against current implementation and16October test evidence. All10 groups implemented; do not call full acceptance complete: detailed80-item ledger retains73PASS/0FAIL/7pending until case-specific evidence. Cron/all-user reminders/throttle are additional scope, excluded from the10; policy012 native SQL/concurrency evidence remains separate. No new tests, DB, runtime or production changes in this documentation pass. See `docs/PM_TEN_REQUIREMENTS_STATUS_20261016.md`.
