@@ -1,9 +1,9 @@
-# Operating interface - Vietnamese lacquer
+# Operating interface - Midnight Gold
 
-User-approved palette (2026-10-15): primary #8C1C13, gold accent #D4A24C, ivory canvas #F6EFE4, dark ink #14100E, secondary text #7A6A5F. Use white reading surfaces and oxblood primary actions. Gold marks selection and estimate chart data, never small text on white. Avoid large dark panels in the operating workspace. Destructive actions retain explicit labels and outlined danger styling.
+User-selected visual world, 2026-10-16: dark by default, canvas #0E1320, card #171E30, gold #D9B26A, main text #EDE6D8, secondary text #9AA0B2. Gold is the primary action and selected-state accent; dark ink on gold. Error and success states retain explicit labels and contrasting red/green tints. Form controls, menus, tables, dialogs, empty/error states and charts all use the dark palette. No automatic light-theme fallback.
 
-Keep self-hosted Inter, clear borders and 44px controls. Navigation left, DeraSoft centered, account/notifications right. Desktop workbenches pair contextual controls with a wide data area; mobile stacks in DOM order. Dashboard has a work stream and access rail. Projects use horizontal rows, team sits beside Kanban. Timesheets place week above entry/history; allocations pair controls and calendar. Long explanations remain expandable.
+Preserve self-hosted Inter and operating workbench layouts. Navigation left, DeraSoft centered, account/notifications right. Mobile stacks in DOM order. Keep native forms/details, CSP, CSRF, permission checks and existing backend content unchanged. Inputs, placeholders, focus, selection and scrollbars are themed.
 
-Preserve native forms/details, permissions, CSRF, CSP and keyboard access. Login uses ivory introduction and white form, stacked on mobile. No fabricated product data, gradients or glass effects.
+User-requested material motion: a single 800ms light sweep across primary buttons on hover; project cards and workspace links lift 6px with a soft offset shadow and gold border. Never loop, block pointer input or move data tables. Reduced motion removes sweep and lift. Existing menu/tab/dialog feedback remains cancelable.
 
-Interaction motion only: menu, tabs, dialogs and feedback. Reduced motion skips spatial effects. Local review only; no push, merge or production deployment without user approval.
+Local review only. No production access, push, merge or deployment without separate approval.

@@ -30,17 +30,17 @@
             return;
         }
         if (charts[id]) { charts[id].data = { labels, datasets }; charts[id].update('none'); }
-        else charts[id] = new window.Chart(canvas, { type: 'bar', data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom', labels: {font:{family:'Inter'}} }, tooltip:{titleFont:{family:'Inter'},bodyFont:{family:'Inter'},footerFont:{family:'Inter'}} }, scales:{x:{ticks:{font:{family:'Inter'}}},y:{ticks:{font:{family:'Inter'}}}} } });
+        else charts[id] = new window.Chart(canvas, { type: 'bar', data: { labels, datasets }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { position: 'bottom', labels: {color:'#9aa0b2',font:{family:'Inter'}} }, tooltip:{titleFont:{family:'Inter'},bodyFont:{family:'Inter'},footerFont:{family:'Inter'}} }, scales:{x:{ticks:{color:'#9aa0b2',font:{family:'Inter'}}},y:{ticks:{color:'#9aa0b2',font:{family:'Inter'}}}} } });
     };
     function draw() {
         const sameCurrency = data.summary.cost !== null && data.summary.cost_complete !== false;
         const dates = Object.keys(data.groups.date).filter(d=>data.groups.date[d].cost!==null && Number.isFinite(Number(data.groups.date[d].cost)));
-        chart('trend-chart', sameCurrency ? dates : [], [{ label: `Actual (${data.summary.currency})`, data: sameCurrency ? dates.map(d => Number(data.groups.date[d].cost)) : [], backgroundColor: '#8c1c13' }], sameCurrency ? 'Chưa có chi phí theo ngày trong khoảng lọc. Thử đổi khoảng ngày hoặc xem bảng bên dưới.' : Number(data.summary.missing_rate_entries)>0 ? 'Chưa đủ đơn giá cho chấm công trong khoảng lọc; chưa vẽ tổng chi phí. Số tiền đã lưu vẫn có trong bảng.' : 'Không vẽ tổng tiền khi dữ liệu khác tiền tệ hoặc chưa đủ dữ liệu đồng nhất. Xem chi tiết trong bảng.');
+        chart('trend-chart', sameCurrency ? dates : [], [{ label: `Actual (${data.summary.currency})`, data: sameCurrency ? dates.map(d => Number(data.groups.date[d].cost)) : [], backgroundColor: '#d9b26a' }], sameCurrency ? 'Chưa có chi phí theo ngày trong khoảng lọc. Thử đổi khoảng ngày hoặc xem bảng bên dưới.' : Number(data.summary.missing_rate_entries)>0 ? 'Chưa đủ đơn giá cho chấm công trong khoảng lọc; chưa vẽ tổng chi phí. Số tiền đã lưu vẫn có trong bảng.' : 'Không vẽ tổng tiền khi dữ liệu khác tiền tệ hoặc chưa đủ dữ liệu đồng nhất. Xem chi tiết trong bảng.');
         const comparable = data.projects.filter(p => p.comparable && p.lifetime.cost_complete !== false);
         chart('budget-chart', comparable.map(p => p.name), [
-            { label: 'Ngân sách VND', data: comparable.map(p => Number(p.budget)), backgroundColor: '#7a6a5f' },
-            { label: 'Actual toàn đời VND', data: comparable.map(p => Number(p.lifetime.cost)), backgroundColor: '#8c1c13' },
-            { label: 'Ước tính VND', data: comparable.map(p => Number(p.estimate.cost)), backgroundColor: '#d4a24c' }
+            { label: 'Ngân sách VND', data: comparable.map(p => Number(p.budget)), backgroundColor: '#9aa0b2' },
+            { label: 'Actual toàn đời VND', data: comparable.map(p => Number(p.lifetime.cost)), backgroundColor: '#d9b26a' },
+            { label: 'Ước tính VND', data: comparable.map(p => Number(p.estimate.cost)), backgroundColor: '#6f91c4' }
         ], data.projects.length ? 'Chưa có dự án đủ dữ liệu VND đồng nhất để so sánh ngân sách, actual toàn đời và ước tính. Xem bảng dự án.' : 'Không có dự án trong phạm vi để so sánh. Thử đổi bộ lọc.');
     }
     function render() {

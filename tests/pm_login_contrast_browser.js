@@ -6,9 +6,9 @@ async page=>{
         return nodes.map(e=>{const fg=lum(getComputedStyle(e).color),bg=lum(getComputedStyle(e.closest('.intro')).backgroundColor);return {tag:e.tagName,ratio:(Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05)}});
     });
     if(results.length!==3||results.some(r=>r.ratio<7))throw Error('Login intro not strongly legible: '+JSON.stringify(results));
-    if(!await page.locator('link[href*="css/pmui.css"]').evaluate(e=>e.getAttribute('href').includes('v=20261015-lacquer1')))throw Error('Login CSS cache version missing');
-    if(!await page.locator('.intro').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(246, 239, 228)'))throw Error('Login brand panel color mismatch');
-    if(!await page.locator('button.submit').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(140, 28, 19)'))throw Error('Login button does not match lacquer theme');
+    if(!await page.locator('link[href*="css/pmui.css"]').evaluate(e=>e.getAttribute('href').includes('v=20261016-midnight1')))throw Error('Login CSS cache version missing');
+    if(!await page.locator('.intro').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(23, 30, 48)'))throw Error('Login brand panel color mismatch');
+    if(!await page.locator('button.submit').evaluate(e=>getComputedStyle(e).backgroundColor==='rgb(217, 178, 106)'))throw Error('Login button does not match Midnight Gold theme');
     for(const width of [1440,390,720]){
         await page.setViewportSize({width,height:1000});
         await page.evaluate(scale=>document.documentElement.style.fontSize=scale,width===720?'200%':'');

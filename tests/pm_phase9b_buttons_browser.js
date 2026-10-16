@@ -20,7 +20,7 @@ async page => {
             if(ratio<4.5||colors.height<44||colors.opacity!=='1')throw new Error(label+' '+state+': '+JSON.stringify({ratio,...colors}));
             if(state==='default'){
                 const destructive=['Khóa','Ngừng áp dụng'].includes(label);
-                if(colors.background!==(destructive?'rgb(255, 255, 255)':'rgb(140, 28, 19)')||colors.color!==(destructive?'rgb(161, 47, 47)':'rgb(255, 255, 255)'))throw new Error('Wrong replacement token '+label);
+                if(colors.background!==(destructive?'rgb(23, 30, 48)':'rgb(217, 178, 106)')||colors.color!==(destructive?'rgb(255, 170, 164)':'rgb(14, 19, 32)'))throw new Error('Wrong replacement token '+label);
             }
             results.push({label,state,contrast:ratio.toFixed(2),...colors});
             if(state==='active')await page.mouse.move(0,0).then(()=>page.mouse.up());

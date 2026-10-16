@@ -2106,3 +2106,8 @@ Hoàn tất thay đổi local theo yêu cầu: ba panel riêng, Preview không t
 ## 2026-10-15 - Local Vietnamese lacquer palette
 
 Applied user-selected oxblood/gold/ivory palette across PM surfaces, removed large dark workspace panels and corrected mobile login stacking. Evidence and limits: `docs/PM_LACQUER_PALETTE_20261015.md`. No-DB verifier 23 scripts/30 lint/6 manifest tests, native contract guard14 and58 browser renders PASS. Button/login contrast, projects, costs, header and motion suites PASS. Local only; no push, merge or production deployment.
+
+
+## 2026-10-16 - Midnight Gold local review
+
+Replaced lacquer palette with the user-selected dark Midnight Gold theme across PM, login, tables/forms and charts. Added one primary-button hover sweep and interactive-card lift, disabled under reduced motion. Fixed inherited light tokens and Bootstrap heading colors found by computed contrast checks. Evidence: `docs/PM_MIDNIGHT_GOLD_20261016.md`. No-DB checks23/lint30/manifest6, native contracts14, browser states58 and targeted contrast/motion/projects/costs/header suites PASS. No DB/session integration or production UAT; no push/merge/deploy.
