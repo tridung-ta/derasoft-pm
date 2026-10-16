@@ -30,7 +30,7 @@ async (page) => {
     await page.waitForFunction(() => document.getElementById('refresh-status').textContent.includes('Đã cập nhật'));
     if (calls !== 1 || await page.locator('img[src=x]').count()) throw new Error('Polling interval or XSS protection failed.');
     if (await page.locator('#valuation-date').textContent() !== '2026-10-03') throw new Error('Estimate valuation date became stale after polling.');
-    if ((await page.evaluate(() => Chart.getChart('trend-chart').data.labels)).length) throw new Error('Mixed-currency chart drew money.');
+    if (await page.evaluate(() => !!Chart.getChart('trend-chart')) || !await page.locator('#trend-chart-empty').isVisible()) throw new Error('Mixed-currency chart drew money or hid fallback.');
     fail = true;
     await page.clock.fastForward(60000);
     await page.waitForFunction(() => document.getElementById('refresh-status').textContent.includes('Giữ số liệu'));

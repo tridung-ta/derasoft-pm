@@ -8,10 +8,10 @@ async page => {
             const s=getComputedStyle(document.body);
             return {background:s.backgroundColor,foreground:s.color,font:s.fontFamily,loaded:[...document.fonts].some(f=>f.family==='Inter'&&f.status==='loaded'),external:[...performance.getEntriesByType('resource')].filter(r=>!r.name.startsWith(location.origin)).map(r=>r.name)};
         });
-        if(styles.background!=='rgb(243, 245, 245)'||styles.foreground!=='rgb(32, 38, 44)'||!styles.loaded||!styles.font.startsWith('Inter')||styles.external.length)throw new Error(file+': '+JSON.stringify(styles));
+        if(styles.background!=='rgb(14, 19, 32)'||styles.foreground!=='rgb(237, 230, 216)'||!styles.loaded||!styles.font.startsWith('Inter')||styles.external.length)throw new Error(file+': '+JSON.stringify(styles));
         if(file==='phase9-dashboard.html'){
             const muted=await page.locator('.metric-label').first().evaluate(e=>getComputedStyle(e).color);
-            if(muted!=='rgb(89, 99, 109)')throw new Error('Dashboard muted text regressed: '+muted);
+            if(muted!=='rgb(154, 160, 178)')throw new Error('Dashboard muted text regressed: '+muted);
         }
         for(const width of [360,390,768,1440]){
             await page.setViewportSize({width,height:1000});
@@ -20,7 +20,7 @@ async page => {
         if(file==='phase9-theme-nav.html'){
             if(await page.locator('.pm-module-nav a').count()!==9||await page.locator('.pm-module-nav a .pm-nav-icon').count()!==9)throw new Error('Full navigation icons missing');
             const nav=await page.locator('.pm-module-nav').evaluate(e=>getComputedStyle(e).backgroundColor);
-            if(nav!=='rgb(255, 255, 255)')throw new Error('Wrong header menu theme');
+            if(nav!=='rgb(23, 30, 48)')throw new Error('Wrong header menu theme');
         }
         if(file==='phase6-preview.html'){
             const align=await page.locator('.pm-money-table td').nth(1).evaluate(e=>getComputedStyle(e).textAlign);

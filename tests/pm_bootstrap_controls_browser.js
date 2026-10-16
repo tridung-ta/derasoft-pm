@@ -6,7 +6,7 @@ async page => {
     await button.evaluate(e=>e.disabled=true);
     await page.waitForTimeout(250); // Wait for Bootstrap's color transition to settle.
     const disabled=await button.evaluate(e=>{const s=getComputedStyle(e);return [s.color,s.backgroundColor,s.opacity]});
-    if(disabled.join('|')!=='rgb(82, 82, 91)|rgb(244, 244, 245)|1')throw Error('Disabled contrast regressed: '+disabled);
+    if(disabled.join('|')!=='rgb(174, 182, 201)|rgb(41, 50, 71)|1')throw Error('Disabled contrast regressed: '+disabled);
     await button.evaluate(e=>e.disabled=false);
     const input=page.locator('.pm-add-person input[name="fullname"]');
     await input.focus();await page.waitForTimeout(250);

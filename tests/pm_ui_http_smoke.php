@@ -5,11 +5,12 @@ $c=new mysqli($config['db_server'],$config['db_user'],$config['db_pwd'],$config[
 $dir=ROOT_PATH.'.local/phase9sessions';if(!is_dir($dir))mkdir($dir,0700,true);ini_set('session.save_path',$dir);ini_set('session.use_cookies','0');
 function uiSession(int $user,int $store): string {session_id(bin2hex(random_bytes(20)));session_start();$_SESSION=['userId'=>$user,'storeId'=>$store,'pm_csrf_token'=>'ui-fixture-token'];$id=session_id();session_write_close();return $id;}
 function uiHttp(string $query,string $sid,?array $post=null): array {
-    $ctx=stream_context_create(['http'=>['method'=>$post===null?'GET':'POST','header'=>'Cookie: PHPSESSID='.$sid."\r\n".($post!==null?"Content-Type: application/x-www-form-urlencoded\r\n":''),'content'=>$post===null?'':http_build_query($post),'ignore_errors'=>true,'timeout'=>15]]);$body=file_get_contents('http://127.0.0.1:18769/admin.php?'.$query,false,$ctx);$headers=$http_response_header??[];preg_match('/\s(\d{3})\s/',$headers[0]??'',$m);return [(int)($m[1]??0),$body,$headers];
+    $ctx=stream_context_create(['http'=>['method'=>$post===null?'GET':'POST','header'=>'Cookie: PHPSESSID='.$sid."\r\n".($post!==null?"Content-Type: application/x-www-form-urlencoded\r\n":''),'content'=>$post===null?'':http_build_query($post),'ignore_errors'=>true,'timeout'=>15]]);$body=file_get_contents('http://127.0.0.1:18849/admin.php?'.$query,false,$ctx);$headers=$http_response_header??[];preg_match('/\s(\d{3})\s/',$headers[0]??'',$m);return [(int)($m[1]??0),$body,$headers];
 }
-$server=proc_open([PHP_BINARY,'-d','session.save_path='.$dir,'-S','127.0.0.1:18769','-t',ROOT_PATH],[0=>['pipe','r'],1=>['file',ROOT_PATH.'.local/phase9-http.log','a'],2=>['file',ROOT_PATH.'.local/phase9-http.log','a']],$pipes,ROOT_PATH);if(!is_resource($server))throw new RuntimeException('No HTTP server.');fclose($pipes[0]);
+$occupied=@fsockopen('127.0.0.1',18849,$portError,$portMessage,.1);if($occupied){fclose($occupied);throw new RuntimeException('UI HTTP fixture port occupied; refusing to test another server.');}
+$server=proc_open([PHP_BINARY,'-d','session.save_path='.$dir,'-S','127.0.0.1:18849','-t',ROOT_PATH],[0=>['pipe','r'],1=>['file',ROOT_PATH.'.local/phase9-http.log','a'],2=>['file',ROOT_PATH.'.local/phase9-http.log','a']],$pipes,ROOT_PATH);if(!is_resource($server))throw new RuntimeException('No HTTP server.');fclose($pipes[0]);
 try{
-    for($i=0;$i<50;$i++){$socket=@fsockopen('127.0.0.1',18769,$errno,$error,.1);if($socket){fclose($socket);break;}usleep(100000);}
+    for($i=0;$i<50;$i++){$socket=@fsockopen('127.0.0.1',18849,$errno,$error,.1);if($socket){fclose($socket);break;}usleep(100000);}
     $routes=['pm','pmusers','pmprojects','pmtimesheets','pmaudit','pmcosts','pmallocations','pmreports','pmimports'];$cases=0;$actors=[];$missing=[];
     foreach(['ADMIN','PM','HR','EMPLOYEE'] as $role){
         $a=$q->fetchOne("SELECT u.id,u.store_id FROM dc_users u JOIN dc_pm_user_roles ur ON ur.store_id=u.store_id AND ur.user_id=u.id JOIN dc_pm_roles r ON r.store_id=ur.store_id AND r.id=ur.role_id WHERE u.status=1 AND r.status=1 AND r.code=? LIMIT 1",'s',[$role]);if(!$a){$missing[]=$role;continue;}

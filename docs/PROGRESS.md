@@ -2111,3 +2111,8 @@ Applied user-selected oxblood/gold/ivory palette across PM surfaces, removed lar
 ## 2026-10-16 - Midnight Gold local review
 
 Replaced lacquer palette with the user-selected dark Midnight Gold theme across PM, login, tables/forms and charts. Added one primary-button hover sweep and interactive-card lift, disabled under reduced motion. Fixed inherited light tokens and Bootstrap heading colors found by computed contrast checks. Evidence: `docs/PM_MIDNIGHT_GOLD_20261016.md`. No-DB checks23/lint30/manifest6, native contracts14, browser states58 and targeted contrast/motion/projects/costs/header suites PASS. No DB/session integration or production UAT; no push/merge/deploy.
+
+
+## 2026-10-16 - Midnight Gold UI/backend action retest
+
+Completed full current regression66 and47 browser suites after correcting stale test assumptions (translated errors, collapsed panels, dark tokens/text logo, chart destruction fallback, confirmation, fixture CSS and preview port collision). Native form contracts14 PASS; no application business changes. Local backup taken; contents of96 tables unchanged, dc_users remains MyISAM. PM/HR controller HTTP157 fixtures PASS, Admin/Employee live-session route18 cases PASS. Browser mutations intercepted; no real-account PM/HR password login or cross-request persisted browser E2E claim. Archived phase10 browser requiring retired isolated DB not run. Details: `docs/PM_UI_BE_ACTION_RETEST_20261016.md`. No push/merge/deploy.

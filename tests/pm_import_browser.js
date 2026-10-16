@@ -5,14 +5,15 @@ async (page) => {
         await page.setViewportSize({width,height});if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw new Error('Import '+name+' overflow.');
         await page.screenshot({path:'phase8-import-'+name+'.png',fullPage:true});
     }
-    if(await page.locator('script').count()||await page.locator('img[src=x]').count())throw new Error('Import preview XSS.');
+    if(await page.locator('script:not([src]):not([type="application/json"])').count()||await page.locator('img[src=x]').count())throw new Error('Import preview XSS.');
     const form=page.locator('form[enctype="multipart/form-data"]');
     if(await form.locator('input[name="op"]').inputValue()!=='pmimports'||await form.locator('input[name="csrf_token"]').inputValue()!=='test-token'||await form.locator('input[type="file"]').getAttribute('accept')!=='.xlsx')throw new Error('Upload route/CSRF/type fields.');
-    if(!await page.getByRole('button',{name:'Kiểm tra và lưu staging'}).count()||!await page.getByRole('button',{name:'Tải file mẫu'}).count())throw new Error('Import controls missing.');
+    if(!await page.getByRole('button',{name:'Kiểm tra và lưu staging',includeHidden:true}).count()||!await page.getByRole('button',{name:'Tải file mẫu',includeHidden:true}).count())throw new Error('Import controls missing.');
     if(!await page.getByText('Preview/staging chưa áp dụng', {exact:false}).count()||errors.length)throw new Error('Missing un-applied state or script error.');
     for(const action of ['apply','resume','detail','provision_password']){
+        await page.locator('a[href="#pm-import-history"]').click();
         const control=page.locator('button[value="'+action+'"]').first();
-        const target=control.locator('..');
+        const target=control.locator('xpath=ancestor::form[1]');
         if(await target.locator('input[name="op"]').inputValue()!=='pmimports'||await target.locator('input[name="csrf_token"]').inputValue()!=='test-token')throw new Error('Apply POST fields.');
         if(action==='provision_password')await target.locator('input[name="password"]').fill('Synthetic password 2026');
         let submitted=false;
@@ -23,7 +24,9 @@ async (page) => {
             if(action==='provision_password'&&(data.get('source_row')!=='2'||!data.get('password')))throw new Error('Credential form missing fields.');
             submitted=true;await route.fulfill({contentType:'text/html',body:'<p>Fixture POST received</p>'});
         });
-        await control.click();await page.waitForLoadState();if(!submitted)throw new Error('Form did not submit '+action);
+        if(action==='apply')page.once('dialog',dialog=>dialog.accept());
+        const response=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/.local/phase8-import-preview.html'));
+        await control.click();await response;await page.waitForLoadState();if(!submitted)throw new Error('Form did not submit '+action);
         await page.unroute('**/.local/phase8-import-preview.html');await page.goto('http://127.0.0.1:18767/.local/phase8-import-preview.html');
     }
     return 'PASS: import desktop/mobile, escaping, staging state, Apply/resume/detail/credential POST and CSRF fields (synthetic browser fixture).';

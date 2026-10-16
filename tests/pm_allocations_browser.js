@@ -17,8 +17,10 @@ async (page) => {
     await page.setViewportSize({width:390,height:844});
     if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw new Error('Mobile overflow.');
     await page.screenshot({path:'phase7-mobile.png',fullPage:true});
+    await page.locator('.pm-allocation-create > summary').click();
     await page.locator('#allocation-task').selectOption('1');
     if(await page.locator('#allocation-user').inputValue()!=='1')throw new Error('Task assignee form broken.');
+    await page.locator('#allocation-suggestions').locator('xpath=ancestor::details[1]/summary').click();
     await page.locator('#allocation-suggestions button').click();
     await page.waitForFunction(()=>document.getElementById('suggestion-results').textContent.includes('3.00'));
     if(suggestionCalls!==1||await page.locator('img[src=x]').count())throw new Error('Suggestions XSS or request failed.');

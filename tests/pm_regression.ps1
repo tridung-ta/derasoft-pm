@@ -19,10 +19,12 @@ try {
         'pm_roles_batch_smoke', 'pm_ui_http_smoke', 'smoke_pm_ui', 'pm_explain_smoke',
         'pm_session_guard_smoke', 'pm_db_isolation_smoke', 'pm_phase11_metadata', 'pm_phase11_bootstrap', 'pm_role_http_smoke', 'pm_tenant_matrix_smoke', 'pm_aggregate_store_input_smoke', 'pm_session_role_http_smoke', 'pm_required_fields_http_smoke', 'pm_workspace_dashboard_smoke', 'pm_allocation_summary_contract_smoke'
     )
+    $failures = @()
     foreach ($test in $tests) {
         & $php "tests/$test.php"
-        if ($LASTEXITCODE -ne 0) { throw "Failed: $test" }
+        if ($LASTEXITCODE -ne 0) { $failures += $test; Write-Output "FAIL: $test (continuing remaining checks)" }
     }
+    if ($failures.Count -gt 0) { throw "Failed regression scripts: $($failures -join ', ')" }
     Write-Output "PASS: $($tests.Count) regression scripts. No migrations applied by this runner."
 } finally {
     Pop-Location
