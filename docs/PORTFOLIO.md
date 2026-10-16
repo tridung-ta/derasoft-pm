@@ -1,16 +1,12 @@
 # Portfolio notes — DeraSoft PM
 
-## Verified extension and delivery status — 07/10/2026
+## Current accepted delivery - 16/10/2026
 
-Added atomic task audits, project customer/member-role/task date metadata,
-weekly/task/late-work statistics, scoped cost filters and XLSX personnel/project
-exports. Integrated self-hosted Bootstrap CSS without replacing the legacy MVC
-or shared Inter theme. Latest local verification: 47 regression scripts with
-73 HTTP fixture cases and 101 prepared EXPLAIN query shapes. Earlier 14 browser
-suites passed; remaining real-account/Excel/zoom acceptance limits are documented.
-Phase 11 integrated into main from develop at 953bba8. Operator reported full prior package deployed
-and running without observed errors; personnel fix 1f1ef1c is not deployed.
-Do not describe these results as complete UAT or production readiness.
+Completed the ten agreed functional areas on the existing PHP/Smarty/MySQL MVC base. The user accepted project completion and reported successful upload of the Midnight Gold interface. Added responsive operating workbenches, preserved native form/backend contracts, and implemented pointer-safe hover effects with reduced-motion support. Cron reminders are additional scope.
+
+Latest local evidence:66 regression scripts,47 browser suites,157 PM/HR controller HTTP fixture cases,14 form contracts; contents of96 local tables unchanged, dc_users remains MyISAM. User acceptance and technical verification are recorded separately. Do not claim exhaustive UAT, production performance, real-account PM/HR login or completed advanced throttle012 concurrency verification.
+
+Read [current requirement coverage](PM_TEN_REQUIREMENTS_STATUS_20261016.md), [action retest report](PM_UI_BE_ACTION_RETEST_20261016.md), [current interface](../README.md#interface-preview) and [32 reusable lessons](BUG_LESSONS.md). Phase-specific notes below are historical evidence, not current deployment status.
 
 ## CV summary
 

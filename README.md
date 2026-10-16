@@ -11,7 +11,7 @@
 
 # DeraSoft PM
 
-**Update — 13 Oct 2026:** The current local workspace adds role dashboards, scoped task estimate warnings, configurable daily total-hours limits, fixed shift labels, Vietnamese feedback and header navigation. Verification on f74da9c: 17 no-DB scripts, 24 browser suites, 44 PHP and 5 JavaScript syntax checks, and 4 UAT workbooks passed. The 80-item checklist remains 73 PASS / 0 FAIL / 7 NOT RUN. Database integration and host UAT on the latest changes remain unverified. See [current review and limits](docs/FINAL_LOCAL_REVIEW_20261013.md) and the [working branch](https://github.com/tridung-ta/derasoft-pm/tree/feature/pm-phase11-launch-copy). This update is not a new main merge or production deployment.
+**Delivery update - 16 Oct 2026:** The user accepted completion of the ten agreed functional areas and reported successful upload of the Midnight Gold interface. Latest local verification: **66 regression scripts, 47 browser suites, 157 PM/HR controller HTTP fixture cases and 14 native-form contracts passed**; contents of 96 local tables remained unchanged. The interface uses self-hosted Inter, dark surfaces, gold actions and reduced-motion support. Cron reminders are additional scope; advanced throttle012 SQL/concurrency verification remains a separate follow-up. This is acceptance of the agreed scope, not a claim of exhaustive UAT, zero defects or production load testing. See [requirements and limits](docs/PM_TEN_REQUIREMENTS_STATUS_20261016.md), [latest test report](docs/PM_UI_BE_ACTION_RETEST_20261016.md) and [bug-prevention lessons](docs/BUG_LESSONS.md).
 
 **Project & timesheet management built by extending an existing PHP application.**
 
@@ -19,11 +19,11 @@ DeraSoft PM connects workforce management, projects, tasks and time tracking in 
 
 **Author:** [Tạ Trí Dũng](https://github.com/tridung-ta) · **Focus:** backend development, business rules and legacy integration.
 
-> **Delivery status — 07 Oct 2026:** All ten requested functional areas are built locally. Phase 11 source is integrated into main from develop at `953bba8`. Automated verification is not full manual UAT or a production load benchmark.
+> **Project status:** Completed within the scope accepted by the user on 16 Oct 2026. Source, handoff documentation and reusable lessons are maintained together; historical verification gaps remain documented.
 
 ## What the application does
 
-| Area | Implemented in Phase 11 |
+| Area | Delivered functionality |
 | --- | --- |
 | Authentication & access | Legacy password upgrade, secure sessions, four roles and tenant-scoped permissions |
 | Workforce | User and department management, multiple roles and effective hourly rates |
@@ -77,6 +77,17 @@ docs/                  Audit, plans, schema and verification records
 
 ## Local verification
 
+Current commands from the repository root (PowerShell; prepare bundled PHP locally):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tests/pm_workspace_verify.ps1
+python tests/pm_ui_review_contract.py
+powershell -ExecutionPolicy Bypass -File tests/pm_regression.ps1
+python docs/learning/sync_memory.py --check
+```
+
+Full regression requires the guarded, backed-up `derasoft_pm_local` database. The runner does not apply migrations. Browser fixtures and intercepted POSTs are separate from actual controller/DAO HTTP tests. See the latest report for preview setup and coverage limits.
+
 Use PHP 8.3 with the required extensions and a backed-up local database. See the [environment baseline](https://github.com/tridung-ta/derasoft-pm/blob/main/docs/BASELINE.md) and [migration conventions](database/migrations/README.md) before setup. Environment configuration and license files are supplied separately; the public repository is not a one-command installation package.
 
 After checking out main and preparing the local schema, representative checks are:
@@ -89,26 +100,31 @@ php tests/smoke_pm_timesheets.php
 php tests/smoke_pm_audit.php
 ```
 
-These checks passed on the documented local environment. Database smoke fixtures use transactions and rollback. Automated service/template verification does not replace browser UAT or concurrent multi-connection testing.
+These checks passed on the documented local environment. Database smoke fixtures use transactions/rollback or connection-local temporary mirrors for nontransactional legacy tables. Automated service/template verification does not replace browser UAT or concurrent multi-connection testing.
 
-## Roadmap
+## Delivery and follow-up
 
-| Phase | Status |
+| Scope | Status |
 | --- | --- |
-| 0–2 · Audit, local baseline, auth & RBAC | Documented and verified |
-| 3–5 · Workforce, projects, timesheets & audit | BUILD / automated verification completed; UAT pending |
-| 6 · Cost aggregation & charts | Built / automated verified; integrated into main |
-| 7 · Resource allocation & overbooking | Built / automated verified; integrated into main |
-| 8 · Reports & Excel | Built / automated verified; integrated into main |
-| 9 · UI/accessibility, query and security hardening | Locally built / automated verified; coverage limits documented, UAT pending |
-| 9b–11 · Theme and requirements completion | Built; integrated into main; personnel correction not deployed |
-| Release acceptance | Prior package reported deployed; latest patch deployment and specific UAT pending |
+| Ten agreed functional areas | Implemented; accepted by the user on 16 Oct 2026 |
+| Midnight Gold UI | Local regression passed; user reported successful host upload |
+| Cron notifications | Additional scope; reminders implemented; advanced throttle012 evidence tracked separately |
+| Documentation and lessons | Architecture, run/test guidance, handoff, requirement matrix and 32 project-scoped lessons retained |
+| Remaining verification | Real-account PM/HR login, full manual keyboard/zoom/CSP/state coverage, actual session expiry and rate-write concurrency are not claimed as fully verified |
+
+## Interface preview
+
+Rendered application templates with synthetic demonstration data. These are not production screenshots or evidence of live persistence; security-probe strings are replaced with readable sample names for presentation.
+
+![Midnight Gold desktop overview](docs/screenshots/midnight-gold/overview-desktop.png)
+
+<img src="docs/screenshots/midnight-gold/overview-mobile.png" alt="Midnight Gold mobile overview with synthetic data" width="390">
 
 ## Tiếng Việt
 
 Hệ thống quản lý dự án và chấm công phát triển trên nền DeraSoft hiện có, không viết lại framework. Điểm chính gồm phân quyền theo tenant, quản lý nhân sự/dự án/task, tính OT theo tổng giờ ngày, snapshot đơn giá và audit log trong transaction. Chấm công được sửa/xóa trong ba ngày lịch tính từ ngày làm việc; Admin sửa sau khóa có audit riêng.
 
-Published implementation: Phase 11 at 953bba8; source integrated into main. Operator reports prior production package stable. The latest personnel patch is not deployed; configuration, uploads, dumps and logs remain excluded from Git.
+Accepted delivery: all ten groups completed within the agreed scope on 16 Oct 2026; user-reported UI upload successful. Cron is additional scope. Configuration, uploads, dumps, sessions and logs remain excluded from Git. Acceptance does not erase the specific technical verification limits documented above.
 
 Local Phase 8 import supports Admin-only XLSX preview/staging, per-row Apply results,
 duplicate-key handling and resume with a connection-owned batch lock. The approved tenant
@@ -117,7 +133,7 @@ Admin provisions a password and explicitly activates them. MyISAM writes and PM 
 writes are not one atomic transaction. Successful Apply/crash scenarios use a temporary
 transactional user mirror; native duplicate rejection is checked on the actual local table.
 
-Run the current local regression suite with `./tests/pm_regression.ps1` (47 scripts;
+Run the current local regression suite with `./tests/pm_regression.ps1` (66 scripts;
 requires the documented local DB and PHP setup). This runner does not apply migrations.
 
 Historical Phase 9 verification adds shared accessible navigation/forms/table regions, exact tenant-scoped

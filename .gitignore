@@ -37,3 +37,6 @@ Thumbs.db
 __pycache__/
 
 /.playwright-cli/
+
+# Local tool reviews and raw environment observations
+/.tmp/
